@@ -8,6 +8,7 @@
 #include "stm32/stm32_timing_helpers.h"
 #include "uart_handler/uart_handler.h"
 #include "log/log.h"
+#include "timekeeping/timekeeping.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -85,11 +86,11 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled(
     GNSS_set_uart_interrupt_state(1);	// We are now expecting a response
 
     // RX FROM GNSS, into UART_gnss_buffer
-    const uint32_t start_rx_time = HAL_GetTick();
+    const uint32_t start_rx_time = TIME_uptime_ms();
     while (1) {
         if ((UART_gnss_buffer_write_idx == 0)) {
             // Check if we've timed out (before the first byte)
-            if ((HAL_GetTick() - start_rx_time) > GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
+            if ((TIME_uptime_ms() - start_rx_time) > GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
                 LOG_message(
                     LOG_SYSTEM_GNSS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
                     "GNSS ERROR: Timeout before receiving any data"
@@ -105,7 +106,7 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled(
         }
         else { // thus, UART_gnss_buffer_write_idx > 0
             // Check if we've timed out (between bytes)
-            const uint32_t cur_time = HAL_GetTick();
+            const uint32_t cur_time = TIME_uptime_ms();
             // Note: Sometimes, because ISRs and C are fun, the UART_gnss_last_write_time_ms is
             // greater than `cur_time`. Thus, we must do a safety check that the time difference
             // is positive.

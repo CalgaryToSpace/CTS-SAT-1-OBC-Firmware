@@ -1474,7 +1474,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 /// @param[in] index_offset The index (starting at 0) from which to start reading files.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) {
-    const uint32_t function_start_time = HAL_GetTick();
+    const uint32_t function_start_time = TIME_uptime_ms();
     
     const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
     HAL_Delay(200);
@@ -1515,7 +1515,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
                 return 6;
             }
 
-            if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            if (TIME_uptime_ms() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
                 // if we've timed out, exit and return an error
                 return 7;
             }
@@ -1593,7 +1593,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
 /// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
 int16_t ADCS_save_sd_file_to_lfs_by_index(bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum) {
 
-    const uint32_t function_start_time = HAL_GetTick();
+    const uint32_t function_start_time = TIME_uptime_ms();
 
     ADCS_file_info_struct_t file_info;
     int16_t snprintf_ret;
@@ -1737,7 +1737,7 @@ int16_t ADCS_save_sd_file_to_lfs_by_index(bool index_file_bool, uint16_t file_in
 
         current_block++;
 
-        if (HAL_GetTick() - function_start_time > ADCS_FILE_DOWNLOAD_TIMEOUT_MS) {
+        if (TIME_uptime_ms() - function_start_time > ADCS_FILE_DOWNLOAD_TIMEOUT_MS) {
             // if we've timed out, exit the loop to close the file and then return an error
             timeout_err = 7;
             break;
@@ -1762,7 +1762,7 @@ int16_t ADCS_save_sd_file_to_lfs_by_index(bool index_file_bool, uint16_t file_in
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 /// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
 int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file_checksum) {
-    const uint32_t function_start_time = HAL_GetTick();
+    const uint32_t function_start_time = TIME_uptime_ms();
 
     ADCS_file_info_struct_t file_info;
     int16_t snprintf_ret;
@@ -1907,7 +1907,7 @@ int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file
 
         current_block++;
 
-        if (HAL_GetTick() - function_start_time > ADCS_FILE_DOWNLOAD_TIMEOUT_MS) {
+        if (TIME_uptime_ms() - function_start_time > ADCS_FILE_DOWNLOAD_TIMEOUT_MS) {
             // if we've timed out, exit the loop to close the file and then return an error
             timeout_err = 7;
             break;
@@ -1968,7 +1968,7 @@ uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation() {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
 
-    const uint32_t function_start_time = HAL_GetTick();
+    const uint32_t function_start_time = TIME_uptime_ms();
     
     ADCS_file_info_struct_t file_info;
 
@@ -1993,7 +1993,7 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
     for (uint16_t i = 0; i < file_index; i++) {
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
         
-        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+        if (TIME_uptime_ms() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
             return 7;
         }
         
@@ -2038,7 +2038,7 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 uint8_t ADCS_erase_sd_file_by_checksum(uint16_t file_checksum) {
 
-    const uint32_t function_start_time = HAL_GetTick();
+    const uint32_t function_start_time = TIME_uptime_ms();
     
     ADCS_file_info_struct_t file_info;
 
@@ -2073,7 +2073,7 @@ uint8_t ADCS_erase_sd_file_by_checksum(uint16_t file_checksum) {
 
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
         
-        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+        if (TIME_uptime_ms() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
             return 7;
         }
         
@@ -2140,7 +2140,7 @@ uint8_t ADCS_convert_to_jpg(uint8_t file_counter, uint8_t quality_factor, uint8_
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t quality_factor, uint8_t white_balance) {
 
-    const uint32_t function_start_time = HAL_GetTick();
+    const uint32_t function_start_time = TIME_uptime_ms();
     
     ADCS_file_info_struct_t file_info;
 
@@ -2166,7 +2166,7 @@ uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t qu
     for (i = 0; i < file_index; i++) {
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
         
-        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+        if (TIME_uptime_ms() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
             return 7;
         }
         
@@ -2217,7 +2217,7 @@ uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t qu
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_checksum(uint16_t file_checksum, uint8_t quality_factor, uint8_t white_balance) {
 
-    const uint32_t function_start_time = HAL_GetTick();
+    const uint32_t function_start_time = TIME_uptime_ms();
     
     ADCS_file_info_struct_t file_info;
 
@@ -2255,7 +2255,7 @@ uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_checksum(uint16_t file_checksum, uint
 
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
         
-        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+        if (TIME_uptime_ms() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
             return 7;
         }
         

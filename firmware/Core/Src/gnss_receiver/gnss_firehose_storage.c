@@ -25,7 +25,7 @@ uint32_t GNSS_recording_start_uptime_ms = 0;
 
 static int8_t GNSS_write_firehose_file_header() {
     // Write timestamp data (the time the buffer finished filling) to file.
-    const uint32_t uptime_ms = TIME_get_current_system_uptime_ms();
+    const uint32_t uptime_ms = TIME_uptime_ms();
 
     const uint64_t timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(uptime_ms);
     char timestamp_ms_str[32];
@@ -82,7 +82,7 @@ static int8_t GNSS_write_firehose_file_footer(const char reason_for_stopping[]) 
         buffer_footer_str, sizeof(buffer_footer_str),
         "\n{\"data_lost_bytes\": %lu, \"time_taken_ms\": %lu, \"reason_for_stopping\": \"%s\" }",
         GNSS_firehose_bytes_lost,
-        (TIME_get_current_system_uptime_ms() - GNSS_recording_start_uptime_ms),
+        (TIME_uptime_ms() - GNSS_recording_start_uptime_ms),
         reason_for_stopping
     );
 
@@ -182,7 +182,7 @@ uint8_t GNSS_enable_firehose_storage_mode(const char output_file_path[]) {
     
     // Init counters, etc.
     GNSS_firehose_bytes_lost = 0;
-    GNSS_recording_start_uptime_ms = HAL_GetTick();
+    GNSS_recording_start_uptime_ms = TIME_uptime_ms();
 
     return 0;
 }
@@ -238,7 +238,7 @@ uint8_t GNSS_disable_firehose_storage_mode(const char reason_for_stopping[]) {
         "{\"data_stored_bytes\": %ld, \"data_lost_bytes\": %lu, \"time_taken_ms\": %lu, \"reason_for_stopping\": \"%s\" }",
         file_size,
         GNSS_firehose_bytes_lost,
-        HAL_GetTick() - GNSS_recording_start_uptime_ms,
+        TIME_uptime_ms() - GNSS_recording_start_uptime_ms,
         reason_for_stopping
     );
 
@@ -314,8 +314,8 @@ uint8_t GNSS_subtask_store_firehose_data_to_file() {
     );
 
     // Conditionally, flush the file to storage.
-    if (HAL_GetTick() - last_gnss_flush_uptime_ms > GNSS_firehose_flush_interval_ms) {
-        last_gnss_flush_uptime_ms = HAL_GetTick();
+    if (TIME_uptime_ms() - last_gnss_flush_uptime_ms > GNSS_firehose_flush_interval_ms) {
+        last_gnss_flush_uptime_ms = TIME_uptime_ms();
         const int8_t flush_result = lfs_file_sync(&LFS_filesystem, &GNSS_firehose_file_pointer);
         if (flush_result < 0) {
             LOG_message(

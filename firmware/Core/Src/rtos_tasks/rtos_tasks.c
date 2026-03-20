@@ -51,7 +51,7 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
                 LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
                 "Heartbeat: Datetime: %s, Uptime: %lu ms",
                 current_time_str,
-                HAL_GetTick()
+                TIME_uptime_ms()
             );
         }
 

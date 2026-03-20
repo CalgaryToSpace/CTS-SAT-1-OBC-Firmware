@@ -6,6 +6,7 @@
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
 #include "uart_handler/uart_control.h"
+#include "timekeeping/timekeeping.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -228,7 +229,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
         );
 
         // Record start time for response reception
-        const uint32_t UART_rx_start_time_ms = HAL_GetTick();
+        const uint32_t UART_rx_start_time_ms = TIME_uptime_ms();
 
         // Check UART transmission
         if (transmit_status != HAL_OK) {
@@ -259,7 +260,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
 
             // Check if we have timed out (Before receiving the first byte)
             if (*UART_rx_buffer_write_idx_ptr == 0) {
-                if((HAL_GetTick() - UART_rx_start_time_ms) > UART_RX_TIMEOUT_DURATION_MS) {
+                if((TIME_uptime_ms() - UART_rx_start_time_ms) > UART_RX_TIMEOUT_DURATION_MS) {
                     LOG_message(
                         LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                         "No response received from %s. Timeout waiting for 1st byte.",
@@ -272,7 +273,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
 
             // We have received some data but timed out (in between bytes / end of reception)
             else {
-                const uint32_t current_time = HAL_GetTick(); // Get current time
+                const uint32_t current_time = TIME_uptime_ms(); // Get current time
 
                 // Get last write time (Required to dereference volatile pointer here to prevent race 
                 // condition in the following if statement)
@@ -497,7 +498,7 @@ uint8_t TCMDEXEC_uart_get_last_rx_times_json(
     char *response_output_buf,
     uint16_t response_output_buf_len
 ) {
-    const uint32_t now = HAL_GetTick();
+    const uint32_t now = TIME_uptime_ms();
 
     const int32_t debug_delta  = UART_telecommand_last_write_time_ms == 0 ? -99 : (int32_t)(now - UART_telecommand_last_write_time_ms);
     const int32_t mpi_delta    = UART_mpi_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_mpi_last_write_time_ms);

@@ -1,5 +1,6 @@
 #include "main.h"
 #include "littlefs/flash_internal_spi.h"
+#include "timekeeping/timekeeping.h"
 
 // Static functions are defined at the bottom of this file.
 static void _chip_select_low(uint8_t chip_number);
@@ -88,7 +89,7 @@ void FLASH_SPI_enable_then_disable_chip_select(uint8_t chip_number) {
 
 /// @brief Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes.
 static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *response, uint16_t response_size) {
-    const uint32_t start_time = HAL_GetTick();
+    const uint32_t start_time = TIME_uptime_ms();
     uint32_t time_elapsed_ms = 0;
 
     // Set the receive complete flag to false.
@@ -102,7 +103,7 @@ static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *res
     // TODO: We could use a static buffer then memcpy to the response buffer, but that adds 1ms overhead. Probably not necessary.
     // Wait for DMA transfer to complete.
     while ((rx_result == HAL_OK) && !SPI_DMA_receive_complete && (time_elapsed_ms < 10)) {
-        time_elapsed_ms = HAL_GetTick() - start_time;
+        time_elapsed_ms = TIME_uptime_ms() - start_time;
     }
 
     SPI_DMA_receive_complete = 0;

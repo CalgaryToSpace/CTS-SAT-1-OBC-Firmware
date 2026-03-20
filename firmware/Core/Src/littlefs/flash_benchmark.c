@@ -2,6 +2,7 @@
 #include "main.h"
 #include "littlefs/flash_benchmark.h"
 #include "littlefs/flash_driver.h"
+#include "timekeeping/timekeeping.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -31,7 +32,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
         .row_address = test_data_address, 
         .col_address = 0};
     // Erase
-    const uint32_t erase_start_time = HAL_GetTick();
+    const uint32_t erase_start_time = TIME_uptime_ms();
     const FLASH_error_enum_t erase_result = FLASH_erase_block(chip_num, physical_address);
     if (erase_result != 0) {
         snprintf(
@@ -40,7 +41,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
             "Erase failed. FLASH_erase() return: %d\n", erase_result);
         return 1;
     }
-    const uint32_t erase_end_time = HAL_GetTick();
+    const uint32_t erase_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),
@@ -54,7 +55,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
         write_buffer[i] = (i + 42) % 256;
     }
     
-    const uint32_t write_send_start_time = HAL_GetTick();
+    const uint32_t write_send_start_time = TIME_uptime_ms();
     const FLASH_error_enum_t write_result = FLASH_program_page(chip_num, physical_address, write_buffer, test_data_length);
     if (write_result != 0) {
         snprintf(
@@ -63,7 +64,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
             "Write failed. FLASH_write return: %d\n", write_result);
         return 2;
     }
-    const uint32_t write_send_end_time = HAL_GetTick();
+    const uint32_t write_send_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),
@@ -71,7 +72,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
         write_send_end_time - write_send_start_time);
 
     // Read
-    const uint32_t read_start_time = HAL_GetTick();
+    const uint32_t read_start_time = TIME_uptime_ms();
     uint8_t read_buffer[test_data_length];
     const FLASH_error_enum_t read_result = FLASH_read_page(chip_num, physical_address, read_buffer, test_data_length);
     if (read_result != 0) {
@@ -81,7 +82,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
             "Read failed. FLASH_read_data return: %d\n", read_result);
         return 3;
     }
-    const uint32_t read_end_time = HAL_GetTick();
+    const uint32_t read_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),

@@ -173,7 +173,7 @@ static void MPI_power_on() {
 
 static int8_t MPI_write_file_header() {
     // Write timestamp data (the time the buffer finished filling) to file.
-    const uint32_t uptime_ms = TIME_get_current_system_uptime_ms();
+    const uint32_t uptime_ms = TIME_uptime_ms();
 
     const uint64_t timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(uptime_ms);
     char timestamp_ms_str[32];
@@ -230,7 +230,7 @@ int8_t MPI_write_file_footer(MPI_reason_for_stopping_active_mode reason_for_stop
         buffer_footer_str, sizeof(buffer_footer_str),
         "{\"data_lost_bytes\": %lu, \"time_taken_ms\": %lu, \"reason_for_stopping\": \"%s\" }",
         MPI_science_data_bytes_lost,
-        (TIME_get_current_system_uptime_ms() - MPI_recording_start_uptime_ms),
+        (TIME_uptime_ms() - MPI_recording_start_uptime_ms),
         MPI_reason_for_stopping_active_mode_enum_to_str(reason_for_stopping)
     );
 
@@ -254,7 +254,7 @@ static int8_t MPI_prepare_to_receive_data(const char output_file_path[]) {
     MPI_power_on();
 
     // Start the timer to track time past since we powered on MPI
-    const uint32_t start_time = HAL_GetTick();
+    const uint32_t start_time = TIME_uptime_ms();
 
     // Mount LFS if not already mounted
     if (!LFS_is_lfs_mounted) {
@@ -311,7 +311,7 @@ static int8_t MPI_prepare_to_receive_data(const char output_file_path[]) {
     }
     
     // Total 5 second delay to make sure MPI is booted
-    const int32_t power_on_delay = (5000 - (HAL_GetTick() - start_time));
+    const int32_t power_on_delay = (5000 - (TIME_uptime_ms() - start_time));
     if (power_on_delay > 0) {
         HAL_Delay(power_on_delay);
     }
@@ -358,7 +358,7 @@ uint8_t MPI_enable_active_mode(const char output_file_path[]) {
     
     // Init counters, etc.
     MPI_science_data_bytes_lost = 0;
-    MPI_recording_start_uptime_ms = HAL_GetTick();
+    MPI_recording_start_uptime_ms = TIME_uptime_ms();
 
 
     // Receive MPI response actively with 8192 buffer size.
@@ -460,7 +460,7 @@ uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode reason_for_s
         "{\"data_stored_bytes\": %ld, \"data_lost_bytes\": %lu, \"time_taken_ms\": %lu, \"reason_for_stopping\": \"%s\" }",
         file_size,
         MPI_science_data_bytes_lost,
-        HAL_GetTick() - MPI_recording_start_uptime_ms,
+        TIME_uptime_ms() - MPI_recording_start_uptime_ms,
         MPI_reason_for_stopping_active_mode_enum_to_str(reason_for_stopping)
     );
 

@@ -86,7 +86,7 @@ static void subtask_disable_adcs_if_eps_enters_safety_mode(void) {
     }
 
     // Check enabled and overdue.
-    const uint64_t current_time = HAL_GetTick();
+    const uint64_t current_time = TIME_uptime_ms();
     if (monitor_eps_to_control_adcs_last_checked_uptime_ms + EPS_monitor_safety_adcs_interval_ms < current_time) {
         monitor_eps_to_control_adcs_last_checked_uptime_ms = current_time;
 
@@ -129,7 +129,7 @@ static void subtask_disable_adcs_if_eps_enters_safety_mode(void) {
 
 static void subtask_monitor_eps_power(void) {
     // EPS overcurrent monitor upkeep
-    const uint64_t current_time = HAL_GetTick();
+    const uint64_t current_time = TIME_uptime_ms();
     if (EPS_monitor_last_uptime_ms + EPS_monitor_interval_ms < current_time) {
 
         const uint8_t EPS_monitor_result = EPS_monitor_and_disable_overcurrent_channels();
@@ -163,14 +163,14 @@ static void subtask_monitor_eps_power(void) {
 static void subtask_reset_system_after_very_long_uptime(void) {
     if (
         (STM32_system_reset_interval_sec > 0) // Allow disabling this feature.
-        && (TIME_get_current_system_uptime_ms() > (STM32_system_reset_interval_sec * 1000))
+        && (TIME_uptime_ms() > (STM32_system_reset_interval_sec * 1000))
     ) {
         LOG_message(
             LOG_SYSTEM_OBC,
             LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
             "System reset triggered due to max uptime exceeded: %ld ms > %ld sec",
-            TIME_get_current_system_uptime_ms(),
+            TIME_uptime_ms(),
             STM32_system_reset_interval_sec
         );
         HAL_Delay(1000); // Give time for the log to be sent.
@@ -190,7 +190,7 @@ static void subtask_reset_system_after_very_long_uptime(void) {
 ///       necessary.
 static void subtask_reset_system_after_no_recent_uplinks(void) {
     const uint32_t time_since_last_uplink_sec = (
-        (TIME_get_current_system_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000
+        (TIME_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000
     );
 
     if (
@@ -217,7 +217,7 @@ static void subtask_reset_system_after_no_recent_uplinks(void) {
 /// @brief Update the RF switch state based on the current mode.
 /// @note Implemented per https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/228
 static void subtask_update_rf_switch(void) {
-    const uint32_t duration_since_last_uplink_sec = (TIME_get_current_system_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000;
+    const uint32_t duration_since_last_uplink_sec = (TIME_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000;
 
     if ((COMMS_rf_switch_control_mode != COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) // Log minimiation condition.
         && (duration_since_last_uplink_sec > COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec)
@@ -269,7 +269,7 @@ static void subtask_update_rf_switch(void) {
 static uint32_t last_beacon_send_time_ms = 0;
 
 static void subtask_send_beacon(void) {
-    if ((TIME_get_current_system_uptime_ms() - last_beacon_send_time_ms) > COMMS_beacon_interval_ms) {
+    if ((TIME_uptime_ms() - last_beacon_send_time_ms) > COMMS_beacon_interval_ms) {
         if (COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) {
             COMMS_toggle_rf_switch_state();
 
@@ -280,7 +280,7 @@ static void subtask_send_beacon(void) {
         // TODO: If complex beacon packet is enabled, also send that too.
         COMMS_total_beacon_count_since_boot += 1;
 
-        last_beacon_send_time_ms = TIME_get_current_system_uptime_ms();
+        last_beacon_send_time_ms = TIME_uptime_ms();
     }
 
 }
@@ -294,9 +294,9 @@ static uint32_t uptime_of_last_eps_time_sync_ms = 0;
 static void subtask_sync_obc_time_based_on_eps_time(void) {
     if (
         (EPS_time_sync_period_sec > 0) // Allow disabling this feature.
-        && (((TIME_get_current_system_uptime_ms() - uptime_of_last_eps_time_sync_ms) / 1000) >= EPS_time_sync_period_sec)
+        && (((TIME_uptime_ms() - uptime_of_last_eps_time_sync_ms) / 1000) >= EPS_time_sync_period_sec)
      ) {
-        uptime_of_last_eps_time_sync_ms = TIME_get_current_system_uptime_ms();
+        uptime_of_last_eps_time_sync_ms = TIME_uptime_ms();
 
         EPS_struct_system_status_t status;
         const uint8_t result_status = EPS_CMD_get_system_status(&status);
@@ -349,7 +349,7 @@ static void subtask_write_boot_time_to_lfs(void) {
         return;
     }
 
-    const uint32_t current_uptime_ms = TIME_get_current_system_uptime_ms();
+    const uint32_t current_uptime_ms = TIME_uptime_ms();
 
     // Don't write the boot record right away, in case LFS writes are causing system crashes.
     // Instead, wait a minute (3 beacons, plus a tiny margin), then do the write.
@@ -417,7 +417,7 @@ static void subtask_enqueue_tcmds_from_agenda_file(void) {
     static uint32_t subtask_last_ran_ms = 0;
     static uint64_t last_enqueue_max_filter_unix_timestamp_ms = 0;
 
-    if (HAL_GetTick() < 65000) { // Hard-coded startup grace period.
+    if (TIME_uptime_ms() < 65000) { // Hard-coded startup grace period.
         // Safety: Avoid running this part for the first 65 seconds.
         // Has the potential to break the system a bit (e.g., bad agenda file with default name),
         // so we give a grace period here before used this feature.
@@ -425,8 +425,8 @@ static void subtask_enqueue_tcmds_from_agenda_file(void) {
     }
 
     // Run the main subtask.
-    if ((HAL_GetTick() - subtask_last_ran_ms) > TCMD_enqueue_from_agenda_file_interval_ms) {
-        subtask_last_ran_ms = HAL_GetTick();
+    if ((TIME_uptime_ms() - subtask_last_ran_ms) > TCMD_enqueue_from_agenda_file_interval_ms) {
+        subtask_last_ran_ms = TIME_uptime_ms();
 
         // Start working out the filter settings.
         const uint64_t current_unix_epoch_time_ms = TIME_get_current_unix_epoch_time_ms();

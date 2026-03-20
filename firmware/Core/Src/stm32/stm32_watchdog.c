@@ -1,6 +1,7 @@
 #include "stm32/stm32_watchdog.h"
 
 #include "log/log.h"
+#include "timekeeping/timekeeping.h"
 
 #include "main.h"
 
@@ -23,7 +24,7 @@ void STM32_pet_watchdog() {
     HAL_IWDG_Refresh(&hiwdg);
 
     // Do checks about stats of watchdog petting.
-    const uint32_t cur_time_ms = HAL_GetTick();
+    const uint32_t cur_time_ms = TIME_uptime_ms();
 
     // Store the time since the last pet. Must come BEFORE updating the global variables.
     const int32_t time_since_last_pet_ms = cur_time_ms - STM32_watchdog_uptime_last_pet_ms;

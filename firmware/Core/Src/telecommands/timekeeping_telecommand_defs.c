@@ -47,7 +47,7 @@ uint8_t TCMDEXEC_set_system_time(
     );
 
     // Move the reported "current time" forward by the delay between telecommand reception and execution.
-    ms += HAL_GetTick() - tcmd_received_at_uptime_ms;
+    ms += TIME_uptime_ms() - tcmd_received_at_uptime_ms;
 
     TIME_set_current_unix_epoch_time_ms(
         ms, TIME_SYNC_SOURCE_TELECOMMAND_ABSOLUTE

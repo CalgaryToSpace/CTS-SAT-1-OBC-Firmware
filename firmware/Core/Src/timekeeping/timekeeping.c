@@ -16,8 +16,9 @@ static char TIME_unix_epoch_time_at_last_time_resync_ms_str[14] = "0000000000000
 uint32_t TIME_system_uptime_at_last_time_resync_ms = 0;
 TIME_sync_source_enum_t TIME_last_synchronization_source = TIME_SYNC_SOURCE_NONE;
 
-uint32_t TIME_get_current_system_uptime_ms(void) {
-    return HAL_GetTick();
+uint32_t TIME_uptime_ms(void) {
+    // return HAL_GetTick(); -> Slow to call that function. Instead, inline it here.
+    return uwTick;
 }
 
 /// @brief Use this function in a telecommand, or upon receiving a time update from the GNSS. 
@@ -36,7 +37,7 @@ void TIME_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TI
     TIME_get_current_utc_datetime_str(old_time_str, sizeof(old_time_str));    
 
     // Update the time.
-    TIME_system_uptime_at_last_time_resync_ms = HAL_GetTick();
+    TIME_system_uptime_at_last_time_resync_ms = TIME_uptime_ms();
     TIME_unix_epoch_time_at_last_time_resync_ms = current_unix_epoch_time_ms;
     TIME_last_synchronization_source = source;
 
@@ -80,7 +81,7 @@ void TIME_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TI
 }
 
 /// @brief Convert the system uptime to a unix epoch time in ms.
-/// @param uptime_ms System uptime in ms, as returned by HAL_GetTick().
+/// @param uptime_ms System uptime in ms, as returned by TIME_uptime_ms().
 /// @return The unix epoch time in ms (ms since 1970-01-01).
 /// @note This function still works fine even if you store the uptime, resync the system time, and then call this function.
 uint64_t TIME_convert_uptime_to_unix_epoch_time_ms(uint32_t uptime_ms) {
@@ -89,13 +90,13 @@ uint64_t TIME_convert_uptime_to_unix_epoch_time_ms(uint32_t uptime_ms) {
 
 /// @brief Returns the current unix timestamp, in milliseconds
 uint64_t TIME_get_current_unix_epoch_time_ms() {
-    return TIME_convert_uptime_to_unix_epoch_time_ms(TIME_get_current_system_uptime_ms());
+    return TIME_convert_uptime_to_unix_epoch_time_ms(TIME_uptime_ms());
 }
 
 /// @brief Returns a computer-friendly timestamp string, ideal for chronological ordering. 
 /// @param dest_str - Pointer to buffer that stores the destination string.
 /// @param dest_str_size - Maximum length of dest_str buffer.
-/// @param uptime_ms - System uptime in ms, as returned by HAL_GetTick().
+/// @param uptime_ms - System uptime in ms, as returned by TIME_uptime_ms().
 /// @details The string identifies the timestamp of the last time synchronization,
 /// the synchronization source (N - none; G - GNSS/GPS; T - telecommand), 
 /// and the time passed in ms since the last synchronization.
@@ -136,7 +137,7 @@ void TIME_format_timestamp_str(
 void TIME_get_current_timestamp_str(char *dest_str, size_t dest_str_size) {
     TIME_format_timestamp_str(
         dest_str, dest_str_size,
-        TIME_get_current_system_uptime_ms(),
+        TIME_uptime_ms(),
         TIME_last_synchronization_source
     );
 }
