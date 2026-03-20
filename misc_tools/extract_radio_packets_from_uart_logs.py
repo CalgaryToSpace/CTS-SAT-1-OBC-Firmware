@@ -35,28 +35,27 @@ def reconstruct_bulk_downlinked_file(log_file_path: Path, output_file_path: Path
         log_file_path: Path to the log file.
         output_file_path: Path to save the reconstructed file.
     """
-    packet_seq_nums = []
+    byte_offset_list: list[int] = []
     with open(output_file_path, "wb") as output_file:
         for packet in extract_radio_packets_from_logs(0x10, log_file_path):
-            packet_seq_num = packet[5]
-            packet_max_seq_num = packet[6]
+            # Read the offset in the file from bytes 5,6,7,8.
+            offset = int.from_bytes(packet[5:9], "little")
+            byte_offset_list.append(offset)
 
-            packet_seq_nums.append(packet_seq_num)
+            # Write the packet to the output file.
+            output_file.write(packet[9:])
 
-            output_file.write(packet[11:])
+            if len(byte_offset_list) == 1:
+                print(f"First packet data: offset_bytes={offset}, length_bytes={len(packet[9:])}")
 
     # Check if all packets are present
-    if len(packet_seq_nums) != len(set(packet_seq_nums)):
-        print("Warning: Duplicate packet sequence numbers found.")
+    if len(byte_offset_list) != len(set(byte_offset_list)):
+        print("Warning: Duplicate packet byte offsets found.")
 
-    if len(packet_seq_nums) != packet_max_seq_num:
-        print("Warning: Not all packets were received. Expected sequence numbers do not match.")
-        print(f"Expected: {packet_max_seq_num}, Received: {len(packet_seq_nums)}")
+    if byte_offset_list != sorted(byte_offset_list):
+        print("Warning: Packet byte offsets are not in order.")
 
-    if packet_seq_num != packet_max_seq_num:
-        print(
-            "Warning: Last packet sequence number does not match the expected maximum sequence number."
-        )
+    # TODO: Validate the entire file size.
 
 
 def calculate_sha256(file_path: Path) -> str:
@@ -93,7 +92,14 @@ def main() -> None:
     print(f"Reconstructed file saved to: {output_file_path}")
 
     print(f"Output file size: {output_file_path.stat().st_size:,} bytes")
-    print(f"SHA-256 hash: {calculate_sha256(output_file_path)}")
+
+    sha256_hash = calculate_sha256(output_file_path)
+    print(f"SHA-256 hash: {sha256_hash}")
+
+    if sha256_hash.lower() in log_file_path.read_text().lower():
+        print("🟢🟢 SHA-256 hash matches a value in the log file! Very good! 🟢🟢")
+    else:
+        print("🟡 SHA-256 hash not found in the input log file. Maybe the command wasn't run?")
 
 
 if __name__ == "__main__":
