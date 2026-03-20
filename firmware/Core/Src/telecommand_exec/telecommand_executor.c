@@ -31,6 +31,7 @@ TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 
 /// @brief  A flag indicating whether a given index in `TCMD_agenda` is valid
 ///         (i.e., filled with a not-yet-executed command).
+/// @note The values in here are tri-state via TCMD_agenda_entry_state_enum_t.
 uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE] = {0};
 
 
@@ -41,24 +42,22 @@ uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE] = {0};
 uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd) {
     // Find the first empty slot in the agenda.
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        // Skip filled slots.
-        if (TCMD_agenda_is_valid[slot_num]) {
+        // Skip filled slots. Skip both PENDING and EXECUTING slots!
+        if (TCMD_agenda_is_valid[slot_num] != TCMD_AGENDA_ENTRY_INVALID) {
             continue;
         }
 
-        // Skip if timstamps are not needed.
-        if(TCMD_require_unique_tssent) {
+        // If this is a duplicate telecommand, and we're enforcing that, skip it.
+        if (TCMD_require_unique_tssent) {
             // Check to see if timestamp is in the circular buffer.
             for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
-                if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
+                if (parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
                     // Skip this telecommand.
                     LOG_message(
-                        LOG_SYSTEM_TELECOMMAND, 
-                        LOG_SEVERITY_WARNING, 
-                        LOG_SINK_ALL, 
+                        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
                         "Telecommand skipped due to repeated tssent."
                     );
-                    return 1; 
+                    return 20;
                 }
             }
         }
@@ -84,7 +83,7 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
             TCMD_agenda[slot_num].resp_fname[j] = parsed_tcmd->resp_fname[j];
         }
         // Mark the slot as valid.
-        TCMD_agenda_is_valid[slot_num] = 1;
+        TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_VALID_AND_PENDING;
 
         // Incrementing counters used for stats 
         TCMD_total_tcmd_queued_count++; 
@@ -95,14 +94,14 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
 }
 
 
-/// @brief Gets the number of used slots in the agenda.
+/// @brief Gets the number of used slots in the agenda (how many valid and pending telecommands).
 /// @return The number of currently-filled slots in the agenda.
 /// @note This function is mostly intended for "system stats" telecommands and logging.
 uint16_t TCMD_get_agenda_used_slots_count() {
     // TODO: Consider an easy O(1) optimization by keeping track of the number of used slots.
     uint16_t count = 0;
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if (TCMD_agenda_is_valid[slot_num]) {
+        if (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING) {
             count++;
         }
     }
@@ -122,7 +121,7 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
     uint64_t earliest_timestamp = UINT64_MAX;
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
         // Skip empty/invalid slots.
-        if (! TCMD_agenda_is_valid[slot_num]) {
+        if (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_INVALID) {
             continue;
         }
 
@@ -215,7 +214,7 @@ static int8_t TCMD_store_resp_to_file(
     );
 
     const lfs_ssize_t header_write_result = lfs_file_write(
-        &LFS_filesystem, &file, (const uint8_t *)header_msg, strlen(header_msg)
+        &LFS_filesystem, &file, header_msg, strlen(header_msg)
     );
     if (header_write_result < 0) {
         LOG_message(
@@ -272,19 +271,19 @@ static int8_t TCMD_store_resp_to_file(
 }
 
 /// @brief Executes a telecommand immediately, based on the minimum info required to execute a telecommand.
-/// @param tcmd_idx The index into `TCMD_telecommand_definitions` for the telecommand to execute.
-/// @param args_str_no_parens A cstring containing the arguments for the telecommand. Null-terminated.
-/// @param timestamp_sent The value of the `@tssent` field when the telecommand was received.
+/// @param parsed_tcmd The parsed telecommand to execute (index, args, timestamp sent, destination file).
 /// @param response_output_buf A buffer to store the response from the telecommand.
 /// @param response_output_buf_size The size of the `response_output_buf`.
 /// @return 0 on success, 254 if `tcmd_idx` is out of bounds, otherwise the error code from the telecommand function.
 static uint8_t TCMD_execute_parsed_telecommand_now(
-    const uint16_t tcmd_idx,
-    const char args_str_no_parens[],
-    const uint64_t timestamp_sent,
-    const char * tcmd_resp_fname,
+    const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
+    const uint16_t tcmd_idx = parsed_tcmd->tcmd_idx;
+    const char *args_str_no_parens = parsed_tcmd->args_str_no_parens;
+    const uint64_t timestamp_sent = parsed_tcmd->timestamp_sent;
+    const char *tcmd_resp_fname = parsed_tcmd->resp_fname;
+    
     // Get the telecommand definition.
     if (tcmd_idx >= TCMD_NUM_TELECOMMANDS) {
         LOG_message(
@@ -356,10 +355,11 @@ static uint8_t TCMD_execute_parsed_telecommand_now(
 /// @param response_output_buf A buffer to store the response from the telecommand.
 /// @param response_output_buf_size The size of the `response_output_buf`.
 /// @return 0 on success, 253/254 if an error occurs in the callers, otherwise the error code from the telecommand function.
-uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
+uint8_t TCMD_execute_telecommand_in_agenda(
+    const uint16_t tcmd_agenda_slot_num,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
-    if (! TCMD_agenda_is_valid[tcmd_agenda_slot_num]) {
+    if (TCMD_agenda_is_valid[tcmd_agenda_slot_num] == TCMD_AGENDA_ENTRY_INVALID) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_execute_telecommand_in_agenda: slot %u is invalidated",
@@ -368,9 +368,8 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         return 253;
     }
 
-    // Mark the slot as invalid because it's executed.
-    // Do it now, in case the execution does Undefined Behaviour (but could also do it after the call just fine).
-    TCMD_agenda_is_valid[tcmd_agenda_slot_num] = 0;
+    // Mark the slot as executing. Slot is still in use, but no longer counted in the "count pending" operations.
+    TCMD_agenda_is_valid[tcmd_agenda_slot_num] = TCMD_AGENDA_ENTRY_EXECUTING;
 
     char tssent_str[32];
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent, tssent_str);
@@ -395,13 +394,15 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
 
     // Execute the telecommand.
     const uint8_t exec_result = TCMD_execute_parsed_telecommand_now(
-        TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
-        TCMD_agenda[tcmd_agenda_slot_num].args_str_no_parens,
-        TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent,
-        TCMD_agenda[tcmd_agenda_slot_num].resp_fname,
+        &TCMD_agenda[tcmd_agenda_slot_num],
         response_output_buf,
         response_output_buf_size
     );
+
+    // Mark the slot as invalid because it's executed.
+    // Must do it AFTER finishing the telecommand, in case the telecommand
+    // enqueues more telecommands during execution.
+    TCMD_agenda_is_valid[tcmd_agenda_slot_num] = TCMD_AGENDA_ENTRY_INVALID;
 
     // Reset the log context back to the default.
     LOG_current_log_context = LOG_CONTEXT_AUTONOMOUS;
@@ -415,8 +416,8 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
 void TCMD_agenda_delete_all() {
     uint16_t num_deleted = 0;
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if (TCMD_agenda_is_valid[slot_num]) {
-            TCMD_agenda_is_valid[slot_num] = 0;
+        if (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING) {
+            TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_INVALID;
             num_deleted++;
         }
     }
@@ -437,10 +438,12 @@ uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
 
     // Loop through the agenda and check for valid agendas and if the timestamp matches
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if (TCMD_agenda_is_valid[slot_num] && TCMD_agenda[slot_num].timestamp_sent == tssent) {
-
-            // Set agenda as invalid
-            TCMD_agenda_is_valid[slot_num] = 0;
+        if (
+            (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING)
+            && (TCMD_agenda[slot_num].timestamp_sent == tssent)
+        ) {
+            // Set agenda entry as invalid.
+            TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_INVALID;
             LOG_message(
                 LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
                 "TCMD_agenda_delete_by_tssent: Telecommand with tssent=%s (%s) deleted from agenda.",
@@ -460,21 +463,13 @@ uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
     return 1;
 }
 
-/// @brief Fetches the active agendas.
+/// @brief Fetches the active agendas and logs each as a JSONL entry.
 /// @return 0 on success, 1 if there are no active agendas.
 uint8_t TCMD_agenda_fetch() {
-    uint16_t active_agendas = 0;
-    uint16_t logged_agendas = 0;
-    
-    // Count the number of active agendas
-    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if (TCMD_agenda_is_valid[slot_num]) {
-            active_agendas++;
-        }
-    }
+    const uint16_t pending_entries = TCMD_get_agenda_used_slots_count();
 
     // If no active agendas, return 1.
-    if (active_agendas == 0) {
+    if (pending_entries == 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "TCMD_agenda_fetch: No entries in the agenda."
@@ -486,14 +481,14 @@ uint8_t TCMD_agenda_fetch() {
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "TCMD_agenda_fetch: Active agendas: %u",
-        active_agendas
+        pending_entries
     );
 
-    // List all active agendas in JSONL format
+    // List all active agendas in JSONL format.
+    uint16_t logged_agendas = 0;
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if (TCMD_agenda_is_valid[slot_num]) {
-
-            // Convert uint64_t to a string
+        if (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING) {
+            // Convert uint64_t to a string.
             char tssent_str[32];
             GEN_uint64_to_str(TCMD_agenda[slot_num].timestamp_sent, tssent_str);
             char tsexec_str[32];
@@ -510,8 +505,8 @@ uint8_t TCMD_agenda_fetch() {
 
         logged_agendas++;
 
-        // Early-exit optimization: Break the loop once all active agendas have been logged
-        if (logged_agendas >= active_agendas) {
+        // Early-exit optimization: Break the loop once all active agendas have been logged.
+        if (logged_agendas >= pending_entries) {
             break;
         }
     }
@@ -555,15 +550,14 @@ uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
 
     // Loop through the agenda and check for valid agendas
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if (TCMD_agenda_is_valid[slot_num] ) {
-
+        if (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING) {
             // Grab the index of the telecommand in the `TCMD_telecommand_definitions` array
             const uint8_t telecommand_index = TCMD_agenda[slot_num].tcmd_idx;
 
             // Perform a string comparision
             if (strcasecmp(TCMD_telecommand_definitions[telecommand_index].tcmd_name, telecommand_name) == 0) {
-                // Set agenda as invalid
-                TCMD_agenda_is_valid[slot_num] = 0;
+                // Set agenda as invalid.
+                TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_INVALID;
             }
         }
     }

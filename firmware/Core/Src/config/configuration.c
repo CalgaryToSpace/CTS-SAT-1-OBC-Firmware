@@ -4,6 +4,7 @@
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 #include "comms_drivers/rf_antenna_switch.h"
 #include "rtos_tasks/rtos_bulk_downlink_task.h"
+#include "littlefs/littlefs_helper.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -24,6 +25,8 @@ extern uint32_t STM32_system_reset_no_uplink_interval_sec;
 extern uint32_t COMMS_beacon_interval_ms;
 extern uint32_t GNSS_write_cmd_mode_data_to_firehose_file;
 extern uint32_t LOG_timestamp_prefix_format;
+extern uint32_t TCMD_enqueue_from_agenda_file_interval_ms;
+extern uint32_t TCMD_enqueue_grace_period_ms;
 
 extern uint32_t LOG_file_flush_interval_sec;
 extern uint32_t LOG_file_rotation_interval_sec;
@@ -97,6 +100,14 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "LOG_timestamp_prefix_format",
         .num_config_var = &LOG_timestamp_prefix_format,
     },
+    {
+        .variable_name = "TCMD_enqueue_from_agenda_file_interval_ms",
+        .num_config_var = &TCMD_enqueue_from_agenda_file_interval_ms,
+    },
+    {
+        .variable_name = "TCMD_enqueue_grace_period_ms",
+        .num_config_var = &TCMD_enqueue_grace_period_ms,
+    },
     // ******** AX100 Configuration ********
     {
         .variable_name = "AX100_enable_downlink_uart_logs",
@@ -161,6 +172,7 @@ char CONFIG_str_demo_var_1[25] = "CONFIG_str_demo_var_1";
 char CONFIG_str_demo_var_2[50] = "CONFIG_str_demo_var_2";
 
 extern char COMMS_beacon_friendly_message_str[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
+extern char TCMD_active_agenda_filename[LFS_MAX_PATH_LENGTH];
 
 // extern
 CONFIG_string_config_entry_t CONFIG_str_config_variables[] = {
@@ -178,6 +190,11 @@ CONFIG_string_config_entry_t CONFIG_str_config_variables[] = {
         .variable_name = "COMMS_beacon_friendly_message_str",
         .variable_pointer = COMMS_beacon_friendly_message_str,
         .max_length = sizeof(COMMS_beacon_friendly_message_str)
+    },
+    {
+        .variable_name = "TCMD_active_agenda_filename",
+        .variable_pointer = TCMD_active_agenda_filename,
+        .max_length = sizeof(TCMD_active_agenda_filename)
     },
 };
 

@@ -458,11 +458,13 @@ uint8_t TCMD_parse_full_telecommand(
     if (!correct_number_of_args_provided) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "TCMD_parse_full_telecommand: %s() accepts %d argument(s).\n", tcmd_name, num_args_expected
+            "TCMD_parse_full_telecommand: %s() accepts %d argument(s).",
+            tcmd_name, num_args_expected
         );
         return 130;
     }
-// Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
+    
+    // Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
     parsed_tcmd_output->tcmd_idx = tcmd_idx;
     memset(parsed_tcmd_output->args_str_no_parens, 0, TCMD_ARGS_STR_NO_PARENS_SIZE); // Safety.
     memcpy(parsed_tcmd_output->args_str_no_parens, args_str_no_parens, arg_len + 1);
