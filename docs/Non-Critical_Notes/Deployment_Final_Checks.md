@@ -20,6 +20,7 @@
 The following checks involve executing code and/or telecommands.
 
 * Units tests pass.
+* Self-checks pass (main and boom).
 * Python-based system tests/checks pass.
 
 
@@ -35,7 +36,7 @@ The following checks involve executing code and/or telecommands.
 1. Check the changelog of libraries (LittleFS, CSP maybe) for bug fixes.
 2. Are there any large VLA allocations? Can/should any be replaced with static allocations?
     * Maybe enable `-Wvla` or `-Wstack-usage`? Not sure what they are yet.
-3. Maybe enable compiler optimizations?
+3. Maybe enable compiler optimizations? Decision: We'll use `-Og` (debug-safe optimizations) for the life of the project.
 4. Ensure that the Golden Copy is mapped in STM32L4R5XX_FLASH.ld file as such:
     ```
     FLASH_BANK_2 (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K
