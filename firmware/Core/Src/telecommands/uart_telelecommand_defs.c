@@ -12,8 +12,10 @@
 
 /// @brief Timeout duration for transmit HAL call, in milliseconds.
 static const uint16_t UART_TX_TIMEOUT_DURATION_MS = 200;
+
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
-static const uint16_t UART_RX_TIMEOUT_DURATION_MS = 300;
+/// @note GNSS has a long delay sometimes, so we set long for all of them.
+static const uint16_t UART_RX_TIMEOUT_DURATION_MS = 3000;
 
 // Allocate space for send and receive arrays.
 const uint16_t tx_buffer_max_size = 500;
