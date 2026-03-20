@@ -1394,6 +1394,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+
+    {
+        .tcmd_name = "obc_set_stm32_sysclk_to_hse",
+        .tcmd_func = TCMDEXEC_obc_set_stm32_sysclk_to_hse,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END SECTION: obc_systems_telecommand_defs ******************
     // ****************** START SECTION: comms_telecommand_defs ******************
     {
