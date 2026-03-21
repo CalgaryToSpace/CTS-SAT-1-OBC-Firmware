@@ -13,7 +13,6 @@ CFLAGS  = \
     -fPIC \
     -ffunction-sections \
     -fdata-sections \
-    -I. \
     -nostdlib \
     -Os \
     -Wall
