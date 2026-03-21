@@ -1186,6 +1186,20 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     // ****************** SECTION: agenda_telecommand_defs ******************
 
     {
+        .tcmd_name = "agenda_fetch_json_grouped",
+        .tcmd_func = TCMDEXEC_agenda_fetch_json_grouped,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    {
+        .tcmd_name = "agenda_fetch_logged_jsonl",
+        .tcmd_func = TCMDEXEC_agenda_fetch_logged_jsonl,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    {
         .tcmd_name = "agenda_delete_all",
         .tcmd_func = TCMDEXEC_agenda_delete_all,
         .number_of_args = 0,
@@ -1196,13 +1210,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "agenda_delete_by_tssent",
         .tcmd_func = TCMDEXEC_agenda_delete_by_tssent,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-
-    {
-        .tcmd_name = "agenda_fetch_logged_jsonl",
-        .tcmd_func = TCMDEXEC_agenda_fetch_logged_jsonl,
-        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 

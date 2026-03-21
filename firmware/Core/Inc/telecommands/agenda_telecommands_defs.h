@@ -5,17 +5,31 @@
 
 #include <stdint.h>
 
-uint8_t TCMDEXEC_agenda_delete_all(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len);
+uint8_t TCMDEXEC_agenda_fetch_json_grouped(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_size
+);
 
-uint8_t TCMDEXEC_agenda_fetch_logged_jsonl(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len);
+uint8_t TCMDEXEC_agenda_fetch_logged_jsonl(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_size
+);
 
-uint8_t TCMDEXEC_agenda_delete_by_name(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len);
+uint8_t TCMDEXEC_agenda_delete_all(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_size
+);
+
+uint8_t TCMDEXEC_agenda_delete_by_tssent(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_size
+);
+
+uint8_t TCMDEXEC_agenda_delete_by_name(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_size
+);
 
 uint8_t TCMDEXEC_agenda_enqueue_from_file(
     const char *args_str,

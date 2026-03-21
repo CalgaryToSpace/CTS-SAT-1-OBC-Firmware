@@ -12,6 +12,118 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+
+
+/// @brief Fetches the active agendas and writes a minified JSON dict-of-lists to the response buffer.
+/// @param args_str No arguments.
+/// @param response_output_buf Buffer to write the JSON output to.
+/// @param response_output_buf_size Size of the response buffer.
+/// @return 0 on success, 1 if there are no pending entries, 2 if the buffer was too small (agenda too long).
+uint8_t TCMDEXEC_agenda_fetch_json_grouped(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_size
+) {
+    // TODO: Could use the args to filter.
+    const uint16_t pending_count = TCMD_get_agenda_used_slots_count();
+
+    if (pending_count == 0) {
+        snprintf(response_output_buf, response_output_buf_size, "{}");
+        return 1;
+    }
+
+    // We'll build the JSON manually by iterating over all tcmd_names that appear in the agenda.
+    // Output format: {"tcmd_name":[{"tssent":xxx,"tsexec":xxx}, ...], ...}
+
+    uint16_t buf_pos = 0;
+    bool first_key = true;
+
+    // Write opening brace.
+    buf_pos += snprintf(response_output_buf + buf_pos, response_output_buf_size - buf_pos, "{");
+
+    // Outer loop: iterate over each unique telecommand index present in the agenda.
+    for (uint16_t tcmd_idx = 0; tcmd_idx < TCMD_NUM_TELECOMMANDS; tcmd_idx++) {
+        // Inner pass 1: check if this tcmd_idx appears at all in the pending agenda.
+        bool found = false;
+        for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+            if (
+                TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING
+                && TCMD_agenda[slot_num].tcmd_idx == tcmd_idx
+            ) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            continue;
+        }
+
+        // Write the key: ,"tcmd_name":[
+        buf_pos += snprintf(
+            response_output_buf + buf_pos, response_output_buf_size - buf_pos,
+            "%s\"%s\":[",
+            first_key ? "" : ",",
+            TCMD_telecommand_definitions[tcmd_idx].tcmd_name
+        );
+        first_key = false;
+
+        // Inner pass 2: write each matching slot as an entry in the list.
+        bool first_entry = true;
+        for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+            if (
+                TCMD_agenda_is_valid[slot_num] != TCMD_AGENDA_ENTRY_VALID_AND_PENDING
+                || TCMD_agenda[slot_num].tcmd_idx != tcmd_idx
+            ) {
+                continue;
+            }
+
+            char tssent_str[32];
+            GEN_uint64_to_str(TCMD_agenda[slot_num].timestamp_sent, tssent_str);
+            char tsexec_str[32];
+            GEN_uint64_to_str(TCMD_agenda[slot_num].timestamp_to_execute, tsexec_str);
+
+            buf_pos += snprintf(
+                response_output_buf + buf_pos, response_output_buf_size - buf_pos,
+                "%s{\"tssent\":%s,\"tsexec\":%s}",
+                first_entry ? "" : ",",
+                tssent_str,
+                tsexec_str
+            );
+            first_entry = false;
+        }
+
+        // Close the list for this key.
+        buf_pos += snprintf(response_output_buf + buf_pos, response_output_buf_size - buf_pos, "]");
+    }
+
+    // Write closing brace.
+    buf_pos += snprintf(response_output_buf + buf_pos, response_output_buf_size - buf_pos, "}");
+
+    if (buf_pos >= response_output_buf_size) {
+        // The buffer was too small; the output is truncated.
+        snprintf(
+            response_output_buf, response_output_buf_size,
+            "Buffer too small (%u bytes, needed >%u).",
+            response_output_buf_size, buf_pos
+        );
+        return 2;
+    }
+
+    return 0;
+}
+
+
+/// @brief Telecommand: Fetch all pending agenda items, and log them each as JSONL
+/// @param args_str No arguments.
+/// @return 0 on success, 1 if there are no active pending agenda items.
+uint8_t TCMDEXEC_agenda_fetch_logged_jsonl(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    const uint8_t result = TCMD_log_pending_agenda_entries();
+    return result;
+}
+
+
 /// @brief Telecommand: Delete all agendas
 /// @param args_str No arguments needed
 /// @param response_output_buf The buffer to write the response to
@@ -36,6 +148,7 @@ uint8_t TCMDEXEC_agenda_delete_all(
 
     return 0;
 }
+
 
 /// @brief Telecommand: Delete agenda entry by tssent timestamp
 /// @param args_str
@@ -93,18 +206,6 @@ uint8_t TCMDEXEC_agenda_delete_by_tssent(
     );
     return 0;
 }
-
-/// @brief Telecommand: Fetch all pending agenda items, and log them each as JSONL
-/// @param args_str No arguments.
-/// @return 0 on success, 1 if there are no active pending agenda items.
-uint8_t TCMDEXEC_agenda_fetch_logged_jsonl(
-    const char *args_str,
-    char *response_output_buf, uint16_t response_output_buf_len
-) {
-    const uint8_t result = TCMD_log_pending_agenda_entries();
-    return result;
-}
-
 
 /// @brief Telecommand: Delete all agenda entries with a telecommand name
 /// @param args_str
