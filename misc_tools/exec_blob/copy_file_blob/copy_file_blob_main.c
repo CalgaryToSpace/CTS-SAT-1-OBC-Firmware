@@ -1,3 +1,14 @@
+// This is a blob (executable) that will copy a file from one LittleFS file to another.
+// It is similar to the "dd" command on unix.
+
+// Args Format: <in_path> <out_path> <start_offset> <byte_count>
+// The start_offset and byte_count can both be zero to copy the whole file.
+
+// Usage Example:
+// After uplinking the compiled output as "copy_file_blob.bin", run:
+// CTS1+exec_blob_from_fs(copy_file_blob.bin,0,obc_boot_log.jsonl obc_boot_log.jsonl.250B 0 250)!
+
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
