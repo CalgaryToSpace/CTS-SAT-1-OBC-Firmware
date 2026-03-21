@@ -70,7 +70,7 @@ uint8_t LFS_init() {
     LOG_message(
         LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL,
         LOG_all_sinks_except(LOG_SINK_FILE),
-        "Successfully completed LFS_init()"
+        "Completed LFS_init()"
     );
 
     return 0;
