@@ -48,6 +48,7 @@ const uint32_t CONFIG_freertos_min_remaining_stack_percent = 20;
 // extern
 CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
+        // Note: The [0] entry is used in the unit tests. Leave it as a placeholder one.
         .variable_name = "CONFIG_int_demo_var_1",
         .num_config_var = &CONFIG_int_demo_var_1,
     },
@@ -177,6 +178,7 @@ extern char TCMD_active_agenda_filename[LFS_MAX_PATH_LENGTH];
 // extern
 CONFIG_string_config_entry_t CONFIG_str_config_variables[] = {
     {
+        // Note: The [0] entry is used in the unit tests. Leave it as a placeholder one.
         .variable_name = "CONFIG_str_demo_var_1",
         .variable_pointer = CONFIG_str_demo_var_1,
         .max_length = sizeof(CONFIG_str_demo_var_1)
