@@ -55,13 +55,25 @@ struct lfs_config LFS_cfg = {
 // ----------------------------- LittleFS Functions -----------------------------
 
 uint8_t LFS_init() {
-   FLASH_init(0); // TODO: probably need initialize all other chips.
-   LFS_ensure_mounted();
+    LOG_message(
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL,
+        LOG_all_sinks_except(LOG_SINK_FILE),
+        "Entering LFS_init()"
+    );
 
-   // Create directories which must exist here.
-   LFS_make_directory("./logs");
+    FLASH_init(0); // TODO: probably need initialize all other chips.
+    LFS_ensure_mounted();
 
-   return 0;
+    // Create directories which must exist here.
+    LFS_make_directory("./logs");
+
+    LOG_message(
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL,
+        LOG_all_sinks_except(LOG_SINK_FILE),
+        "Successfully completed LFS_init()"
+    );
+
+    return 0;
 }
 
 /// @brief Formats Memory Module so it can successfully mount LittleFS

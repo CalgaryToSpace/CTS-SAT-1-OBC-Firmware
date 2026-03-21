@@ -28,7 +28,12 @@
 /// @note LittleFS must be mounted, power must be provided to the ADCS, and
 ///       OBC time must be set in order to initialize the ADCS.
 uint8_t ADCS_initialize() {
-    ADCS_synchronize_unix_time();
+    // Previously, we called ADCS_synchronize_unix_time() in here.
+    // Removing it to adhere to a fail-safe bootup sequence.
+    // It may have been involved in system startup failures (leading to watchdog reset),
+    // for example if the ADCS was in bootloader mode when the OBC was powered on.
+    // We will manually sync the time with the telecommand instead.
+
     ADCS_initialize_crc8_checksum();
     LFS_make_directory("ADCS");
 

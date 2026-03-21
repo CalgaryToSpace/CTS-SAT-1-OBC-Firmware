@@ -322,13 +322,7 @@ int main(void)
   // Start the callback interrupts for the UART channels.
   UART_init_uart_handlers();
   
-  LFS_init();
-  
-  
   EPS_set_obc_time_based_on_eps_time(); // Sync approx time for ADCS.
-
-  // Initialize the ADCS CRC8 checksum, clock, and LittleFS directory (required for ADCS operation).
-  ADCS_initialize(); // Note: LittleFS must be formatted and mounted, and system time must be set, before this command is run
 
   // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
   HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
@@ -343,6 +337,15 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
+
+  // Must wait until FreeRTOS heap is initialized and ready-to-use before we should call LFS_init().
+  LFS_init();
+
+  // Initialize the ADCS CRC8 checksum and LittleFS directory (required for ADCS operation).
+  // Note: LittleFS must be formatted and mounted.
+  ADCS_initialize();
+
+
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
