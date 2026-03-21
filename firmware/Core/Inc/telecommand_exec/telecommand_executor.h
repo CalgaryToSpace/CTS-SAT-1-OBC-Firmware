@@ -12,6 +12,13 @@
 /// Max number of tssent timestamp values that can be stored at a time (for unique telecommand tssent validation).
 #define TCMD_TIMESTAMP_RECORD_SIZE 750
 
+/// @brief  The agenda (schedule queue) of telecommands to execute.
+extern TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
+
+/// @brief  A flag indicating whether a given index in `TCMD_agenda` is valid
+///         (i.e., filled with a not-yet-executed command).
+/// @note The values in here are tri-state via TCMD_agenda_entry_state_enum_t.
+extern uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE];
 
 typedef enum {
     TCMD_AGENDA_ENTRY_INVALID = 0, // Initial state.
@@ -30,13 +37,8 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     char *response_output_buf, uint16_t response_output_buf_size
 );
 
-void TCMD_agenda_delete_all();
-
-uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent);
-
 uint8_t TCMD_log_pending_agenda_entries();
 
-uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name);
 
 extern uint32_t TCMD_total_tcmd_queued_count;
 extern uint64_t TCMD_latest_received_tcmd_timestamp_sent;
