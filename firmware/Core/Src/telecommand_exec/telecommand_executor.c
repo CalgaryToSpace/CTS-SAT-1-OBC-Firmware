@@ -476,27 +476,27 @@ uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
 
 /// @brief Fetches the active agendas and logs each as a JSONL entry.
 /// @return 0 on success, 1 if there are no active agendas.
-uint8_t TCMD_agenda_fetch() {
-    const uint16_t pending_entries = TCMD_get_agenda_used_slots_count();
+uint8_t TCMD_log_pending_agenda_entries() {
+    const uint16_t pending_count = TCMD_get_agenda_used_slots_count();
 
     // If no active agendas, return 1.
-    if (pending_entries == 0) {
+    if (pending_count == 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "TCMD_agenda_fetch: No entries in the agenda."
+            "TCMD_log_pending_agenda_entries: No entries in the agenda."
         );
         return 1;
     }
 
-    // Output the number of active agendas
+    // Output the number of pending agendas.
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "TCMD_agenda_fetch: Active agendas: %u",
-        pending_entries
+        "TCMD_log_pending_agenda_entries: Pending agenda entries: %u",
+        pending_count
     );
 
     // List all active agendas in JSONL format.
-    uint16_t logged_agendas = 0;
+    uint16_t logged_entries_count = 0;
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
         if (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING) {
             // Convert uint64_t to a string.
@@ -507,17 +507,19 @@ uint8_t TCMD_agenda_fetch() {
 
             LOG_message(
                 LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, 
-                "{\"slot_num\":\"%u\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s}",
+                "{\"slot_num\":\"%u\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s,\"tcmd_name\":\"%s\"}",
                 slot_num,
                 tssent_str,
-                tsexec_str
+                tsexec_str,
+                TCMD_telecommand_definitions[TCMD_agenda[slot_num].tcmd_idx].tcmd_name
             );
+
+            logged_entries_count++;
         }
 
-        logged_agendas++;
 
         // Early-exit optimization: Break the loop once all active agendas have been logged.
-        if (logged_agendas >= pending_entries) {
+        if (logged_entries_count >= pending_count) {
             break;
         }
     }

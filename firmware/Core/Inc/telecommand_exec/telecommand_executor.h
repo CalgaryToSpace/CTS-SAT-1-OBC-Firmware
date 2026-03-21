@@ -34,7 +34,7 @@ void TCMD_agenda_delete_all();
 
 uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent);
 
-uint8_t TCMD_agenda_fetch();
+uint8_t TCMD_log_pending_agenda_entries();
 
 uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name);
 

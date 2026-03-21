@@ -73,11 +73,11 @@ uint8_t TCMDEXEC_agenda_delete_by_tssent(
 /// @brief Telecommand: Fetch all pending agenda items, and log them each as JSONL
 /// @param args_str No arguments.
 /// @return 0 on success, 1 if there are no active pending agenda items.
-uint8_t TCMDEXEC_agenda_fetch_jsonl(
+uint8_t TCMDEXEC_agenda_fetch_logged_jsonl(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    const uint8_t result = TCMD_agenda_fetch();
+    const uint8_t result = TCMD_log_pending_agenda_entries();
     return result;
 }
 
