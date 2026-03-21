@@ -3,6 +3,7 @@
 #include "config/configuration.h"
 
 #include <string.h>
+#include <stdio.h>
 
 
 uint8_t TEST_EXEC__setup_configuration_variables()
@@ -101,8 +102,8 @@ uint8_t TEST_EXEC__set_str_variable()
     TEST_ASSERT(strcmp(inital_val, first_var.variable_pointer) == 0);
 
     // Test 1.3 (Success): Set variable which does exist.
-    char new_val[first_var.max_length - 1];
-    memset(new_val, 'a', first_var.max_length - 2);
+    char new_val[first_var.max_length];
+    snprintf(new_val, first_var.max_length, "Value set in unit test");
     new_val[first_var.max_length - 1] = '\0';
     TEST_ASSERT(CONFIG_set_str_variable(first_var.variable_name, new_val) == 0);
     TEST_ASSERT(strcmp(new_val, first_var.variable_pointer) == 0);
