@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "littlefs/lfs.h" // For lfs_file_t type.
-#include "littlefs/littlefs_helper.h" // For LFS_MAX_PATH_LENGTH
+#include "littlefs/littlefs_constants.h"
 
 typedef enum {
     COMMS_BULK_FILE_DOWNLINK_STATE_IDLE,
