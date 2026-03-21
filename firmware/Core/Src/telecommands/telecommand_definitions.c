@@ -327,6 +327,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "flash_force_corrupt_filesystem",
+        .tcmd_func = TCMDEXEC_flash_force_corrupt_filesystem,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE,
+    },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
     // ****************** SECTION: lfs_telecommand_defs ******************
