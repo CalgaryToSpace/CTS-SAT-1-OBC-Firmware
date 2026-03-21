@@ -167,7 +167,8 @@ def send_file_over_uart(
         hash_on_satellite = _send_simple_slow_command(
             ser,
             f"CTS1+fs_read_file_sha256_hash_json({output_file},0,0)!",
-            delay=15,  # Calculating the whole hash can be quite slow.
+            # Calculating the whole hash can be quite slow, especially for very large files.
+            delay=15 if input_file_path.stat().st_size > 100_000 else 5,
         )
 
         hash_on_disk = hashlib.sha256(input_file_path.read_bytes()).hexdigest()
@@ -185,6 +186,10 @@ def send_file_over_uart(
             )
         else:
             logger.success(f"Final ACK count matches the number of chunks sent ({chunk_index}).")
+
+        _send_simple_slow_command(ser, "CTS1+reboot()!", delay=5)  # Reset configs.
+        # Set the system time for ease of use later.
+        _send_simple_slow_command(ser, f"CTS1+set_system_time({int(time.time() * 1000)})!")
 
 
 def main():
