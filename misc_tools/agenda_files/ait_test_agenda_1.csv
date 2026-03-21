@@ -1,0 +1,20 @@
+tsexec_date,tsexec_time,command,resp_fname,comment
+,,"config_set_int_var(EPS_time_sync_period_sec,10000000)",,"Before: HSE, Time Sync"
+2026-03-21,01:44:00,hello_world(),resp_2026-03-21-01h.txt,
+2026-03-21,01:44:02,eps_get_current_battery_percent(),resp_2026-03-21-01h.txt,
+2026-03-21,01:44:04,core_system_stats(),resp_2026-03-21-01h.txt,
+2026-03-21,01:44:06,system_self_check_as_json(),resp_2026-03-21-01h.txt,
+2026-03-21,01:45:08,"config_set_int_var(EPS_time_sync_period_sec,10000000)",resp_2026-03-21-01h.txt,
+2026-03-21,01:46:00,"eps_set_channel_enabled(gnss,1)",resp_2026-03-21-01h.txt,
+2026-03-21,01:47:00,gnss_send_cmd_ascii(log versiona once),resp_2026-03-21-01h.txt,
+2026-03-21,01:47:15,gnss_enable_firehose_storage_mode(gnss_2026-03-21-T014702.dat),resp_2026-03-21-01h.txt,
+2026-03-21,01:47:30,gnss_send_cmd_ascii(log versiona ontime 5),resp_2026-03-21-01h.txt,
+2026-03-21,01:47:40,gnss_send_cmd_ascii(log bestxyza ontime 5),resp_2026-03-21-01h.txt,
+2026-03-21,01:47:50,gnss_send_cmd_ascii_get_response_hex(log timeb ontime 5),resp_2026-03-21-01h.txt,
+2026-03-21,01:48:00,mpi_enable_active_mode(mpi_2026-03-21-T014800.dat),resp_2026-03-21-01h.txt,
+2026-03-21,02:01:30,mpi_disable_active_mode(),resp_2026-03-21-02h.txt,First after long gap (MPI data for 13m30s)
+2026-03-21,02:03:05,gnss_send_cmd_ascii(unlogall),resp_2026-03-21-02h.txt,
+2026-03-21,02:03:10,gnss_disable_firehose_storage_mode(),resp_2026-03-21-02h.txt,
+2026-03-21,02:03:15,"eps_set_channel_enabled(gnss,0)",resp_2026-03-21-02h.txt,
+2026-03-21,02:15:00,camera_setup(),resp_2026-03-21-02h.txt,Another long gap
+2026-03-21,02:16:00,"camera_capture(d,cam_2026-03-21-T0216.dat)",resp_2026-03-21-02h.txt,
