@@ -6,6 +6,7 @@
 #include "littlefs/flash_benchmark.h"
 #include "debug_tools/debug_uart.h"
 #include "log/log.h"
+#include "littlefs/littlefs_helper.h" // For unmounting.
 
 #include <stdio.h>
 #include <string.h>
@@ -426,5 +427,74 @@ uint8_t TCMDEXEC_flash_read_status_register(const char *args_str,
         " Status Register Value: 0x%02X\n", 
         status_reg_val);
 
+    return 0;
+}
+
+
+/// @brief Force the LittleFS filesystem to be corrupted by modifying the underlying storage on a flash memory module.
+/// @param args_str
+/// - Arg 0: Chip Number (CS number) as uint
+/// @return 0 on success (forced corruption). >0 on error.
+uint8_t TCMDEXEC_flash_force_corrupt_filesystem(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    uint64_t chip_num_u64;
+    const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
+    if (arg0_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing chip number argument: %d", arg0_result
+        );
+        return 1;
+    }
+
+    if (chip_num_u64 >= FLASH_NUMBER_OF_FLASH_DEVICES) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Chip number is out of range. Must be 0 to %d.",
+            FLASH_NUMBER_OF_FLASH_DEVICES - 1
+        );
+        return 2;
+    }
+
+    const uint8_t chip_num = (uint8_t)chip_num_u64;
+    
+    const int8_t unmount_result = LFS_ensure_unmounted();
+    if (unmount_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error unmounting LittleFS before format. LFS_ensure_unmounted() -> %d. Steamrolling.",
+            unmount_result
+        );
+    }
+
+    // LittleFS stores its superblock in the first two block pairs (blocks 0/1 and 2/3).
+    // Erasing these blocks is sufficient to corrupt the filesystem beyond recognition,
+    // as LittleFS will be unable to find a valid superblock on mount.
+    // We erase a few more blocks for good measure (covers the root directory entries too).
+    const uint16_t NUM_BLOCKS_TO_CORRUPT = 4 * 64; // 64 is `FLASH_CHIP_PAGES_PER_BLOCK`
+    for (uint16_t block = 0; block < NUM_BLOCKS_TO_CORRUPT; block++) {
+        FLASH_Physical_Address_t address = {
+            .row_address = block,
+            .col_address = 0,
+        };
+        const FLASH_error_enum_t erase_result = FLASH_erase_block(chip_num, address);
+        if (erase_result != 0) {
+            snprintf(
+                response_output_buf, response_output_buf_len,
+                "Error erasing block %d on chip %d: FLASH error %d",
+                block, chip_num, erase_result
+            );
+            return 3;
+        }
+    }
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Successfully corrupted filesystem on chip %d (erased %d leading blocks)! "
+        "You may want to re-format before rebooting, if access to the satellite is challenging.",
+        chip_num, NUM_BLOCKS_TO_CORRUPT
+    );
     return 0;
 }
