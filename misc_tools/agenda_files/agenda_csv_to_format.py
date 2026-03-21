@@ -50,15 +50,15 @@ def main(input_csv_file: Path, *, output_agenda_file: Path | None = None) -> Non
         )
         .with_columns(
             output=(
-                pl.format(
-                    "CTS1+{}@tssent={}@tsexec={}{}!",
+                pl.concat_str(
+                    pl.lit("CTS1+"),
                     pl.col("command"),
-                    pl.col("tssent_ms"),
-                    pl.col("tsexec_ms"),
-                    # Optional resp_fname suffix tag:
-                    pl.when(pl.col("resp_fname").is_not_null())
-                    .then(pl.lit("@resp_fname=") + pl.col("resp_fname"))
-                    .otherwise(pl.lit("")),
+                    pl.lit("@tssent=") + pl.col("tssent_ms").cast(pl.Utf8),
+                    pl.lit("@tsexec=") + pl.col("tsexec_ms").cast(pl.Utf8),
+                    pl.lit("@resp_fname=") + pl.col("resp_fname"),
+                    pl.lit("!"),
+                    separator="",
+                    ignore_nulls=True,
                 )
             )
         )

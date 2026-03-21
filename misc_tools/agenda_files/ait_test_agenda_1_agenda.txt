@@ -1,0 +1,19 @@
+CTS1+config_set_int_var(EPS_time_sync_period_sec,10000000)!
+CTS1+hello_world()@tssent=1774057440000@tsexec=1774057440000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+eps_get_current_battery_percent()@tssent=1774057442000@tsexec=1774057442000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+core_system_stats()@tssent=1774057444000@tsexec=1774057444000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+system_self_check_as_json()@tssent=1774057446000@tsexec=1774057446000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+config_set_int_var(EPS_time_sync_period_sec,10000000)@tssent=1774057508000@tsexec=1774057508000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+eps_set_channel_enabled(gnss,1)@tssent=1774057560000@tsexec=1774057560000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+gnss_send_cmd_ascii(log versiona once)@tssent=1774057620000@tsexec=1774057620000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+gnss_enable_firehose_storage_mode(gnss_2026-03-21-T014702.dat)@tssent=1774057635000@tsexec=1774057635000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+gnss_send_cmd_ascii(log versiona ontime 5)@tssent=1774057650000@tsexec=1774057650000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+gnss_send_cmd_ascii(log bestxyza ontime 5)@tssent=1774057660000@tsexec=1774057660000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+gnss_send_cmd_ascii_get_response_hex(log timeb ontime 5)@tssent=1774057670000@tsexec=1774057670000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+mpi_enable_active_mode(mpi_2026-03-21-T014800.dat)@tssent=1774057680000@tsexec=1774057680000@resp_fname=resp_2026-03-21-01h.txt!
+CTS1+mpi_disable_active_mode()@tssent=1774058490000@tsexec=1774058490000@resp_fname=resp_2026-03-21-02h.txt!
+CTS1+gnss_send_cmd_ascii(unlogall)@tssent=1774058585000@tsexec=1774058585000@resp_fname=resp_2026-03-21-02h.txt!
+CTS1+gnss_disable_firehose_storage_mode()@tssent=1774058590000@tsexec=1774058590000@resp_fname=resp_2026-03-21-02h.txt!
+CTS1+eps_set_channel_enabled(gnss,0)@tssent=1774058595000@tsexec=1774058595000@resp_fname=resp_2026-03-21-02h.txt!
+CTS1+camera_setup()@tssent=1774059300000@tsexec=1774059300000@resp_fname=resp_2026-03-21-02h.txt!
+CTS1+camera_capture(d,cam_2026-03-21-T0216.dat)@tssent=1774059360000@tsexec=1774059360000@resp_fname=resp_2026-03-21-02h.txt!
