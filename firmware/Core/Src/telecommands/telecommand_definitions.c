@@ -421,6 +421,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
+        .tcmd_name = "fs_demo_write_random_data",
+        .tcmd_func = TCMDEXEC_fs_demo_write_random_data,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    },
+    {
         .tcmd_name = "fs_benchmark_write_read",
         .tcmd_func = TCMDEXEC_fs_benchmark_write_read,
         .number_of_args = 2,

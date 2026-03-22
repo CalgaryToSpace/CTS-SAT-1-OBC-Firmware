@@ -50,6 +50,11 @@ uint8_t TCMDEXEC_fs_read_file_sha256_hash_json(
 uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
+uint8_t TCMDEXEC_fs_demo_write_random_data(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
 uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
