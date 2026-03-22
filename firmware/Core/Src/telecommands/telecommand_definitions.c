@@ -417,7 +417,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "fs_demo_write_then_read",
         .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
-        .number_of_args = 0,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
