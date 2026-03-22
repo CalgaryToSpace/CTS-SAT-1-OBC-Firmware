@@ -647,7 +647,7 @@ uint8_t TCMDEXEC_fs_demo_write_random_data(
         return 1;
     }
     if (
-        arg_randomness_amount <= 1
+        arg_randomness_amount < 1
         || arg_randomness_amount > 255
         || arg_file_size > INT32_MAX
     ) {
