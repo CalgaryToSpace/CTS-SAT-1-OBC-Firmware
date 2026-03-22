@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 
+use core::fmt::Write as _;
 use core::panic::PanicInfo;
 use heapless::String;
 
@@ -43,13 +44,7 @@ pub unsafe extern "C" fn blob_main(
 
 fn run(args: &str) -> Result<String<256>, String<256>> {
     let mut out: String<256> = String::new();
-
-    out.push_str("Hello world from blob! args=<")
-        .map_err(|_| make_err("push args prefix"))?;
-    out.push_str(args).map_err(|_| make_err("push args"))?;
-    out.push('>')
-        .map_err(|_| make_err("push closing bracket"))?;
-
+    write!(out, "Hello world from Rust blob! args_str=<{}>", args).map_err(|_| make_err("write!"))?;
     Ok(out)
 }
 
