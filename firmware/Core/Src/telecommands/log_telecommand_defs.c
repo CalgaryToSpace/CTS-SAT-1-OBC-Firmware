@@ -131,6 +131,10 @@ uint8_t TCMDEXEC_log_report_all_system_file_logging_states(
 /// @param args_str
 /// - Arg 0: Sink enum
 /// - Arg 1: State 0: disable debug messages, 1: enable debug messages
+/// @details FrontierSat LOG sinks
+///    LOG_SINK_UHF_RADIO = 1
+///    LOG_SINK_FILE = 2 
+///    LOG_SINK_UMBILICAL_UART = 4
 uint8_t TCMDEXEC_log_set_sink_debugging_messages_state(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -165,6 +169,21 @@ uint8_t TCMDEXEC_log_set_sink_debugging_messages_state(
 /// @param args_str
 /// - Arg 0: Subsystem enum
 /// - Arg 1: State 0: disable debug messages, 1: enable debug messages
+/// @details FrontierSat LOG subsystems
+///    LOG_SYSTEM_OBC = 1
+///    LOG_SYSTEM_UHF_RADIO = 2
+///    LOG_SYSTEM_UMBILICAL_UART = 4
+///    LOG_SYSTEM_GNSS = 8
+///    LOG_SYSTEM_MPI = 16
+///    LOG_SYSTEM_EPS = 32
+///    LOG_SYSTEM_BOOM = 64
+///    LOG_SYSTEM_ADCS = 128
+///    LOG_SYSTEM_LFS = 256
+///    LOG_SYSTEM_FLASH = 512
+///    LOG_SYSTEM_ANTENNA_DEPLOY = 1024
+///    LOG_SYSTEM_LOG = 2048
+///    LOG_SYSTEM_TELECOMMAND = 4096
+///    LOG_SYSTEM_UNIT_TEST = 8192
 uint8_t TCMDEXEC_log_set_system_debugging_messages_state(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
