@@ -1,0 +1,17 @@
+objcopy := "arm-none-eabi-objcopy"
+target  := "thumbv7em-none-eabihf"
+out     := "build"
+
+all: bin
+
+elf:
+    mkdir -p {{out}}
+    cargo build --release
+    cp target/{{target}}/release/blob {{out}}/blob.elf
+
+bin: elf
+    {{objcopy}} -O binary {{out}}/blob.elf {{out}}/blob.bin
+
+clean:
+    cargo clean
+    rm -rf {{out}}
