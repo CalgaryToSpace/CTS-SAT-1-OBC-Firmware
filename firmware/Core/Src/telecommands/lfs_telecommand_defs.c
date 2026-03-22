@@ -16,6 +16,7 @@
 #include "compression/heatshrink_helpers.h"
 #include "compression/heatshrink_lib/heatshrink_common.h"
 #include "timekeeping/timekeeping.h"
+#include "crypto/random_number_generator.h"
 
 
 /// @brief Format the LittleFS storage. ERASES ALL FILES. Unmounts the filesystem if necessary.
@@ -577,19 +578,20 @@ uint8_t TCMDEXEC_fs_read_file_sha256_hash_json(
 }
 
 
-uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-
-    char file_name[] = "demo_test.txt";
+/// @brief Writes a file to LittleFS, then reads it back.
+/// @param args_str 
+/// - Arg 0: File path as string
+/// @param response_output_buf 
+/// @param response_output_buf_len 
+/// @return 
+uint8_t TCMDEXEC_fs_demo_write_then_read(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    const char *file_name = args_str;
 
     char file_content[200];
     snprintf(file_content, sizeof(file_content), "Hello, World! Write timestamp: %lu", TIME_uptime_ms());
-
-    const int8_t mount_result = LFS_mount();
-    if (mount_result != 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS mounting error: %d", mount_result);
-        return 1;
-    }
 
     const int8_t write_result = LFS_write_file(file_name, (uint8_t*) file_content, strlen(file_content));
     if (write_result != 0) {
@@ -611,6 +613,132 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str,
         response_output_buf, response_output_buf_len,
         "LittleFS Successfully Read File '%s'. System uptime: %lu, File Content: '%s'!",
         file_name, TIME_uptime_ms(), (char*)read_buffer);
+    return 0;
+}
+
+
+/// @brief Write a file with pseudorandom data to LittleFS.
+/// @param args_str
+/// - Arg 0: File path as string
+/// - Arg 1: File size in bytes (approx., best-effort)
+/// - Arg 2: Amount of randomness - 0 = no randomness, 1 = highly predictable, 255 = very random
+/// @param response_output_buf 
+/// @param response_output_buf_len 
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_fs_demo_write_random_data(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+
+    uint64_t arg_file_size, arg_randomness_amount;
+    const uint8_t arg_file_size_err = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &arg_file_size);
+    const uint8_t arg_randomness_amount_err = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &arg_randomness_amount);
+
+    if (
+        parse_file_name_result != 0 || arg_file_size_err != 0 || arg_randomness_amount_err != 0
+    ) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bad Args: Error parsing file name/offset/length args: Error %d/%d/%d",
+            parse_file_name_result, arg_file_size_err, arg_randomness_amount_err
+        );
+        return 1;
+    }
+    if ((arg_randomness_amount > 255) || (arg_file_size >= INT32_MAX)) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bad Args: Invalid numerical arg ranges. Refer to docstring."
+        );
+        return 1;
+    }
+
+    const uint8_t randomness_amount = (uint8_t) arg_randomness_amount;
+    const int32_t file_size = (int32_t) arg_file_size;
+
+    lfs_file_t file;
+    const int8_t open_err = lfs_file_open(&LFS_filesystem, &file, arg_file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC);
+    if (open_err != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS open error: %d", open_err);
+        return 2;
+    }
+
+    uint8_t random_buffer[1024];
+
+    // Write out a header to the file.
+    int32_t written = snprintf(
+        (char*)random_buffer, sizeof(random_buffer),
+        "Filling file with pseudorandom data.\nFile name: %s\nFile size: %ld\nRandomness amount: %u\n",
+        arg_file_name, file_size, randomness_amount
+    );
+
+    // Write that part as a header.
+    const lfs_ssize_t write_err = lfs_file_write(&LFS_filesystem, &file, random_buffer, written+=1);
+    if (write_err <= 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS header write error: %ld", write_err);
+        lfs_file_close(&LFS_filesystem, &file);
+        return 3;
+    }
+    
+    // Performance-optimization: Create a lookup table for mod `x % randomness_amount`.
+    uint8_t mod_lut[256];
+    for (int i = 0; i < 256; i++) {
+        mod_lut[i] = i % randomness_amount;
+    }
+
+    while (written < file_size) {
+        // Generate a random number between 0 and randomness_amount, effectively simulating analog data which
+        // does not span the full range of the byte, thus allowing for compression/compaction.
+        if (randomness_amount == 0) {
+            memset(random_buffer, (uint8_t)CRYPTO_generate_random_uint32(TIME_uptime_ms()), sizeof(random_buffer));
+        }
+        else if (randomness_amount == 255) {
+            CRYPTO_random_fill_buffer(TIME_uptime_ms(), random_buffer, sizeof(random_buffer));
+            // Performance-optimization: For 255, we can skip the modulo look-up step.
+        }
+        else { // Case: (randomness_amount >= 1 and < 255)
+            CRYPTO_random_fill_buffer(TIME_uptime_ms(), random_buffer, sizeof(random_buffer));
+
+            for (uint16_t i = 0; i < sizeof(random_buffer); i++) {
+                // Original version: random_buffer[i] = random_buffer[i] % randomness_amount;
+                // Performance-optimized version:
+                random_buffer[i] = mod_lut[random_buffer[i]];
+            }
+        }
+
+        int32_t byte_count_now = sizeof(random_buffer);
+        if (written + byte_count_now > file_size) {
+            byte_count_now = file_size - written;
+        }
+        const lfs_ssize_t write_err = lfs_file_write(
+            &LFS_filesystem, &file, &random_buffer,
+            byte_count_now
+        );
+        if (write_err < 0) {
+            snprintf(
+                response_output_buf, response_output_buf_len,
+                "LittleFS write error after %ld bytes: %ld",
+                written, write_err
+            );
+            lfs_file_close(&LFS_filesystem, &file);
+            return 4;
+        }
+        written += byte_count_now;
+    }
+
+    const int8_t close_err = lfs_file_close(&LFS_filesystem, &file);
+    if (close_err != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS close error: %d", close_err);
+        return 5;
+    }
+    
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "File filled with random data. File Name: %s, File Size: %ld, Randomness Amount: %u.",
+        arg_file_name, written, randomness_amount
+    );
+
     return 0;
 }
 
