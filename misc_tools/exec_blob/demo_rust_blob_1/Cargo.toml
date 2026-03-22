@@ -12,3 +12,6 @@ panic = "abort"     # no unwinding machinery
 [[bin]]
 name = "blob"
 path = "src/blob_main.rs"
+
+[dependencies]
+heapless = { version = "0.8", default-features = false }
