@@ -3,9 +3,9 @@ target = "thumbv7em-none-eabihf"   # Cortex-M4F, matches -mcpu=cortex-m4 -mfpu=f
 
 [target.thumbv7em-none-eabihf]
 rustflags = [
-    "-C", "relocation-model=pic",       # -fPIC equivalent
+    "-C", "relocation-model=pic",       # -fPIC equivalent (Position-Independent Code)
     "-C", "link-arg=-Tblob.ld",         # our custom linker script
-    "-C", "link-arg=--no-eh-frame-hdr", # suppress .eh_frame
+    "-C", "link-arg=--no-eh-frame-hdr", # suppress .eh_frame and/or .eh_frame_hdr sections
     "-C", "link-arg=--gc-sections",     # -Wl,--gc-sections equivalent
     "-C", "opt-level=s",                # -Os equivalent
     "-C", "force-frame-pointers=no",

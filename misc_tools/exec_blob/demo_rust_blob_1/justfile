@@ -1,5 +1,6 @@
 target := "thumbv7em-none-eabihf"
 build_dir := "build"
+project_name := "demo_rust_blob_1"
 
 # Show available commands.
 default:
@@ -13,12 +14,14 @@ help:
 elf:
     mkdir -p {{build_dir}}
     cargo build --release
-    cp target/{{target}}/release/blob {{build_dir}}/blob.elf
+    cp target/{{target}}/release/{{project_name}} {{build_dir}}/{{project_name}}.elf
 
 # MAIN: Convert the elf file to a binary file, and show its size.
 build: elf
-    arm-none-eabi-objcopy -O binary {{build_dir}}/blob.elf {{build_dir}}/blob.bin
-    arm-none-eabi-size {{build_dir}}/blob.elf
+    arm-none-eabi-objcopy -O binary {{build_dir}}/{{project_name}}.elf {{build_dir}}/{{project_name}}.bin
+    arm-none-eabi-size {{build_dir}}/{{project_name}}.elf
+    sha256sum {{build_dir}}/{{project_name}}.bin
+    du --bytes {{build_dir}}/{{project_name}}.bin
 
 clean:
     cargo clean

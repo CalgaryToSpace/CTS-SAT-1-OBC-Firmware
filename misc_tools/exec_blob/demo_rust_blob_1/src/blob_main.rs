@@ -5,8 +5,8 @@ use core::fmt::Write as _;
 use core::panic::PanicInfo;
 use heapless::String;
 
-#[no_mangle]
-#[link_section = ".text.entry"]
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".text.entry")]
 pub extern "C" fn blob_main(
     args_str: *const u8,
     response_buf: *mut u8,
@@ -42,9 +42,7 @@ fn run(args: &str) -> Result<String<256>, String<256>> {
 
 fn make_err(msg: &str) -> String<256> {
     let mut s: String<256> = String::new();
-    // If even this fails the string is returned empty, which is acceptable.
-    let _ = s.push_str("ERR: ");
-    let _ = s.push_str(msg);
+    _ = write!(s, "ERROR: {}", msg);
     s
 }
 
