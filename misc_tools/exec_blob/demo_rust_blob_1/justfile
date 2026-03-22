@@ -1,0 +1,25 @@
+target := "thumbv7em-none-eabihf"
+build_dir := "build"
+
+# Show available commands.
+default:
+    @just --list
+
+# Show available commands.
+help:
+    @just --list
+
+# Build the elf file from Rust source with Cargo.
+elf:
+    mkdir -p {{build_dir}}
+    cargo build --release
+    cp target/{{target}}/release/blob {{build_dir}}/blob.elf
+
+# MAIN: Convert the elf file to a binary file, and show its size.
+build: elf
+    arm-none-eabi-objcopy -O binary {{build_dir}}/blob.elf {{build_dir}}/blob.bin
+    arm-none-eabi-size {{build_dir}}/blob.elf
+
+clean:
+    cargo clean
+    rm -rf {{build_dir}}
