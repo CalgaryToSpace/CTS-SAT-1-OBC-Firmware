@@ -1,0 +1,14 @@
+[package]
+name = "blob"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+opt-level = "s"
+lto = true          # important: eliminates any cross-crate thunks
+codegen-units = 1   # single CGU ensures section ordering is predictable
+panic = "abort"     # no unwinding machinery
+
+[[bin]]
+name = "blob"
+path = "src/blob_main.rs"
