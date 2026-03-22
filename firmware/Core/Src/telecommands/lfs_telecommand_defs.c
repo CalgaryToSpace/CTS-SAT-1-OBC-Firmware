@@ -621,7 +621,7 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(
 /// @param args_str
 /// - Arg 0: File path as string
 /// - Arg 1: File size in bytes (approx., best-effort)
-/// - Arg 2: Amount of randomness - 1 = highly predictable, 255 = very random
+/// - Arg 2: Amount of randomness - 0 = no randomness, 1 = highly predictable, 255 = very random
 /// @param response_output_buf 
 /// @param response_output_buf_len 
 /// @return 0 on success, >0 on error
@@ -646,11 +646,7 @@ uint8_t TCMDEXEC_fs_demo_write_random_data(
         );
         return 1;
     }
-    if (
-        arg_randomness_amount < 1
-        || arg_randomness_amount > 255
-        || arg_file_size > INT32_MAX
-    ) {
+    if ((arg_randomness_amount > 255) || (arg_file_size >= INT32_MAX)) {
         snprintf(
             response_output_buf, response_output_buf_len,
             "Bad Args: Invalid numerical arg ranges. Refer to docstring."
@@ -668,30 +664,47 @@ uint8_t TCMDEXEC_fs_demo_write_random_data(
         return 2;
     }
 
-    // Write out both a header AND the content to 
+    uint8_t random_buffer[1024];
+
+    // Write out a header to the file.
     int32_t written = snprintf(
-        response_output_buf, response_output_buf_len,
-        "File now contains random data. File Name: %s, File Size: %ld, Randomness Amount: %u.",
+        (char*)random_buffer, sizeof(random_buffer),
+        "Filling file with pseudorandom data.\nFile name: %s\nFile size: %ld\nRandomness amount: %u\n",
         arg_file_name, file_size, randomness_amount
     );
 
     // Write that part as a header.
-    const lfs_ssize_t write_err = lfs_file_write(&LFS_filesystem, &file, response_output_buf, written+=1);
+    const lfs_ssize_t write_err = lfs_file_write(&LFS_filesystem, &file, random_buffer, written+=1);
     if (write_err <= 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS header write error: %ld", write_err);
         lfs_file_close(&LFS_filesystem, &file);
         return 3;
     }
-
-    uint8_t random_buffer[1024];
+    
+    // Performance-optimization: Create a lookup table for mod `x % randomness_amount`.
+    uint8_t mod_lut[256];
+    for (int i = 0; i < 256; i++) {
+        mod_lut[i] = i % randomness_amount;
+    }
 
     while (written < file_size) {
-        CRYPTO_random_fill_buffer(TIME_uptime_ms(), random_buffer, sizeof(random_buffer));
-
         // Generate a random number between 0 and randomness_amount, effectively simulating analog data which
         // does not span the full range of the byte, thus allowing for compression/compaction.
-        for (uint16_t i = 0; i < sizeof(random_buffer); i++) {
-            random_buffer[i] = random_buffer[i] % randomness_amount;
+        if (randomness_amount == 0) {
+            memset(random_buffer, (uint8_t)CRYPTO_generate_random_uint32(TIME_uptime_ms()), sizeof(random_buffer));
+        }
+        else if (randomness_amount == 255) {
+            CRYPTO_random_fill_buffer(TIME_uptime_ms(), random_buffer, sizeof(random_buffer));
+            // Performance-optimization: For 255, we can skip the modulo look-up step.
+        }
+        else { // Case: (randomness_amount >= 1 and < 255)
+            CRYPTO_random_fill_buffer(TIME_uptime_ms(), random_buffer, sizeof(random_buffer));
+
+            for (uint16_t i = 0; i < sizeof(random_buffer); i++) {
+                // Original version: random_buffer[i] = random_buffer[i] % randomness_amount;
+                // Performance-optimized version:
+                random_buffer[i] = mod_lut[random_buffer[i]];
+            }
         }
 
         int32_t byte_count_now = sizeof(random_buffer);
@@ -720,7 +733,11 @@ uint8_t TCMDEXEC_fs_demo_write_random_data(
         return 5;
     }
     
-    // Recall that response_output_buf is already filled with a reasonable message.
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "File filled with random data. File Name: %s, File Size: %ld, Randomness Amount: %u.",
+        arg_file_name, written, randomness_amount
+    );
 
     return 0;
 }
