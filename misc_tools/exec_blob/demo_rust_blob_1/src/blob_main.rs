@@ -5,6 +5,8 @@ use core::panic::PanicInfo;
 use heapless::String;
 use ufmt::uwrite;
 
+use serde::Serialize;
+
 #[unsafe(no_mangle)]
 #[unsafe(link_section = ".text.entry")]
 pub extern "C" fn blob_main(
@@ -33,11 +35,28 @@ pub extern "C" fn blob_main(
     return_code
 }
 
+#[derive(Serialize)]
+struct BlobResponse<'a> {
+    message: &'a str,
+    args_field: &'a str,
+    code: u8,
+}
+
 fn run(args: &str) -> Result<String<256>, String<256>> {
-    let mut out: String<256> = String::new();
-    uwrite!(out, "Hello world from Rust blob! args_str=<{}>", args)
-        .map_err(|_| make_err("uwrite! macro failed"))?;
-    Ok(out)
+    let mut args_field_string: String<64> = String::new();
+    uwrite!(args_field_string, "Args In - {}", args).map_err(|_| make_err("uwrite"))?;
+
+    // Create a sample response in JSON as a demonstration.
+    let response_struct = BlobResponse {
+        message: "Hello from blob!",
+        args_field: &args_field_string,
+        code: 0,
+    };
+
+    let buf: String<256> =
+        serde_json_core::to_string(&response_struct).map_err(|_| make_err("serialize"))?;
+
+    Ok(buf)
 }
 
 fn make_err(msg: &str) -> String<256> {
