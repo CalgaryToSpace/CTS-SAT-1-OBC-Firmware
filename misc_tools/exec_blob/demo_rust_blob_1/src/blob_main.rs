@@ -2,10 +2,19 @@
 #![no_main]
 
 use core::panic::PanicInfo;
+use core::sync::atomic::{AtomicU32, Ordering};
 use heapless::String;
 use ufmt::uwrite;
-
 use serde::Serialize;
+
+// TIME_uptime_ms_from_tim6 in ELF (sat-1-rc2). Immutable pointer to a volatile variable.
+const TIME_UPTIME_MS_ADDR: *const AtomicU32 = 0x200706d0usize as *const AtomicU32;
+
+/// Rust version of `TIME_uptime_ms()`.
+fn get_uptime_ms() -> u32 {
+    unsafe { (*TIME_UPTIME_MS_ADDR).load(Ordering::Relaxed) }
+}
+
 
 #[unsafe(no_mangle)]
 #[unsafe(link_section = ".text.entry")]
@@ -40,6 +49,7 @@ struct BlobResponse<'a> {
     message: &'a str,
     args_field: &'a str,
     code: u8,
+    uptime_ms: u32
 }
 
 fn run(args: &str) -> Result<String<256>, String<256>> {
@@ -51,6 +61,7 @@ fn run(args: &str) -> Result<String<256>, String<256>> {
         message: "Hello from blob!",
         args_field: &args_field_string,
         code: 0,
+        uptime_ms: get_uptime_ms(),
     };
 
     let buf: String<256> =
