@@ -37,6 +37,38 @@ TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 /// @note The values in here are tri-state via TCMD_agenda_entry_state_enum_t.
 uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE] = {0};
 
+/// @brief Index into `TCMD_agenda` and `TCMD_agenda_is_valid` of the last used slot.
+/// @details The next telecommand to entered into the agenda will fill this slot, or will
+///          go into the first free slot after this one.
+uint16_t TCMD_agenda_last_used_slot = 0;
+
+
+/// @brief  Gets the index of the first free ("invalid") slot in the agenda.
+/// @return The index into `TCMD_agenda` and `TCMD_agenda_is_valid` of the first free slot.
+///         If the agenda is full, returns 0, suggesting that the caller should overwrite starting at the beginning.
+static uint16_t TCMD_agenda_get_free_slot_idx() {
+    // `i` is just a counter to ensure we don't get stuck in an infinite loop.
+    uint16_t slot_num = TCMD_agenda_last_used_slot;
+    for (uint16_t i = 0; i < TCMD_AGENDA_SIZE; i++) {
+        // Skip filled slots. Skip both PENDING and EXECUTING slots!
+        if (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_INVALID) {
+            return slot_num;
+        }
+        slot_num = (slot_num + 1) % TCMD_AGENDA_SIZE; // Increment and wrap around.
+    }
+
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+        "TCMD_agenda_get_free_slot_idx: No free slots in the agenda. Overwriting from the start."
+    );
+
+    // If it's full, try returning 0. However, if telecommand 0 is executing, then don't overwrite it.
+    // Instead, move to 1, under the assumption that only a single telecommand can be executing at a time.
+    if (TCMD_agenda_is_valid[0] != TCMD_AGENDA_ENTRY_EXECUTING) {
+        return 0; // Slot 0 because slot 0 is not executing - nominal error handling case.
+    }
+    return 1; // Slot 1 because slot 0 is executing. Extreme edge case.
+}
 
 /// @brief Adds a telecommand to the agenda (schedule/queue) of telecommands to execute.
 /// @param parsed_tcmd The parsed telecommand to add to the agenda.
@@ -44,64 +76,60 @@ uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE] = {0};
 /// @note Performs a deep copy of the `parsed_tcmd` arg into the agenda.
 uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd) {
     // Find the first empty slot in the agenda.
-    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        // Skip filled slots. Skip both PENDING and EXECUTING slots!
-        if (TCMD_agenda_is_valid[slot_num] != TCMD_AGENDA_ENTRY_INVALID) {
-            continue;
-        }
-
-        // If this is a duplicate telecommand, and we're enforcing that, skip it.
-        if (TCMD_require_unique_tssent) {
-            // Check to see if timestamp is in the circular buffer.
-            // Loop upperbound: Search to the end, because it's circular. It's initialized with zeros,
-            // so tssent=0 will cause a rejection/error here (which is good/as planned).
-            for (uint32_t i = 0; i < TCMD_timestamp_sent_used_slots; i++) {
-                if (parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
-                    // Skip this telecommand.
-                    LOG_message(
-                        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                        "Telecommand skipped due to repeated tssent."
-                    );
-                    return 20;
-                }
+    const uint16_t slot_num = TCMD_agenda_get_free_slot_idx();
+    
+    // If this is a duplicate telecommand, and we're enforcing that, skip it.
+    if (TCMD_require_unique_tssent) {
+        // Check to see if timestamp is in the circular buffer.
+        // Loop upperbound: Search to the end, because it's circular. It's initialized with zeros,
+        // so tssent=0 will cause a rejection/error here (which is good/as planned).
+        for (uint32_t i = 0; i < TCMD_timestamp_sent_used_slots; i++) {
+            if (parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
+                // Skip this telecommand.
+                LOG_message(
+                    LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                    "Telecommand skipped due to repeated tssent."
+                );
+                return 20;
             }
         }
-
-        // Add the timestamp to the circular buffer.
-        // This mechanism prevents command replays (executing the same command twice inadvertently).
-        if (parsed_tcmd->timestamp_sent > 0) {
-            TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
-            TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
-
-            // Increase the used slots count up until it hits TCMD_TIMESTAMP_RECORD_SIZE, then
-            // leave it equal to TCMD_TIMESTAMP_RECORD_SIZE.
-            if (TCMD_timestamp_sent_used_slots < (TCMD_TIMESTAMP_RECORD_SIZE - 1)) {
-                TCMD_timestamp_sent_used_slots++;
-            }
-        }
-
-        // Copy the parsed telecommand into the agenda.
-        TCMD_agenda[slot_num].tcmd_idx = parsed_tcmd->tcmd_idx;
-        TCMD_agenda[slot_num].timestamp_sent = parsed_tcmd->timestamp_sent;
-        TCMD_agenda[slot_num].timestamp_to_execute = parsed_tcmd->timestamp_to_execute;
-
-        for (uint16_t j = 0; j < TCMD_ARGS_STR_NO_PARENS_SIZE; j++) {
-            TCMD_agenda[slot_num].args_str_no_parens[j] = parsed_tcmd->args_str_no_parens[j];
-        }
-
-        // Copy the log filename into the agenda.
-        for (uint16_t j = 0; j < TCMD_MAX_RESP_FNAME_LEN; j++) {
-            TCMD_agenda[slot_num].resp_fname[j] = parsed_tcmd->resp_fname[j];
-        }
-        // Mark the slot as valid.
-        TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_VALID_AND_PENDING;
-
-        // Incrementing counters used for stats 
-        TCMD_total_tcmd_queued_count++; 
-        TCMD_latest_received_tcmd_timestamp_sent = parsed_tcmd->timestamp_sent;
-        return 0;
     }
-    return 1;
+
+    // Add the tssent timestamp to the circular buffer.
+    // This mechanism prevents command replays (executing the same command twice inadvertently).
+    if (parsed_tcmd->timestamp_sent > 0) {
+        TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
+        TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
+
+        // Increase the used slots count up until it hits TCMD_TIMESTAMP_RECORD_SIZE, then
+        // leave it equal to TCMD_TIMESTAMP_RECORD_SIZE.
+        if (TCMD_timestamp_sent_used_slots < (TCMD_TIMESTAMP_RECORD_SIZE - 1)) {
+            TCMD_timestamp_sent_used_slots++;
+        }
+    }
+
+    // Copy the parsed telecommand into the agenda.
+    TCMD_agenda[slot_num].tcmd_idx = parsed_tcmd->tcmd_idx;
+    TCMD_agenda[slot_num].timestamp_sent = parsed_tcmd->timestamp_sent;
+    TCMD_agenda[slot_num].timestamp_to_execute = parsed_tcmd->timestamp_to_execute;
+
+    for (uint16_t j = 0; j < TCMD_ARGS_STR_NO_PARENS_SIZE; j++) {
+        TCMD_agenda[slot_num].args_str_no_parens[j] = parsed_tcmd->args_str_no_parens[j];
+    }
+
+    // Copy the log filename into the agenda.
+    for (uint16_t j = 0; j < TCMD_MAX_RESP_FNAME_LEN; j++) {
+        TCMD_agenda[slot_num].resp_fname[j] = parsed_tcmd->resp_fname[j];
+    }
+    // Mark the slot as valid.
+    TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_VALID_AND_PENDING;
+
+    // Incrementing counters used for stats 
+    TCMD_total_tcmd_queued_count++; 
+    TCMD_latest_received_tcmd_timestamp_sent = parsed_tcmd->timestamp_sent;
+    TCMD_agenda_last_used_slot = slot_num;
+
+    return 0;
 }
 
 
@@ -122,10 +150,12 @@ uint16_t TCMD_get_agenda_used_slots_count() {
 /// @brief Finds the index into `TCMD_agenda` (`slot_num`) of the next telecommand to execute.
 /// @return The index into `TCMD_agenda` of the next telecommand to execute, or -1 if none are available/ready.
 /// @note This function will return the `slot_num` which has the lowest `timestamp_to_execute` value.
-///      If multiple slots have the same `timestamp_to_execute`, the lowest `slot_num` will be returned.
+///       If multiple slots have the same `timestamp_to_execute`, the lowest `slot_num` will be returned.
+///       Thus, based on the insertion order, during tsexec ties, telecommands will be executed in the order
+///       they were added to the agenda (received).
+///       Edge case: When wrapping around the circular buffer (at 750 telecommands), it is not perfectly guaranteed
+///       that tsexec ties will run in the order they were inserted.
 int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
-    // TODO: Benchmark this, and consider an O(1) optimization by keeping track of the timestamp of the next upcoming telecommand timestamp.
-    
     const uint64_t current_timestamp_ms = TIME_get_current_unix_epoch_time_ms();
 
     int16_t earliest_slot_num = -1;
@@ -136,11 +166,12 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
             continue;
         }
 
-        // Optimization: return the first 0-timestamp slot found, if any.
+        // Optimization: Return the first 0-timestamp slot found, if any.
         if (TCMD_agenda[slot_num].timestamp_to_execute == 0) {
             return slot_num;
         }
         
+        // Find the next earliest tsexec timestamp.
         if (
             (TCMD_agenda[slot_num].timestamp_to_execute < earliest_timestamp)
             && (TCMD_agenda[slot_num].timestamp_to_execute <= current_timestamp_ms)

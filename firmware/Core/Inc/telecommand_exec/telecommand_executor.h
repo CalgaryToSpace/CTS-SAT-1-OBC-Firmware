@@ -12,13 +12,11 @@
 /// Max number of tssent timestamp values that can be stored at a time (for unique telecommand tssent validation).
 #define TCMD_TIMESTAMP_RECORD_SIZE 750
 
-/// @brief  The agenda (schedule queue) of telecommands to execute.
 extern TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 
-/// @brief  A flag indicating whether a given index in `TCMD_agenda` is valid
-///         (i.e., filled with a not-yet-executed command).
-/// @note The values in here are tri-state via TCMD_agenda_entry_state_enum_t.
 extern uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE];
+
+extern uint16_t TCMD_agenda_last_used_slot;
 
 typedef enum {
     TCMD_AGENDA_ENTRY_INVALID = 0, // Initial state.

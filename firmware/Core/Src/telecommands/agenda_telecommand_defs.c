@@ -124,7 +124,7 @@ uint8_t TCMDEXEC_agenda_fetch_logged_jsonl(
 }
 
 
-/// @brief Telecommand: Delete all agendas
+/// @brief Telecommand: Delete all agenda entries.
 /// @param args_str No arguments needed
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
@@ -140,8 +140,14 @@ uint8_t TCMDEXEC_agenda_delete_all(
             num_deleted++;
         }
     }
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+
+    // Not essential, but good to do. Reset the write index to 0.
+    // Benefit: Ensures that the next TCMD_AGENDA_SIZE telecommands will get executed perfectly
+    // in the order they were received, if there are tsexec ties.
+    TCMD_agenda_last_used_slot = 0;
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
         "Deleted all %d entries from the agenda.",
         num_deleted
     );
@@ -207,7 +213,7 @@ uint8_t TCMDEXEC_agenda_delete_by_tssent(
     return 0;
 }
 
-/// @brief Telecommand: Delete all agenda entries with a telecommand name
+/// @brief Telecommand: Delete all agenda entries with a given telecommand name.
 /// @param args_str
 /// - Arg 0: telecommand name (string) - The name of the telecommand function in the agenda to delete. (e.g, hello_world)
 /// @param response_output_buf The buffer to write the response to
