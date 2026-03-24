@@ -214,11 +214,18 @@ uint8_t TCMDEXEC_fs_make_directory(const char *args_str,
     }
 
     const int8_t make_directory_result = LFS_make_directory(arg_root_directory_path);
-    if (make_directory_result != 0) {
+    if (make_directory_result == LFS_ERR_EXIST) {
+        // We'll call this error code a "success", because it's generally fine/as-intended
+        // that the directory exists after the call.
+        snprintf(response_output_buf, response_output_buf_len, "Directory already exists");
+        return 0;
+    }
+    else if (make_directory_result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: LFS_make_directory() -> %d", make_directory_result);
         return 1;
     }
-    
+
+    snprintf(response_output_buf, response_output_buf_len, "Directory successfully created");
     return 0;
 }
 
