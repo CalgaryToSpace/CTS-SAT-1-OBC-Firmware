@@ -443,8 +443,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
         &LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
     );
 
-    if (open_result < 0)
-    {
+    if (open_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening/creating file: %s", file_name);
         return open_result;
     }
@@ -453,16 +452,15 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 
     // Write data to file
     const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
-    if (write_result < 0)
-    {
+    if (write_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
+        lfs_file_close(&LFS_filesystem, &file);
         return write_result;
     }
 
     // Close the File, the storage is not updated until the file is closed successfully
     const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
-    if (close_result < 0)
-    {
+    if (close_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
         return close_result;
     }
@@ -487,22 +485,20 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
     const int8_t open_result = lfs_file_open(
         &LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND
     );
-    if (open_result < 0)
-    {
+    if (open_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file: %s", file_name);
         return open_result;
     }
-    
-    // Note: I think this seek is unnecessary. Validation would be required.
-    const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
-    if (seek_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file: %s", file_name);
-        return seek_result;
-    }
+    // Note: No need to seek to the end of the file, as `LFS_O_APPEND` opens with the cursor at the end.
 
     const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
     if (write_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file %s", file_name);
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error writing to file %s (LFS ERROR %ld)",
+            file_name, write_result
+        );
+        lfs_file_close(&LFS_filesystem, &file);
         return write_result;
     }
     
@@ -553,7 +549,8 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
         return current_size;
     }
 
-    // Check if we need to extend the file with zeros for a gap
+    // Check if we need to extend the file with zeros for a gap.
+    // TODO: I think you can just seek forward and LFS will fill with zeros automatically internally.
     if (offset > current_size)
     {
         // Calculate the gap size between current file end and desired offset
@@ -623,8 +620,7 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
 
     // Close the File, the storage is not updated until the file is closed successfully
     const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
-    if (close_result < 0)
-    {
+    if (close_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
                    "Error closing file: %s (error: %d)", file_name, close_result);
         return close_result;
@@ -658,20 +654,24 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file to read: %s", file_name);
         return open_result;
     }
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened file to read: %s", file_name);
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE), "Opened file to read: %s", file_name);
 
-    const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
-    if (seek_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file: %s", file_name);
-        return seek_result;
+    if (offset > 0) {
+        const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
+        if (seek_result < 0) {
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file: %s", file_name);
+            lfs_file_close(&LFS_filesystem, &file);
+            return seek_result;
+        }
     }
 
     const lfs_ssize_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_size);
     if (read_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error reading file: %s", file_name);
+        lfs_file_close(&LFS_filesystem, &file);
         return read_result;
     }
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully read file: %s", file_name);
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully read file: %s", file_name);
 
     // Close the File, the storage is not updated until the file is closed successfully
     const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
@@ -679,15 +679,15 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
         return close_result;
     }
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully closed file: %s", file_name);
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully closed file: %s", file_name);
 
-    return read_result;	
+    return read_result;	// Return the number of bytes read.
 }
 
 /// @brief Returns the file size
 /// @param file_name - Pointer to buffer holding the file name to open
 /// @return Returns negative values if read or file open failed, else the
-/// number of bytes in the file
+///         number of bytes in the file.
 lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages) {
     const int8_t mount_result = LFS_ensure_mounted();
     if (mount_result < 0) {
@@ -731,5 +731,5 @@ lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages) {
             "Successfully closed file: %s", file_name
         );
     }
-    return size;
+    return size; // Nominally, return the number of bytes in the file.
 }
