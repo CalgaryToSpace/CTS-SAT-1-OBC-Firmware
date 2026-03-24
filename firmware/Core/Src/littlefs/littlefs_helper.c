@@ -11,7 +11,9 @@
 // Variables to track LittleFS on Flash Memory Module
 uint8_t LFS_is_lfs_mounted = 0;
 
-// Should be at least (BLOCK_COUNT / 8). 
+// Should be equal to `BLOCK_COUNT / 8` to store every block in the lookahead buffer,
+// for optimal performance.
+// Best value: 1024 blocks / 8 = 128
 #define FLASH_LOOKAHEAD_SIZE 128
 
 // LittleFS Buffers for reading and writing
@@ -30,7 +32,6 @@ struct lfs_config LFS_cfg = {
     .erase = LFS_block_device_erase,
     .sync = LFS_block_device_sync,
 
-    // block device configuration
     .read_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .prog_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .block_size = FLASH_CHIP_BLOCK_SIZE_BYTES,

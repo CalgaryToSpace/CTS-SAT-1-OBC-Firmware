@@ -14,7 +14,7 @@ inline static FLASH_Physical_Address_t _block_plus_offset_to_address(lfs_block_t
 	return address;
 }
 
-uint8_t LFS_get_chip_number(lfs_block_t block_num) {
+static inline uint8_t LFS_get_chip_number(lfs_block_t block_num) {
 	// TODO: Add a conversion here to partition across multiple chips, if desired.
 	return 0;
 }
