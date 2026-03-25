@@ -24,6 +24,11 @@
 /// @brief The period of the heartbeat task, in milliseconds. 0 to disable.
 uint32_t TASK_heartbeat_period_ms = 10990;
 
+/// @brief Execute this many telecommands back-to-back when they come due, if they're available.
+/// @details Increase this past 3 to execute commands faster (e.g., during bulk uplink).
+/// @note Default: 3.
+uint32_t TCMD_max_consecutive_burst_execution_size = 3;
+
 static char current_time_str[30] = {0};
 
 void TASK_DEBUG_print_heartbeat(void *argument) {
@@ -83,12 +88,14 @@ void TASK_execute_telecommands(void *argument) {
         // This is a good place to pet, because it basically says "if the satellite stops responding
         // (executing telecommands), reboot it".
         STM32_pet_watchdog();
+        const uint32_t last_watchdog_pet_ms = TIME_uptime_ms();
 
         // Execute [potentially] several commands back-to-back if several are available.
         // Normally we want to execute a single command, then yield. However, if several commands
         // are available to execute, then execute them back-to-back with only a very brief yield.
         // Useful optimization specifically for bulk data uplink (e.g., OTA firmware upgrades).
-        for (uint8_t consecutive_cmd_num = 0; consecutive_cmd_num < 3; consecutive_cmd_num++) {
+        const uint32_t burst_size = TCMD_max_consecutive_burst_execution_size;
+        for (uint32_t consecutive_cmd_num = 0; consecutive_cmd_num < burst_size; consecutive_cmd_num++) {
             // Get the next telecommand to execute.
             const int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
             if (next_tcmd_slot == -1) {
@@ -104,6 +111,15 @@ void TASK_execute_telecommands(void *argument) {
                 main_response_output_buffer,
                 sizeof(main_response_output_buffer)
             );
+
+            if (TIME_uptime_ms() - last_watchdog_pet_ms > 4000) {
+                // The inner for-loop allows rapid execution ("burst") of fast telecommands.
+                // However, if they're executing slowly, then break to the main loop and
+                // allow other tasks to run, and to pet the watchdog.
+                // 4000ms is a fair choice, as it leaves subsequent telecommands at least 15sec-4sec = 11sec
+                // to execute before a watchdog reset.
+                break;
+            }
 
             osDelay(1); // Very brief yield with consecutive telecommands.
         }

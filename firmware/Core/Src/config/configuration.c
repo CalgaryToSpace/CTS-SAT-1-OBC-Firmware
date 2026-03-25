@@ -27,6 +27,7 @@ extern uint32_t GNSS_write_cmd_mode_data_to_firehose_file;
 extern uint32_t LOG_timestamp_prefix_format;
 extern uint32_t TCMD_enqueue_from_agenda_file_interval_ms;
 extern uint32_t TCMD_enqueue_grace_period_ms;
+extern uint32_t TCMD_max_consecutive_burst_execution_size;
 
 extern uint32_t LOG_file_flush_interval_sec;
 extern uint32_t LOG_file_rotation_interval_sec;
@@ -135,6 +136,10 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "TCMD_require_unique_tssent",
         .num_config_var = &TCMD_require_unique_tssent,
+    },
+    {
+        .variable_name = "TCMD_max_consecutive_burst_execution_size",
+        .num_config_var = &TCMD_max_consecutive_burst_execution_size,
     },
     // ******** COMMS Configuration ********
     {
