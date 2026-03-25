@@ -7,6 +7,13 @@ The LittleFS filesystem is used to provide a layer on top of the raw flash memor
 * Chip: MT29F1G 1Gib (128MiB)
     * NAND FLASH
     * Datasheet: https://www.farnell.com/datasheets/3151163.pdf
+    * Sizes:
+        * Page Size: 2048 bytes (+ error correction)
+        * Block Size: 64 pages = 128 KiB = 131072 bytes
+        * Plane (entire chip) Size: 1024 blocks = 128 MiB = 134217728 bytes
+        * Chip Size = 2048 bytes per page * 64 pages per block * 1024 blocks per plane
+        * You can write one PAGE at a time, but you have to erase a whole BLOCK at a time.
+
 * SPI DMA is faster.
 * The MT29F1G chip requires that the CS line be driven to inactive between writes, otherwise the chip/system goes unresponsive.
 
@@ -24,3 +31,10 @@ The LittleFS filesystem is used to provide a layer on top of the raw flash memor
     * Alternative/additional option described in issue: Call `lfs_fs_gc()` periodically during idle.
     * Default value is the entire blocksize. We lower it to: `.metadata_max = 1024 * 8`
 
+### Be Aware
+
+* You must close all files (even read-only ones), or you risk in-SRAM state corruption as pointers to the stack aren't freed.
+* Unmounting not actually do anything to the device, and does not lock out filesystem operations.
+    * Thus, you have to be confident the filesystem is mounted before attempting file operations.
+* The filesystem slows down as more blocks are used/written to.
+* The filesystem can only store as many files as there are blocks. That is, we can only store 1024 files per chip (plus a few tiny inline files).

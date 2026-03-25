@@ -17,6 +17,12 @@
 #define FLASH_CHIP_PAGES_PER_BLOCK 64
 
 // NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
+// Page Size: 2048 bytes (+ error correction)
+// Block Size: 64 pages
+// Plane (entire chip) Size: 128 MiB = 134217728 bytes = 1024 blocks
+// Chip Size = 2048 bytes per page * 64 pages per block * 1024 blocks per plane
+// You can write one PAGE at a time, but you have to erase a whole BLOCK at a time.
+
 // Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
 #define FLASH_CHIP_PAGE_SIZE_BYTES 2048
 

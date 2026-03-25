@@ -6,7 +6,8 @@
 #include "littlefs/lfs.h"
 
 /*---------------------------FUNCTIONS---------------------------*/
-uint8_t LFS_get_chip_number(lfs_block_t block_num);
+// uint8_t LFS_get_chip_number(lfs_block_t block_num); // Changed to a static inline.
+
 int LFS_block_device_read(const struct lfs_config *, lfs_block_t, lfs_off_t, void *, lfs_size_t);
 int LFS_block_device_prog(const struct lfs_config *, lfs_block_t, lfs_off_t, const void *, lfs_size_t);
 int LFS_block_device_erase(const struct lfs_config *, lfs_block_t);

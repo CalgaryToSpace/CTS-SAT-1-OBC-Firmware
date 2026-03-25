@@ -502,14 +502,19 @@ uint8_t TCMDEXEC_fs_read_text_file(
     }
 
     // Read the file directly into the response buffer.
-    const int32_t read_result = LFS_read_file(arg_file_name, file_offset, (uint8_t*)response_output_buf, response_output_buf_len-1);
+    const int32_t read_result = LFS_read_file(
+        arg_file_name, file_offset,
+        (uint8_t*)response_output_buf,
+        max_length // Request only this many bytes.
+    );
     if (read_result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error reading file: %ld", read_result);
         return 10;
     }
 
     // Ensure null-termination.
-    response_output_buf[response_output_buf_len - 1] = '\0';
+    response_output_buf[max_length] = '\0';
+    response_output_buf[response_output_buf_len - 1] = '\0'; // Secondary safety.
     
     return 0;
 }
