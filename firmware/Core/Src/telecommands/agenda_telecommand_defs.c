@@ -64,6 +64,9 @@ uint8_t TCMDEXEC_agenda_fetch_json_grouped(
             first_key ? "" : ",",
             TCMD_telecommand_definitions[tcmd_idx].tcmd_name
         );
+        if (buf_pos >= response_output_buf_size) {
+            return 2;
+        }
         first_key = false;
 
         // Inner pass 2: write each matching slot as an entry in the list.
@@ -88,23 +91,22 @@ uint8_t TCMDEXEC_agenda_fetch_json_grouped(
                 tssent_str,
                 tsexec_str
             );
+            if (buf_pos >= response_output_buf_size) {
+                return 2;
+            }
             first_entry = false;
         }
 
         // Close the list for this key.
         buf_pos += snprintf(response_output_buf + buf_pos, response_output_buf_size - buf_pos, "]");
+        if (buf_pos >= response_output_buf_size) {
+            return 2;
+        }
     }
 
     // Write closing brace.
     buf_pos += snprintf(response_output_buf + buf_pos, response_output_buf_size - buf_pos, "}");
-
     if (buf_pos >= response_output_buf_size) {
-        // The buffer was too small; the output is truncated.
-        snprintf(
-            response_output_buf, response_output_buf_size,
-            "Buffer too small (%u bytes, needed >%u).",
-            response_output_buf_size, buf_pos
-        );
         return 2;
     }
 
@@ -188,9 +190,9 @@ uint8_t TCMDEXEC_agenda_delete_by_tssent(
             && (TCMD_agenda[slot_num].timestamp_sent == tssent)
         ) {
             // Set agenda entry as invalid.
+            tcmd_name = TCMD_telecommand_definitions[TCMD_agenda[slot_num].tcmd_idx].tcmd_name;
             TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_INVALID;
             deleted_count++;
-            tcmd_name = TCMD_telecommand_definitions[TCMD_agenda[slot_num].tcmd_idx].tcmd_name;
         }
     }
 
@@ -319,7 +321,9 @@ uint8_t TCMDEXEC_agenda_enqueue_from_file(
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error parsing file name arg: Error %d", parse_file_name_result);
+            "Error parsing file name arg: min_err=%d, max_err=%d",
+            parse_filter_arg_min_err, parse_filter_arg_max_err
+        );
         return 99;
     }
     // Per docstring, if max_tsexec_exclusive is 0, set it to UINT64_MAX to unrestrict filter.

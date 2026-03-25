@@ -103,7 +103,7 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
 
         // Increase the used slots count up until it hits TCMD_TIMESTAMP_RECORD_SIZE, then
         // leave it equal to TCMD_TIMESTAMP_RECORD_SIZE.
-        if (TCMD_timestamp_sent_used_slots < (TCMD_TIMESTAMP_RECORD_SIZE - 1)) {
+        if (TCMD_timestamp_sent_used_slots < TCMD_TIMESTAMP_RECORD_SIZE) {
             TCMD_timestamp_sent_used_slots++;
         }
     }
