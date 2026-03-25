@@ -1,0 +1,17 @@
+CTS1+config_set_int_var(EPS_time_sync_period_sec,10000000)!
+CTS1+hello_world()@tssent=1774480500000@tsexec=1774480500000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+eps_get_current_battery_percent()@tssent=1774480502000@tsexec=1774480502000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+core_system_stats()@tssent=1774480504000@tsexec=1774480504000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+eps_set_channel_enabled(gnss,1)@tssent=1774480506000@tsexec=1774480506000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+gnss_send_cmd_ascii(log versiona once)@tssent=1774480508000@tsexec=1774480508000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+gnss_enable_firehose_storage_mode(gnss_ait_2026-03-25.dat)@tssent=1774480510000@tsexec=1774480510000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+gnss_send_cmd_ascii(log versiona ontime 5)@tssent=1774480512000@tsexec=1774480512000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+gnss_send_cmd_ascii(log bestxyza ontime 5)@tssent=1774480514000@tsexec=1774480514000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+gnss_send_cmd_ascii_get_response_hex(log timeb ontime 5)@tssent=1774480516000@tsexec=1774480516000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+mpi_enable_active_mode(ait_mpi_2026-03-25.dat)@tssent=1774480518000@tsexec=1774480518000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+mpi_disable_active_mode()@tssent=1774480620000@tsexec=1774480620000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+gnss_send_cmd_ascii(unlogall)@tssent=1774480622000@tsexec=1774480622000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+gnss_disable_firehose_storage_mode()@tssent=1774480624000@tsexec=1774480624000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+eps_set_channel_enabled(gnss,0)@tssent=1774480626000@tsexec=1774480626000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+camera_setup()@tssent=1774480628000@tsexec=1774480628000@resp_fname=ait_resp_2026-03-25.txt!
+CTS1+camera_capture(d,ait_cam_2026-03-25.dat)@tssent=1774480630000@tsexec=1774480630000@resp_fname=ait_resp_2026-03-25.txt!

@@ -1,0 +1,18 @@
+tsexec_date,tsexec_time,command,resp_fname,comment
+,,"config_set_int_var(EPS_time_sync_period_sec,10000000)",,"Before: HSE, Time Sync"
+2026-03-25,23:15:00,hello_world(),ait_resp_2026-03-25.txt,
+2026-03-25,23:15:02,eps_get_current_battery_percent(),ait_resp_2026-03-25.txt,
+2026-03-25,23:15:04,core_system_stats(),ait_resp_2026-03-25.txt,
+2026-03-25,23:15:06,"eps_set_channel_enabled(gnss,1)",ait_resp_2026-03-25.txt,
+2026-03-25,23:15:08,gnss_send_cmd_ascii(log versiona once),ait_resp_2026-03-25.txt,
+2026-03-25,23:15:10,gnss_enable_firehose_storage_mode(gnss_ait_2026-03-25.dat),ait_resp_2026-03-25.txt,
+2026-03-25,23:15:12,gnss_send_cmd_ascii(log versiona ontime 5),ait_resp_2026-03-25.txt,
+2026-03-25,23:15:14,gnss_send_cmd_ascii(log bestxyza ontime 5),ait_resp_2026-03-25.txt,
+2026-03-25,23:15:16,gnss_send_cmd_ascii_get_response_hex(log timeb ontime 5),ait_resp_2026-03-25.txt,
+2026-03-25,23:15:18,mpi_enable_active_mode(ait_mpi_2026-03-25.dat),ait_resp_2026-03-25.txt,
+2026-03-25,23:17:00,mpi_disable_active_mode(),ait_resp_2026-03-25.txt,First after long gap
+2026-03-25,23:17:02,gnss_send_cmd_ascii(unlogall),ait_resp_2026-03-25.txt,
+2026-03-25,23:17:04,gnss_disable_firehose_storage_mode(),ait_resp_2026-03-25.txt,
+2026-03-25,23:17:06,"eps_set_channel_enabled(gnss,0)",ait_resp_2026-03-25.txt,
+2026-03-25,23:17:08,camera_setup(),ait_resp_2026-03-25.txt,Another long gap
+2026-03-25,23:17:10,"camera_capture(d,ait_cam_2026-03-25.dat)",ait_resp_2026-03-25.txt,
