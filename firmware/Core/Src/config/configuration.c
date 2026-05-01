@@ -32,14 +32,15 @@ extern uint32_t TCMD_max_consecutive_burst_execution_size;
 extern uint32_t LOG_file_flush_interval_sec;
 extern uint32_t LOG_file_rotation_interval_sec;
 
+/// @brief Does nothing. Used for testing configuration variables.
 uint32_t CONFIG_int_demo_var_1 = 13345;
 
-// extern
+/// @brief The interval at which the `EPS_monitor_and_disable_overcurrent_channels` task runs.
 uint32_t EPS_monitor_interval_ms = 20000;
 
 
-// extern
-// 1 = require, 0 = don't require
+/// @brief Boolean. Whether to require the `@tssent` suffix tag for all telecommands.
+/// @details 1 = require, 0 = don't require
 uint32_t TCMD_require_unique_tssent = 0;
 
 /// @brief The percentage of the stack space that should remain free. If the free space falls
