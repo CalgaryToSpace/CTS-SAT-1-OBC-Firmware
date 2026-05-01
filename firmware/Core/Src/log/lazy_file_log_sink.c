@@ -11,8 +11,13 @@
 
 #include "main.h"
 
-uint32_t LOG_file_flush_interval_sec = 60; // Nominal: 60 seconds is 1 minute.
-uint32_t LOG_file_rotation_interval_sec = 1800; // Nominal: 1800 seconds is 30 minutes. 
+/// @brief Interval in seconds at which to flush the log file to the filesystem.
+/// @note Nominal: 60 seconds = 1 minute.
+uint32_t LOG_file_flush_interval_sec = 60;
+
+/// @brief Interval in seconds where a new dated log file is created, and the old file is closed
+/// @note Nominal: 1800 seconds = 30 minutes.
+uint32_t LOG_file_rotation_interval_sec = 1800;
 
 // Statically allocate the log file LFS cache buffer.
 // Important so this log file can be written to from within exception handlers.

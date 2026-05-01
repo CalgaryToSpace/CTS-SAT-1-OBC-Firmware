@@ -21,7 +21,7 @@ const uint32_t GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
 GNSS_rx_mode_enum_t GNSS_current_rx_mode = GNSS_RX_MODE_DISABLED;
 
 
-/// @brief Whether to store command-mode GNSS data to the firehose file.
+/// @brief Boolean. Whether to store command-mode GNSS data to the firehose file.
 /// @details If GNSS firehose storage mode is enabled, and the send_cmd_get_response
 ///          function is used, this config variable controls whether the command-mode
 ///          response data is written to the firehose file.
