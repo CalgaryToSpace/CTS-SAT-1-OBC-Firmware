@@ -23,7 +23,7 @@ typedef enum {
     MPI_REASON_FOR_STOPPING_TELECOMMAND,
     MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED,
     MPI_REASON_FOR_STOPPING_SELF_CHECK_DONE,
-} MPI_reason_for_stopping_active_mode;
+} MPI_reason_for_stopping_active_mode_enum_t;
 
 uint8_t MPI_send_command_get_response(
     const uint8_t *bytes_to_send, const size_t bytes_to_send_len, 
@@ -32,11 +32,11 @@ uint8_t MPI_send_command_get_response(
 );
 
 uint8_t MPI_enable_active_mode(const char output_file_path[]);
-uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode reason_for_stopping);
+uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode_enum_t reason_for_stopping);
 uint8_t MPI_validate_command_response(
     const uint8_t command_code, uint8_t *rx_buffer, const uint16_t rx_buffer_len
 );
 
-char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_active_mode reason);
+char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_active_mode_enum_t reason);
 
 #endif /* INC_MPI_COMMAND_HANDLING_H_ */

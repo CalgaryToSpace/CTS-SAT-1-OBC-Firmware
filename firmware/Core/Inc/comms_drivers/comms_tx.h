@@ -86,15 +86,13 @@ typedef struct {
     uint8_t rbf_pin_state; // Enum: OBC_rbf_state_enum_t
 
     uint8_t mpi_rx_mode_enum; // Enum: MPI_rx_mode_enum_t
-    uint8_t mpi_transceiver_state_enum; // Enum: MPI_current_transceiver_state_enum_t
+    uint8_t mpi_transceiver_state_enum; // Enum: MPI_transceiver_state_enum_t
 
     uint8_t mpi_last_reason_for_stopping_enum; // Enum: MPI_reason_for_stopping_active_mode_enum_t
     
     uint8_t gnss_uart_interrupt_enabled;
 
     uint8_t gnss_rx_mode_enum; // Enum: GNSS_rx_mode_enum_t
-
-    // TODO: Total log message counts (esp. for warning/error levels)
 
     // End with a null-terminated configurable friendly message.
     char friendly_message[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
