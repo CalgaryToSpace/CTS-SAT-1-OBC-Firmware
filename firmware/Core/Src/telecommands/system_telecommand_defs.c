@@ -29,7 +29,7 @@
 
 extern uint32_t COMMS_total_beacon_count_since_boot;
 extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
-extern MPI_reason_for_stopping_active_mode MPI_last_reason_for_stopping_active_mode;
+extern MPI_reason_for_stopping_active_mode_enum_t MPI_last_reason_for_stopping_active_mode;
 
 /// @brief A simple telecommand that responds with "Hello, world!" (log message and TCMD response)
 /// @param args_str No arguments expected

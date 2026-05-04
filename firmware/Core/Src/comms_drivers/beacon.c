@@ -31,7 +31,7 @@
 
 extern uint32_t COMMS_total_beacon_count_since_boot;
 extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
-extern MPI_reason_for_stopping_active_mode MPI_last_reason_for_stopping_active_mode;
+extern MPI_reason_for_stopping_active_mode_enum_t MPI_last_reason_for_stopping_active_mode;
 
 
 char COMMS_beacon_friendly_message_str[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE] = "Hello from CalgaryToSpace FrontierSat";

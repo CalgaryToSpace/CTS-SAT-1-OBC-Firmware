@@ -14,7 +14,87 @@ The first byte of the packet (after the 4-byte CSP header) is the packet type. T
 
 ### Byte 1-200 of Basic Telemetry Beacon Packets (Packet Type `0x01`)
 
-See the beacon packet format in [the firmware at `/comms_drivers/comms_tx.h`](https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/blob/main/firmware/Core/Inc/comms_drivers/comms_tx.h), in `COMMS_beacon_basic_packet_t`.
+See the beacon packet format (as a tightly-packed C struct) in [the firmware at `/comms_drivers/comms_tx.h`](https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/blob/main/firmware/Core/Inc/comms_drivers/comms_tx.h), in `COMMS_beacon_basic_packet_t`.
+
+Relevant enum definitions:
+
+```c
+typedef enum {
+    OBC_RBF_STATE_FLYING = 1,
+    OBC_RBF_STATE_BENCH = 0,
+} OBC_rbf_state_enum_t;
+
+typedef enum {
+    GNSS_RX_MODE_COMMAND_MODE,   // GNSS is in command mode.
+    GNSS_RX_MODE_FIREHOSE_MODE,  // GNSS is in firehose data storage mode.
+    GNSS_RX_MODE_DISABLED        // GNSS data is not being collected/stored.
+} GNSS_rx_mode_enum_t;
+
+typedef enum {
+    MPI_RX_MODE_COMMAND_MODE,        // MPI is in command mode
+    MPI_RX_MODE_SENSING_MODE,        // MPI is science data is being collected mode
+    MPI_RX_MODE_NOT_LISTENING_TO_MPI // MPI may be sending science data, but it is not being collected by OBC.
+} MPI_rx_mode_enum_t;
+
+typedef enum {
+    MPI_TRANSCEIVER_MODE_INACTIVE,
+    MPI_TRANSCEIVER_MODE_MOSI,
+    MPI_TRANSCEIVER_MODE_MISO,
+    MPI_TRANSCEIVER_MODE_DUPLEX
+} MPI_transceiver_state_enum_t;
+
+typedef enum {
+    MPI_REASON_FOR_STOPPING_NOT_SET,
+    MPI_REASON_FOR_STOPPING_TEMPERATURE_EXCEEDED,
+    MPI_REASON_FOR_STOPPING_TELECOMMAND,
+    MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED,
+    MPI_REASON_FOR_STOPPING_SELF_CHECK_DONE,
+} MPI_reason_for_stopping_active_mode_enum_t;
+
+typedef enum {
+    TIME_SYNC_SOURCE_NONE = 0,
+    TIME_SYNC_SOURCE_GNSS_UART,
+    TIME_SYNC_SOURCE_GNSS_PPS,
+    TIME_SYNC_SOURCE_TELECOMMAND_ABSOLUTE,
+    TIME_SYNC_SOURCE_TELECOMMAND_CORRECTION,
+    TIME_SYNC_SOURCE_EPS_RTC // Electrical Power System's Real-Time Clock (precise to 1 second only)
+} TIME_sync_source_enum_t;
+
+typedef enum {
+    COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON = 0, // Default.
+    COMMS_RF_SWITCH_CONTROL_MODE_FORCE_ANT1 = 1,
+    COMMS_RF_SWITCH_CONTROL_MODE_FORCE_ANT2 = 2,
+    COMMS_RF_SWITCH_CONTROL_MODE_USE_ADCS_NORMAL = 3,
+    COMMS_RF_SWITCH_CONTROL_MODE_USE_ADCS_FLIPPED = 4, // Redundant implementation that assumes the antennas are backwards.
+    COMMS_RF_SWITCH_CONTROL_MODE_UNKNOWN = 255, // Used for error handling in string parser.
+} COMMS_rf_switch_control_mode_enum_t;
+
+typedef enum {
+    // Entry point. Booted, and awaiting a trigger to deployment. Emulate a 60-minute countdown to antenna deployment.
+    CTS1_OPERATION_STATE_BOOTED_AND_WAITING,
+
+    // Intermediate state. Very short-lived nominally. Deploy deployable antennas here.
+    CTS1_OPERATION_STATE_DEPLOYING,
+
+    // Normal operation state, with radio transmission enabled (e.g., flying through space).
+    CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
+
+    // Normal operation state, with radio transmission disabled (e.g., during bench testing).
+    CTS1_OPERATION_STATE_NOMINAL_WITHOUT_RADIO_TX
+} CTS1_operation_state_enum_t;
+
+typedef enum {
+    STM32_RESET_CAUSE_UNKNOWN = 0,
+    STM32_RESET_CAUSE_LOW_POWER_RESET,
+    STM32_RESET_CAUSE_WINDOW_WATCHDOG_RESET,
+    STM32_RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET,
+    STM32_RESET_CAUSE_SOFTWARE_RESET,
+    STM32_RESET_CAUSE_EXTERNAL_RESET_PIN_RESET,
+    STM32_RESET_CAUSE_BROWNOUT_RESET,
+    STM32_RESET_CAUSE_OPTION_BYTE_LOADER_RESET,
+    STM32_RESET_CAUSE_FIREWALL_RESET,
+} STM32_reset_cause_t;
+```
 
 ### Bytes 1-200 of Log Message Packets (Packet Type `0x03`)
 

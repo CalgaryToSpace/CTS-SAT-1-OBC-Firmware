@@ -23,7 +23,7 @@ static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 2000;
 
 volatile MPI_rx_mode_enum_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
-MPI_reason_for_stopping_active_mode MPI_last_reason_for_stopping_active_mode = MPI_REASON_FOR_STOPPING_NOT_SET;
+MPI_reason_for_stopping_active_mode_enum_t MPI_last_reason_for_stopping_active_mode = MPI_REASON_FOR_STOPPING_NOT_SET;
 
 
 uint8_t MPI_science_data_file_is_open = 0;
@@ -224,7 +224,7 @@ static int8_t MPI_write_file_header() {
 /// @brief Write the end-of-recording JSON data to the file.
 /// @return 
 /// @note The normal timestamp function is called right before this function, so no need to include timestamps in here.
-int8_t MPI_write_file_footer(MPI_reason_for_stopping_active_mode reason_for_stopping) {
+int8_t MPI_write_file_footer(MPI_reason_for_stopping_active_mode_enum_t reason_for_stopping) {
     char buffer_footer_str[200];
     snprintf(
         buffer_footer_str, sizeof(buffer_footer_str),
@@ -400,7 +400,7 @@ static void MPI_power_off() {
     }
 }
 
-uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode reason_for_stopping) {
+uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode_enum_t reason_for_stopping) {
     MPI_power_off();
     MPI_last_reason_for_stopping_active_mode = reason_for_stopping;
 
@@ -467,7 +467,7 @@ uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode reason_for_s
     return 0;
 }
 
-char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_active_mode reason) {
+char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_active_mode_enum_t reason) {
     switch (reason) {
         case MPI_REASON_FOR_STOPPING_NOT_SET:
             return "NOT_SET";
