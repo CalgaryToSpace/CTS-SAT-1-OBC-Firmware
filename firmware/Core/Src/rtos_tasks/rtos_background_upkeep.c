@@ -219,7 +219,7 @@ static void subtask_reset_system_after_no_recent_uplinks(void) {
 static void subtask_update_rf_switch(void) {
     const uint32_t duration_since_last_uplink_sec = (TIME_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000;
 
-    if ((COMMS_rf_switch_control_mode != COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) // Log minimiation condition.
+    if ((COMMS_rf_switch_control_mode != COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) // Minimize logs, avoid resetting the beacon interval to default nominally.
         && (duration_since_last_uplink_sec > COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec)
     ) {
         COMMS_rf_switch_control_mode = COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON;

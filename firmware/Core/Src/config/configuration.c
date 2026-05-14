@@ -39,8 +39,10 @@ uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t EPS_monitor_interval_ms = 20000;
 
 
-/// @brief Boolean. Whether to require the `@tssent` suffix tag for all telecommands.
-/// @details 1 = require, 0 = don't require
+/// @brief Boolean. Whether to enforce unique `@tssent` suffix tag value for all telecommands.
+/// @details When enabled, telecommands with duplicate `@tssent` suffixes will be rejected.
+/// @note When enabled, telecommands without a `@tssent` value will be rejected.
+/// @note 1 = require, 0 = don't require
 uint32_t TCMD_require_unique_tssent = 0;
 
 /// @brief The percentage of the stack space that should remain free. If the free space falls
