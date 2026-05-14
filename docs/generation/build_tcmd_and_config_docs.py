@@ -142,8 +142,14 @@ def render_telecommand_section(telecommands: list[dict]) -> str:
 def render_config_variable_section(config_data: dict) -> str:
     """Renders the configuration variables section of the Markdown file."""
 
-    int_vars = config_data.get("int_config_variables", [])
-    str_vars = config_data.get("str_config_variables", [])
+    int_vars = sorted(
+        config_data.get("int_config_variables", []),
+        key=lambda v: v["variable_name"],
+    )
+    str_vars = sorted(
+        config_data.get("str_config_variables", []),
+        key=lambda v: v["variable_name"],
+    )
 
     lines: list[str] = []
     lines.append("# Configuration Variables")
@@ -154,31 +160,75 @@ def render_config_variable_section(config_data: dict) -> str:
     )
     lines.append("")
 
-    # Integer config variables table.
-    lines.append("## Integer Configuration Variables")
+    # Quick-reference summary table covering both int and str variables.
+    lines.append("## Summary Table")
     lines.append("")
-    lines.append("| Variable Name | Default Value | Description |")
-    lines.append("| --- | ---: | --- |")
-    for var in sorted(int_vars, key=lambda v: v["variable_name"]):
+    lines.append("| # | Variable Name | Type | Default Value |")
+    lines.append("| ---: | --- | --- | --- |")
+    idx = 0
+    for var in int_vars:
+        idx += 1
         name = var["variable_name"]
         default = var["default_value"]
-        docstring = escape_md_cell(var.get("docstring"))
-        lines.append(f"| `{name}` | `{default}` | {docstring} |")
+        lines.append(f"| {idx} | [`{name}`](#cfg-{name}) | `int` | `{default}` |")
+    for var in str_vars:
+        idx += 1
+        name = var["variable_name"]
+        # Default is a string; escape pipes/newlines for the cell.
+        default = escape_md_cell(var["default_value"])
+        lines.append(f"| {idx} | [`{name}`](#cfg-{name}) | `str` | `{default}` |")
     lines.append("")
 
-    # String config variables table.
-    lines.append("## String Configuration Variables")
+    # Detail section: one subsection per integer config variable.
+    lines.append("## Integer Configuration Variable Details")
     lines.append("")
-    lines.append("| Variable Name | Max Length | Default Value | Description |")
-    lines.append("| --- | ---: | --- | --- |")
-    for var in sorted(str_vars, key=lambda v: v["variable_name"]):
+    for var in int_vars:
         name = var["variable_name"]
-        max_length = var["max_length"]
-        # Default value is a string; wrap in backticks and escape pipes.
-        default = escape_md_cell(var["default_value"])
-        docstring = escape_md_cell(var.get("docstring"))
-        lines.append(f"| `{name}` | {max_length} | `{default}` | {docstring} |")
+        lines.append(f'### <a id="cfg-{name}"></a>`{name}`')
+        lines.append("")
+
+        # Compact metadata table.
+        lines.append("| Field | Value |")
+        lines.append("| --- | --- |")
+        lines.append("| Type | `int` |")
+        lines.append(f"| Default Value | `{var['default_value']}` |")
+        lines.append("")
+
+        # Docstring as a fenced code block to preserve formatting verbatim.
+        docstring = var.get("docstring")
+        if docstring:
+            lines.append("**Docstring:**")
+            lines.append("")
+            lines.append("```")
+            lines.append(docstring.rstrip())
+            lines.append("```")
+            lines.append("")
+
+    # Detail section: one subsection per string config variable.
+    lines.append("## String Configuration Variable Details")
     lines.append("")
+    for var in str_vars:
+        name = var["variable_name"]
+        lines.append(f'### <a id="cfg-{name}"></a>`{name}`')
+        lines.append("")
+
+        # Compact metadata table.
+        lines.append("| Field | Value |")
+        lines.append("| --- | --- |")
+        lines.append("| Type | `str` |")
+        lines.append(f"| Max Length | {var['max_length']} |")
+        lines.append(f"| Default Value | `{escape_md_cell(var['default_value'])}` |")
+        lines.append("")
+
+        # Docstring as a fenced code block to preserve formatting verbatim.
+        docstring = var.get("docstring")
+        if docstring:
+            lines.append("**Docstring:**")
+            lines.append("")
+            lines.append("```")
+            lines.append(docstring.rstrip())
+            lines.append("```")
+            lines.append("")
 
     return "\n".join(lines)
 
@@ -201,8 +251,9 @@ repository's bundled data files.
   - [Summary Table](#summary-table)
   - [Telecommand Details](#telecommand-details)
 - [Configuration Variables](#configuration-variables)
-  - [Integer Configuration Variables](#integer-configuration-variables)
-  - [String Configuration Variables](#string-configuration-variables)
+  - [Summary Table](#summary-table-1)
+  - [Integer Configuration Variable Details](#integer-configuration-variable-details)
+  - [String Configuration Variable Details](#string-configuration-variable-details)
 
 ---
 
