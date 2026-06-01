@@ -1,0 +1,17 @@
+Here's what I'm generating for tonight's pass:
+> LLM Prompt (+a screenshot of the overpass times from SatNOGS):
+> 
+> Help me make some telecommands for a satellite. See the screenshot for the list of overpasses (start and end times).
+> 
+> Make a CSV file with "date", "time", and "command" columns. Cycle through these commands to execute them continuously during the pass, with 7 seconds between each command.
+> 
+> CTS1+config_set_int_var(TCMD_require_unique_tssent,1)!
+> CTS1+fs_list_directory_json(/,0,20)!
+> CTS1+fs_get_filesystem_stats_json()!
+> CTS1+adcs_identification()!
+> CTS1+eps_get_pbu_housekeeping_data_eng_json()!
+> CTS1+eps_get_pcu_housekeeping_data_eng_json()!
+> CTS1+obc_adc_read_vbat_voltage()!
+
+Then, I'm using the tool in the firmware repo `CTS-SAT-1-OBC-Firmware/misc_tools/agenda_files/agenda_csv_to_format.py` to convert it to the nominal format.
+

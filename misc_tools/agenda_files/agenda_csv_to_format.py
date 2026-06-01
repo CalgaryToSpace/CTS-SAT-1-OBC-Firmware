@@ -14,7 +14,7 @@ from loguru import logger
 import tyro
 
 
-def main(input_csv_file: Path, *, output_agenda_file: Path | None = None) -> None:
+def main(input_csv_file: Path, *, output_agenda_file: Path | None = None, sort: bool = False) -> None:
     if output_agenda_file is None:
         output_agenda_file = input_csv_file.with_name(input_csv_file.stem + "_agenda.txt")
 
@@ -30,6 +30,7 @@ def main(input_csv_file: Path, *, output_agenda_file: Path | None = None) -> Non
     logger.info(f"Loaded file: {df.height} rows")
 
     df = df.with_columns(
+        pl.col("command").str.replace(r"^CTS1\+", "").str.replace(r"!$", ""),
         tsexec_date=pl.col("tsexec_date").str.to_date("%Y-%m-%d"),
         tsexec_time=pl.col("tsexec_time").str.to_time("%H:%M:%S"),
     )
@@ -43,7 +44,11 @@ def main(input_csv_file: Path, *, output_agenda_file: Path | None = None) -> Non
                 .cast(pl.Int64)
             ),
         )
-        .sort("tsexec_ms")  # Sorting might not actually be critical, but good idea.
+            )
+    if sort:
+        df = df.sort("tsexec_ms")  # Sorting might not actually be critical, but good idea.
+
+    df = (df
         .with_columns(
             # Copy tsexec to tssent for duplicate detection.
             tssent_ms=pl.col("tsexec_ms"),
