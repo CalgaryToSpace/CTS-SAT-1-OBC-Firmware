@@ -5759,6 +5759,7 @@ Note: Does not include execution.
 * The `Max Length` values below are the number of normal ASCII characters you can put in the string.
     * The allocated C-string size is one larger than the value here to account for the null terminator.
 * Emojis are generally supported (e.g., in the friendly message), but count as 4 characters.
+
 ### <a id="cfg-COMMS_beacon_friendly_message_str"></a>`COMMS_beacon_friendly_message_str`
 
 | Field | Value |

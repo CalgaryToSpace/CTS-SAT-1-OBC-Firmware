@@ -216,6 +216,7 @@ def render_config_variable_section(config_data: dict) -> str:
     lines.append(
         "* Emojis are generally supported (e.g., in the friendly message), but count as 4 characters."
     )
+    lines.append("")
     for var in str_vars:
         name = var["variable_name"]
         lines.append(f'### <a id="cfg-{name}"></a>`{name}`')
