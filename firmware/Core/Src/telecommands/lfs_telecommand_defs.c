@@ -69,14 +69,17 @@ uint8_t TCMDEXEC_fs_unmount(const char *args_str,
     return 0;
 }
 
-/// @brief Telecommand: List all the files and directories within a given directory
+/// @brief Telecommand: List all the files and directories within a given directory via log messages.
+/// @note The directory contents are each listed in separate log messages. Logging must be enabled separately.
+/// @note On success, the telecommand response is empty. Recommended to use `fs_list_directory_json` generally.
 /// @param args_str
 /// - Arg 0: Root Directory path as string
 /// - Arg 1: (Offset) Number of entries to skip at the beginning
 /// - Arg 2: (Count) Number entries to display
-uint8_t TCMDEXEC_fs_list_directory(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-
+uint8_t TCMDEXEC_fs_list_directory(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     char arg_root_directory_path[LFS_MAX_PATH_LENGTH];
     const uint8_t parse_directory_path_result = TCMD_extract_string_arg(
         args_str, 0, arg_root_directory_path, sizeof(arg_root_directory_path)
