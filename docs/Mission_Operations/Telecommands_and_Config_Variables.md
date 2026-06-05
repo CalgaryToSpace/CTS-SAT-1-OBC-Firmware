@@ -1842,19 +1842,17 @@ ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 
 **Full docstring:**
 
-```cpp
-/**
-  @brief Telecommand: Request the given telemetry data from the ADCS
-  @param args_str
-  - Arg 0: gyro1 (Axis for Gyro #1; enum, options are pos/neg x, pos/neg y, pos/neg z)
-  - Arg 1: gyro2 (Axis for Gyro #2; enum, options are pos/neg x, pos/neg y, pos/neg z)
-  - Arg 2: gyro3 (Axis for Gyro #3; enum, options are pos/neg x, pos/neg y, pos/neg z)
-  - Arg 3: x_rate_offset (x-rate sensor offset) (double)
-  - Arg 4: y_rate_offset (y-rate sensor offset) (double)
-  - Arg 5: z_rate_offset (z-rate sensor offset) (double)
-  - Arg 6: rate_sensor_mult (multiplier of rate sensor measurement)
-  @return 0 on success, >0 on error
-*/
+```
+@brief Telecommand: Request the given telemetry data from the ADCS
+@param args_str
+- Arg 0: gyro1 (Axis for Gyro #1; enum, options are pos/neg x, pos/neg y, pos/neg z)
+- Arg 1: gyro2 (Axis for Gyro #2; enum, options are pos/neg x, pos/neg y, pos/neg z)
+- Arg 2: gyro3 (Axis for Gyro #3; enum, options are pos/neg x, pos/neg y, pos/neg z)
+- Arg 3: x_rate_offset (x-rate sensor offset) (double)
+- Arg 4: y_rate_offset (y-rate sensor offset) (double)
+- Arg 5: z_rate_offset (z-rate sensor offset) (double)
+- Arg 6: rate_sensor_mult (multiplier of rate sensor measurement)
+@return 0 on success, >0 on error
 ```
 
 ### <a id="tcmd-adcs_set_run_mode"></a>`adcs_set_run_mode`
