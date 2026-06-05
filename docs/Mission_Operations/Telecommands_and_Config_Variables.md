@@ -1842,17 +1842,19 @@ ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 
 **Full docstring:**
 
-```
-@brief Telecommand: Request the given telemetry data from the ADCS
-@param args_str
-- Arg 0: gyro1 (Axis for Gyro #1; enum, options are pos/neg x, pos/neg y, pos/neg z)
-- Arg 1: gyro2 (Axis for Gyro #2; enum, options are pos/neg x, pos/neg y, pos/neg z)
-- Arg 2: gyro3 (Axis for Gyro #3; enum, options are pos/neg x, pos/neg y, pos/neg z)
-- Arg 3: x_rate_offset (x-rate sensor offset) (double)
-- Arg 4: y_rate_offset (y-rate sensor offset) (double)
-- Arg 5: z_rate_offset (z-rate sensor offset) (double)
-- Arg 6: rate_sensor_mult (multiplier of rate sensor measurement)
-@return 0 on success, >0 on error
+```cpp
+/**
+  @brief Telecommand: Request the given telemetry data from the ADCS
+  @param args_str
+  - Arg 0: gyro1 (Axis for Gyro #1; enum, options are pos/neg x, pos/neg y, pos/neg z)
+  - Arg 1: gyro2 (Axis for Gyro #2; enum, options are pos/neg x, pos/neg y, pos/neg z)
+  - Arg 2: gyro3 (Axis for Gyro #3; enum, options are pos/neg x, pos/neg y, pos/neg z)
+  - Arg 3: x_rate_offset (x-rate sensor offset) (double)
+  - Arg 4: y_rate_offset (y-rate sensor offset) (double)
+  - Arg 5: z_rate_offset (z-rate sensor offset) (double)
+  - Arg 6: rate_sensor_mult (multiplier of rate sensor measurement)
+  @return 0 on success, >0 on error
+*/
 ```
 
 ### <a id="tcmd-adcs_set_run_mode"></a>`adcs_set_run_mode`
@@ -3964,7 +3966,9 @@ You must remember them, and use them when decompressing.
 **Full docstring:**
 
 ```
-@brief Telecommand: List all the files and directories within a given directory
+@brief Telecommand: List all the files and directories within a given directory via log messages.
+@note The directory contents are each listed in separate log messages. Logging must be enabled separately.
+@note On success, the telecommand response is empty. Recommended to use `fs_list_directory_json` generally.
 @param args_str
 - Arg 0: Root Directory path as string
 - Arg 1: (Offset) Number of entries to skip at the beginning
@@ -5520,9 +5524,9 @@ These logs get very annoying though, so they can be turned off with this variabl
 
 ```
 @brief Boolean. Whether to store command-mode GNSS data to the firehose file.
-@details If GNSS firehose storage mode is enabled, and the send_cmd_get_response
-function is used, this config variable controls whether the command-mode
-response data is written to the firehose file.
+@details If GNSS firehose storage mode is enabled, and the GNSS_send_cmd_get_response
+function is used (e.g., via the `gnss_send_cmd_ascii` command), this config variable
+controls whether the command-mode response data is written to the firehose file.
 ```
 
 ### <a id="cfg-LOG_file_flush_interval_sec"></a>`LOG_file_flush_interval_sec`
