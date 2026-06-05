@@ -22,9 +22,9 @@ GNSS_rx_mode_enum_t GNSS_current_rx_mode = GNSS_RX_MODE_DISABLED;
 
 
 /// @brief Boolean. Whether to store command-mode GNSS data to the firehose file.
-/// @details If GNSS firehose storage mode is enabled, and the send_cmd_get_response
-///          function is used, this config variable controls whether the command-mode
-///          response data is written to the firehose file.
+/// @details If GNSS firehose storage mode is enabled, and the GNSS_send_cmd_get_response
+///          function is used (e.g., via the `gnss_send_cmd_ascii` command), this config variable
+///          controls whether the command-mode response data is written to the firehose file.
 uint32_t GNSS_write_cmd_mode_data_to_firehose_file = 1;
 
 
