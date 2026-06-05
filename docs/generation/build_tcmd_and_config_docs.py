@@ -207,6 +207,15 @@ def render_config_variable_section(config_data: dict) -> str:
     # Detail section: one subsection per string config variable.
     lines.append("## String Configuration Variable Details")
     lines.append("")
+    lines.append(
+        "* The `Max Length` values below are the number of normal ASCII characters you can put in the string."
+    )
+    lines.append(
+        "    * The allocated C-string size is one larger than the value here to account for the null terminator."
+    )
+    lines.append(
+        "* Emojis are generally supported (e.g., in the friendly message), but count as 4 characters."
+    )
     for var in str_vars:
         name = var["variable_name"]
         lines.append(f'### <a id="cfg-{name}"></a>`{name}`')
