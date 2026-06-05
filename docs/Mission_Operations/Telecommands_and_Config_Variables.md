@@ -3964,7 +3964,9 @@ You must remember them, and use them when decompressing.
 **Full docstring:**
 
 ```
-@brief Telecommand: List all the files and directories within a given directory
+@brief Telecommand: List all the files and directories within a given directory via log messages.
+@note The directory contents are each listed in separate log messages. Logging must be enabled separately.
+@note On success, the telecommand response is empty. Recommended to use `fs_list_directory_json` generally.
 @param args_str
 - Arg 0: Root Directory path as string
 - Arg 1: (Offset) Number of entries to skip at the beginning
@@ -5520,9 +5522,9 @@ These logs get very annoying though, so they can be turned off with this variabl
 
 ```
 @brief Boolean. Whether to store command-mode GNSS data to the firehose file.
-@details If GNSS firehose storage mode is enabled, and the send_cmd_get_response
-function is used, this config variable controls whether the command-mode
-response data is written to the firehose file.
+@details If GNSS firehose storage mode is enabled, and the GNSS_send_cmd_get_response
+function is used (e.g., via the `gnss_send_cmd_ascii` command), this config variable
+controls whether the command-mode response data is written to the firehose file.
 ```
 
 ### <a id="cfg-LOG_file_flush_interval_sec"></a>`LOG_file_flush_interval_sec`
@@ -5753,6 +5755,10 @@ Note: Does not include execution.
 ```
 
 ## String Configuration Variable Details
+
+* The `Max Length` values below are the number of normal ASCII characters you can put in the string.
+    * The allocated C-string size is one larger than the value here to account for the null terminator.
+* Emojis are generally supported (e.g., in the friendly message), but count as 4 characters.
 
 ### <a id="cfg-COMMS_beacon_friendly_message_str"></a>`COMMS_beacon_friendly_message_str`
 
