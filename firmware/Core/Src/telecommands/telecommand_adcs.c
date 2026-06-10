@@ -1924,7 +1924,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file_by_checksum(
         return 5;
     }
 
-    uint16_t crc16 = (checksum[0] << 8) | checksum[1];
+    const uint16_t crc16 = (checksum[0] << 8) | checksum[1];
 
     const int16_t status = ADCS_save_sd_file_to_lfs_by_checksum(false, crc16);
 
