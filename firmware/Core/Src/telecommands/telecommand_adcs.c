@@ -1891,9 +1891,13 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str,
 /// @param args_str 
 ///     - Arg 0: The index of the file to download
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_download_sd_file_by_index(const char *args_str,
-                                   char *response_output_buf, uint16_t response_output_buf_len) {
-
+/// @details This command writes a file to LittleFS in the `/ADCS/` directory, identified
+///         by the file's checksum. For example, "ADCS/log_%x.TLM", "ADCS/img_%x.jpg", "ADCS/img_%x.bmp",
+///         where %x is the file's CRC16 checksum in lowercase hex.
+uint8_t TCMDEXEC_adcs_download_sd_file_by_index(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     // parse file index argument
     uint64_t file_index;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
@@ -1910,6 +1914,10 @@ uint8_t TCMDEXEC_adcs_download_sd_file_by_index(const char *args_str,
 ///     - Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 /// @return 0 on success, >0 on error
 /// @example For checksum 0x07f1, the telecommand is: CTS1+adcs_download_sd_file_by_checksum(07 f1)
+///         and the file will be downloaded as: `ADCS/log_07f1.TLM` (if it's a telemetry file).
+/// @details This command writes a file to LittleFS in the `/ADCS/` directory, identified
+///         by the file's checksum. For example, "ADCS/log_%x.TLM", "ADCS/img_%x.jpg", "ADCS/img_%x.bmp",
+///         where %x is the file's CRC16 checksum in lowercase hex.
 uint8_t TCMDEXEC_adcs_download_sd_file_by_checksum(
     const char *args_str, 
     char *response_output_buf, uint16_t response_output_buf_len
