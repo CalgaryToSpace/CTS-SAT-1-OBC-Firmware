@@ -1891,9 +1891,13 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str,
 /// @param args_str 
 ///     - Arg 0: The index of the file to download
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_download_sd_file_by_index(const char *args_str,
-                                   char *response_output_buf, uint16_t response_output_buf_len) {
-
+/// @details This command writes a file to LittleFS in the `/ADCS/` directory, identified
+///         by the file's checksum. For example, "ADCS/log_%x.TLM", "ADCS/img_%x.jpg", "ADCS/img_%x.bmp",
+///         where %x is the file's CRC16 checksum in lowercase hex.
+uint8_t TCMDEXEC_adcs_download_sd_file_by_index(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     // parse file index argument
     uint64_t file_index;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
@@ -1907,11 +1911,17 @@ uint8_t TCMDEXEC_adcs_download_sd_file_by_index(const char *args_str,
 
 /// @brief Telecommand: Download a specific file from the ADCS SD card by its checksum.
 /// @param args_str 
-///     - Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+///     - Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_download_sd_file_by_checksum(const char *args_str, 
-                                   char *response_output_buf, uint16_t response_output_buf_len) {
-
+/// @example For checksum 0x07f1, the telecommand is: CTS1+adcs_download_sd_file_by_checksum(07 f1)
+///         and the file will be downloaded as: `ADCS/log_07f1.TLM` (if it's a telemetry file).
+/// @details This command writes a file to LittleFS in the `/ADCS/` directory, identified
+///         by the file's checksum. For example, "ADCS/log_%x.TLM", "ADCS/img_%x.jpg", "ADCS/img_%x.bmp",
+///         where %x is the file's CRC16 checksum in lowercase hex.
+uint8_t TCMDEXEC_adcs_download_sd_file_by_checksum(
+    const char *args_str, 
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     uint8_t checksum[2];
     uint16_t checksum_length;
     TCMD_extract_hex_array_arg(args_str, 0, &checksum[0], 2, &checksum_length);
@@ -1922,7 +1932,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file_by_checksum(const char *args_str,
         return 5;
     }
 
-    uint16_t crc16 = (checksum[0] << 8) | checksum[1];
+    const uint16_t crc16 = (checksum[0] << 8) | checksum[1];
 
     const int16_t status = ADCS_save_sd_file_to_lfs_by_checksum(false, crc16);
 
@@ -2941,11 +2951,12 @@ uint8_t TCMDEXEC_adcs_erase_sd_file_by_index(const char *args_str,
 
 /// @brief Telecommand: Instruct the ADCS to erase a file from the SD card
 /// @param args_str 
-///     - Arg 0: CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+///     - Arg 0: CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_erase_sd_file_by_checksum(const char *args_str,
-    char *response_output_buf, uint16_t response_output_buf_len) {
-    
+uint8_t TCMDEXEC_adcs_erase_sd_file_by_checksum(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     // parse checksum
     uint8_t checksum[2];
     uint16_t checksum_length;
@@ -2969,9 +2980,10 @@ uint8_t TCMDEXEC_adcs_erase_sd_file_by_checksum(const char *args_str,
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str,
-    char *response_output_buf, uint16_t response_output_buf_len) {
-
+uint8_t TCMDEXEC_adcs_exit_bootloader(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     const uint8_t run_status = ADCS_bootloader_run_program(); // we cannot verify this command with a return value, so check below
     if (run_status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -3050,13 +3062,14 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg_by_index(const char *args_str,
 
 /// @brief Telecommand: Instruct the ADCS to convert an SD card file to JPG format
 /// @param args_str 
-///     - Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+///     - Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 ///     - Arg 1: Quality factor (1 is the most compressed and lossy, 100 is the least)
 ///     - Arg 2: White balance
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_convert_to_jpg_by_checksum(const char *args_str, 
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-
+uint8_t TCMDEXEC_adcs_convert_to_jpg_by_checksum(
+    const char *args_str, 
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     // parse checksum argument
     uint8_t checksum[2];
     uint16_t checksum_length;
