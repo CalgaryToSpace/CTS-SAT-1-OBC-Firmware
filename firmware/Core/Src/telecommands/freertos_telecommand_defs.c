@@ -130,13 +130,13 @@ uint8_t TCMDEXEC_freertos_heap_stats_json(
     snprintf(
         response_output_buf, response_output_buf_len,
         "{"
-            "\"available_heap_bytes\":%zu,"
-            "\"largest_free_block_bytes\":%zu,"
-            "\"smallest_free_block_bytes\":%zu,"
-            "\"num_free_blocks\":%zu,"
-            "\"min_ever_free_bytes\":%zu,"
-            "\"num_successful_allocs\":%zu,"
-            "\"num_successful_frees\":%zu,"
+            "\"available_heap_bytes\":%u,"
+            "\"largest_free_block_bytes\":%u,"
+            "\"smallest_free_block_bytes\":%u,"
+            "\"num_free_blocks\":%u,"
+            "\"min_ever_free_bytes\":%u,"
+            "\"num_successful_allocs\":%u,"
+            "\"num_successful_frees\":%u,"
             "\"outstanding_allocations\":%lu"
         "}",
         heap_stats.xAvailableHeapSpaceInBytes,
