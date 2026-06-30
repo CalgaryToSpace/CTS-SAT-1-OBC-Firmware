@@ -23,14 +23,17 @@ from loguru import logger
 def read_and_parse_image(text_file_in, jpg_file_out):
     with open(text_file_in) as fp, open(jpg_file_out, "wb") as fp_out:
         line_num = 0
-        while line := fp.readline():
+        while raw_line := fp.readline():
             line_num += 1
+            line = raw_line.strip()
 
             if not line.startswith("@"):
                 logger.error(f"Line {line_num} doesn't start with an @ sign. Skipping.")
                 continue
 
-            assert len(line) == 66
+            if len(line) != 65:  # @ + 64 hex chars (+ "\r" if not stripped)
+                logger.warning(f"Line {line_num} is wrong length ({len(line)} chars). Skipping.")
+                continue
 
             line = line[1:]  # remove '@' sign
 
@@ -47,7 +50,7 @@ def read_and_parse_image(text_file_in, jpg_file_out):
 
             if line_data["sentence_num_hex"] == "FACE":
                 logger.info(f"Reached end telemetry seq on Line {line_num}.")
-                # FIXME optionally parse this line, per the datasheet's spec
+                # FIXME: Optionally parse this line per the datasheet's spec.
                 continue
 
             line_img_data = binascii.unhexlify(line_data["img_data_hex"])
