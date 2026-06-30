@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/// @brief Set up the camera by powering on and changing the baudrate to 230400.
+/// @brief Set up the camera by powering on EPS channel and changing the baudrate to 230400.
 /// @param args_str
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
@@ -90,12 +90,18 @@ uint8_t TCMDEXEC_camera_change_baud_rate(
 }
 
 /// @brief Send telecommand to camera and capture an image. RUN CAM_SETUP BEFORE THIS EVERY TIME!
+/// @note This command disables the EPS power channel afterwards.
 /// @param args_str
 /// - Arg 0: filename to save the image to (max 32 chars)
 /// - Arg 1: lighting mode (single character: d,m,n,s)
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
+/// @note Lighting modes:
+///     d - daylight ambient light
+///     m - medium ambient light
+///     n - night ambient light
+///     s - solar sail contrast and light
 uint8_t TCMDEXEC_camera_capture(const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
