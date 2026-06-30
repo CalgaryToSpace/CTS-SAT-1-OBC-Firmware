@@ -469,7 +469,7 @@ ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 
 **Arguments:**
 
-0. The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+0. The CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 1. Quality factor (1 is the most compressed and lossy, 100 is the least)
 2. White balance
 
@@ -478,7 +478,7 @@ ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 ```
 @brief Telecommand: Instruct the ADCS to convert an SD card file to JPG format
 @param args_str
-- Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+- Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 - Arg 1: Quality factor (1 is the most compressed and lossy, 100 is the least)
 - Arg 2: White balance
 @return 0 on success, >0 on error
@@ -581,15 +581,20 @@ ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 
 **Arguments:**
 
-0. The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+0. The CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 
 **Full docstring:**
 
 ```
 @brief Telecommand: Download a specific file from the ADCS SD card by its checksum.
 @param args_str
-- Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+- Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 @return 0 on success, >0 on error
+@example For checksum 0x07f1, the telecommand is: CTS1+adcs_download_sd_file_by_checksum(07 f1)
+and the file will be downloaded as: `ADCS/log_07f1.TLM` (if it's a telemetry file).
+@details This command writes a file to LittleFS in the `/ADCS/` directory, identified
+by the file's checksum. For example, "ADCS/log_%x.TLM", "ADCS/img_%x.jpg", "ADCS/img_%x.bmp",
+where %x is the file's CRC16 checksum in lowercase hex.
 ```
 
 ### <a id="tcmd-adcs_download_sd_file_by_index"></a>`adcs_download_sd_file_by_index`
@@ -611,6 +616,9 @@ ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 @param args_str
 - Arg 0: The index of the file to download
 @return 0 on success, >0 on error
+@details This command writes a file to LittleFS in the `/ADCS/` directory, identified
+by the file's checksum. For example, "ADCS/log_%x.TLM", "ADCS/img_%x.jpg", "ADCS/img_%x.bmp",
+where %x is the file's CRC16 checksum in lowercase hex.
 ```
 
 ### <a id="tcmd-adcs_enter_low_power_mode"></a>`adcs_enter_low_power_mode`
@@ -644,14 +652,14 @@ ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 
 **Arguments:**
 
-0. CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+0. CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 
 **Full docstring:**
 
 ```
 @brief Telecommand: Instruct the ADCS to erase a file from the SD card
 @param args_str
-- Arg 0: CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+- Arg 0: CRC16 checksum of the file as two hex bytes in order (e.g. pass checksum 0x07f1 as "07 f1")
 @return 0 on success, >0 on error
 ```
 
@@ -2531,12 +2539,18 @@ This is one of very few telecommands with short aliases, as it allows more data 
 
 ```
 @brief Send telecommand to camera and capture an image. RUN CAM_SETUP BEFORE THIS EVERY TIME!
+@note This command disables the EPS power channel afterwards.
 @param args_str
 - Arg 0: filename to save the image to (max 32 chars)
 - Arg 1: lighting mode (single character: d,m,n,s)
 @param response_output_buf Buffer to write the response to
 @param response_output_buf_len Max length of the buffer
 @return 0 if successful, >0 if an error occurred
+@note Lighting modes:
+d - daylight ambient light
+m - medium ambient light
+n - night ambient light
+s - solar sail contrast and light
 ```
 
 ### <a id="tcmd-camera_change_baud_rate"></a>`camera_change_baud_rate`
@@ -2571,7 +2585,7 @@ This is one of very few telecommands with short aliases, as it allows more data 
 **Full docstring:**
 
 ```
-@brief Set up the camera by powering on and changing the baudrate to 230400.
+@brief Set up the camera by powering on EPS channel and changing the baudrate to 230400.
 @param args_str
 @param response_output_buf Buffer to write the response to
 @param response_output_buf_len Max length of the buffer
