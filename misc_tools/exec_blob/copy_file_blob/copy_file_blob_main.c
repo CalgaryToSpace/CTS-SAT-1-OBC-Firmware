@@ -188,7 +188,7 @@ static int8_t copy_lfs_file_chunk(
         fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
         return err;
     }
-    if (start_offset > src_file_size) {
+    if (start_offset > (uint32_t)src_file_size) {
         LOG(
             LOG_SEVERITY_ERROR,
             "Offset is higher than file size (%lu > %lu)",
@@ -198,8 +198,8 @@ static int8_t copy_lfs_file_chunk(
         fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
         return 191;
     }
-    if (byte_count == 0 || (start_offset + byte_count) > src_file_size) {
-        byte_count = src_file_size - start_offset;
+    if (byte_count == 0 || (start_offset + byte_count) > (uint32_t)src_file_size) {
+        byte_count = (uint32_t)src_file_size - start_offset;
     }
 
     // Seek the input file to the start offset.
@@ -215,7 +215,7 @@ static int8_t copy_lfs_file_chunk(
     uint8_t transfer_buffer[1024] = {0};
     int32_t bytes_left = byte_count;
     while (bytes_left > 0) {
-        const lfs_ssize_t read_size = bytes_left > sizeof(transfer_buffer) ? sizeof(transfer_buffer) : bytes_left;
+        const lfs_ssize_t read_size = ((uint32_t)bytes_left) > sizeof(transfer_buffer) ? sizeof(transfer_buffer) : (uint32_t)bytes_left;
         if ((err=fw_lfs_file_read(LFS_filesystem_ptr, &in_file, transfer_buffer, read_size)) < 0) {
             fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
             fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
