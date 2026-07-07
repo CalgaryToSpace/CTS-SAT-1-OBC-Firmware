@@ -2,9 +2,9 @@
 
 typedef int (*snprintf_fn_t)(char *buf, unsigned int size, const char *fmt, ...);
 
-// arm-none-eabi-nm -n firmware/build/debug/CTS-SAT-1_FW.elf | grep snprintf
-// Below: Address from nm command above, but you MUST add 1 to make it odd.
-#define FIRMWARE_SNPRINTF ((snprintf_fn_t) 0x0802d825UL)
+// arm-none-eabi-nm -n firmware/build/debug/CTS-SAT-1_FW_rc3.elf | grep snprintf
+// Below: Address from nm command above, but you MUST add 1 to make it odd (bitwise OR).
+#define FIRMWARE_SNPRINTF ((snprintf_fn_t) (0x0802ff2cUL | 0x1))
 
 __attribute__((used, section(".text.entry")))
 unsigned char blob_main(

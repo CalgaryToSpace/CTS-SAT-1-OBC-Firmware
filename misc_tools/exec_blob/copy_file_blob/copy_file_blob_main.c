@@ -1,13 +1,14 @@
 // This is a blob (executable) that will copy a file from one LittleFS file to another.
 // It is similar to the "dd" command on unix.
-
+//
 // Args Format: <in_path> <out_path> <start_offset> <byte_count>
 // The start_offset and byte_count can both be zero to copy the whole file.
-
+//
 // Usage Example:
 // After uplinking the compiled output as "copy_file_blob.bin", run:
 // CTS1+exec_blob_from_fs(copy_file_blob.bin,0,obc_boot_log.jsonl obc_boot_log.jsonl.250B 0 250)!
-
+//
+// This blob is created against the CTS-SAT-1_FW_rc3.elf binary.
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -31,10 +32,10 @@ static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 
 // Global variables in ELF.
-static lfs_t * const LFS_filesystem_ptr = (lfs_t *)(0x20028064UL); // LFS_filesystem in ELF.
+static lfs_t * const LFS_filesystem_ptr = (lfs_t *)(0x20028074UL); // LFS_filesystem in ELF.
 
 // TIME_uptime_ms_from_tim6 in ELF. Immutable pointer to a volatile variable.
-static volatile uint32_t * const TIME_uptime_ms_from_tim6_ptr = (volatile uint32_t *)(0x200706d0UL);
+static volatile uint32_t * const TIME_uptime_ms_from_tim6_ptr = (volatile uint32_t *)(0x200706e8UL);
 
 typedef int (*snprintf_fn_t)(char *buf, unsigned int size, const char *fmt, ...);
 
@@ -43,34 +44,34 @@ typedef void (*LOG_message_fn_t)(
     const char *fmt, ...
 );
 
-// arm-none-eabi-nm -n CTS-SAT-1_FW_rc2.elf  | grep snprintf
-// Below: Address from nm command above, but you MUST add 1 to make it odd.
-#define FW_SNPRINTF ((snprintf_fn_t) (0x0802ff2cUL | 0x1))
-#define FW_LOG_MESSAGE ((LOG_message_fn_t) (0x08015360UL | 0x1))
+// arm-none-eabi-nm -n CTS-SAT-1_FW_rc3.elf  | grep snprintf
+// Below: Address from nm command above, but you MUST add 1 to make it odd (bitwise OR).
+#define FW_SNPRINTF ((snprintf_fn_t) (0x08030244UL | 0x1))
+#define FW_LOG_MESSAGE ((LOG_message_fn_t) (0x08015558UL | 0x1))
 
 static int (*const fw_lfs_file_open)(
     lfs_t *lfs, lfs_file_t *file,
     const char *path, int flags
-) = (void*)(0x08012f30UL | 0x1);
+) = (void*)(0x08012f48UL | 0x1);
 
-static lfs_soff_t (*const fw_lfs_file_size)(lfs_t *lfs, lfs_file_t *file) = (void*)(0x08012f70UL | 0x1);
+static lfs_soff_t (*const fw_lfs_file_size)(lfs_t *lfs, lfs_file_t *file) = (void*)(0x08012f88UL | 0x1);
 
 static lfs_soff_t (*const fw_lfs_file_seek)(
     lfs_t *lfs, lfs_file_t *file,
     lfs_soff_t off, int whence
-) = (void*)(0x08012f68UL | 0x1);
+) = (void*)(0x08012f80UL | 0x1);
 
 static lfs_ssize_t (*const fw_lfs_file_read)(
     lfs_t *lfs, lfs_file_t *file,
     void *buffer, lfs_size_t size
-) = (void*)(0x08012f58UL | 0x1);
+) = (void*)(0x08012f70UL | 0x1);
 
 static lfs_ssize_t (*const fw_lfs_file_write)(
     lfs_t *lfs, lfs_file_t *file,
     const void *buffer, lfs_size_t size
-) = (void*)(0x08012f60UL | 0x1);
+) = (void*)(0x08012f78UL | 0x1);
 
-static int (*const fw_lfs_file_close)(lfs_t *lfs, lfs_file_t *file) = (void*)(0x08012f48UL | 0x1);
+static int (*const fw_lfs_file_close)(lfs_t *lfs, lfs_file_t *file) = (void*)(0x08012f60UL | 0x1);
 
 #define LOG(severity, fmt, ...) \
     FW_LOG_MESSAGE(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
