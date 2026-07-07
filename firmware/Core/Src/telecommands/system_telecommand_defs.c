@@ -86,7 +86,7 @@ uint8_t TCMDEXEC_obc_firmware_version(
         __VERSION__, // "compiler"
         optimize_str, // "optimize"
         asserts_str, // "asserts" (least-useful one)
-        "sat-1-rc3" // "comment" (description of build/release, like "dev" or "sat-1-rc3")
+        "dev" // "comment" (description of build/release, like "dev" or "sat-1-rc3")
     );
 
     return 0;
