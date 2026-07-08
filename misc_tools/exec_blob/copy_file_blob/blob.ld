@@ -6,7 +6,7 @@ SECTIONS
     . = 0x00000000;
 
     .text : {
-        *(.text.entry)   /* blob_main forced to offset 0 */
+        KEEP(*(.text.entry))   /* blob_main forced to offset 0 */
         *(.text*)
         *(.rodata*)
     }
@@ -16,3 +16,4 @@ SECTIONS
         *(.ARM.extab*)
     }
 }
+INSERT AFTER .text;
