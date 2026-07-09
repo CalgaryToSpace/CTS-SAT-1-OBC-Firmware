@@ -31,47 +31,25 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 
-// Global variables in ELF.
-static lfs_t * const LFS_filesystem_ptr = (lfs_t *)(0x20028074UL); // LFS_filesystem in ELF.
+// Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf), resolved
+// at link time via `-Wl,--just-symbols=` (see Makefile) instead of hardcoded addresses.
+extern lfs_t LFS_filesystem;
 
-// TIME_uptime_ms_from_tim6 in ELF. Immutable pointer to a volatile variable.
-static volatile uint32_t * const TIME_uptime_ms_from_tim6_ptr = (volatile uint32_t *)(0x200706e8UL);
+// Immutable pointer to a volatile variable defined in the firmware ELF.
+extern volatile uint32_t TIME_uptime_ms_from_tim6;
 
-typedef int (*snprintf_fn_t)(char *buf, unsigned int size, const char *fmt, ...);
+extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 
-typedef void (*LOG_message_fn_t)(
+extern void LOG_message(
     uint32_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
     const char *fmt, ...
 );
 
-// arm-none-eabi-nm -n CTS-SAT-1_FW_rc3.elf  | grep snprintf
-// Below: Address from nm command above, but you MUST add 1 to make it odd (bitwise OR).
-#define FW_SNPRINTF ((snprintf_fn_t) (0x08030244UL | 0x1))
-#define FW_LOG_MESSAGE ((LOG_message_fn_t) (0x08015558UL | 0x1))
+#define FW_SNPRINTF snprintf
+#define FW_LOG_MESSAGE LOG_message
 
-static int (*const fw_lfs_file_open)(
-    lfs_t *lfs, lfs_file_t *file,
-    const char *path, int flags
-) = (void*)(0x08012f48UL | 0x1);
-
-static lfs_soff_t (*const fw_lfs_file_size)(lfs_t *lfs, lfs_file_t *file) = (void*)(0x08012f88UL | 0x1);
-
-static lfs_soff_t (*const fw_lfs_file_seek)(
-    lfs_t *lfs, lfs_file_t *file,
-    lfs_soff_t off, int whence
-) = (void*)(0x08012f80UL | 0x1);
-
-static lfs_ssize_t (*const fw_lfs_file_read)(
-    lfs_t *lfs, lfs_file_t *file,
-    void *buffer, lfs_size_t size
-) = (void*)(0x08012f70UL | 0x1);
-
-static lfs_ssize_t (*const fw_lfs_file_write)(
-    lfs_t *lfs, lfs_file_t *file,
-    const void *buffer, lfs_size_t size
-) = (void*)(0x08012f78UL | 0x1);
-
-static int (*const fw_lfs_file_close)(lfs_t *lfs, lfs_file_t *file) = (void*)(0x08012f60UL | 0x1);
+// lfs_file_open/size/seek/read/write/close are already declared in lfs.h;
+// their definitions are resolved against the firmware ELF at link time.
 
 #define LOG(severity, fmt, ...) \
     FW_LOG_MESSAGE(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
@@ -84,7 +62,7 @@ void *memset(void *s, int c, __SIZE_TYPE__ n) {
 
 
 static inline uint32_t TIME_uptime_ms() {
-    return *TIME_uptime_ms_from_tim6_ptr;
+    return TIME_uptime_ms_from_tim6;
 }
 
 
@@ -168,24 +146,24 @@ static int8_t copy_lfs_file_chunk(
     // Open files.
     int err;
     lfs_file_t in_file;
-    if ((err=fw_lfs_file_open(LFS_filesystem_ptr, &in_file, src_file_path, LFS_O_RDONLY)) < 0) {
+    if ((err=lfs_file_open(&LFS_filesystem, &in_file, src_file_path, LFS_O_RDONLY)) < 0) {
         LOG(LOG_SEVERITY_ERROR, "Failed to open source file: '%s' (%d)", src_file_path, err);
         return err;
     }
 
     lfs_file_t out_file;
-    if ((err=fw_lfs_file_open(LFS_filesystem_ptr, &out_file, dest_file_path, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC)) < 0) {
+    if ((err=lfs_file_open(&LFS_filesystem, &out_file, dest_file_path, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC)) < 0) {
         LOG(LOG_SEVERITY_ERROR, "Failed to open destination file: '%s' (%d)", dest_file_path, err);
-        fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
+        lfs_file_close(&LFS_filesystem, &in_file);
         return err;
     }
 
     // Get the input file size.
-    const lfs_soff_t src_file_size = fw_lfs_file_size(LFS_filesystem_ptr, &in_file);
+    const lfs_soff_t src_file_size = lfs_file_size(&LFS_filesystem, &in_file);
     if (src_file_size < 0) {
         LOG(LOG_SEVERITY_ERROR, "Failed to get size of source file: '%s'", src_file_path);
-        fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-        fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        lfs_file_close(&LFS_filesystem, &in_file);
+        lfs_file_close(&LFS_filesystem, &out_file);
         return err;
     }
     if (start_offset > (uint32_t)src_file_size) {
@@ -194,8 +172,8 @@ static int8_t copy_lfs_file_chunk(
             "Offset is higher than file size (%lu > %lu)",
             start_offset, src_file_size
         );
-        fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-        fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        lfs_file_close(&LFS_filesystem, &in_file);
+        lfs_file_close(&LFS_filesystem, &out_file);
         return 191;
     }
     if (byte_count == 0 || (start_offset + byte_count) > (uint32_t)src_file_size) {
@@ -204,9 +182,9 @@ static int8_t copy_lfs_file_chunk(
 
     // Seek the input file to the start offset.
     if (start_offset != 0) {
-        if ((err=fw_lfs_file_seek(LFS_filesystem_ptr, &in_file, start_offset, LFS_SEEK_SET)) < 0) {
-            fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-            fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        if ((err=lfs_file_seek(&LFS_filesystem, &in_file, start_offset, LFS_SEEK_SET)) < 0) {
+            lfs_file_close(&LFS_filesystem, &in_file);
+            lfs_file_close(&LFS_filesystem, &out_file);
             return err;
         }
     }
@@ -216,25 +194,25 @@ static int8_t copy_lfs_file_chunk(
     int32_t bytes_left = byte_count;
     while (bytes_left > 0) {
         const lfs_ssize_t read_size = ((uint32_t)bytes_left) > sizeof(transfer_buffer) ? sizeof(transfer_buffer) : (uint32_t)bytes_left;
-        if ((err=fw_lfs_file_read(LFS_filesystem_ptr, &in_file, transfer_buffer, read_size)) < 0) {
-            fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-            fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        if ((err=lfs_file_read(&LFS_filesystem, &in_file, transfer_buffer, read_size)) < 0) {
+            lfs_file_close(&LFS_filesystem, &in_file);
+            lfs_file_close(&LFS_filesystem, &out_file);
             return err;
         }
-        if ((err=fw_lfs_file_write(LFS_filesystem_ptr, &out_file, transfer_buffer, read_size)) < 0) {
-            fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-            fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        if ((err=lfs_file_write(&LFS_filesystem, &out_file, transfer_buffer, read_size)) < 0) {
+            lfs_file_close(&LFS_filesystem, &in_file);
+            lfs_file_close(&LFS_filesystem, &out_file);
             return err;
         }
         bytes_left -= read_size;
     }
 
     // Close files.
-    if ((err=fw_lfs_file_close(LFS_filesystem_ptr, &in_file)) < 0) {
-        fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+    if ((err=lfs_file_close(&LFS_filesystem, &in_file)) < 0) {
+        lfs_file_close(&LFS_filesystem, &out_file);
         return err;
     }
-    if ((err=fw_lfs_file_close(LFS_filesystem_ptr, &out_file)) < 0) {
+    if ((err=lfs_file_close(&LFS_filesystem, &out_file)) < 0) {
         return err;
     }
 

@@ -5,6 +5,11 @@ SIZE    = $(CROSS)size
 
 BUILD_DIR = build
 
+# Reference firmware ELF: resolves `extern` firmware functions/globals used by
+# the blob source to their real addresses at link time (see --just-symbols below),
+# instead of hardcoding numeric addresses in the C source.
+FW_ELF = ../CTS-SAT-1_FW_rc3.elf
+
 CFLAGS  = \
     -mthumb \
     -mcpu=cortex-m4 \
@@ -26,6 +31,7 @@ CFLAGS += \
     -fno-jump-tables
 
 LDFLAGS += -Wl,--gc-sections
+LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 
 TARGET = copy_file_blob
 
@@ -39,7 +45,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Build, link, and print the size info.
-$(ELF): copy_file_blob_main.c | $(BUILD_DIR)
+$(ELF): copy_file_blob_main.c $(FW_ELF) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -T blob.ld $< -o $@ $(LDFLAGS)
 	@echo "--- Section sizes ---"
 	$(SIZE) -A $@
