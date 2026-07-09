@@ -11,6 +11,14 @@ SECTIONS
         *(.rodata*)
     }
 
+    /* Placed explicitly (contiguous with .text) so it doesn't fall through to
+       the default shared-object script's orphan-section placement, which
+       page-aligns .got and leaves a multi-KB gap that objcopy zero-fills. */
+    .got : {
+        *(.got.plt)
+        *(.got)
+    }
+
     /DISCARD/ : {
         *(.ARM.exidx*)
         *(.ARM.extab*)
