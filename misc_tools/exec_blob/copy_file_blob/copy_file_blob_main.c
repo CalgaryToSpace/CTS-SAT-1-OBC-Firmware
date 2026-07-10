@@ -5,10 +5,8 @@
 // The start_offset and byte_count can both be zero to copy the whole file.
 //
 // Usage Example:
-// After uplinking the compiled output as "copy_file_blob.bin", run:
-// CTS1+exec_blob_from_fs(copy_file_blob.bin,0,obc_boot_log.jsonl obc_boot_log.jsonl.250B 0 250)!
-//
-// This blob is created against the CTS-SAT-1_FW_rc3.elf binary.
+// After uplinking the compiled output as "blobs/copy_file_blob_v1.bin", run:
+// CTS1+exec_blob_from_fs(blobs/copy_file_blob_v1.bin,0,obc_boot_log.jsonl obc_boot_log.jsonl.250B 0 250)!
 
 #include <stdint.h>
 #include <stdbool.h>
