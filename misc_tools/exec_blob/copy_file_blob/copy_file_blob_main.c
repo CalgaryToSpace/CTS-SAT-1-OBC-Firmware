@@ -31,41 +31,28 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 
-// Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf), resolved
-// at link time via `-Wl,--just-symbols=` (see Makefile) instead of hardcoded addresses.
+// Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
-
-// Immutable pointer to a volatile variable defined in the firmware ELF.
 extern volatile uint32_t TIME_uptime_ms_from_tim6;
 
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
+extern int strlen (const char *s);
 
 extern void LOG_message(
     uint32_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
     const char *fmt, ...
 );
 
-#define FW_SNPRINTF snprintf
-#define FW_LOG_MESSAGE LOG_message
-
 // lfs_file_open/size/seek/read/write/close are already declared in lfs.h;
 // their definitions are resolved against the firmware ELF at link time.
 
 #define LOG(severity, fmt, ...) \
-    FW_LOG_MESSAGE(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
+    LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
-void *memset(void *s, int c, __SIZE_TYPE__ n) {
-    uint8_t *p = s;
-    while (n--) *p++ = (uint8_t)c;
-    return s;
-}
-
-
+// Must redefine here because it's inlined in the main code.
 static inline uint32_t TIME_uptime_ms() {
     return TIME_uptime_ms_from_tim6;
 }
-
-
 
 static uint16_t parse_token(
     const char *src, uint16_t src_offset, uint16_t src_len,
@@ -85,12 +72,6 @@ static uint16_t parse_token(
 
     // Return index just past the token
     return i;
-}
-
-static uint16_t str_len(const char *s) {
-    uint16_t n = 0;
-    while (s[n]) n++;
-    return n;
 }
 
 static int8_t hex_to_int(char c) {
@@ -232,7 +213,7 @@ uint8_t blob_main(
         args_str
     );
 
-    const uint16_t args_str_len = str_len(args_str);
+    const uint16_t args_str_len = strlen(args_str);
     uint16_t pos = 0;
 
     char arg0_in_path[LFS_MAX_PATH_LENGTH]  = {0};
@@ -264,7 +245,7 @@ uint8_t blob_main(
         arg0_in_path, arg1_out_path, start_offset, byte_count
     );
     if (err != 0) {
-        FW_SNPRINTF(
+        snprintf(
             response_buf, response_buf_len,
             "Running 'copy_file_blob %s %s %d %d' failed. Error: %d. Runtime: %d ms.",
             arg0_in_path, arg1_out_path, start_offset, byte_count,
@@ -274,7 +255,7 @@ uint8_t blob_main(
         return 1;
     }
 
-    FW_SNPRINTF(
+    snprintf(
         response_buf, response_buf_len,
         "Running 'copy_file_blob %s %s %d %d' succeeded. Runtime: %d ms.",
         arg0_in_path, arg1_out_path, start_offset, byte_count,
