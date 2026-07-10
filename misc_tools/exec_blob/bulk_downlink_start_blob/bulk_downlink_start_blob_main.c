@@ -250,18 +250,20 @@ uint8_t blob_main(
     const char *args_str,
     char *response_buf, unsigned short response_buf_len
 ) {
+    // Log that the blob is starting (important for tracing crashes).
     LOG(
         LOG_SEVERITY_NORMAL,
-        "Blob (bulk_downlink_start_blob) args_str: '%s'",
+        "Blob (%s) args_str: '%s'",
+        BLOB_NAME,
         args_str
     );
 
     const uint16_t args_str_len = strlen(args_str);
     uint16_t pos = 0;
 
-    char arg0_file_path[LFS_MAX_PATH_LENGTH] = {0};
-    char arg1_start_offset[20]               = {0};
-    char arg2_byte_count[20]                 = {0};
+    char arg0_file_path[LFS_MAX_PATH_LENGTH];
+    char arg1_start_offset[20];
+    char arg2_byte_count[20];
 
     pos = parse_token(args_str, pos, args_str_len, arg0_file_path,    sizeof(arg0_file_path));
     pos = parse_token(args_str, pos, args_str_len, arg1_start_offset, sizeof(arg1_start_offset));
