@@ -246,7 +246,7 @@ uint8_t blob_main(
     if (err != 0) {
         snprintf(
             response_buf, response_buf_len,
-            "Running 'copy_file_blob %s %s %d %d' failed. Error: %d. Runtime: %d ms.",
+            "Running 'copy_file_blob %s;%s;%d;%d' failed. Error: %d. Runtime: %d ms.",
             arg0_in_path, arg1_out_path, start_offset, byte_count,
             err,
             TIME_uptime_ms() - start_time_ms
@@ -256,7 +256,7 @@ uint8_t blob_main(
 
     snprintf(
         response_buf, response_buf_len,
-        "Running 'copy_file_blob %s %s %d %d' succeeded. Runtime: %d ms.",
+        "Running 'copy_file_blob %s;%s;%d;%d' succeeded. Runtime: %d ms.",
         arg0_in_path, arg1_out_path, start_offset, byte_count,
         TIME_uptime_ms() - start_time_ms
     );
