@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
-#include "lfs.h"
+#include "../lfs.h"
 
 #define LFS_MAX_PATH_LENGTH 200
 
