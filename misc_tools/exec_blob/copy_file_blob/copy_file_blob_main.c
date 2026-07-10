@@ -1,12 +1,12 @@
 // This is a blob (executable) that will copy a file from one LittleFS file to another.
 // It is similar to the "dd" command on unix.
 //
-// Args Format: <in_path> <out_path> <start_offset> <byte_count>
+// Args Format: <in_path>;<out_path>;<start_offset>;<byte_count>
 // The start_offset and byte_count can both be zero to copy the whole file.
 //
 // Usage Example:
 // After uplinking the compiled output as "blobs/copy_file_blob_v1.bin", run:
-// CTS1+exec_blob_from_fs(blobs/copy_file_blob_v1.bin,0,obc_boot_log.jsonl obc_boot_log.jsonl.250B 0 250)!
+// CTS1+exec_blob_from_fs(blobs/copy_file_blob_v1.bin,0,obc_boot_log.jsonl;obc_boot_log.jsonl.250B;0;250)!
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -28,6 +28,7 @@ typedef enum {
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
+static const char ARG_DELIM = ';';
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -59,14 +60,14 @@ static uint16_t parse_token(
     uint16_t di = 0;
     uint16_t i  = src_offset;
 
-    // Skip leading spaces
-    while (i < src_len && src[i] == ' ') i++;
-
-    // Copy until next space or end
-    while (i < src_len && src[i] != ' ' && di < dst_size - 1) {
+    // Copy until next delimiter or end
+    while (i < src_len && src[i] != ARG_DELIM && di < dst_size - 1) {
         dst[di++] = src[i++];
     }
     dst[di] = '\0';
+
+    // Skip the delimiter itself
+    if (i < src_len && src[i] == ARG_DELIM) i++;
 
     // Return index just past the token
     return i;
