@@ -1,4 +1,3 @@
-
 // This is a blob (executable) that replaces the "CTS1+bulk_file_downlink_start" command.
 //
 // Motivation: The existing FrontierSat bulk file downlink system contains a bug where you can only
@@ -12,7 +11,7 @@
 //
 // Usage Example:
 // After uplinking the blob as "blobs/bulk_downlink_start_v2.blob", run:
-// CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.bin,0,your_file.run;0;0)!
+// CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,your_file.run;0;0)!
 
 #include <stdint.h>
 #include <stdbool.h>

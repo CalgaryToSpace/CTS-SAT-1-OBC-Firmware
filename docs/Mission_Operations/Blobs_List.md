@@ -45,3 +45,44 @@ Take note of the blob arguments being separated by semicolons (`;`) instead of c
 ```
 CTS1+exec_blob_from_fs(blobs/copy_file_v1.blob,0,mpi_data/2026-07-01_mpi.dat;mpi_data/2026-07-01_mpi_smaller_output.dat;100;150)!
 ```
+
+## `blobs/bulk_downlink_start_v2.blob`
+
+Blob to replace the [buggy](https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/653) `CTS1+comms_bulk_file_downlink_start(<filename>,<start>,<length>)!` command.
+
+### Description
+
+This blob is nearly a drop-in replacement for the `bulk_file_downlink_start` telecommand:
+
+```c
+// This is a blob (executable) that replaces the "CTS1+bulk_file_downlink_start" command.
+//
+// Motivation: The existing FrontierSat bulk file downlink system contains a bug where you can only
+// use it 40 times before the satellite needs a reboot to continue using the filesystem.
+// This blob is a workaround to fix that bug/limitation.
+//
+// Full description of bug: https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/653
+//
+// Args Format: <file_path_to_read>;<start_offset>;<byte_count>
+// The start_offset and byte_count can both be zero to downlink up to 1 MB.
+//
+// Usage Example:
+// After uplinking the blob as "blobs/bulk_downlink_start_v2.blob", run:
+// CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,your_file.run;0;0)!
+```
+
+This blob contains the following benefits above the existing `comms_bulk_file_downlink_start` telecommand:
+1. This blob's telecommand response string now includes the filename, file size, and file hash, making it simpler to correlate bulk downlink data with the file it came from, especially when scheduled.
+2. Bug is fixed - downlink as many files as many times as you want!
+
+### Example Usage
+
+Assume there exists a file `adcs_data/your_file.run` which you want to bulk downlink.
+
+```
+# Previously, you would have ran:
+CTS1+comms_bulk_file_downlink_start(adcs_data/your_file.run,0,0)@tsexec=123456@tssent=789!
+
+# Instead though, now you'll run:
+CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,adcs_data/your_file.run;0;0)@tsexec=123456@tssent=789!
+```
