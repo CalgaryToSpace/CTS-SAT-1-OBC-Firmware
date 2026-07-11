@@ -6,9 +6,17 @@ SECTIONS
     . = 0x00000000;
 
     .text : {
-        *(.text.entry)   /* blob_main forced to offset 0 */
+        KEEP(*(.text.entry))   /* blob_main forced to offset 0 */
         *(.text*)
         *(.rodata*)
+    }
+
+    /* Placed explicitly (contiguous with .text) so it doesn't fall through to
+       the default shared-object script's orphan-section placement, which
+       page-aligns .got and leaves a multi-KB gap that objcopy zero-fills. */
+    .got : {
+        *(.got.plt)
+        *(.got)
     }
 
     /DISCARD/ : {
@@ -16,3 +24,4 @@ SECTIONS
         *(.ARM.extab*)
     }
 }
+INSERT AFTER .text;

@@ -1,19 +1,18 @@
 // This is a blob (executable) that will copy a file from one LittleFS file to another.
 // It is similar to the "dd" command on unix.
-
-// Args Format: <in_path> <out_path> <start_offset> <byte_count>
+//
+// Args Format: <in_path>;<out_path>;<start_offset>;<byte_count>
 // The start_offset and byte_count can both be zero to copy the whole file.
-
+//
 // Usage Example:
-// After uplinking the compiled output as "copy_file_blob.bin", run:
-// CTS1+exec_blob_from_fs(copy_file_blob.bin,0,obc_boot_log.jsonl obc_boot_log.jsonl.250B 0 250)!
-
+// After uplinking the compiled output as "blobs/copy_file_blob_v1.bin", run:
+// CTS1+exec_blob_from_fs(blobs/copy_file_blob_v1.bin,0,obc_boot_log.jsonl;obc_boot_log.jsonl.250B;0;250)!
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
 
-#include "lfs.h"
+#include "../lfs.h"
 
 #define LFS_MAX_PATH_LENGTH 200
 
@@ -29,64 +28,30 @@ typedef enum {
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
+static const char ARG_DELIM = ';';
 
-// Global variables in ELF.
-static lfs_t * const LFS_filesystem_ptr = (lfs_t *)(0x20028064UL); // LFS_filesystem in ELF.
+// Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
+extern lfs_t LFS_filesystem;
+extern volatile uint32_t TIME_uptime_ms_from_tim6;
 
-// TIME_uptime_ms_from_tim6 in ELF. Immutable pointer to a volatile variable.
-static volatile uint32_t * const TIME_uptime_ms_from_tim6_ptr = (volatile uint32_t *)(0x200706d0UL);
+extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
+extern int strlen (const char *s);
 
-typedef int (*snprintf_fn_t)(char *buf, unsigned int size, const char *fmt, ...);
-
-typedef void (*LOG_message_fn_t)(
+extern void LOG_message(
     uint32_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
     const char *fmt, ...
 );
 
-// arm-none-eabi-nm -n CTS-SAT-1_FW_rc2.elf  | grep snprintf
-// Below: Address from nm command above, but you MUST add 1 to make it odd.
-#define FW_SNPRINTF ((snprintf_fn_t) (0x0802ff2cUL | 0x1))
-#define FW_LOG_MESSAGE ((LOG_message_fn_t) (0x08015360UL | 0x1))
-
-static int (*const fw_lfs_file_open)(
-    lfs_t *lfs, lfs_file_t *file,
-    const char *path, int flags
-) = (void*)(0x08012f30UL | 0x1);
-
-static lfs_soff_t (*const fw_lfs_file_size)(lfs_t *lfs, lfs_file_t *file) = (void*)(0x08012f70UL | 0x1);
-
-static lfs_soff_t (*const fw_lfs_file_seek)(
-    lfs_t *lfs, lfs_file_t *file,
-    lfs_soff_t off, int whence
-) = (void*)(0x08012f68UL | 0x1);
-
-static lfs_ssize_t (*const fw_lfs_file_read)(
-    lfs_t *lfs, lfs_file_t *file,
-    void *buffer, lfs_size_t size
-) = (void*)(0x08012f58UL | 0x1);
-
-static lfs_ssize_t (*const fw_lfs_file_write)(
-    lfs_t *lfs, lfs_file_t *file,
-    const void *buffer, lfs_size_t size
-) = (void*)(0x08012f60UL | 0x1);
-
-static int (*const fw_lfs_file_close)(lfs_t *lfs, lfs_file_t *file) = (void*)(0x08012f48UL | 0x1);
+// lfs_file_open/size/seek/read/write/close are already declared in lfs.h;
+// their definitions are resolved against the firmware ELF at link time.
 
 #define LOG(severity, fmt, ...) \
-    FW_LOG_MESSAGE(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
+    LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
-void *memset(void *s, int c, __SIZE_TYPE__ n) {
-    uint8_t *p = s;
-    while (n--) *p++ = (uint8_t)c;
-    return s;
-}
-
-
+// Must redefine here because it's inlined in the main code.
 static inline uint32_t TIME_uptime_ms() {
-    return *TIME_uptime_ms_from_tim6_ptr;
+    return TIME_uptime_ms_from_tim6;
 }
-
-
 
 static uint16_t parse_token(
     const char *src, uint16_t src_offset, uint16_t src_len,
@@ -95,23 +60,17 @@ static uint16_t parse_token(
     uint16_t di = 0;
     uint16_t i  = src_offset;
 
-    // Skip leading spaces
-    while (i < src_len && src[i] == ' ') i++;
-
-    // Copy until next space or end
-    while (i < src_len && src[i] != ' ' && di < dst_size - 1) {
+    // Copy until next delimiter or end
+    while (i < src_len && src[i] != ARG_DELIM && di < dst_size - 1) {
         dst[di++] = src[i++];
     }
     dst[di] = '\0';
 
+    // Skip the delimiter itself
+    if (i < src_len && src[i] == ARG_DELIM) i++;
+
     // Return index just past the token
     return i;
-}
-
-static uint16_t str_len(const char *s) {
-    uint16_t n = 0;
-    while (s[n]) n++;
-    return n;
 }
 
 static int8_t hex_to_int(char c) {
@@ -167,45 +126,45 @@ static int8_t copy_lfs_file_chunk(
     // Open files.
     int err;
     lfs_file_t in_file;
-    if ((err=fw_lfs_file_open(LFS_filesystem_ptr, &in_file, src_file_path, LFS_O_RDONLY)) < 0) {
+    if ((err=lfs_file_open(&LFS_filesystem, &in_file, src_file_path, LFS_O_RDONLY)) < 0) {
         LOG(LOG_SEVERITY_ERROR, "Failed to open source file: '%s' (%d)", src_file_path, err);
         return err;
     }
 
     lfs_file_t out_file;
-    if ((err=fw_lfs_file_open(LFS_filesystem_ptr, &out_file, dest_file_path, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC)) < 0) {
+    if ((err=lfs_file_open(&LFS_filesystem, &out_file, dest_file_path, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC)) < 0) {
         LOG(LOG_SEVERITY_ERROR, "Failed to open destination file: '%s' (%d)", dest_file_path, err);
-        fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
+        lfs_file_close(&LFS_filesystem, &in_file);
         return err;
     }
 
     // Get the input file size.
-    const lfs_soff_t src_file_size = fw_lfs_file_size(LFS_filesystem_ptr, &in_file);
+    const lfs_soff_t src_file_size = lfs_file_size(&LFS_filesystem, &in_file);
     if (src_file_size < 0) {
         LOG(LOG_SEVERITY_ERROR, "Failed to get size of source file: '%s'", src_file_path);
-        fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-        fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        lfs_file_close(&LFS_filesystem, &in_file);
+        lfs_file_close(&LFS_filesystem, &out_file);
         return err;
     }
-    if (start_offset > src_file_size) {
+    if (start_offset > (uint32_t)src_file_size) {
         LOG(
             LOG_SEVERITY_ERROR,
             "Offset is higher than file size (%lu > %lu)",
             start_offset, src_file_size
         );
-        fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-        fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        lfs_file_close(&LFS_filesystem, &in_file);
+        lfs_file_close(&LFS_filesystem, &out_file);
         return 191;
     }
-    if (byte_count == 0 || (start_offset + byte_count) > src_file_size) {
-        byte_count = src_file_size - start_offset;
+    if (byte_count == 0 || (start_offset + byte_count) > (uint32_t)src_file_size) {
+        byte_count = (uint32_t)src_file_size - start_offset;
     }
 
     // Seek the input file to the start offset.
     if (start_offset != 0) {
-        if ((err=fw_lfs_file_seek(LFS_filesystem_ptr, &in_file, start_offset, LFS_SEEK_SET)) < 0) {
-            fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-            fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        if ((err=lfs_file_seek(&LFS_filesystem, &in_file, start_offset, LFS_SEEK_SET)) < 0) {
+            lfs_file_close(&LFS_filesystem, &in_file);
+            lfs_file_close(&LFS_filesystem, &out_file);
             return err;
         }
     }
@@ -214,26 +173,26 @@ static int8_t copy_lfs_file_chunk(
     uint8_t transfer_buffer[1024] = {0};
     int32_t bytes_left = byte_count;
     while (bytes_left > 0) {
-        const lfs_ssize_t read_size = bytes_left > sizeof(transfer_buffer) ? sizeof(transfer_buffer) : bytes_left;
-        if ((err=fw_lfs_file_read(LFS_filesystem_ptr, &in_file, transfer_buffer, read_size)) < 0) {
-            fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-            fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        const lfs_ssize_t read_size = ((uint32_t)bytes_left) > sizeof(transfer_buffer) ? sizeof(transfer_buffer) : (uint32_t)bytes_left;
+        if ((err=lfs_file_read(&LFS_filesystem, &in_file, transfer_buffer, read_size)) < 0) {
+            lfs_file_close(&LFS_filesystem, &in_file);
+            lfs_file_close(&LFS_filesystem, &out_file);
             return err;
         }
-        if ((err=fw_lfs_file_write(LFS_filesystem_ptr, &out_file, transfer_buffer, read_size)) < 0) {
-            fw_lfs_file_close(LFS_filesystem_ptr, &in_file);
-            fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+        if ((err=lfs_file_write(&LFS_filesystem, &out_file, transfer_buffer, read_size)) < 0) {
+            lfs_file_close(&LFS_filesystem, &in_file);
+            lfs_file_close(&LFS_filesystem, &out_file);
             return err;
         }
         bytes_left -= read_size;
     }
 
     // Close files.
-    if ((err=fw_lfs_file_close(LFS_filesystem_ptr, &in_file)) < 0) {
-        fw_lfs_file_close(LFS_filesystem_ptr, &out_file);
+    if ((err=lfs_file_close(&LFS_filesystem, &in_file)) < 0) {
+        lfs_file_close(&LFS_filesystem, &out_file);
         return err;
     }
-    if ((err=fw_lfs_file_close(LFS_filesystem_ptr, &out_file)) < 0) {
+    if ((err=lfs_file_close(&LFS_filesystem, &out_file)) < 0) {
         return err;
     }
 
@@ -253,7 +212,7 @@ uint8_t blob_main(
         args_str
     );
 
-    const uint16_t args_str_len = str_len(args_str);
+    const uint16_t args_str_len = strlen(args_str);
     uint16_t pos = 0;
 
     char arg0_in_path[LFS_MAX_PATH_LENGTH]  = {0};
@@ -285,9 +244,9 @@ uint8_t blob_main(
         arg0_in_path, arg1_out_path, start_offset, byte_count
     );
     if (err != 0) {
-        FW_SNPRINTF(
+        snprintf(
             response_buf, response_buf_len,
-            "Running 'copy_file_blob %s %s %d %d' failed. Error: %d. Runtime: %d ms.",
+            "Running 'copy_file_blob %s;%s;%d;%d' failed. Error: %d. Runtime: %d ms.",
             arg0_in_path, arg1_out_path, start_offset, byte_count,
             err,
             TIME_uptime_ms() - start_time_ms
@@ -295,9 +254,9 @@ uint8_t blob_main(
         return 1;
     }
 
-    FW_SNPRINTF(
+    snprintf(
         response_buf, response_buf_len,
-        "Running 'copy_file_blob %s %s %d %d' succeeded. Runtime: %d ms.",
+        "Running 'copy_file_blob %s;%s;%d;%d' succeeded. Runtime: %d ms.",
         arg0_in_path, arg1_out_path, start_offset, byte_count,
         TIME_uptime_ms() - start_time_ms
     );
