@@ -31,9 +31,11 @@
 #include "eps_drivers/eps_commands.h"
 #include "stm32/stm32_reboot_reason.h"
 #include "obc_systems/external_led_and_rbf.h"
+#include "comms_drivers/ax100_tx.h"
+#include "comms_drivers/comms_tx.h"
+
 
 #define LFS_MAX_PATH_LENGTH 200
-#define COMMS_BEACON_FRIENDLY_MESSAGE_SIZE 42
 
 
 typedef enum {
@@ -88,7 +90,7 @@ extern void LOG_message(
 #pragma pack(push, 1)
 
 typedef struct {
-    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_BEACON_BASIC for this packet
+    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_BEACON_EXTENDED for this packet.
 
     char satellite_name[4]; // 4 bytes: "CTS1" :)
 
@@ -113,7 +115,7 @@ typedef struct {
     uint16_t eps_error_code;
     uint16_t eps_battery_voltage_mV;
     uint8_t eps_battery_percent;
-    int16_t eps_battery_temperature_0_cC;
+    int16_t eps_battery_temperature_0_cC; // Note: Defective in core FW. Fixed in blob.
     int16_t eps_battery_temperature_1_cC;
     // Note: Third battery temperature sensor doesn't work on our model.
     int32_t eps_total_fault_count;
@@ -142,9 +144,74 @@ typedef struct {
     // End with a null-terminated configurable friendly message.
     char friendly_message[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
 
-    char end_message[4]; // "END\0"
+    char end_message[4]; // "END\0" on basic packets; " EX\0" on extended packets.
+
+    // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
+    // MARK: Extended Fields
+
+    uint8_t adcs_run_mode_enum; // Enum: ADCS_run_mode_enum_t
+    uint8_t adcs_attitude_control_mode_enum; // Enum: ADCS_control_mode_enum_t
+    uint8_t adcs_attitude_estimation_mode_enum; // Enum: ADCS_estimation_mode_enum_t
+
+    // Raw ADCS Coarse Sun Sensor (CSS) readings. Sensors 8 and 10 are unused and excluded.
+    uint8_t adcs_raw_css_1;
+    uint8_t adcs_raw_css_2;
+    uint8_t adcs_raw_css_3;
+    uint8_t adcs_raw_css_4;
+    uint8_t adcs_raw_css_5;
+    uint8_t adcs_raw_css_6;
+    uint8_t adcs_raw_css_7;
+    uint8_t adcs_raw_css_9;
+
+    uint16_t adcs_raw_magnetometer_x;
+    uint16_t adcs_raw_magnetometer_y;
+    uint16_t adcs_raw_magnetometer_z;
+
+    int16_t adcs_estimated_rate_x_mdeg_per_sec;
+    int16_t adcs_estimated_rate_y_mdeg_per_sec;
+    int16_t adcs_estimated_rate_z_mdeg_per_sec;
+
+    int16_t adcs_estimated_quaternion_q1;
+    int16_t adcs_estimated_quaternion_q2;
+    int16_t adcs_estimated_quaternion_q3;
+
+    // TODO: ADCS: Aggregate error/fault flags. Table 98/190 bit-flags (comms errors, sensor range errors, runtime errors). Combine (OR) them into 1–2 summary bytes ("ADCS healthy: Y/N", "which subsystem faulted").
+
+    uint16_t obc_adc_battery_voltage_mV;
+
+    int16_t eps_pcu_ch0_volt_in_mppt_mV;
+    int16_t eps_pcu_ch0_curr_in_mppt_mA;
+    int16_t eps_pcu_ch0_curr_ou_mppt_mA;
+
+    int16_t eps_pcu_ch1_volt_in_mppt_mV;
+    int16_t eps_pcu_ch1_curr_in_mppt_mA;
+    int16_t eps_pcu_ch1_curr_ou_mppt_mA;
+
+    int16_t eps_pcu_ch2_volt_in_mppt_mV;
+    int16_t eps_pcu_ch2_curr_in_mppt_mA;
+    int16_t eps_pcu_ch2_curr_ou_mppt_mA;
+
+    int16_t eps_pcu_ch3_volt_in_mppt_mV;
+    int16_t eps_pcu_ch3_curr_in_mppt_mA;
+    int16_t eps_pcu_ch3_curr_ou_mppt_mA;
+
+    // Note: Excluded the PCU output voltages, as they very closely match the rail/battery voltage.
+
+    uint8_t eps_battery_heater_state_bitfield; // TODO: May need widdening.
+
+    int16_t eps_total_net_battery_power_cW;
+    int16_t eps_total_power_distributed_cW;
+
+    uint8_t obc_active_oscillator_MHz;
+
+    // TODO: Maybe antenna temperature sensors.
     
-} COMMS_beacon_basic_packet_t;
+    // TODO: Maybe ADCS temperature sensors (esp. magnetometer).
+    
+} COMMS_beacon_extended_packet_t;
+
+// Limit: sizeof(COMMS_beacon_extended_packet_t) <= 200
+// Currently, sizeof(COMMS_beacon_extended_packet_t) = 191
 
 #pragma pack(pop)
 
@@ -230,8 +297,6 @@ static uint8_t reexecute_current_blob_tcmd(uint32_t time_into_future_to_execute_
         return 163;
     }
 
-    const char* args = TCMD_agenda[slot_num].args_str_no_parens;
-
     TCMD_parsed_tcmd_to_execute_t new_tcmd;
     memcpy(&new_tcmd, &TCMD_agenda[slot_num], sizeof(TCMD_parsed_tcmd_to_execute_t));
 
@@ -249,14 +314,14 @@ static uint8_t reexecute_current_blob_tcmd(uint32_t time_into_future_to_execute_
 /// @brief 
 /// @param beacon_packet 
 /// @note Based on the `COMMS_fill_beacon_basic_packet` function in the main firmware.
-static void COMMS_fill_beacon_basic_packet_new(
-    COMMS_beacon_basic_packet_t *beacon_packet
+static void COMMS_fill_beacon_extended_packet(
+    COMMS_beacon_extended_packet_t *beacon_packet
 ) {
     // Safety: Reset the packet to zero.
-    memset(beacon_packet, 0, sizeof(COMMS_beacon_basic_packet_t));
+    memset(beacon_packet, 0, sizeof(COMMS_beacon_extended_packet_t));
 
     // Fill the packet with the current system state.
-    beacon_packet->packet_type = 20; // FIXME: Ensure we want to make 20 = 0x14 the new code.
+    beacon_packet->packet_type = COMMS_PACKET_TYPE_BEACON_EXTENDED; // COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20 = 32
     memcpy(beacon_packet->satellite_name, "CTS1", 4);
     beacon_packet->active_rf_switch_antenna = COMMS_active_rf_switch_antenna; // 1 or 2
     beacon_packet->active_rf_switch_control_mode = COMMS_rf_switch_control_mode; // Enum
@@ -310,7 +375,7 @@ static void COMMS_fill_beacon_basic_packet_new(
         COMMS_beacon_friendly_message_str,
         strlen(COMMS_beacon_friendly_message_str)
     );
-    memcpy(beacon_packet->end_message, "END", 4);
+    memcpy(beacon_packet->end_message, " EX", 4);
     
     // Try to fetch the EPS system status, and store it in the beacon packet if successful.
     {
@@ -335,7 +400,9 @@ static void COMMS_fill_beacon_basic_packet_new(
                 (uint8_t)EPS_convert_battery_voltage_to_percent(eps_pbu_data.battery_pack_info_each_pack[0])
             );
             beacon_packet->eps_battery_temperature_0_cC = (
-                eps_pbu_data.battery_pack_info_each_pack[0].battery_temperature_each_sensor_cC[0]
+                // Note: Original beacon in core FW has this value always pegged at "32767 cC".
+                // Fixed in this blob though.
+                eps_pbu_data.battery_pack_info_each_pack[0].battery_temperature_each_sensor_cC[2]
             );
             beacon_packet->eps_battery_temperature_1_cC = (
                 eps_pbu_data.battery_pack_info_each_pack[0].battery_temperature_each_sensor_cC[1]
@@ -435,15 +502,30 @@ uint8_t blob_main(
     }
     
     // TODO: Fill the packet and emit it.
-    COMMS_beacon_basic_packet_t beacon_packet;
-    COMMS_fill_beacon_basic_packet_new(&beacon_packet);
+    COMMS_beacon_extended_packet_t beacon_packet;
+    COMMS_fill_beacon_extended_packet(&beacon_packet);
+
+
+    const uint8_t tx_success = AX100_downlink_bytes(
+        (uint8_t *)(&beacon_packet), 
+        sizeof(COMMS_beacon_extended_packet_t)
+    );
+    if (tx_success != 0) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: downlink failed (AX100_downlink_bytes() -> %d)",
+            BLOB_NAME,
+            tx_success
+        );
+        return tx_success;
+    }
 
     if (beacon_interval_ms > 0) {
         const uint8_t reexec_result = reexecute_current_blob_tcmd(beacon_interval_ms);
         if (reexec_result != 0) {
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reexec failed (code %d)",
+                "%s error: reexecute_current_blob_tcmd() -> %d",
                 BLOB_NAME,
                 reexec_result
             );
