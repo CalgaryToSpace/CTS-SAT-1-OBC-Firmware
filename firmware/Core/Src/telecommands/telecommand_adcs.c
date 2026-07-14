@@ -2078,7 +2078,7 @@ uint8_t TCMDEXEC_adcs_set_sd_log_config(const char *args_str,
     // parse hex array arguments
     uint8_t hex_data_array[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES]; 
     uint16_t data_length;
-    extract_status = TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], data_length, &data_length);
+    extract_status = TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], ADCS_SD_LOG_BITFIELD_LENGTH_BYTES, &data_length);
     if (extract_status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "Telecommand argument extraction failed (err %d)", extract_status);
@@ -2757,15 +2757,15 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str,
         return 9;
     }
 
-    ADCS_acp_execution_state_struct_t current_state;
-    do { // wait until 500ms has passed since last update
-        uint8_t state_status = ADCS_get_acp_execution_state(&current_state);
-        if (state_status) {
-            snprintf(response_output_buf, response_output_buf_len,
-                "ACP execution state telemetry request failed (err %d)", state_status);
-                return 1;
-        }
-    } while (current_state.time_since_iteration_start_ms <= 500);
+    // ADCS_acp_execution_state_struct_t current_state;
+    // do { // wait until 500ms has passed since last update
+    //     uint8_t state_status = ADCS_get_acp_execution_state(&current_state);
+    //     if (state_status) {
+    //         snprintf(response_output_buf, response_output_buf_len,
+    //             "ACP execution state telemetry request failed (err %d)", state_status);
+    //             return 1;
+    //     }
+    // } while (current_state.time_since_iteration_start_ms <= 500);
 
     uint8_t status = 0;
 

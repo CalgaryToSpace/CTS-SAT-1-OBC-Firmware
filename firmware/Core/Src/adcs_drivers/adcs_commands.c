@@ -15,6 +15,7 @@
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
 #include "stm32/stm32_watchdog.h"
+#include "debug_tools/debug_uart.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -1254,6 +1255,12 @@ uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uin
         default:
             return 7; // invalid log to log
     }
+
+    DEBUG_uart_print_str("Sending command: ");
+    DEBUG_uart_print_uint32(command_id);
+    DEBUG_uart_print_str(" with data: ");
+    DEBUG_uart_print_array_hex(data_send, 13);
+    DEBUG_uart_print_str("\n");
     
     const uint8_t cmd_status = ADCS_i2c_send_command_and_check(command_id, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
