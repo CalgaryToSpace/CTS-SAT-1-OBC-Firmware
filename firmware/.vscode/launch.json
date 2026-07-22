@@ -9,7 +9,7 @@
             "type": "cortex-debug",
             "runToEntryPoint": "main",
             "showDevDebugOutput": "none",
-            "servertype": "stlink",
+            "servertype": "stlink"
         },
         {
             "name": "Python Debugger: Current File",
@@ -30,7 +30,9 @@
             "device": "stm32l4r5",
             "configFiles": [
                 "openocd.cfg"
-            ]
+            ],
+            "svdFile": "STM32L4R5.svd",
+            "svdPath": "STM32L4R5.svd"
         },
         {
             "showDevDebugOutput": "parsed",
@@ -44,7 +46,9 @@
             "device": "stm32l4r5",
             "configFiles": [
                 "openocd.cfg"
-            ]
+            ],
+            "svdFile": "STM32L4R5.svd",
+            "svdPath": "STM32L4R5.svd"
         }
     ]
 }
