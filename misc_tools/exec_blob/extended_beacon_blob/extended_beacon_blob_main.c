@@ -35,9 +35,6 @@
 #include "comms_drivers/comms_tx.h"
 
 
-#define LFS_MAX_PATH_LENGTH 200
-
-
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
     LOG_SEVERITY_NORMAL = 1 << 1,
@@ -149,9 +146,42 @@ typedef struct {
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
     // MARK: Extended Fields
 
-    uint8_t adcs_run_mode_enum; // Enum: ADCS_run_mode_enum_t
-    uint8_t adcs_attitude_control_mode_enum; // Enum: ADCS_control_mode_enum_t
-    uint8_t adcs_attitude_estimation_mode_enum; // Enum: ADCS_estimation_mode_enum_t
+    uint16_t obc_adc_battery_voltage_mV;
+
+    int16_t eps_pcu_ch0_volt_in_mppt_mV;
+    int16_t eps_pcu_ch0_curr_in_mppt_mA;
+    int16_t eps_pcu_ch0_curr_ou_mppt_mA;
+
+    int16_t eps_pcu_ch1_volt_in_mppt_mV;
+    int16_t eps_pcu_ch1_curr_in_mppt_mA;
+    int16_t eps_pcu_ch1_curr_ou_mppt_mA;
+
+    int16_t eps_pcu_ch2_volt_in_mppt_mV;
+    int16_t eps_pcu_ch2_curr_in_mppt_mA;
+    int16_t eps_pcu_ch2_curr_ou_mppt_mA;
+
+    int16_t eps_pcu_ch3_volt_in_mppt_mV;
+    int16_t eps_pcu_ch3_curr_in_mppt_mA;
+    int16_t eps_pcu_ch3_curr_ou_mppt_mA;
+
+    // Note: Excluded the PCU output voltages, as they very closely match the rail/battery voltage.
+
+    // Battery pack status (EPS FW ICD Table 3-18).
+    // Bits 0 (LSB) to 3 are per-cell under voltage flags. 4 to 7 are over voltage flags.
+    // Bits 8 to 11 indicate balancing. Bit 12 (0x1000) indicates heater is active (valuable)!
+    // Bit 15 (MSB) indicates battery pack is enabled.
+    uint16_t eps_battery_pack_status_bitfield;
+
+    int16_t eps_total_net_battery_power_cW;
+    int16_t eps_total_power_distributed_cW;
+
+    uint8_t obc_active_oscillator_MHz;
+
+
+    // Includes run mode, attitude control mode, and attitude estimation mode, and a ton of
+    // enabled/error bitfields. Splits apart into about 40 fields total.
+    // See ADCS_pack_to_current_state_1_struct(...) for details on unpacking.
+    uint8_t adcs_current_state_1[6];
 
     // Raw ADCS Coarse Sun Sensor (CSS) readings. Sensors 8 and 10 are unused and excluded.
     uint8_t adcs_raw_css_1;
@@ -175,43 +205,10 @@ typedef struct {
     int16_t adcs_estimated_quaternion_q2;
     int16_t adcs_estimated_quaternion_q3;
 
-    // TODO: ADCS: Aggregate error/fault flags. Table 98/190 bit-flags (comms errors, sensor range errors, runtime errors). Combine (OR) them into 1–2 summary bytes ("ADCS healthy: Y/N", "which subsystem faulted").
-
-    uint16_t obc_adc_battery_voltage_mV;
-
-    int16_t eps_pcu_ch0_volt_in_mppt_mV;
-    int16_t eps_pcu_ch0_curr_in_mppt_mA;
-    int16_t eps_pcu_ch0_curr_ou_mppt_mA;
-
-    int16_t eps_pcu_ch1_volt_in_mppt_mV;
-    int16_t eps_pcu_ch1_curr_in_mppt_mA;
-    int16_t eps_pcu_ch1_curr_ou_mppt_mA;
-
-    int16_t eps_pcu_ch2_volt_in_mppt_mV;
-    int16_t eps_pcu_ch2_curr_in_mppt_mA;
-    int16_t eps_pcu_ch2_curr_ou_mppt_mA;
-
-    int16_t eps_pcu_ch3_volt_in_mppt_mV;
-    int16_t eps_pcu_ch3_curr_in_mppt_mA;
-    int16_t eps_pcu_ch3_curr_ou_mppt_mA;
-
-    // Note: Excluded the PCU output voltages, as they very closely match the rail/battery voltage.
-
-    uint8_t eps_battery_heater_state_bitfield; // TODO: May need widdening.
-
-    int16_t eps_total_net_battery_power_cW;
-    int16_t eps_total_power_distributed_cW;
-
-    uint8_t obc_active_oscillator_MHz;
-
-    // TODO: Maybe antenna temperature sensors.
-    
-    // TODO: Maybe ADCS temperature sensors (esp. magnetometer).
-    
 } COMMS_beacon_extended_packet_t;
 
 // Limit: sizeof(COMMS_beacon_extended_packet_t) <= 200
-// Currently, sizeof(COMMS_beacon_extended_packet_t) = 191
+// Currently, sizeof(COMMS_beacon_extended_packet_t) = 195
 
 #pragma pack(pop)
 
