@@ -36,6 +36,7 @@
 
 // Beacon v2 contents (includes).
 #include "obc_systems/adc_vbat_monitor.h"
+#include "adcs_drivers/adcs_types.h"
 
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
@@ -70,6 +71,10 @@ extern uint32_t SystemCoreClock;
 // Beacon v1 contents (extern functions).
 extern int32_t OBC_TEMP_SENSOR_get_temperature_cC();
 
+/// Beacon v2 contents (extern functions).
+extern uint8_t ADCS_i2c_request_telemetry_and_check(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
+extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
+extern uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct);
 
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int strlen(const char *s);
@@ -181,7 +186,6 @@ typedef struct {
 
     int16_t eps_total_net_battery_power_cW;
     int16_t eps_total_power_distributed_cW;
-
 
 
     // Includes run mode, attitude control mode, and attitude estimation mode, and a ton of
@@ -488,6 +492,45 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_total_fault_count = EPS_calculate_total_fault_count(&eps_pdu_fault_data);
         }
     }
+
+    // ADCS status data.
+    {
+        const uint8_t adcs_status_data_length = 6;
+        uint8_t data_received[adcs_status_data_length];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            132, // ADCS_TELEMETRY_CUBEACP_ADCS_STATE
+            data_received,
+            adcs_status_data_length,
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            memcpy(beacon_packet->adcs_current_state_1, data_received, adcs_status_data_length);
+        }
+    }
+
+    // ADCS CSS (coarse sun sensor) raw data.
+    {
+        ADCS_raw_coarse_sun_sensor_1_to_6_struct_t output_struct_1_to_6;
+        ADCS_raw_coarse_sun_sensor_7_to_10_struct_t output_struct_7_to_10;
+
+        const uint8_t status_1_to_6 = ADCS_get_raw_coarse_sun_sensor_1_to_6(&output_struct_1_to_6);
+        const uint8_t status_7_to_10 = ADCS_get_raw_coarse_sun_sensor_7_to_10(&output_struct_7_to_10);
+
+        if ((status_1_to_6 == 0) && (status_7_to_10 == 0)) {
+            beacon_packet->adcs_raw_css_1 = output_struct_1_to_6.coarse_sun_sensor_1;
+            beacon_packet->adcs_raw_css_2 = output_struct_1_to_6.coarse_sun_sensor_2;
+            beacon_packet->adcs_raw_css_3 = output_struct_1_to_6.coarse_sun_sensor_3;
+            beacon_packet->adcs_raw_css_4 = output_struct_1_to_6.coarse_sun_sensor_4;
+            beacon_packet->adcs_raw_css_5 = output_struct_1_to_6.coarse_sun_sensor_5;
+            beacon_packet->adcs_raw_css_6 = output_struct_1_to_6.coarse_sun_sensor_6;
+            beacon_packet->adcs_raw_css_7 = output_struct_7_to_10.coarse_sun_sensor_7;
+            beacon_packet->adcs_raw_css_9 = output_struct_7_to_10.coarse_sun_sensor_9;
+            // Skip 8 and 10 (unused).
+        }
+    }
+
 }
 
 
