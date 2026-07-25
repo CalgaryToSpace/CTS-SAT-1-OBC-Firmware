@@ -34,6 +34,8 @@
 #include "comms_drivers/ax100_tx.h"
 #include "comms_drivers/comms_tx.h"
 
+// Beacon v2 contents (includes).
+#include "obc_systems/adc_vbat_monitor.h"
 
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
@@ -61,6 +63,9 @@ extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
 extern MPI_reason_for_stopping_active_mode_enum_t MPI_last_reason_for_stopping_active_mode;
 extern volatile uint8_t UART_gnss_uart_interrupt_enabled; // Flag to enable or disable the UART GNSS ISR
 extern char COMMS_beacon_friendly_message_str[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
+
+// Beacon v2 contents (extern variables).
+extern uint32_t SystemCoreClock;
 
 // Beacon v1 contents (extern functions).
 extern int32_t OBC_TEMP_SENSOR_get_temperature_cC();
@@ -112,7 +117,7 @@ typedef struct {
     uint16_t eps_error_code;
     uint16_t eps_battery_voltage_mV;
     uint8_t eps_battery_percent;
-    int16_t eps_battery_temperature_0_cC; // Note: Defective in core FW. Fixed in blob.
+    int16_t eps_battery_temperature_0_cC; // Note: Defective in core FW. Fixed in this blob.
     int16_t eps_battery_temperature_1_cC;
     // Note: Third battery temperature sensor doesn't work on our model.
     int32_t eps_total_fault_count;
@@ -146,7 +151,9 @@ typedef struct {
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
     // MARK: Extended Fields
 
-    uint16_t obc_adc_battery_voltage_mV;
+    uint8_t obc_active_oscillator_MHz;
+
+    int16_t obc_adc_battery_voltage_mV;
 
     int16_t eps_pcu_ch0_volt_in_mppt_mV;
     int16_t eps_pcu_ch0_curr_in_mppt_mA;
@@ -175,7 +182,6 @@ typedef struct {
     int16_t eps_total_net_battery_power_cW;
     int16_t eps_total_power_distributed_cW;
 
-    uint8_t obc_active_oscillator_MHz;
 
 
     // Includes run mode, attitude control mode, and attitude estimation mode, and a ton of
@@ -352,6 +358,31 @@ static void COMMS_fill_beacon_extended_packet(
         strlen(COMMS_beacon_friendly_message_str)
     );
     memcpy(beacon_packet->end_message, " EX", 4);
+
+    // Set the extended beacon packet fields.
+
+    beacon_packet->obc_active_oscillator_MHz = SystemCoreClock / 1000000;
+
+    beacon_packet->obc_adc_battery_voltage_mV = OBC_read_vbat_with_adc_mV();
+
+    beacon_packet->eps_pcu_ch0_volt_in_mppt_mV = -9999;
+    beacon_packet->eps_pcu_ch0_curr_in_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch0_curr_ou_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch1_volt_in_mppt_mV = -9999;
+    beacon_packet->eps_pcu_ch1_curr_in_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch1_curr_ou_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch2_volt_in_mppt_mV = -9999;
+    beacon_packet->eps_pcu_ch2_curr_in_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch2_curr_ou_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch3_volt_in_mppt_mV = -9999;
+    beacon_packet->eps_pcu_ch3_curr_in_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch3_curr_ou_mppt_mA = -9999;
+
+    beacon_packet->eps_battery_pack_status_bitfield = 0xFFFF;
+
+    beacon_packet->eps_total_net_battery_power_cW = -9999;
+    beacon_packet->eps_total_power_distributed_cW = -9999;
+
     
     // Try to fetch the EPS system status, and store it in the beacon packet if successful.
     {
@@ -383,6 +414,15 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_battery_temperature_1_cC = (
                 eps_pbu_data.battery_pack_info_each_pack[0].battery_temperature_each_sensor_cC[1]
             );
+
+            // Beacon v2 fields:
+            beacon_packet->eps_battery_pack_status_bitfield = (
+                eps_pbu_data.battery_pack_info_each_pack[0].bp_status_bitfield
+            );
+
+            beacon_packet->eps_total_net_battery_power_cW = (
+                eps_pbu_data.battery_pack_info_each_pack[0].vip_bp_input.power_cW
+            );
         }
     }
 
@@ -392,6 +432,11 @@ static void COMMS_fill_beacon_extended_packet(
         if (EPS_CMD_get_pdu_housekeeping_data_eng(&eps_pdu_data) == 0) {
             beacon_packet->eps_enabled_channels_bitfield = (
                 (eps_pdu_data.stat_ch_ext_on_bitfield << 16) | eps_pdu_data.stat_ch_on_bitfield
+            );
+
+            // Beacon v2 fields:
+            beacon_packet->eps_total_power_distributed_cW = (
+                eps_pdu_data.vip_total_input.power_cW
             );
         }
     }
@@ -406,6 +451,19 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_total_pcu_power_output_cW = (
                 EPS_calculate_total_pcu_power_output_cW(&eps_pcu_data)
             );
+
+            beacon_packet->eps_pcu_ch0_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[0].volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch0_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[0].curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch0_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[0].curr_ou_mppt_mA;
+            beacon_packet->eps_pcu_ch1_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[1].volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch1_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[1].curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch1_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[1].curr_ou_mppt_mA;
+            beacon_packet->eps_pcu_ch2_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[2].volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch2_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[2].curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch2_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[2].curr_ou_mppt_mA;
+            beacon_packet->eps_pcu_ch3_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[3].volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch3_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[3].curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch3_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[3].curr_ou_mppt_mA;
         }
     }
 
@@ -477,11 +535,11 @@ uint8_t blob_main(
         return 136;
     }
     
-    // TODO: Fill the packet and emit it.
+    // Fill the beacon packet.
     COMMS_beacon_extended_packet_t beacon_packet;
     COMMS_fill_beacon_extended_packet(&beacon_packet);
 
-
+    // Downlink the beacon packet.
     const uint8_t tx_success = AX100_downlink_bytes(
         (uint8_t *)(&beacon_packet), 
         sizeof(COMMS_beacon_extended_packet_t)
