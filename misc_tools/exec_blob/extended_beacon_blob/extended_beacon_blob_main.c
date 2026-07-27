@@ -346,10 +346,12 @@ static uint8_t reexecute_current_blob_tcmd(uint32_t time_into_future_to_execute_
 /// @param beacon_packet 
 /// @note Based on the `COMMS_fill_beacon_basic_packet` function in the main firmware.
 static void COMMS_fill_beacon_extended_packet(
-    COMMS_beacon_extended_packet_t *beacon_packet
+    COMMS_beacon_extended_packet_t *beacon_packet, uint8_t *peripheral_comms_error_count_dst
 ) {
     // Safety: Reset the packet to zero.
     memset(beacon_packet, 0, sizeof(COMMS_beacon_extended_packet_t));
+
+    uint8_t peripheral_comms_error_count = 0;
 
     // Fill the packet with the current system state.
     beacon_packet->packet_type = COMMS_PACKET_TYPE_BEACON_EXTENDED; // COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20 = 32
@@ -442,6 +444,9 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_uptime_sec = eps_status_data.uptime_sec;
             beacon_packet->eps_error_code = eps_status_data.error_code;
         }
+        else {
+            peripheral_comms_error_count++;
+        }
     }
 
     // Try to fetch the EPS battery data (INSTANTANEOUS), and store it in the beacon packet if successful.
@@ -469,6 +474,9 @@ static void COMMS_fill_beacon_extended_packet(
                 eps_pbu_data.battery_pack_info_each_pack[0].bp_status_bitfield
             );
         }
+        else {
+            peripheral_comms_error_count++;
+        }
     }
 
     // Try to fetch the EPS battery data (AVERAGE), and store it in the beacon packet if successful.
@@ -479,6 +487,9 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_total_avg_net_battery_power_cW = (
                 eps_pbu_data.battery_pack_info_each_pack[0].vip_bp_input.power_cW
             );
+        }
+        else {
+            peripheral_comms_error_count++;
         }
     }
 
@@ -496,6 +507,9 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_total_avg_power_distributed_cW = (
                 eps_pdu_data.vip_total_input.power_cW
             );
+        }
+        else {
+            peripheral_comms_error_count++;
         }
     }
 
@@ -524,6 +538,9 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_pcu_ch3_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[3].curr_in_mppt_mA;
             beacon_packet->eps_pcu_ch3_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[3].curr_ou_mppt_mA;
         }
+        else {
+            peripheral_comms_error_count++;
+        }
     }
 
     // Try to fetch the EPS PCU data (RUNNING AVERAGE), and store it in the beacon packet if successful.
@@ -537,6 +554,9 @@ static void COMMS_fill_beacon_extended_packet(
                 EPS_calculate_total_pcu_power_output_cW(&eps_pcu_data)
             );
         }
+        else {
+            peripheral_comms_error_count++;
+        }
     }
 
     // Try to fetch the EPS fault count, and store it in the beacon packet if successful.
@@ -545,6 +565,9 @@ static void COMMS_fill_beacon_extended_packet(
         EPS_struct_pdu_overcurrent_fault_state_t eps_pdu_fault_data;
         if (EPS_CMD_get_pdu_overcurrent_fault_state(&eps_pdu_fault_data) == 0) {
             beacon_packet->eps_total_fault_count = EPS_calculate_total_fault_count(&eps_pdu_fault_data);
+        }
+        else {
+            peripheral_comms_error_count++;
         }
     }
 
@@ -563,6 +586,9 @@ static void COMMS_fill_beacon_extended_packet(
 
         if (tlm_status == 0) {
             memcpy(beacon_packet->adcs_current_state_1, data_received, sizeof(data_received));
+        }
+        else {
+            peripheral_comms_error_count++;
         }
     }
 
@@ -585,6 +611,9 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->adcs_raw_css_9 = output_struct_7_to_10.coarse_sun_sensor_9;
             // Skip 8 and 10 (unused).
         }
+        else {
+            peripheral_comms_error_count++;
+        }
     }
 
     // ADCS magnetic field vector.
@@ -603,6 +632,9 @@ static void COMMS_fill_beacon_extended_packet(
             memcpy(&beacon_packet->adcs_magnetic_field_x_T_en8, &data_received[0], 2);
             memcpy(&beacon_packet->adcs_magnetic_field_y_T_en8, &data_received[2], 2);
             memcpy(&beacon_packet->adcs_magnetic_field_z_T_en8, &data_received[4], 2);
+        }
+        else {
+            peripheral_comms_error_count++;
         }
     }
 
@@ -631,6 +663,9 @@ static void COMMS_fill_beacon_extended_packet(
                 + ((int32_t)z_cdeg_per_sec * (int32_t)z_cdeg_per_sec)
             );
         }
+        else {
+            peripheral_comms_error_count++;
+        }
     }
 
     // ADCS estimated angular rates.
@@ -648,6 +683,9 @@ static void COMMS_fill_beacon_extended_packet(
             memcpy(&beacon_packet->adcs_estimated_rate_x_cdeg_per_sec, &data_received[0], 2);
             memcpy(&beacon_packet->adcs_estimated_rate_y_cdeg_per_sec, &data_received[2], 2);
             memcpy(&beacon_packet->adcs_estimated_rate_z_cdeg_per_sec, &data_received[4], 2);
+        }
+        else {
+            peripheral_comms_error_count++;
         }
     }
 
@@ -667,8 +705,12 @@ static void COMMS_fill_beacon_extended_packet(
             memcpy(&beacon_packet->adcs_estimated_pitch_angle_cdeg, &data_received[2], 2);
             memcpy(&beacon_packet->adcs_estimated_yaw_angle_cdeg, &data_received[4], 2);
         }
+        else {
+            peripheral_comms_error_count++;
+        }
     }
 
+    *peripheral_comms_error_count_dst = peripheral_comms_error_count;
 }
 
 
@@ -718,7 +760,8 @@ uint8_t blob_main(
     
     // Fill the beacon packet.
     COMMS_beacon_extended_packet_t beacon_packet;
-    COMMS_fill_beacon_extended_packet(&beacon_packet);
+    uint8_t peripheral_comms_error_count = 0;
+    COMMS_fill_beacon_extended_packet(&beacon_packet, &peripheral_comms_error_count);
 
     // Downlink the beacon packet.
     const uint8_t tx_success = AX100_downlink_bytes(
@@ -746,6 +789,16 @@ uint8_t blob_main(
             );
             return reexec_result;
         }
+    }
+
+    if (peripheral_comms_error_count > 0) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: peripheral comms error count: %d",
+            BLOB_NAME,
+            peripheral_comms_error_count
+        );
+        return 117;
     }
 
     snprintf(
