@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#include <math.h>
 
 #include "../lfs.h"
 
@@ -289,6 +288,29 @@ static int32_t parse_int(const char *s, bool *ok) {
     if (ok) *ok = true;
     return (int32_t)result;
 }
+
+
+/// @brief Integer square root (Newton/Heron's method), overflow-safe.
+/// Source: adapted from https://en.wikipedia.org/wiki/Integer_square_root
+/// (CC BY-SA), "Newton's method" / Heron's method with integer-only ops.
+static uint16_t integer_sqrt_u32(uint32_t value) {
+    if (value == 0) {
+        return 0;
+    }
+    if (value == UINT32_MAX) {
+        // sqrt(2^32-1) floors to 2^16-1 exactly
+        return UINT16_MAX;
+    }
+
+    uint32_t lo = 1;
+    uint32_t hi = value;
+    while (lo < hi) {
+        hi = lo + ((hi - lo) / 2);   // midpoint without lo+hi overflow
+        lo = value / hi;
+    }
+    return (uint16_t)hi;
+}
+
 
 static int16_t get_current_executing_tcmd_agenda_slot_num() {
     for (uint16_t i = 0; i < TCMD_AGENDA_SIZE; i++) {
@@ -603,13 +625,11 @@ static void COMMS_fill_beacon_extended_packet(
             memcpy(&y_cdeg_per_sec, &data_received[2], 2);
             memcpy(&z_cdeg_per_sec, &data_received[4], 2);
 
-            const double rate_norm_cdeg_per_sec = sqrt(
-                ((double)x_cdeg_per_sec * (double)x_cdeg_per_sec)
-                + ((double)y_cdeg_per_sec * (double)y_cdeg_per_sec)
-                + ((double)z_cdeg_per_sec * (double)z_cdeg_per_sec)
+            beacon_packet->adcs_angular_rate_norm_cdeg_per_sec = integer_sqrt_u32(
+                ((int32_t)x_cdeg_per_sec * (int32_t)x_cdeg_per_sec)
+                + ((int32_t)y_cdeg_per_sec * (int32_t)y_cdeg_per_sec)
+                + ((int32_t)z_cdeg_per_sec * (int32_t)z_cdeg_per_sec)
             );
-
-            beacon_packet->adcs_angular_rate_norm_cdeg_per_sec = (uint16_t)rate_norm_cdeg_per_sec;
         }
     }
 
