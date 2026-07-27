@@ -9,8 +9,8 @@
 // that specified interval.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v1.blob", run:
-// CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,your_file.run;0;0)!
+// After uplinking the blob as "blobs/extended_beacon_v2.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
 
 #include <stdint.h>
 #include <stdbool.h>

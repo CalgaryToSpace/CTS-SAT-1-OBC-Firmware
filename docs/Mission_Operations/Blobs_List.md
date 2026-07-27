@@ -86,3 +86,33 @@ CTS1+comms_bulk_file_downlink_start(adcs_data/your_file.run,0,0)@tsexec=123456@t
 # Instead though, now you'll run:
 CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,adcs_data/your_file.run;0;0)@tsexec=123456@tssent=789!
 ```
+
+## `blobs/extended_beacon_v2.blob`
+
+### Description
+
+Running this blob triggers the extended beacon.
+
+```c
+// This is a blob (executable) that emits extended beacons with many extra peripheral fields.
+//
+// Motivation: The existing FrontierSat beacon is great, but lacks certain data (e.g., ADCS data
+// and per-channel EPS data especially).
+// This blob is a new feature that allows for sending additional data in the beacon packets.
+//
+// Args Format: repeat_interval_ms
+// The repeat_interval_ms can be 0 to run only once, or any positive number to run repeatedly at
+// that specified interval.
+//
+// Usage Example:
+// After uplinking the blob as "blobs/extended_beacon_v2.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
+```
+
+### Example Usage
+
+To start the extended beacon, repeating every 9 seconds, run:
+
+```
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
+```
