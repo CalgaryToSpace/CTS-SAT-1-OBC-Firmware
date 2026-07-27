@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <math.h>
 
 #include "../lfs.h"
 
@@ -212,15 +213,15 @@ typedef struct {
     // ADCS MEMS Rate Sensor Angular Rate Magnitude (derrived from Telemetry ID 155).
     // This is the normalized magnitude of the MEMS rate sensor angular rates, i.e. sqrt(x^2 + y^2 + z^2).
     // Value in Deg/s = Value_uint16 * 0.01.
-    uint16_t adcs_angular_rate_norm_deg_per_sec_en2;
+    uint16_t adcs_angular_rate_norm_cdeg_per_sec;
 
-    // ADCS Estimated Angular Rates (Telemetry ID 152).
+    // ADCS Estimated Angular Rates (Telemetry ID 147).
     // In Estimation Mode 1, these rates are the MEMS rate sensor values directly. Otherwise,
     // they are estimated from magnetometer and/or full-state calculations.
     // Value in Deg/s = Value_uint16 * 0.01.
-    int16_t adcs_estimated_rate_x_deg_per_sec_en2;
-    int16_t adcs_estimated_rate_y_deg_per_sec_en2;
-    int16_t adcs_estimated_rate_z_deg_per_sec_en2;
+    int16_t adcs_estimated_rate_x_cdeg_per_sec;
+    int16_t adcs_estimated_rate_y_cdeg_per_sec;
+    int16_t adcs_estimated_rate_z_cdeg_per_sec;
 
     // ADCS Estimated Quaternion (Telemetry ID 218).
     // These values are populated in Estimation Mode 3, 4, 5, and 6 only.
@@ -232,9 +233,9 @@ typedef struct {
 
     // ADCS Estimated Attitude Angles (Telemetry ID 146).
     // These values are populated in Estimation Mode 3, 4, 5, and 6 only.
-    int16_t adcs_estimated_roll_angle_deg_en2;
-    int16_t adcs_estimated_pitch_angle_deg_en2;
-    int16_t adcs_estimated_yaw_angle_deg_en2;
+    int16_t adcs_estimated_roll_angle_cdeg;
+    int16_t adcs_estimated_pitch_angle_cdeg;
+    int16_t adcs_estimated_yaw_angle_cdeg;
 
 } COMMS_beacon_extended_packet_t;
 
@@ -529,18 +530,17 @@ static void COMMS_fill_beacon_extended_packet(
 
     // ADCS status data.
     {
-        const uint8_t adcs_status_data_length = 6;
-        uint8_t data_received[adcs_status_data_length];
+        uint8_t data_received[6];
 
         const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
             132, // ADCS_TELEMETRY_CUBEACP_ADCS_STATE
             data_received,
-            adcs_status_data_length,
+            sizeof(data_received),
             1 // ADCS_INCLUDE_CHECKSUM
         );
 
         if (tlm_status == 0) {
-            memcpy(beacon_packet->adcs_current_state_1, data_received, adcs_status_data_length);
+            memcpy(beacon_packet->adcs_current_state_1, data_received, sizeof(data_received));
         }
     }
 
@@ -562,6 +562,90 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->adcs_raw_css_7 = output_struct_7_to_10.coarse_sun_sensor_7;
             beacon_packet->adcs_raw_css_9 = output_struct_7_to_10.coarse_sun_sensor_9;
             // Skip 8 and 10 (unused).
+        }
+    }
+
+    // ADCS magnetic field vector.
+    // Raw values are int16, little-endian, in units of 10 nT (i.e. already in Telsla en8 scale).
+    {
+        uint8_t data_received[6];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            151, // ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            memcpy(&beacon_packet->adcs_magnetic_field_x_T_en8, &data_received[0], 2);
+            memcpy(&beacon_packet->adcs_magnetic_field_y_T_en8, &data_received[2], 2);
+            memcpy(&beacon_packet->adcs_magnetic_field_z_T_en8, &data_received[4], 2);
+        }
+    }
+
+    // ADCS MEMS rate sensor angular rate magnitude.
+    {
+        uint8_t data_received[6];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            155, // ADCS_TELEMETRY_CUBEACP_RATE_SENSOR_RATES
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            int16_t x_cdeg_per_sec;
+            int16_t y_cdeg_per_sec;
+            int16_t z_cdeg_per_sec;
+            memcpy(&x_cdeg_per_sec, &data_received[0], 2);
+            memcpy(&y_cdeg_per_sec, &data_received[2], 2);
+            memcpy(&z_cdeg_per_sec, &data_received[4], 2);
+
+            const double rate_norm_cdeg_per_sec = sqrt(
+                ((double)x_cdeg_per_sec * (double)x_cdeg_per_sec)
+                + ((double)y_cdeg_per_sec * (double)y_cdeg_per_sec)
+                + ((double)z_cdeg_per_sec * (double)z_cdeg_per_sec)
+            );
+
+            beacon_packet->adcs_angular_rate_norm_cdeg_per_sec = (uint16_t)rate_norm_cdeg_per_sec;
+        }
+    }
+
+    // ADCS estimated angular rates.
+    {
+        uint8_t data_received[6];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            147, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            memcpy(&beacon_packet->adcs_estimated_rate_x_cdeg_per_sec, &data_received[0], 2);
+            memcpy(&beacon_packet->adcs_estimated_rate_y_cdeg_per_sec, &data_received[2], 2);
+            memcpy(&beacon_packet->adcs_estimated_rate_z_cdeg_per_sec, &data_received[4], 2);
+        }
+    }
+
+    // ADCS estimated attitude angles.
+    {
+        uint8_t data_received[6];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            146, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            memcpy(&beacon_packet->adcs_estimated_roll_angle_cdeg, &data_received[0], 2);
+            memcpy(&beacon_packet->adcs_estimated_pitch_angle_cdeg, &data_received[2], 2);
+            memcpy(&beacon_packet->adcs_estimated_yaw_angle_cdeg, &data_received[4], 2);
         }
     }
 
