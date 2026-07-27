@@ -151,7 +151,7 @@ typedef struct {
     // End with a null-terminated configurable friendly message.
     char friendly_message[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
 
-    char end_message[4]; // "END\0" on basic packets; " EX\0" on extended packets.
+    char end_message[4]; // "END\0" on basic packets; " X2\0" on extended packets (v2).
 
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
     // MARK: Extended Fields
@@ -160,23 +160,20 @@ typedef struct {
 
     int16_t obc_adc_battery_voltage_mV;
 
+    // Instantaneous solar panel power measurements (not averaged).
+    // Note: Excluded the PCU output voltages, as they very closely match the rail/battery voltage.
     int16_t eps_pcu_ch0_volt_in_mppt_mV;
     int16_t eps_pcu_ch0_curr_in_mppt_mA;
     int16_t eps_pcu_ch0_curr_ou_mppt_mA;
-
     int16_t eps_pcu_ch1_volt_in_mppt_mV;
     int16_t eps_pcu_ch1_curr_in_mppt_mA;
     int16_t eps_pcu_ch1_curr_ou_mppt_mA;
-
     int16_t eps_pcu_ch2_volt_in_mppt_mV;
     int16_t eps_pcu_ch2_curr_in_mppt_mA;
     int16_t eps_pcu_ch2_curr_ou_mppt_mA;
-
     int16_t eps_pcu_ch3_volt_in_mppt_mV;
     int16_t eps_pcu_ch3_curr_in_mppt_mA;
     int16_t eps_pcu_ch3_curr_ou_mppt_mA;
-
-    // Note: Excluded the PCU output voltages, as they very closely match the rail/battery voltage.
 
     // Battery pack status (EPS FW ICD Table 3-18).
     // Bits 0 (LSB) to 3 are per-cell under voltage flags. 4 to 7 are over voltage flags.
@@ -184,9 +181,9 @@ typedef struct {
     // Bit 15 (MSB) indicates battery pack is enabled.
     uint16_t eps_battery_pack_status_bitfield;
 
-    int16_t eps_total_net_battery_power_cW;
-    int16_t eps_total_power_distributed_cW;
-
+    // EPS power balance (running average).
+    int16_t eps_total_avg_net_battery_power_cW;
+    int16_t eps_total_avg_power_distributed_cW;
 
     // Includes run mode, attitude control mode, and attitude estimation mode, and a ton of
     // enabled/error bitfields. Splits apart into about 40 fields total.
@@ -385,7 +382,7 @@ static void COMMS_fill_beacon_extended_packet(
         COMMS_beacon_friendly_message_str,
         strlen(COMMS_beacon_friendly_message_str)
     );
-    memcpy(beacon_packet->end_message, " EX", 4);
+    memcpy(beacon_packet->end_message, " X2", 4); // Extended beacon packet version.
 
     // Set the extended beacon packet fields.
 
