@@ -317,6 +317,7 @@ static uint8_t reexecute_current_blob_tcmd(uint32_t time_into_future_to_execute_
     return 0;
 }
 
+// MARK: Fill Packet
 
 /// @brief 
 /// @param beacon_packet 
@@ -405,8 +406,8 @@ static void COMMS_fill_beacon_extended_packet(
 
     beacon_packet->eps_battery_pack_status_bitfield = 0xFFFF;
 
-    beacon_packet->eps_total_net_battery_power_cW = -9999;
-    beacon_packet->eps_total_power_distributed_cW = -9999;
+    beacon_packet->eps_total_avg_net_battery_power_cW = -9999;
+    beacon_packet->eps_total_avg_power_distributed_cW = -9999;
 
     
     // Try to fetch the EPS system status, and store it in the beacon packet if successful.
@@ -420,7 +421,7 @@ static void COMMS_fill_beacon_extended_packet(
         }
     }
 
-    // Try to fetch the EPS battery data, and store it in the beacon packet if successful.
+    // Try to fetch the EPS battery data (INSTANTANEOUS), and store it in the beacon packet if successful.
     {
         EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
         if (EPS_CMD_get_pbu_housekeeping_data_eng(&eps_pbu_data) == 0) {
@@ -444,23 +445,32 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_battery_pack_status_bitfield = (
                 eps_pbu_data.battery_pack_info_each_pack[0].bp_status_bitfield
             );
+        }
+    }
 
-            beacon_packet->eps_total_net_battery_power_cW = (
+    // Try to fetch the EPS battery data (AVERAGE), and store it in the beacon packet if successful.
+    {
+        EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
+        if (EPS_CMD_get_pbu_housekeeping_data_run_avg(&eps_pbu_data) == 0) {
+            // Beacon v2 fields:
+            beacon_packet->eps_total_avg_net_battery_power_cW = (
                 eps_pbu_data.battery_pack_info_each_pack[0].vip_bp_input.power_cW
             );
         }
     }
 
-    // Try to fetch the EPS PDU data, and store it in the beacon packet if successful.
+    // Try to fetch the EPS PDU data (AVERAGE), and store it in the beacon packet if successful.
     {
         EPS_struct_pdu_housekeeping_data_eng_t eps_pdu_data;
-        if (EPS_CMD_get_pdu_housekeeping_data_eng(&eps_pdu_data) == 0) {
+        if (EPS_CMD_get_pdu_housekeeping_data_run_avg(&eps_pdu_data) == 0) {
+            // Note: v1 beacon got this field from the instantaneous data; should be the exact same
+            // value though, so we'll fetch it from the running average data in this v2 beacon.
             beacon_packet->eps_enabled_channels_bitfield = (
                 (eps_pdu_data.stat_ch_ext_on_bitfield << 16) | eps_pdu_data.stat_ch_on_bitfield
             );
 
             // Beacon v2 fields:
-            beacon_packet->eps_total_power_distributed_cW = (
+            beacon_packet->eps_total_avg_power_distributed_cW = (
                 eps_pdu_data.vip_total_input.power_cW
             );
         }
@@ -477,6 +487,7 @@ static void COMMS_fill_beacon_extended_packet(
                 EPS_calculate_total_pcu_power_output_cW(&eps_pcu_data)
             );
 
+            // Beacon v2 fields:
             beacon_packet->eps_pcu_ch0_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[0].volt_in_mppt_mV;
             beacon_packet->eps_pcu_ch0_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[0].curr_in_mppt_mA;
             beacon_packet->eps_pcu_ch0_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[0].curr_ou_mppt_mA;
@@ -513,6 +524,8 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_total_fault_count = EPS_calculate_total_fault_count(&eps_pdu_fault_data);
         }
     }
+
+    // Everything below is for the v2 beacon.
 
     // ADCS status data.
     {
