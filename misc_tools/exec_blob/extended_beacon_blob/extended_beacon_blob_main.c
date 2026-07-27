@@ -37,6 +37,7 @@
 // Beacon v2 contents (includes).
 #include "obc_systems/adc_vbat_monitor.h"
 #include "adcs_drivers/adcs_types.h"
+#include "mpi/mpi_types.h"
 
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
@@ -67,6 +68,10 @@ extern char COMMS_beacon_friendly_message_str[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE
 
 // Beacon v2 contents (extern variables).
 extern uint32_t SystemCoreClock;
+extern const uint16_t MPI_science_buffer_len;
+extern volatile uint8_t MPI_science_buffer_one[];
+extern volatile uint8_t MPI_science_buffer_two[];
+
 
 // Beacon v1 contents (extern functions).
 extern int32_t OBC_TEMP_SENSOR_get_temperature_cC();
@@ -75,6 +80,12 @@ extern int32_t OBC_TEMP_SENSOR_get_temperature_cC();
 extern uint8_t ADCS_i2c_request_telemetry_and_check(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct);
+
+extern int32_t read_avg_temperature_cC_from_mpi_data_buffer(volatile uint8_t* large_buffer);
+extern volatile MPI_buffer_state_enum_t MPI_buffer_one_state;
+extern volatile MPI_buffer_state_enum_t MPI_buffer_two_state;
+extern volatile uint32_t MPI_buffer_one_last_filled_uptime_ms;
+extern volatile uint32_t MPI_buffer_two_last_filled_uptime_ms;
 
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int strlen(const char *s);
@@ -156,9 +167,17 @@ typedef struct {
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
     // MARK: Extended Fields
 
+    // Active oscillator frequency, in MHz. 16 MHz = internal clock (HSI, imprecise), 25 MHz = external (HSE, precise).
     uint8_t obc_active_oscillator_MHz;
 
+    // Battery voltage, as measured by the ADC on the OBC. Very useful when EPS fails to report
+    // its battery voltage, as it often tends to do (due to ISISpace bug).
     int16_t obc_adc_battery_voltage_mV;
+
+    // Average temperature of the MPI, when active, at the most recent time it was active.
+    // Clamped to -90C to +125C.
+    // -99 = MPI inactive. -98 and -97 are error codes.
+    int8_t mpi_last_temperature_C;
 
     // Instantaneous solar panel power measurements (not averaged).
     // Note: Excluded the PCU output voltages, as they very closely match the rail/battery voltage.
@@ -239,7 +258,7 @@ typedef struct {
 } COMMS_beacon_extended_packet_t;
 
 // Limit: sizeof(COMMS_beacon_extended_packet_t) <= 200
-// Currently, sizeof(COMMS_beacon_extended_packet_t) = 197
+// Currently, sizeof(COMMS_beacon_extended_packet_t) = 198
 
 #pragma pack(pop)
 
@@ -309,6 +328,45 @@ static uint16_t integer_sqrt_u32(uint32_t value) {
         lo = value / hi;
     }
     return (uint16_t)hi;
+}
+
+/// @brief Dig the current MPI temperature from the data buffer.
+/// @note Based heavily on the inline logic in `rtos_mpi_tasks.c`.
+/// @return Temperature in C, or -99 if MPI never active, or -98 if error calculating temperature.
+/// @note Clamps at -90 if colder than -90C, or 125 if hotter than 125C.
+static int8_t get_last_mpi_temperature_C() {
+    int32_t last_mpi_temperature_cC = -99999;
+
+    // Pick the buffer with the most recent data.
+    if (MPI_buffer_one_last_filled_uptime_ms > MPI_buffer_two_last_filled_uptime_ms) {
+        last_mpi_temperature_cC = read_avg_temperature_cC_from_mpi_data_buffer(
+            MPI_science_buffer_one
+        ) / 100;
+    }
+    else if (MPI_buffer_two_last_filled_uptime_ms > MPI_buffer_one_last_filled_uptime_ms) {
+        last_mpi_temperature_cC = read_avg_temperature_cC_from_mpi_data_buffer(
+            MPI_science_buffer_two
+        ) / 100;
+    }
+    else {
+        return -99; // Neither has ever been filled.
+    }
+
+    // If we don't have a valid averaged temperature value available:
+    if ((last_mpi_temperature_cC == -99999) || (last_mpi_temperature_cC == -9999)) {
+        return -98; // Error calculating temperature.
+    }
+
+    // Divide by 100, and clamp the value to within -90C and 125C.
+    const int32_t last_mpi_temperature_C = last_mpi_temperature_cC / 100;
+    if (last_mpi_temperature_C <= -90) {
+        return -90;
+    }
+    else if (last_mpi_temperature_C >= 125) {
+        return 125;
+    }
+    
+    return last_mpi_temperature_C;
 }
 
 
@@ -415,6 +473,8 @@ static void COMMS_fill_beacon_extended_packet(
     beacon_packet->obc_active_oscillator_MHz = SystemCoreClock / 1000000;
 
     beacon_packet->obc_adc_battery_voltage_mV = OBC_read_vbat_with_adc_mV();
+
+    beacon_packet->mpi_last_temperature_C = get_last_mpi_temperature_C();
 
     beacon_packet->eps_pcu_ch0_volt_in_mppt_mV = -9999;
     beacon_packet->eps_pcu_ch0_curr_in_mppt_mA = -9999;
