@@ -203,22 +203,46 @@ typedef struct {
     uint8_t adcs_raw_css_7;
     uint8_t adcs_raw_css_9;
 
-    uint16_t adcs_raw_magnetometer_x;
-    uint16_t adcs_raw_magnetometer_y;
-    uint16_t adcs_raw_magnetometer_z;
+    // ADCS Magnetic Field Vector (Telemetry ID 151).
+    // ADCS calculates this value by applying calibration to the raw A/D readings.
+    // Reference Frame: Satellite Body Frame.
+    // Value_in_Teslas = Value_uint16 * 10^-8.
+    // Value_in_uT     = Value_uint16 * 0.01.
+    uint16_t adcs_magnetic_field_x_T_en8;
+    uint16_t adcs_magnetic_field_y_T_en8;
+    uint16_t adcs_magnetic_field_z_T_en8;
 
-    int16_t adcs_estimated_rate_x_mdeg_per_sec;
-    int16_t adcs_estimated_rate_y_mdeg_per_sec;
-    int16_t adcs_estimated_rate_z_mdeg_per_sec;
+    // ADCS MEMS Rate Sensor Angular Rate Magnitude (derrived from Telemetry ID 155).
+    // This is the normalized magnitude of the MEMS rate sensor angular rates, i.e. sqrt(x^2 + y^2 + z^2).
+    // Value in Deg/s = Value_uint16 * 0.01.
+    uint16_t adcs_angular_rate_norm_deg_per_sec_en2;
 
-    int16_t adcs_estimated_quaternion_q1;
-    int16_t adcs_estimated_quaternion_q2;
-    int16_t adcs_estimated_quaternion_q3;
+    // ADCS Estimated Angular Rates (Telemetry ID 152).
+    // In Estimation Mode 1, these rates are the MEMS rate sensor values directly. Otherwise,
+    // they are estimated from magnetometer and/or full-state calculations.
+    // Value in Deg/s = Value_uint16 * 0.01.
+    int16_t adcs_estimated_rate_x_deg_per_sec_en2;
+    int16_t adcs_estimated_rate_y_deg_per_sec_en2;
+    int16_t adcs_estimated_rate_z_deg_per_sec_en2;
+
+    // ADCS Estimated Quaternion (Telemetry ID 218).
+    // These values are populated in Estimation Mode 3, 4, 5, and 6 only.
+    // NOTE: Decided against quaternions. Will use angles instead, as angles will be easier to
+    // directly compare to the commanded attitude settings.
+    // int16_t adcs_estimated_quaternion_q1;
+    // int16_t adcs_estimated_quaternion_q2;
+    // int16_t adcs_estimated_quaternion_q3;
+
+    // ADCS Estimated Attitude Angles (Telemetry ID 146).
+    // These values are populated in Estimation Mode 3, 4, 5, and 6 only.
+    int16_t adcs_estimated_roll_angle_deg_en2;
+    int16_t adcs_estimated_pitch_angle_deg_en2;
+    int16_t adcs_estimated_yaw_angle_deg_en2;
 
 } COMMS_beacon_extended_packet_t;
 
 // Limit: sizeof(COMMS_beacon_extended_packet_t) <= 200
-// Currently, sizeof(COMMS_beacon_extended_packet_t) = 195
+// Currently, sizeof(COMMS_beacon_extended_packet_t) = 197
 
 #pragma pack(pop)
 
