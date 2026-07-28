@@ -68,7 +68,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char *BLOB_NAME = "extended_beacon_blob";
+static const char BLOB_NAME[] = "extended_beacon_blob";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -100,8 +100,6 @@ extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct);
 
 extern int32_t read_avg_temperature_cC_from_mpi_data_buffer(volatile uint8_t* large_buffer);
-extern volatile MPI_buffer_state_enum_t MPI_buffer_one_state;
-extern volatile MPI_buffer_state_enum_t MPI_buffer_two_state;
 extern volatile uint32_t MPI_buffer_one_last_filled_uptime_ms;
 extern volatile uint32_t MPI_buffer_two_last_filled_uptime_ms;
 
@@ -160,7 +158,7 @@ typedef struct {
     uint8_t eps_battery_percent;
     int16_t eps_battery_temperature_0_cC; // Note: Defective in core FW. Fixed in this blob.
     int16_t eps_battery_temperature_1_cC;
-    // Note: Third battery temperature sensor doesn't work on our model.
+    // Note: Only 2 out of 3 battery temperature sensors work on our model.
     int32_t eps_total_fault_count;
     uint32_t eps_enabled_channels_bitfield;
     int32_t eps_total_pcu_power_input_cW;
@@ -282,8 +280,10 @@ typedef struct {
 
 } COMMS_beacon_extended_packet_t;
 
-// Limit: sizeof(COMMS_beacon_extended_packet_t) <= 200
-// Currently, sizeof(COMMS_beacon_extended_packet_t) = 198
+// Packet size limit:
+_Static_assert(sizeof(COMMS_beacon_extended_packet_t) <= 200, "ext. beacon packet too large");
+// Packet size (currently):
+_Static_assert(sizeof(COMMS_beacon_extended_packet_t) == 198, "ext. beacon packet size documented wrong here");
 
 #pragma pack(pop)
 
@@ -887,7 +887,7 @@ uint8_t blob_main(
     }
 
     bool arg0_beacon_interval_ms_ok;
-    const int32_t beacon_interval_ms = parse_int(arg0_beacon_interval_ms, &arg0_beacon_interval_ms_ok);
+    int32_t beacon_interval_ms = parse_int(arg0_beacon_interval_ms, &arg0_beacon_interval_ms_ok);
 
     if (!arg0_beacon_interval_ms_ok) {
         snprintf(
@@ -896,6 +896,12 @@ uint8_t blob_main(
             BLOB_NAME
         );
         return 136;
+    }
+
+    // Protect the minimum repeat interval! Too low of value would make it so we can't uplink to
+    // the satellite because it'd always be transmitting, which would be super non-ideal.
+    if ((beacon_interval_ms != 0) && (beacon_interval_ms < 2500)) {
+        beacon_interval_ms = 2500;
     }
     
     // Cancel any other pending agenda entries that would re-run this same blob (e.g., a repeat
