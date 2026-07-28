@@ -902,6 +902,7 @@ uint8_t blob_main(
     // telecommand scheduled by a previous run of this blob), so re-uplinking this blob on every
     // pass doesn't stack up duplicate scheduled reruns.
     const int16_t cancel_result = cancel_other_scheduled_reruns_of_this_blob(get_current_executing_tcmd_agenda_slot_num());
+    char cancel_msg[50];
     if (cancel_result < 0) {
         snprintf(
             response_buf, response_buf_len,
@@ -910,6 +911,17 @@ uint8_t blob_main(
             cancel_result
         );
         return 137;
+    }
+    else if (cancel_result > 0) {
+        snprintf(
+            cancel_msg,
+            sizeof(cancel_msg),
+            ", %d duplicate rerun(s) cancelled",
+            cancel_result
+        );
+    }
+    else {
+        cancel_msg[0] = '\0';
     }
 
     // Fill the beacon packet.
@@ -925,10 +937,10 @@ uint8_t blob_main(
     if (tx_success != 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: downlink failed (AX100_downlink_bytes() -> %d), %d duplicate rerun(s) cancelled",
+            "%s error: downlink failed (AX100_downlink_bytes() -> %d)%s",
             BLOB_NAME,
             tx_success,
-            cancel_result
+            cancel_msg
         );
         return tx_success;
     }
@@ -938,10 +950,10 @@ uint8_t blob_main(
         if (reexec_result != 0) {
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reexecute_current_blob_tcmd() -> %d, %d duplicate rerun(s) cancelled",
+                "%s error: reexecute_current_blob_tcmd() -> %d%s",
                 BLOB_NAME,
                 reexec_result,
-                cancel_result
+                cancel_msg
             );
             return reexec_result;
         }
@@ -950,19 +962,19 @@ uint8_t blob_main(
     if (peripheral_comms_error_count > 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: peripheral comms error count: %d, %d duplicate rerun(s) cancelled",
+            "%s error: peripheral comms error count: %d%s",
             BLOB_NAME,
             peripheral_comms_error_count,
-            cancel_result
+            cancel_msg
         );
         return 117;
     }
 
     snprintf(
         response_buf, response_buf_len,
-        "%s success, %d duplicate rerun(s) cancelled",
+        "%s success%s",
         BLOB_NAME,
-        cancel_result
+        cancel_msg
     );
 
     return 0;
