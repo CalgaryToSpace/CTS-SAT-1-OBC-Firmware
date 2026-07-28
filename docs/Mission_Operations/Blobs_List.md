@@ -109,6 +109,22 @@ Running this blob triggers the extended beacon.
 // CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
 ```
 
+### Notes
+
+1. Always use "0" as the second argument (i.e., always run with malloc).
+2. If the ADCS fails to respond to the OBC, this blob hits the watchdog and crashes because
+    the ADCS communications each take about 3.5 seconds to time out. Thus, this blob cannot be
+    tested on a dev kit, and must be tested on the flatsat with the ADCS engg model computer.
+3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
+    a tssent value of `<interval_ms>` after the beacon is sent.
+4. If this blob is currently running in repeat mode, and you re-run it, it will first cancel
+    the existing repeat telecommand, and then re-schedule itself. That is, it is fine to send
+    a command to run this blob on every uplink pass, whether or not it's already running.
+5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
+    use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
+    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,0)!` (which will run one last time,
+    then cancel itself).
+
 ### Example Usage
 
 To start the extended beacon, repeating every 9 seconds, run:
