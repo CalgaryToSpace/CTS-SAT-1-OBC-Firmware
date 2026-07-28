@@ -11,6 +11,16 @@
 // Usage Example:
 // After uplinking the blob as "blobs/extended_beacon_v2.blob", run:
 // CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
+//
+// Notes:
+//  1. Always use "0" as the second argument (i.e., always run with malloc).
+//  2. If the ADCS fails to respond to the OBC, this blob hits the watchdog and crashes because
+//      the ADCS communications each take about 3.5 seconds to time out. Thus, this blob cannot be
+//      tested on a dev kit, and must be tested on the flatsat with the ADCS engg model computer.
+//  3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
+//      a tssent value of <interval_ms> after the beacon is sent.
+//  4. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
+//      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`.
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -77,6 +87,7 @@ extern volatile uint8_t MPI_science_buffer_two[];
 extern int32_t OBC_TEMP_SENSOR_get_temperature_cC();
 
 /// Beacon v2 contents (extern functions).
+// void DEBUG_uart_print_str(const char *str);
 extern uint8_t ADCS_i2c_request_telemetry_and_check(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct);
@@ -104,6 +115,12 @@ extern void LOG_message(
 #define LOG(severity, fmt, ...) \
     LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
+// static void DEBUG_UART(const char *fmt) {
+//     #if 1
+//     DEBUG_uart_print_str(fmt);
+//     DEBUG_uart_print_str("\n");
+//     #endif
+// }
 
 #pragma pack(push, 1)
 
