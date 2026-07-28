@@ -247,9 +247,9 @@ typedef struct {
     // Reference Frame: Satellite Body Frame.
     // Value_in_Teslas = Value_uint16 * 10^-8.
     // Value_in_uT     = Value_uint16 * 0.01.
-    uint16_t adcs_magnetic_field_x_T_en8;
-    uint16_t adcs_magnetic_field_y_T_en8;
-    uint16_t adcs_magnetic_field_z_T_en8;
+    int16_t adcs_magnetic_field_x_T_en8;
+    int16_t adcs_magnetic_field_y_T_en8;
+    int16_t adcs_magnetic_field_z_T_en8;
 
     // ADCS MEMS Rate Sensor Angular Rate Magnitude (derrived from Telemetry ID 155).
     // This is the normalized magnitude of the MEMS rate sensor angular rates, i.e. sqrt(x^2 + y^2 + z^2).
