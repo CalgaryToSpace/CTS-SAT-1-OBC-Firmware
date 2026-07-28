@@ -107,7 +107,7 @@ extern volatile uint32_t MPI_buffer_two_last_filled_uptime_ms;
 
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int strlen(const char *s);
-extern int strcasecmp(const char *s1, const char *s2);
+extern int strcmp(const char *s1, const char *s2);
 extern void *memset(void *s, int c, size_t n);
 extern void *memcpy(void *__restrict dest, const void *__restrict src, size_t n);
 
@@ -366,12 +366,12 @@ static int8_t get_last_mpi_temperature_C() {
     if (MPI_buffer_one_last_filled_uptime_ms > MPI_buffer_two_last_filled_uptime_ms) {
         last_mpi_temperature_cC = read_avg_temperature_cC_from_mpi_data_buffer(
             MPI_science_buffer_one
-        ) / 100;
+        );
     }
     else if (MPI_buffer_two_last_filled_uptime_ms > MPI_buffer_one_last_filled_uptime_ms) {
         last_mpi_temperature_cC = read_avg_temperature_cC_from_mpi_data_buffer(
             MPI_science_buffer_two
-        ) / 100;
+        );
     }
     else {
         return -99; // Neither has ever been filled.
@@ -449,7 +449,7 @@ static int16_t cancel_other_scheduled_reruns_of_this_blob(int16_t current_slot_n
             continue;
         }
 
-        if (strcasecmp(own_blob_file_name, other_blob_file_name) == 0) {
+        if (strcmp(own_blob_file_name, other_blob_file_name) == 0) {
             // Main action: Cancel that entry!
             TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_INVALID;
             cancelled_count++;
