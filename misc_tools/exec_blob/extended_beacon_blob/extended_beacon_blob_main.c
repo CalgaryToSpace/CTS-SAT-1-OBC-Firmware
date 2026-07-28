@@ -19,8 +19,13 @@
 //      tested on a dev kit, and must be tested on the flatsat with the ADCS engg model computer.
 //  3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
 //      a tssent value of <interval_ms> after the beacon is sent.
-//  4. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
-//      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`.
+//  4. If this blob is currently running in repeat mode, and you re-run it, it will first cancel
+//      the existing repeat telecommand, and then re-schedule itself. That is, it is fine to send
+//      a command to run this blob on every uplink pass, whether or not it's already running.
+//  5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
+//      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
+//      `CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,0)!` (which will run one last time,
+//      then cancel itself).
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -33,6 +38,8 @@
 #include "comms_drivers/rf_antenna_switch.h"
 #include "timekeeping/timekeeping.h"
 #include "telecommand_exec/telecommand_executor.h"
+#include "telecommand_exec/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "mpi/mpi_types.h"
 #include "mpi/mpi_command_handling.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
@@ -100,6 +107,7 @@ extern volatile uint32_t MPI_buffer_two_last_filled_uptime_ms;
 
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int strlen(const char *s);
+extern int strcasecmp(const char *s1, const char *s2);
 extern void *memset(void *s, int c, size_t n);
 extern void *memcpy(void *__restrict dest, const void *__restrict src, size_t n);
 
@@ -394,6 +402,61 @@ static int16_t get_current_executing_tcmd_agenda_slot_num() {
         }
     }
     return -1;
+}
+
+/// @brief Cancel any other pending agenda entries that would re-run this same blob file, so that
+/// re-uplinking this blob (whether to start, restart, or stop repeating) doesn't leave duplicate
+/// scheduled reruns behind.
+/// @param current_slot_num Agenda slot of the `exec_blob_from_fs` tcmd currently executing this blob.
+/// @return Number of duplicate agenda entries cancelled. Negative if error.
+static int16_t cancel_other_scheduled_reruns_of_this_blob(int16_t current_slot_num) {
+    if (current_slot_num < 0) {
+        return 0;
+    }
+
+    const uint8_t exec_blob_from_fs_tcmd_idx = TCMD_agenda[current_slot_num].tcmd_idx;
+
+    char own_blob_file_name[TCMD_ARGS_STR_NO_PARENS_SIZE];
+    const uint8_t parse_result = TCMD_extract_string_arg(
+        TCMD_agenda[current_slot_num].args_str_no_parens, 0,
+        own_blob_file_name, sizeof(own_blob_file_name)
+    );
+    if (parse_result != 0) {
+        // Can't determine our own blob file name; don't risk cancelling the wrong entries.
+        return -1;
+    }
+
+    uint16_t cancelled_count = 0;
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if ((int16_t)slot_num == current_slot_num) {
+            continue;
+        }
+        if (TCMD_agenda_is_valid[slot_num] != TCMD_AGENDA_ENTRY_VALID_AND_PENDING) {
+            continue;
+        }
+        if (TCMD_agenda[slot_num].tcmd_idx != exec_blob_from_fs_tcmd_idx) {
+            continue;
+        }
+
+        char other_blob_file_name[TCMD_ARGS_STR_NO_PARENS_SIZE];
+        const uint8_t other_parse_result = TCMD_extract_string_arg(
+            TCMD_agenda[slot_num].args_str_no_parens, 0,
+            other_blob_file_name, sizeof(other_blob_file_name)
+        );
+        if (other_parse_result != 0) {
+            // Can't determine other blob file name; don't risk cancelling the wrong entries.
+            // Could log a warning here.
+            continue;
+        }
+
+        if (strcasecmp(own_blob_file_name, other_blob_file_name) == 0) {
+            // Main action: Cancel that entry!
+            TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_INVALID;
+            cancelled_count++;
+        }
+    }
+
+    return cancelled_count;
 }
 
 static uint8_t reexecute_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
@@ -835,6 +898,20 @@ uint8_t blob_main(
         return 136;
     }
     
+    // Cancel any other pending agenda entries that would re-run this same blob (e.g., a repeat
+    // telecommand scheduled by a previous run of this blob), so re-uplinking this blob on every
+    // pass doesn't stack up duplicate scheduled reruns.
+    const int16_t cancel_result = cancel_other_scheduled_reruns_of_this_blob(get_current_executing_tcmd_agenda_slot_num());
+    if (cancel_result < 0) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d",
+            BLOB_NAME,
+            cancel_result
+        );
+        return 137;
+    }
+
     // Fill the beacon packet.
     COMMS_beacon_extended_packet_t beacon_packet;
     uint8_t peripheral_comms_error_count = 0;
@@ -848,9 +925,10 @@ uint8_t blob_main(
     if (tx_success != 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: downlink failed (AX100_downlink_bytes() -> %d)",
+            "%s error: downlink failed (AX100_downlink_bytes() -> %d), %d duplicate rerun(s) cancelled",
             BLOB_NAME,
-            tx_success
+            tx_success,
+            cancel_result
         );
         return tx_success;
     }
@@ -860,9 +938,10 @@ uint8_t blob_main(
         if (reexec_result != 0) {
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reexecute_current_blob_tcmd() -> %d",
+                "%s error: reexecute_current_blob_tcmd() -> %d, %d duplicate rerun(s) cancelled",
                 BLOB_NAME,
-                reexec_result
+                reexec_result,
+                cancel_result
             );
             return reexec_result;
         }
@@ -871,17 +950,19 @@ uint8_t blob_main(
     if (peripheral_comms_error_count > 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: peripheral comms error count: %d",
+            "%s error: peripheral comms error count: %d, %d duplicate rerun(s) cancelled",
             BLOB_NAME,
-            peripheral_comms_error_count
+            peripheral_comms_error_count,
+            cancel_result
         );
         return 117;
     }
 
     snprintf(
         response_buf, response_buf_len,
-        "%s success",
-        BLOB_NAME
+        "%s success, %d duplicate rerun(s) cancelled",
+        BLOB_NAME,
+        cancel_result
     );
 
     return 0;
