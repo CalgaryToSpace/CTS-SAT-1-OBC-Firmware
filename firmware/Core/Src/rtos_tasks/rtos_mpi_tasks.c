@@ -179,6 +179,8 @@ void TASK_service_write_mpi_data(void *argument) {
         }
 
         // If we have a valid averaged temperature value available:
+        // Note: If read_avg_temp_... fails (e.g., no frame), it returns -9999, which then gets
+        // logged stilled. No power/stopping actions are taken with that value, as it's < 0 C.
         if (last_mpi_temperature_cC != -99999) {
             LOG_message(
                 LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,

@@ -48,7 +48,7 @@ CTS1+exec_blob_from_fs(blobs/copy_file_v1.blob,0,mpi_data/2026-07-01_mpi.dat;mpi
 
 ## `blobs/bulk_downlink_start_v2.blob`
 
-Blob to replace the [buggy](https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/653) `CTS1+comms_bulk_file_downlink_start(<filename>,<start>,<length>)!` command.
+Blob to replace the [buggy](https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/653) `CTS1+comms_bulk_file_downlink_start(<filename>,<start>,<length>)!` command ("v1").
 
 ### Description
 
@@ -85,4 +85,50 @@ CTS1+comms_bulk_file_downlink_start(adcs_data/your_file.run,0,0)@tsexec=123456@t
 
 # Instead though, now you'll run:
 CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,adcs_data/your_file.run;0;0)@tsexec=123456@tssent=789!
+```
+
+## `blobs/extended_beacon_v2.blob`
+
+### Description
+
+Running this blob triggers the extended beacon.
+
+```c
+// This is a blob (executable) that emits extended beacons with many extra peripheral fields.
+//
+// Motivation: The existing FrontierSat beacon is great, but lacks certain data (e.g., ADCS data
+// and per-channel EPS data especially).
+// This blob is a new feature that allows for sending additional data in the beacon packets.
+//
+// Args Format: repeat_interval_ms
+// The repeat_interval_ms can be 0 to run only once, or any positive number to run repeatedly at
+// that specified interval.
+//
+// Usage Example:
+// After uplinking the blob as "blobs/extended_beacon_v2.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
+```
+
+### Notes
+
+1. Always use "0" as the second argument (i.e., always run with malloc).
+2. If the ADCS fails to respond to the OBC, this blob hits the watchdog and crashes because
+    the ADCS communications each take about 3.5 seconds to time out. Thus, this blob cannot be
+    tested on a dev kit, and must be tested on the flatsat with the ADCS engg model computer.
+3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
+    a tssent value of `<interval_ms>` after the beacon is sent.
+4. If this blob is currently running in repeat mode, and you re-run it, it will first cancel
+    the existing repeat telecommand, and then re-schedule itself. That is, it is fine to send
+    a command to run this blob on every uplink pass, whether or not it's already running.
+5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
+    use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
+    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,0)!` (which will run one last time,
+    then cancel itself).
+
+### Example Usage
+
+To start the extended beacon, repeating every 9 seconds, run:
+
+```
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
 ```
