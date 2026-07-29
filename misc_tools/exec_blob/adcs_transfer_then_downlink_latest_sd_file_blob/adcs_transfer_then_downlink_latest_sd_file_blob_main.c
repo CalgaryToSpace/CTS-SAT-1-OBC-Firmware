@@ -1,17 +1,28 @@
-// This is a blob (executable) that replaces the "CTS1+bulk_file_downlink_start" command.
+// This is a blob (executable) that replaces will nearly double the rate of ADCS commissioning.
 //
-// Motivation: The existing FrontierSat bulk file downlink system contains a bug where you can only
-// use it 40 times before the satellite needs a reboot to continue using the filesystem.
-// This blob is a workaround to fix that bug/limitation.
+// Motivation: Each ADCS commissioning step requires collecting data into an SD file, downlinking
+// the list of files, selecting the right file (by its checksum), and then bulk downlinking it. It
+// requires two uplink overpasses to get the file. This blob makes it so a single commissioning 
+// step requires only one uplink overpass to fetch the file.
 //
-// Full description of bug: https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/653
+// Args Format: 0 (placeholder, not used)
 //
-// Args Format: <file_path_to_read>;<start_offset>;<byte_count>
-// The start_offset and byte_count can both be zero to downlink up to 1 MB.
+// Description of Blob:
+//  1. Lists all files on the ADCS SD card.
+//  2. Determine's the latest file, by index, on the SD card.
+//  3. Checks if that file has "is_busy_updating = true". Returns error code 96 if it does.
+//  4. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
+//      not yet downloaded, it downloads it. Otherwise, it does nothing.
+//  5. Starts the bulk downlink process to download the file.
+//  6. Sends a telecommand response with the file name, size, hash, and crc16.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/bulk_downlink_start_v2.blob", run:
-// CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,your_file.run;0;0)!
+// After uplinking the blob as "blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob", run:
+// CTS1+exec_blob_from_fs(blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob,0,0)!
+//
+// Implementation Note: This blob also includes the fix from the `bulk_downlink_start_blob` blob,
+// as is required to initiate bulk file downlinks.
+// Full description of bug: https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/653
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -34,7 +45,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char *BLOB_NAME = "bulk_downlink_start_blob";
+static const char *BLOB_NAME = "adcs_grab_and_go_blob";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -52,11 +63,6 @@ lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages);
 extern int8_t LFS_read_file_checksum_sha256(
     const char filepath[], uint32_t start_offset, uint32_t max_length, uint8_t sha256_dest[32]
 );
-
-extern void GEN_byte_array_to_hex_str(
-    const uint8_t *byte_array, uint32_t byte_array_len, char *dest_str, uint32_t dest_str_size
-);
-
 
 // Bulk file downlink state and control.
 typedef enum {
@@ -145,6 +151,30 @@ static int32_t parse_int(const char *s, bool *ok) {
     return (int32_t)result;
 }
 
+/// @brief Writes a byte array to a hex string (no spaces between bytes).
+/// @param byte_array Input byte array.
+/// @param byte_array_len Length of input `byte_array`.
+/// @param dest_str The destination to write a C-string to.
+/// @param dest_str_size The size of the `dest_str` array, allocated before calling. Must be at least
+///     `byte_array_len * 3 + 1` to fit the entire string.
+void GEN_byte_array_to_lower_hex_str(
+    const uint8_t *byte_array, uint32_t byte_array_len, char *dest_str, uint32_t dest_str_size
+) {
+    if (dest_str_size == 0) return; // no space at all
+    char *ptr = dest_str;
+    uint32_t remaining = dest_str_size;
+
+    for (uint32_t i = 0; i < byte_array_len; ++i) {
+        if (remaining < 3) break;  // not enough space for 2 chars + null terminator
+        int written = snprintf(ptr, remaining, "%02x", byte_array[i]);
+        if (written != 2) break;   // safety check (should always write 2 characters)
+        ptr += 2;
+        remaining -= 2;
+    }
+
+    *ptr = '\0'; // null-terminate even if truncated
+}
+
 
 /// @brief Main operation in this blob.
 /// @param src_file_path 
@@ -228,15 +258,12 @@ static int8_t fill_response_output_buffer(
 
     // Convert the SHA256 hash to a little-endian hex string.
     char hex_hash_str[100]; // Should be 64 chars.
-    GEN_byte_array_to_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
-
-    // TODO: Switch to GEN_byte_array_to_lower_hex_str implementation.
-    // TODO: Include ADCS crc16 checksum in here too. Helpful for validation.
+    GEN_byte_array_to_lower_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
 
     // Format like JSON.
     snprintf(
         response_output_buf, response_output_buf_len,
-        "{\"action\":\"%s\",\"file\":\"%s\",\"file_size\":%ld,\"sha256\":\"%s\",\"offset\":%lu,\"length\":%lu}",
+        "{\"action\":\"%s\",\"file\":\"%s\",\"file_size\":%ld,\"crc16\":0x%s,\"sha256\":\"%s\",\"offset\":%lu,\"length\":%lu}",
         BLOB_NAME,
         src_file_path,
         file_size_bytes,
