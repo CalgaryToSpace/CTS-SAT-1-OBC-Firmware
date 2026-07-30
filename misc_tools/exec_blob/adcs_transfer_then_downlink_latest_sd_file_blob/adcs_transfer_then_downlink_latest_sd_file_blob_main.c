@@ -16,6 +16,9 @@
 //  5. Starts the bulk downlink process to download the file.
 //  6. Sends a telecommand response with the file name, size, hash, and crc16.
 //
+// Notes:
+//  1. Likely doesn't work if there are more than 70 files on the SD card. It's the way it has to be.
+//
 // Usage Example:
 // After uplinking the blob as "blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob", run:
 // CTS1+exec_blob_from_fs(blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob,0,0)!
@@ -43,7 +46,7 @@ typedef enum {
 } LOG_severity_enum_t;
 
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
-static const uint32_t LOG_SYSTEM_ADCS = 1 << 7;
+// static const uint32_t LOG_SYSTEM_ADCS = 1 << 7;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char *BLOB_NAME = "adcs_grab_and_go_blob";
@@ -102,32 +105,25 @@ static inline uint32_t TIME_uptime_ms() {
     return TIME_uptime_ms_from_tim6;
 }
 
-static void adcs_ack_incantation(void) {
-    // "To avoid interference from the EPS, do a separate ack for these commands.
-    ADCS_cmd_ack_struct_t ack_status;
-    ADCS_cmd_ack(&ack_status);
-    if (ack_status.error_flag != 0) {
-        LOG_message(
-            LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "ADCS command ack failed with error code %d",
-            ack_status.error_flag
-        );
-    }
-}
 
 /// @brief Find the file at the highest index in the ADCS SD card's file list.
 /// @param[out] out_file_info Set to the file_info of the latest (highest-index) file, on success.
 /// @param[out] out_index Set to the index (starting at 0) of the latest file, on success.
 /// @return 0 on success (at least one file exists), 91 if the SD card's file list is empty,
 ///     otherwise the non-zero error code from the underlying ADCS command that failed.
+///     ADCS error codes: 1 (Invalid TC), 2 (Incorrect Length), 3 (Incorrect Parameter), 4 (CRC check failed).
 static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint16_t *out_index) {
     const uint32_t function_start_time = TIME_uptime_ms();
 
     const uint8_t reset_status = ADCS_reset_file_list_read_pointer();
     HAL_Delay(200);
     if (reset_status != 0) {
-        adcs_ack_incantation();
-        return reset_status;
+        // Incantation: If the command fails but ACK succeeds, allow continuing.
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
     }
 
     bool found_any = false;
@@ -140,8 +136,6 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
         const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
         HAL_Delay(100);
         if (file_info_status != 0) {
-            adcs_ack_incantation();
-
             return file_info_status;
         }
 
@@ -161,9 +155,11 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
         const uint8_t advance_status = ADCS_advance_file_list_read_pointer();
         HAL_Delay(100);
         if (advance_status != 0) {
-            adcs_ack_incantation();
-
-            return advance_status;
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
         }
     }
 
@@ -405,7 +401,7 @@ uint8_t blob_main(
 ) {
     // Log that the blob is starting (important for tracing crashes).
     LOG(
-        LOG_SEVERITY_NORMAL,
+        LOG_SEVERITY_DEBUG,
         "Blob (%s) args_str: '%s'",
         BLOB_NAME,
         args_str
