@@ -200,6 +200,50 @@ static int8_t lfs_file_exists(const char *file_path) {
     return 1;
 }
 
+/// @brief Computes a CRC16 checksum of a file in LittleFS, reading it in 256-byte chunks.
+/// @note The per-byte update rule matches `CRC_Calc()` from the ADCS Firmware ICD (Section 6.4.1).
+/// @param filepath Path to the file to read and compute the checksum for.
+/// @param[out] crc_dest Set to the computed checksum, on success.
+/// @return 0 on success, negative LFS error code on error.
+static int8_t LFS_read_file_checksum_crc16(const char *filepath, uint16_t *crc_dest) {
+    const uint16_t chunk_size = 256;
+    uint8_t read_buffer[chunk_size];
+
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_open(&LFS_filesystem, &file, filepath, LFS_O_RDONLY);
+    if (open_result < 0) {
+        return open_result;
+    }
+
+    uint16_t crc = 0;
+    while (true) {
+        const int32_t bytes_read = lfs_file_read(&LFS_filesystem, &file, read_buffer, chunk_size);
+        if (bytes_read < 0) {
+            lfs_file_close(&LFS_filesystem, &file);
+            return bytes_read;
+        }
+        if (bytes_read == 0) {
+            break; // End of file.
+        }
+
+        for (int32_t i = 0; i < bytes_read; i++) {
+            crc = (crc >> 8) | (crc << 8);      // byte-swap the CRC
+            crc ^= read_buffer[i];               // XOR in the next byte
+            crc ^= (crc & 0xff) >> 4;            // mix low nibble down
+            crc ^= crc << 12;                    // mix up by 12 bits
+            crc ^= (crc & 0xff) << 5;            // mix low byte up by 5 bits
+        }
+    }
+
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0) {
+        return close_result;
+    }
+
+    *crc_dest = crc;
+    return 0;
+}
+
 /// @brief Writes a byte array to a hex string (no spaces between bytes).
 /// @param byte_array Input byte array.
 /// @param byte_array_len Length of input `byte_array`.
@@ -279,7 +323,7 @@ static int8_t bulk_downlink_start_fixed(
 /// @param response_output_buf_len
 /// @return 0 on success, non-zero on error.
 static int8_t fill_response_output_buffer(
-    const char *src_file_path, uint16_t adcs_crc16, uint16_t sd_card_index,
+    const char *src_file_path, uint16_t sd_card_index,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Prepare the SHA256 destination buffer.
@@ -306,6 +350,14 @@ static int8_t fill_response_output_buffer(
     char hex_hash_str[100]; // Should be 64 chars.
     GEN_byte_array_to_lower_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
 
+    // Calculate the file_crc16.
+    uint16_t crc16_calc = 0;
+    const uint8_t crc16_result = LFS_read_file_checksum_crc16(src_file_path, &crc16_calc);
+    if (crc16_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error calculating CRC16: Err=%d", crc16_result);
+        return crc16_result;
+    }
+
     // Format like JSON.
     snprintf(
         response_output_buf, response_output_buf_len,
@@ -313,7 +365,7 @@ static int8_t fill_response_output_buffer(
         BLOB_NAME,
         src_file_path,
         file_size_bytes,
-        adcs_crc16,
+        crc16_calc,
         hex_hash_str,
         sd_card_index
     );
@@ -413,7 +465,7 @@ uint8_t blob_main(
 
     // Send a telecommand response with the file name, size, hash, and crc16.
     const int8_t resp_err = fill_response_output_buffer(
-        lfs_file_path, latest_file_info.file_crc16, latest_file_index,
+        lfs_file_path, latest_file_index,
         response_buf, response_buf_len
     );
     if (resp_err != 0) {

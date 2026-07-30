@@ -231,7 +231,7 @@ static int8_t fill_response_output_buffer(
     GEN_byte_array_to_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
 
     // TODO: Switch to GEN_byte_array_to_lower_hex_str implementation.
-    // TODO: Include ADCS crc16 checksum in here too. Helpful for validation.
+    // TODO: Include ADCS crc16 checksum in here too. Helpful for validation. LFS_read_file_checksum_crc16()
 
     // Format like JSON.
     snprintf(
