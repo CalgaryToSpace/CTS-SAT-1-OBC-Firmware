@@ -18,6 +18,7 @@
 //
 // Notes:
 //  1. Likely doesn't work if there are more than 70 files on the SD card. It's the way it has to be.
+//  2. You MUST stop the ADCS SD logging before running this command.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob", run:

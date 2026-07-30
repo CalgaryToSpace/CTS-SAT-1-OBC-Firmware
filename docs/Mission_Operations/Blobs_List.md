@@ -132,3 +132,40 @@ To start the extended beacon, repeating every 9 seconds, run:
 ```
 CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
 ```
+
+## `blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob`
+
+Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` folder, and then bulk downlinks it.
+
+```c
+// This is a blob (executable) that will nearly double the rate of ADCS commissioning.
+//
+// Motivation: Each ADCS commissioning step requires collecting data into an SD file, downlinking
+// the list of files, selecting the right file (by its checksum), and then bulk downlinking it. It
+// requires two uplink overpasses to get the file. This blob makes it so a single commissioning 
+// step requires only one uplink overpass to fetch the file.
+//
+// Args Format: 0 (placeholder, not used)
+```
+
+### Description of Blob (Steps)
+
+1. Lists all files on the ADCS SD card.
+2. Determine's the latest file, by index, on the SD card.
+3. Checks if that file has "is_busy_updating = true". Returns error code 96 if it does.
+4. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
+    not yet downloaded, it downloads it. Otherwise, it does nothing.
+5. Starts the bulk downlink process to download the file.
+6. Sends a telecommand response with the file name, size, hash, and crc16.
+
+### Notes
+1. Likely doesn't work if there are more than 70 files on the SD card. It's the way it has to be.
+2. You MUST stop the ADCS SD logging before running this command.
+
+### Example Usage
+
+To transfer and downlink the latest file on the ADCS SD card, run:
+
+```
+CTS1+exec_blob_from_fs(blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob,0,0)!
+```
