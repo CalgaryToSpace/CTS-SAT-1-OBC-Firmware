@@ -1,4 +1,4 @@
-// This is a blob (executable) that replaces will nearly double the rate of ADCS commissioning.
+// This is a blob (executable) that will nearly double the rate of ADCS commissioning.
 //
 // Motivation: Each ADCS commissioning step requires collecting data into an SD file, downlinking
 // the list of files, selecting the right file (by its checksum), and then bulk downlinking it. It
@@ -352,7 +352,7 @@ static int8_t fill_response_output_buffer(
 
     // Calculate the file_crc16.
     uint16_t crc16_calc = 0;
-    const uint8_t crc16_result = LFS_read_file_checksum_crc16(src_file_path, &crc16_calc);
+    const int8_t crc16_result = LFS_read_file_checksum_crc16(src_file_path, &crc16_calc);
     if (crc16_result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error calculating CRC16: Err=%d", crc16_result);
         return crc16_result;
@@ -428,7 +428,7 @@ uint8_t blob_main(
     if (exists_result < 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: lfs_stat('%s') -> %d.",
+            "%s error: lfs_file_exists('%s') -> %d.",
             BLOB_NAME, lfs_file_path, exists_result
         );
         return 93;
