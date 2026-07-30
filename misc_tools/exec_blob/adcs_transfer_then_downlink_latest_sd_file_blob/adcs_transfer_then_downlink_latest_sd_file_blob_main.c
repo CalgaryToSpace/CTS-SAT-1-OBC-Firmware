@@ -385,8 +385,24 @@ uint8_t blob_main(
     }
     const bool already_transferred = (exists_result == 1);
 
-    // TODO (next step): transfer the file from the ADCS SD card if not already_transferred,
-    // then start the bulk downlink and report the final file name/size/hash/crc16.
+    // Step 3: transfer the file from the ADCS SD card to LittleFS, unless it's already there.
+    // Checksum validation guards against the SD card's file list shifting between our
+    // find_latest_sd_file() call above and this transfer (e.g. a file being deleted/added).
+    if (!already_transferred) {
+        const int16_t transfer_err = ADCS_save_sd_file_to_lfs_by_index(
+            false, latest_file_index, true, latest_file_info.file_crc16
+        );
+        if (transfer_err != 0) {
+            snprintf(
+                response_buf, response_buf_len,
+                "%s error: ADCS_save_sd_file_to_lfs_by_index(index=%u) -> %d.",
+                BLOB_NAME, latest_file_index, transfer_err
+            );
+            return 94;
+        }
+    }
+
+    // TODO (next step): start the bulk downlink and report the final file name/size/hash/crc16.
     snprintf(
         response_buf, response_buf_len,
         "{\"action\":\"%s\",\"latest_index\":%u,\"file_type\":%d,\"crc16\":\"0x%x\",\"size\":%lu,"
