@@ -43,6 +43,7 @@ typedef enum {
 } LOG_severity_enum_t;
 
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
+static const uint32_t LOG_SYSTEM_ADCS = 1 << 7;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char *BLOB_NAME = "adcs_grab_and_go_blob";
@@ -64,6 +65,8 @@ extern int8_t LFS_read_file_checksum_sha256(
     const char filepath[], uint32_t start_offset, uint32_t max_length, uint8_t sha256_dest[32]
 );
 
+void HAL_Delay(uint32_t Delay);
+
 // Bulk file downlink state and control.
 typedef enum {
     COMMS_BULK_FILE_DOWNLINK_STATE_IDLE,
@@ -83,6 +86,7 @@ uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct);
 int16_t ADCS_save_sd_file_to_lfs_by_index(
     bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum
 );
+uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack);
 
 // Worst-case time to walk the ADCS file-list pointer across all 255 files; same bound the firmware uses.
 static const uint16_t ADCS_FILE_POINTER_TIMEOUT_MS = 60000;
@@ -98,6 +102,19 @@ static inline uint32_t TIME_uptime_ms() {
     return TIME_uptime_ms_from_tim6;
 }
 
+static void adcs_ack_incantation(void) {
+    // "To avoid interference from the EPS, do a separate ack for these commands.
+    ADCS_cmd_ack_struct_t ack_status;
+    ADCS_cmd_ack(&ack_status);
+    if (ack_status.error_flag != 0) {
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "ADCS command ack failed with error code %d",
+            ack_status.error_flag
+        );
+    }
+}
+
 /// @brief Find the file at the highest index in the ADCS SD card's file list.
 /// @param[out] out_file_info Set to the file_info of the latest (highest-index) file, on success.
 /// @param[out] out_index Set to the index (starting at 0) of the latest file, on success.
@@ -107,7 +124,9 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
     const uint32_t function_start_time = TIME_uptime_ms();
 
     const uint8_t reset_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
     if (reset_status != 0) {
+        adcs_ack_incantation();
         return reset_status;
     }
 
@@ -119,7 +138,10 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
     for (uint16_t index = 0; index < 256; index++) {
         ADCS_file_info_struct_t file_info;
         const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        HAL_Delay(100);
         if (file_info_status != 0) {
+            adcs_ack_incantation();
+
             return file_info_status;
         }
 
@@ -128,7 +150,7 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
             break;
         }
 
-        *out_file_info = file_info;
+        *out_file_info = file_info; // Copy struct into the caller's buffer.
         latest_index = index;
         found_any = true;
 
@@ -137,7 +159,10 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
         }
 
         const uint8_t advance_status = ADCS_advance_file_list_read_pointer();
+        HAL_Delay(100);
         if (advance_status != 0) {
+            adcs_ack_incantation();
+
             return advance_status;
         }
     }
