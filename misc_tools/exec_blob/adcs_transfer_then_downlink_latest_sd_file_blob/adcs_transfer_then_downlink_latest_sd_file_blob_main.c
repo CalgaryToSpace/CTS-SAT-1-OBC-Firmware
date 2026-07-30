@@ -29,6 +29,7 @@
 #include <stdarg.h>
 
 #include "../lfs.h"
+#include "adcs_drivers/adcs_types.h"
 
 #define LFS_MAX_PATH_LENGTH 200
 
@@ -44,7 +45,6 @@ typedef enum {
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
-static const char ARG_DELIM = ';';
 static const char *BLOB_NAME = "adcs_grab_and_go_blob";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
@@ -74,6 +74,19 @@ extern COMMS_bulk_file_downlink_state_enum_t COMMS_bulk_file_downlink_state;
 extern char COMMS_bulk_file_downlink_file_path[LFS_MAX_PATH_LENGTH];
 int32_t COMMS_bulk_file_downlink_start(char *file_path, uint32_t start_offset, uint32_t max_bytes);
 
+// ADCS SD-card file listing/transfer.
+extern uint8_t LFS_is_lfs_mounted;
+
+uint8_t ADCS_reset_file_list_read_pointer();
+uint8_t ADCS_advance_file_list_read_pointer();
+uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct);
+int16_t ADCS_save_sd_file_to_lfs_by_index(
+    bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum
+);
+
+// Worst-case time to walk the ADCS file-list pointer across all 255 files; same bound the firmware uses.
+static const uint16_t ADCS_FILE_POINTER_TIMEOUT_MS = 60000;
+
 // lfs_file_open/size/seek/read/write/close are already declared in lfs.h;
 // their definitions are resolved against the firmware ELF at link time.
 
@@ -85,70 +98,56 @@ static inline uint32_t TIME_uptime_ms() {
     return TIME_uptime_ms_from_tim6;
 }
 
-static uint16_t parse_token(
-    const char *src, uint16_t src_offset, uint16_t src_len,
-    char *dst, uint16_t dst_size
-) {
-    uint16_t di = 0;
-    uint16_t i  = src_offset;
+/// @brief Find the file at the highest index in the ADCS SD card's file list.
+/// @param[out] out_file_info Set to the file_info of the latest (highest-index) file, on success.
+/// @param[out] out_index Set to the index (starting at 0) of the latest file, on success.
+/// @return 0 on success (at least one file exists), 91 if the SD card's file list is empty,
+///     otherwise the non-zero error code from the underlying ADCS command that failed.
+static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint16_t *out_index) {
+    const uint32_t function_start_time = TIME_uptime_ms();
 
-    // Copy until next delimiter or end
-    while (i < src_len && src[i] != ARG_DELIM && di < dst_size - 1) {
-        dst[di++] = src[i++];
-    }
-    dst[di] = '\0';
-
-    // Skip the delimiter itself
-    if (i < src_len && src[i] == ARG_DELIM) i++;
-
-    // Return index just past the token
-    return i;
-}
-
-static int8_t hex_to_int(char c) {
-    if (c >= '0' && c <= '9') return c - '0';
-    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-    return -1; // Error.
-}
-
-/// @brief Parse a string into an integer.
-/// @param s String to parse. Valid formats: "0x<digits>" or "<digits>". Underscores are ignored.
-/// @returns Parsed integer, or 0 if invalid.
-static int32_t parse_int(const char *s, bool *ok) {
-    uint32_t result = 0;
-    bool hex = false;
-    uint8_t i = 0;
-
-    if (ok) *ok = false;
-    if (!s || s[0] == '\0') return 0;
-
-    // Detect 0x prefix
-    if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) {
-        hex = true;
-        i = 2;
-        if (s[i] == '\0') return 0; // bare "0x" is invalid
+    const uint8_t reset_status = ADCS_reset_file_list_read_pointer();
+    if (reset_status != 0) {
+        return reset_status;
     }
 
-    bool has_digits = false;
-    while (s[i] != '\0') {
-        if (s[i] == '_') { i++; continue; } // skip delimiter
+    bool found_any = false;
+    uint16_t latest_index = 0;
 
-        if (hex) {
-            int8_t d = hex_to_int(s[i]);
-            if (d < 0) return 0; // invalid char
-            result = (result << 4) | (uint8_t)d;
-        } else {
-            if (s[i] < '0' || s[i] > '9') return 0; // invalid char
-            result = result * 10 + (s[i] - '0');
+    // Walk the file list (bounded to 256 entries, matching ADCS_save_sd_file_to_lfs_by_index's limit)
+    // until we hit the all-zero sentinel that marks the end of the list.
+    for (uint16_t index = 0; index < 256; index++) {
+        ADCS_file_info_struct_t file_info;
+        const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (file_info_status != 0) {
+            return file_info_status;
         }
-        has_digits = true;
-        i++;
+
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // All-zero file_info means we've reached the end of the file list.
+            break;
+        }
+
+        *out_file_info = file_info;
+        latest_index = index;
+        found_any = true;
+
+        if (TIME_uptime_ms() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            break; // Timed out; use the latest file found so far.
+        }
+
+        const uint8_t advance_status = ADCS_advance_file_list_read_pointer();
+        if (advance_status != 0) {
+            return advance_status;
+        }
     }
 
-    if (!has_digits) return 0;
-    if (ok) *ok = true;
-    return (int32_t)result;
+    if (!found_any) {
+        return 91; // No files found on the ADCS SD card.
+    }
+
+    *out_index = latest_index;
+    return 0;
 }
 
 /// @brief Writes a byte array to a hex string (no spaces between bytes).
@@ -287,71 +286,38 @@ uint8_t blob_main(
         args_str
     );
 
-    const uint16_t args_str_len = strlen(args_str);
-    uint16_t pos = 0;
-
-    char arg0_file_path[LFS_MAX_PATH_LENGTH];
-    char arg1_start_offset[20];
-    char arg2_byte_count[20];
-
-    pos = parse_token(args_str, pos, args_str_len, arg0_file_path,    sizeof(arg0_file_path));
-    pos = parse_token(args_str, pos, args_str_len, arg1_start_offset, sizeof(arg1_start_offset));
-    pos = parse_token(args_str, pos, args_str_len, arg2_byte_count,   sizeof(arg2_byte_count));
-
-    if (arg0_file_path[0] == '\0'
-        || arg1_start_offset[0] == '\0'
-        || arg2_byte_count[0] == '\0'
-    ) {
-        // Missing args error.
+    // Step 1: find the latest (highest-index) file on the ADCS SD card.
+    ADCS_file_info_struct_t latest_file_info;
+    uint16_t latest_file_index;
+    const uint8_t find_latest_err = find_latest_sd_file(&latest_file_info, &latest_file_index);
+    if (find_latest_err != 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: missing args!",
-            BLOB_NAME
+            "%s error: find_latest_sd_file() -> %d.",
+            BLOB_NAME, find_latest_err
         );
-        return 135;
+        return find_latest_err;
     }
 
-    bool arg1_start_offset_ok, arg2_byte_count_ok;
-    int32_t start_offset = parse_int(arg1_start_offset, &arg1_start_offset_ok);
-    int32_t byte_count   = parse_int(arg2_byte_count,   &arg2_byte_count_ok);
-
-    if (!arg1_start_offset_ok || !arg2_byte_count_ok) {
+    if (latest_file_info.busy_updating) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: invalid int args!",
-            BLOB_NAME
+            "%s error: latest file (index %u) is still busy_updating.",
+            BLOB_NAME, latest_file_index
         );
-        return 136;
+        return 96;
     }
 
-    const int8_t resp_err = fill_response_output_buffer(
-        arg0_file_path, start_offset, byte_count,
-        response_buf, response_buf_len
+    // TODO (next step): check whether this file is already in `ADCS/`, transfer it if not,
+    // then start the bulk downlink and report the final file name/size/hash/crc16.
+    snprintf(
+        response_buf, response_buf_len,
+        "{\"action\":\"%s\",\"latest_index\":%u,\"file_type\":%d,\"crc16\":\"0x%x\",\"size\":%lu}",
+        BLOB_NAME,
+        latest_file_index,
+        latest_file_info.file_type,
+        latest_file_info.file_crc16,
+        latest_file_info.file_size
     );
-    if (resp_err != 0) {
-        snprintf(
-            response_buf, response_buf_len,
-            "Running %s: '%s;%d;%d' failed in checking file size/hash. Error: %d.",
-            BLOB_NAME,
-            arg0_file_path, start_offset, byte_count,
-            resp_err
-        );
-        return 10;
-    }
-    
-    const int8_t start_bulk_err = bulk_downlink_start_fixed(
-        arg0_file_path, start_offset, byte_count
-    );
-    if (start_bulk_err != 0) {
-        snprintf(
-            response_buf, response_buf_len,
-            "Running %s: '%s;%d;%d' failed in bulk_downlink_start_fixed(). Error: %d.",
-            BLOB_NAME,
-            arg0_file_path, start_offset, byte_count,
-            start_bulk_err
-        );
-        return 20;
-    }
-
     return 0;
 }
