@@ -150,6 +150,56 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
     return 0;
 }
 
+/// @brief Build the LittleFS path that `ADCS_save_sd_file_to_lfs_by_index()` uses/would use for a
+///     given file, matching its naming convention exactly (see adcs_commands.c).
+/// @param file_type The file's type, as reported by ADCS_get_file_info_telemetry().
+/// @param file_crc16 The file's CRC16, as reported by ADCS_get_file_info_telemetry().
+/// @param dest Destination buffer (at least 17 bytes, matching the firmware's `filename_string`).
+/// @param dest_size Size of `dest`.
+/// @return 0 on success, 92 if `file_type` isn't a recognized/downloadable type.
+static uint8_t build_adcs_lfs_filename(
+    ADCS_file_type_enum_t file_type, uint16_t file_crc16,
+    char *dest, uint16_t dest_size
+) {
+    switch (file_type) {
+        case ADCS_FILE_TYPE_TELEMETRY_LOG:
+            snprintf(dest, dest_size, "ADCS/log_%x.TLM", file_crc16);
+            break;
+        case ADCS_FILE_TYPE_JPG_IMAGE:
+            snprintf(dest, dest_size, "ADCS/img_%x.jpg", file_crc16);
+            break;
+        case ADCS_FILE_TYPE_BMP_IMAGE:
+            snprintf(dest, dest_size, "ADCS/img_%x.bmp", file_crc16);
+            break;
+        case ADCS_FILE_TYPE_INDEX:
+            snprintf(dest, dest_size, "ADCS/index_file");
+            break;
+        default:
+            return 92; // Unrecognized/undownloadable file type.
+    }
+    return 0;
+}
+
+/// @brief Check whether a regular file already exists in LittleFS at the given path.
+/// @param file_path Path to check.
+/// @return 1 if the file exists, 0 if it does not, negative on an LFS error other than "not found".
+static int8_t lfs_file_exists(const char *file_path) {
+    lfs_file_t file;
+    const int open_result = lfs_file_open(&LFS_filesystem, &file, file_path, LFS_O_RDONLY);
+    if (open_result == LFS_ERR_NOENT) {
+        return 0;
+    }
+    if (open_result < 0) {
+        return open_result;
+    }
+
+    const int close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0) {
+        return close_result;
+    }
+    return 1;
+}
+
 /// @brief Writes a byte array to a hex string (no spaces between bytes).
 /// @param byte_array Input byte array.
 /// @param byte_array_len Length of input `byte_array`.
@@ -308,16 +358,46 @@ uint8_t blob_main(
         return 96;
     }
 
-    // TODO (next step): check whether this file is already in `ADCS/`, transfer it if not,
+    // Step 2: figure out the LittleFS path this file would live at, and check whether it's
+    // already been transferred from the ADCS SD card.
+    char lfs_file_path[LFS_MAX_PATH_LENGTH];
+    const uint8_t build_filename_err = build_adcs_lfs_filename(
+        latest_file_info.file_type, latest_file_info.file_crc16,
+        lfs_file_path, sizeof(lfs_file_path)
+    );
+    if (build_filename_err != 0) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: unrecognized file_type %d for latest file (index %u).",
+            BLOB_NAME, latest_file_info.file_type, latest_file_index
+        );
+        return build_filename_err;
+    }
+
+    const int8_t exists_result = lfs_file_exists(lfs_file_path);
+    if (exists_result < 0) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: lfs_stat('%s') -> %d.",
+            BLOB_NAME, lfs_file_path, exists_result
+        );
+        return 93;
+    }
+    const bool already_transferred = (exists_result == 1);
+
+    // TODO (next step): transfer the file from the ADCS SD card if not already_transferred,
     // then start the bulk downlink and report the final file name/size/hash/crc16.
     snprintf(
         response_buf, response_buf_len,
-        "{\"action\":\"%s\",\"latest_index\":%u,\"file_type\":%d,\"crc16\":\"0x%x\",\"size\":%lu}",
+        "{\"action\":\"%s\",\"latest_index\":%u,\"file_type\":%d,\"crc16\":\"0x%x\",\"size\":%lu,"
+        "\"lfs_path\":\"%s\",\"already_transferred\":%d}",
         BLOB_NAME,
         latest_file_index,
         latest_file_info.file_type,
         latest_file_info.file_crc16,
-        latest_file_info.file_size
+        latest_file_info.file_size,
+        lfs_file_path,
+        already_transferred
     );
     return 0;
 }
