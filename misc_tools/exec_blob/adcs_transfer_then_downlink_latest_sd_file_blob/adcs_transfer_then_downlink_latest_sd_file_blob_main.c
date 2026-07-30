@@ -270,26 +270,24 @@ static int8_t bulk_downlink_start_fixed(
 }
 
 
-/// @brief Fill the response output buffer with info about the file (very helpful for decoding).
-/// @note This is a totally new feature, independent from the original bulk downlink telecommand.
-///     It is observed as a helpful feature for re-assembling the downlinked files during mission ops.
-/// @param src_file_path 
-/// @param start_offset 
-/// @param max_length Max length of the file to read, or 0 to read full file.
-/// @param response_output_buf 
-/// @param response_output_buf_len 
+/// @brief Fill the response output buffer with info about the downlinked file (very helpful for
+///     re-assembling/decoding the file from the downlinked bulk-transfer packets).
+/// @param src_file_path Path, in LittleFS, of the file that was downlinked.
+/// @param adcs_crc16 The file's CRC16, as reported by the ADCS (from ADCS_get_file_info_telemetry()).
+/// @param sd_card_index The file's index in the ADCS SD card's file list, at the time it was found.
+/// @param response_output_buf
+/// @param response_output_buf_len
 /// @return 0 on success, non-zero on error.
 static int8_t fill_response_output_buffer(
-    const char *src_file_path,
-    uint32_t start_offset, uint32_t max_length,
+    const char *src_file_path, uint16_t adcs_crc16, uint16_t sd_card_index,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Prepare the SHA256 destination buffer.
     uint8_t sha256_dest[32] = {0}; // 32 bytes for SHA256
 
-    // Calculate the SHA256 hash of the file.
+    // Calculate the SHA256 hash of the whole file.
     const int8_t sha256_result = LFS_read_file_checksum_sha256(
-        src_file_path, start_offset, max_length, sha256_dest
+        src_file_path, 0, 0, sha256_dest
     );
 
     if (sha256_result != 0) {
@@ -303,21 +301,21 @@ static int8_t fill_response_output_buffer(
         snprintf(response_output_buf, response_output_buf_len, "Error getting file size: Err=%ld", file_size_bytes);
         return file_size_bytes;
     }
-    const uint32_t real_length_hashed = (max_length == 0 || max_length >= (uint32_t)file_size_bytes) ? (uint32_t)file_size_bytes : max_length;
 
-    // Convert the SHA256 hash to a little-endian hex string.
+    // Convert the SHA256 hash to a lowercase hex string.
     char hex_hash_str[100]; // Should be 64 chars.
     GEN_byte_array_to_lower_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
 
     // Format like JSON.
     snprintf(
         response_output_buf, response_output_buf_len,
-        "{\"action\":\"%s\",\"file\":\"%s\",\"file_size\":%ld,\"crc16\":0x%s,\"sha256\":\"%s\",\"offset\":%lu,\"length\":%lu}",
+        "{\"action\":\"%s\",\"file\":\"%s\",\"file_size\":%ld,\"crc16\":\"0x%x\",\"sha256\":\"%s\",\"sd_card_index\":%u}",
         BLOB_NAME,
         src_file_path,
         file_size_bytes,
+        adcs_crc16,
         hex_hash_str,
-        start_offset, real_length_hashed
+        sd_card_index
     );
     return 0;
 }
@@ -402,18 +400,30 @@ uint8_t blob_main(
         }
     }
 
-    // TODO (next step): start the bulk downlink and report the final file name/size/hash/crc16.
-    snprintf(
-        response_buf, response_buf_len,
-        "{\"action\":\"%s\",\"latest_index\":%u,\"file_type\":%d,\"crc16\":\"0x%x\",\"size\":%lu,"
-        "\"lfs_path\":\"%s\",\"already_transferred\":%d}",
-        BLOB_NAME,
-        latest_file_index,
-        latest_file_info.file_type,
-        latest_file_info.file_crc16,
-        latest_file_info.file_size,
-        lfs_file_path,
-        already_transferred
+    // Step 4: start the bulk downlink of the transferred file.
+    const int8_t start_bulk_err = bulk_downlink_start_fixed(lfs_file_path, 0, 0);
+    if (start_bulk_err != 0) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: bulk_downlink_start_fixed('%s') -> %d.",
+            BLOB_NAME, lfs_file_path, start_bulk_err
+        );
+        return 20;
+    }
+
+    // Send a telecommand response with the file name, size, hash, and crc16.
+    const int8_t resp_err = fill_response_output_buffer(
+        lfs_file_path, latest_file_info.file_crc16, latest_file_index,
+        response_buf, response_buf_len
     );
+    if (resp_err != 0) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s: downlink of '%s' started, but building the response failed. Error: %d.",
+            BLOB_NAME, lfs_file_path, resp_err
+        );
+        return 10;
+    }
+
     return 0;
 }
