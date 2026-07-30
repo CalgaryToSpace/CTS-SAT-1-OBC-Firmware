@@ -86,9 +86,10 @@ extern uint8_t LFS_is_lfs_mounted;
 uint8_t ADCS_reset_file_list_read_pointer();
 uint8_t ADCS_advance_file_list_read_pointer();
 uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct);
-int16_t ADCS_save_sd_file_to_lfs_by_index(
-    bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum
-);
+// int16_t ADCS_save_sd_file_to_lfs_by_index(
+//     bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum
+// );
+int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file_checksum);
 uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack);
 
 // Worst-case time to walk the ADCS file-list pointer across all 255 files; same bound the firmware uses.
@@ -171,7 +172,7 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
     return 0;
 }
 
-/// @brief Build the LittleFS path that `ADCS_save_sd_file_to_lfs_by_index()` uses/would use for a
+/// @brief Build the LittleFS path that `ADCS_save_sd_file_to_lfs_by_{index,checksum}()` uses/would use for a
 ///     given file, matching its naming convention exactly (see adcs_commands.c).
 /// @param file_type The file's type, as reported by ADCS_get_file_info_telemetry().
 /// @param file_crc16 The file's CRC16, as reported by ADCS_get_file_info_telemetry().
@@ -204,7 +205,7 @@ static uint8_t build_adcs_lfs_filename(
 /// @brief Check whether a regular file already exists in LittleFS at the given path.
 /// @param file_path Path to check.
 /// @return 1 if the file exists, 0 if it does not, negative on an LFS error other than "not found".
-static int8_t lfs_file_exists(const char *file_path) {
+static int8_t LFS_does_file_exist(const char *file_path) {
     lfs_file_t file;
     const int open_result = lfs_file_open(&LFS_filesystem, &file, file_path, LFS_O_RDONLY);
     if (open_result == LFS_ERR_NOENT) {
@@ -445,11 +446,11 @@ uint8_t blob_main(
         return build_filename_err;
     }
 
-    const int8_t exists_result = lfs_file_exists(lfs_file_path);
+    const int8_t exists_result = LFS_does_file_exist(lfs_file_path);
     if (exists_result < 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: lfs_file_exists('%s') -> %d.",
+            "%s error: LFS_does_file_exist('%s') -> %d.",
             BLOB_NAME, lfs_file_path, exists_result
         );
         return 93;
@@ -460,13 +461,13 @@ uint8_t blob_main(
     // Checksum validation guards against the SD card's file list shifting between our
     // find_latest_sd_file() call above and this transfer (e.g. a file being deleted/added).
     if (!already_transferred) {
-        const int16_t transfer_err = ADCS_save_sd_file_to_lfs_by_index(
-            false, latest_file_index, true, latest_file_info.file_crc16
+        const int16_t transfer_err = ADCS_save_sd_file_to_lfs_by_checksum(
+            false, latest_file_info.file_crc16
         );
         if (transfer_err != 0) {
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: ADCS_save_sd_file_to_lfs_by_index(index=%u) -> %d.",
+                "%s error: ADCS_save_sd_file_to_lfs_by_checksum(index=%u) -> %d.",
                 BLOB_NAME, latest_file_index, transfer_err
             );
             return 94;
