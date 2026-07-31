@@ -34,7 +34,7 @@ CFLAGS += \
 LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 
-TARGET = adcs_transfer_then_downlink_latest_sd_file_blob
+TARGET = adcs_get_latest_sd_file_blob
 
 ELF = $(BUILD_DIR)/$(TARGET).elf
 BIN = $(BUILD_DIR)/$(TARGET).bin
@@ -46,7 +46,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Build, link, and print the size info.
-$(ELF): adcs_transfer_then_downlink_latest_sd_file_blob_main.c $(FW_ELF) | $(BUILD_DIR)
+$(ELF): adcs_get_latest_sd_file_blob_main.c $(FW_ELF) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -T blob.ld $< -o $@ $(LDFLAGS)
 	@echo "--- Section sizes ---"
 	$(SIZE) -A $@

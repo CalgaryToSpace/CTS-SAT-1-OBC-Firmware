@@ -133,7 +133,7 @@ To start the extended beacon, repeating every 9 seconds, run:
 CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
 ```
 
-## `blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob`
+## `blobs/adcs_get_latest_sd_file_v1.blob`
 
 Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` folder, and then bulk downlinks it.
 
@@ -168,5 +168,5 @@ Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` f
 To transfer and downlink the latest file on the ADCS SD card, run:
 
 ```
-CTS1+exec_blob_from_fs(blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob,0,0)!
+CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v1.blob,0,0)!
 ```

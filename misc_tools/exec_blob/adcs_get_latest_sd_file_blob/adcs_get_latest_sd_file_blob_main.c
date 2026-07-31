@@ -22,8 +22,8 @@
 //  2. You MUST stop the ADCS SD logging before running this command.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob", run:
-// CTS1+exec_blob_from_fs(blobs/adcs_transfer_then_downlink_latest_sd_file_v1.blob,0,0)!
+// After uplinking the blob as "blobs/adcs_get_latest_sd_file_v1.blob", run:
+// CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v1.blob,0,0)!
 //
 // Implementation Note: This blob also includes the fix from the `bulk_downlink_start_blob` blob,
 // as is required to initiate bulk file downlinks.
@@ -51,7 +51,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SYSTEM_ADCS = 1 << 7;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
-static const char *BLOB_NAME = "adcs_grab_and_go_blob";
+static const char *BLOB_NAME = "adcs_get_latest_sd_file_blob";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
