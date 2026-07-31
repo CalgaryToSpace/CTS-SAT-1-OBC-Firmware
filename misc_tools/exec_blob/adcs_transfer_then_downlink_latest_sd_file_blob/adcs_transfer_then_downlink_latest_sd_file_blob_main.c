@@ -8,13 +8,14 @@
 // Args Format: 0 (placeholder, not used)
 //
 // Description of Blob:
-//  1. Lists all files on the ADCS SD card.
-//  2. Determine's the latest file, by index, on the SD card.
-//  3. Checks if that file has "is_busy_updating = true". Returns error code 96 if it does.
-//  4. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
+//  1. Sets the ADCS SD logging config to stop primary logging (in case it wasn't stopped yet).
+//  2. Lists all files on the ADCS SD card.
+//  3. Determine's the latest file, by index, on the SD card.
+//  4. Checks if that file has "is_busy_updating = true". Returns error code 96 if it does.
+//  5. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
 //      not yet downloaded, it downloads it. Otherwise, it does nothing.
-//  5. Starts the bulk downlink process to download the file.
-//  6. Sends a telecommand response with the file name, size, hash, and crc16.
+//  6. Starts the bulk downlink process to download the file.
+//  7. Sends a telecommand response with the file name, size, hash, and crc16.
 //
 // Notes:
 //  1. Likely doesn't work if there are more than 70 files on the SD card. It's the way it has to be.
@@ -47,7 +48,7 @@ typedef enum {
 } LOG_severity_enum_t;
 
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
-// static const uint32_t LOG_SYSTEM_ADCS = 1 << 7;
+static const uint32_t LOG_SYSTEM_ADCS = 1 << 7;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char *BLOB_NAME = "adcs_grab_and_go_blob";
@@ -92,6 +93,10 @@ uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct);
 // );
 int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file_checksum);
 uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack);
+uint8_t ADCS_set_sd_log_config(
+    uint8_t which_log, const uint8_t **log_array, uint8_t log_array_len, uint16_t log_period,
+    ADCS_sd_log_destination_enum_t which_sd
+);
 
 // Worst-case time to walk the ADCS file-list pointer across all 255 files; same bound the firmware uses.
 static const uint16_t ADCS_FILE_POINTER_TIMEOUT_MS = 60000;
@@ -408,6 +413,31 @@ uint8_t blob_main(
         BLOB_NAME,
         args_str
     );
+
+    // Step 0: Stop the ADCS SD logging.
+    {
+        const uint8_t sd_log_config[10] = {0,0,0,0,0,0,0,0,0,0};
+        const uint8_t *sd_log_config_ptr[1] = {sd_log_config};
+        const uint8_t stop_status = ADCS_set_sd_log_config(
+            1, // (uint8_t) which_log [1 = primary, 2 = secondary]
+            sd_log_config_ptr,
+            1, // length of sd_log_config_ptr
+            0, // (uint8_t) log_period [0 to disable]
+            0 // (uint8_t) which_sd [0 = primary, 1 = secondary]
+        );
+
+        HAL_Delay(250);
+
+        if (stop_status != 0) {
+            LOG_message(
+                LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "%s - Error stopping ADCS SD logging: %d",
+                BLOB_NAME,
+                stop_status
+            );
+            // Steamroll on error.
+        }
+    }
 
     // Step 1: find the latest (highest-index) file on the ADCS SD card.
     ADCS_file_info_struct_t latest_file_info;

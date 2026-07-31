@@ -150,13 +150,14 @@ Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` f
 
 ### Description of Blob (Steps)
 
-1. Lists all files on the ADCS SD card.
-2. Determine's the latest file, by index, on the SD card.
-3. Checks if that file has "is_busy_updating = true". Returns error code 96 if it does.
-4. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
+1. Sets the ADCS SD logging config to stop primary logging (in case it wasn't stopped yet).
+2. Lists all files on the ADCS SD card.
+3. Determine's the latest file, by index, on the SD card.
+4. Checks if that file has "is_busy_updating = true". Returns error code 96 if it does.
+5. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
     not yet downloaded, it downloads it. Otherwise, it does nothing.
-5. Starts the bulk downlink process to download the file.
-6. Sends a telecommand response with the file name, size, hash, and crc16.
+6. Starts the bulk downlink process to download the file.
+7. Sends a telecommand response with the file name, size, hash, and crc16.
 
 ### Notes
 1. Likely doesn't work if there are more than 70 files on the SD card. It's the way it has to be.
