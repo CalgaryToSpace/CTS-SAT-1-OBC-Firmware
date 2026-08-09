@@ -107,6 +107,8 @@ typedef struct {
     uint32_t magic; // GNSS_RING_BUFFER_MAGIC once initialized; anything else means cold/garbage SRAM.
     uint16_t write_idx; // Next slot to write, 0..(CAPACITY-1). Wraps around (circular eviction).
     uint16_t count; // Number of valid samples stored so far, capped at GNSS_RING_BUFFER_CAPACITY.
+    uint32_t gnss_fetch_failure_count; // Total GNSS data fetch failures across all blob executions
+        // (GNSS comms failures + BESTXYZB sync-not-found extraction failures), since cold-init.
     uint8_t samples[GNSS_RING_BUFFER_CAPACITY][GNSS_SAMPLE_SIZE];
 } GNSS_ring_buffer_t;
 #pragma pack(pop)
@@ -338,6 +340,7 @@ static uint8_t sample_and_store_bestxyzb() {
             "%s: GNSS_send_cmd_get_response() -> %d",
             BLOB_NAME, gnss_status
         );
+        g_ring->gnss_fetch_failure_count++;
         return 1;
     }
 
@@ -349,6 +352,7 @@ static uint8_t sample_and_store_bestxyzb() {
             "%s: BESTXYZB binary sync (AA 44 12) not found in %d-byte GNSS response",
             BLOB_NAME, rx_buf_len
         );
+        g_ring->gnss_fetch_failure_count++;
         return 2;
     }
 
@@ -463,8 +467,9 @@ uint8_t blob_main(
     if ((power_check_status != 0) || (!gnss_is_on)) {
         snprintf(
             response_buf, response_buf_len,
-            "%s: GNSS channel is off (or EPS query failed, status=%d); NOT rescheduling, blob dying%s",
-            BLOB_NAME, power_check_status, cancel_msg
+            "%s: GNSS channel is off (or EPS query failed, status=%d); NOT rescheduling, blob dying. "
+            "gnss_fetch_failures=%lu%s",
+            BLOB_NAME, power_check_status, g_ring->gnss_fetch_failure_count, cancel_msg
         );
         return 50; // This is the intended safety shutdown path.
     }
@@ -487,9 +492,10 @@ uint8_t blob_main(
 
     snprintf(
         response_buf, response_buf_len,
-        "%s: sample_status=%d, ring_count=%d/%d, downlink_n=%ld, downlink_fail_count=%d%s",
+        "%s: sample_status=%d, ring_count=%d/%d, downlink_n=%ld, downlink_fail_count=%d, "
+        "gnss_fetch_failures=%lu%s",
         BLOB_NAME, sample_status, g_ring->count, GNSS_RING_BUFFER_CAPACITY,
-        downlink_n, downlink_fail_count, cancel_msg
+        downlink_n, downlink_fail_count, g_ring->gnss_fetch_failure_count, cancel_msg
     );
 
     if (sample_status != 0) {
