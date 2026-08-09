@@ -56,6 +56,7 @@
 #include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_commands.h"
 #include "comms_drivers/ax100_tx.h"
+#include "comms_drivers/comms_tx.h"
 #include "crypto/random_number_generator.h"
 
 typedef enum {
@@ -91,15 +92,17 @@ extern void LOG_message(
     LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
 
-// MARK: Persistent Ring Buffer (see blob.ld for the memory reservation rationale)
+// MARK: Persistent Ring Buffer
+
+// See blob.ld for the memory reservation rationale.
 
 // Defined by blob.ld: a NOLOAD symbol anchored at the start of the fixed `RING` memory region.
 extern uint8_t gnss_ring_buffer_base[];
 
 #define GNSS_RING_BUFFER_REGION_LEN 0x9000u // Must match blob.ld's MEMORY.RING.LENGTH.
 
-#define GNSS_SAMPLE_SIZE 120 // Trailing-zero-padded slot size. Each BESTXYZB is 116 bytes, so 4 bytes of zeros padding at the end.
-#define GNSS_RING_BUFFER_CAPACITY 300
+#define GNSS_SAMPLE_SIZE 144 // Slot size. Each BESTXYZB is 144 bytes. Value can be larger to add optional trailing padding.
+#define GNSS_RING_BUFFER_CAPACITY 255
 #define GNSS_RING_BUFFER_MAGIC 0xB35779C0u
 
 #pragma pack(push, 1)
@@ -109,6 +112,8 @@ typedef struct {
     uint16_t count; // Number of valid samples stored so far, capped at GNSS_RING_BUFFER_CAPACITY.
     uint32_t gnss_fetch_failure_count; // Total GNSS data fetch failures across all blob executions
         // (GNSS comms failures + BESTXYZB sync-not-found extraction failures), since cold-init.
+    uint16_t downlink_seq_num; // Next sequence number to stamp on a downlinked GNSS_bestxyzb_downlink_packet_t.
+        // Incremented (and wraps) per packet downlinked, persisted across this blob's executions.
     uint8_t samples[GNSS_RING_BUFFER_CAPACITY][GNSS_SAMPLE_SIZE];
 } GNSS_ring_buffer_t;
 #pragma pack(pop)
@@ -121,7 +126,26 @@ _Static_assert(
 #define g_ring ((GNSS_ring_buffer_t *)gnss_ring_buffer_base)
 
 
-// MARK: Arg Parsing (copied from other blobs, e.g. extended_beacon_blob, for consistency)
+// MARK: Packet
+
+#pragma pack(push, 1)
+typedef struct {
+    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE.
+
+    uint16_t downlink_seq_num; // Sequence number of this downlinked packet (persisted, wraps at 65536).
+    uint16_t ring_position; // Index (0..GNSS_RING_BUFFER_CAPACITY-1) within the ring buffer this sample came from.
+
+    uint8_t bestxyzb_data[GNSS_SAMPLE_SIZE]; // Raw BESTXYZB binary log sample.
+} GNSS_bestxyzb_downlink_packet_t;
+#pragma pack(pop)
+
+_Static_assert(
+    sizeof(GNSS_bestxyzb_downlink_packet_t) <= AX100_DOWNLINK_MAX_BYTES,
+    "GNSS_bestxyzb_downlink_packet_t must fit within a single AX100 downlink packet"
+);
+
+
+// MARK: Arg Parsing
 
 static uint16_t parse_token(
     const char *src, uint16_t src_offset, uint16_t src_len,
@@ -169,7 +193,9 @@ static int32_t parse_int(const char *s, bool *ok) {
 }
 
 
-// MARK: Self-Rescheduling (copied from extended_beacon_blob_main.c)
+// MARK: Self-Rescheduling
+
+// Note: Re-used from extended_beacon_blob_main.c
 
 static int16_t get_current_executing_tcmd_agenda_slot_num() {
     for (uint16_t i = 0; i < TCMD_AGENDA_SIZE; i++) {
@@ -257,7 +283,7 @@ static uint8_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute
 }
 
 
-// MARK: GNSS Power Check (SAFETY: this blob never powers GNSS on/off itself, only observes state)
+// MARK: GNSS Power Check
 
 /// @brief Check whether the GNSS EPS power channel is currently enabled, via the EPS PDU
 ///     housekeeping enabled-channels bitfield (NOT a GNSS-side query -- there is no such thing).
@@ -290,7 +316,7 @@ static uint8_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
 // MARK: GNSS Sampling
 
 /// @brief Find the NovAtel binary log sync sequence (0xAA 0x44 0x12) in a GNSS command-mode
-///     response, and copy up to GNSS_BESTXYZB_BINARY_LEN bytes from there into a zero-padded,
+///     response, and copy up to GNSS_BESTXYZB_BINARY_LEN bytes from there into a maybe-zero-padded,
 ///     GNSS_SAMPLE_SIZE-byte sample slot.
 /// @details GNSS command-mode responses are prefixed with an ASCII acknowledgment (observed as
 ///     "<OK\n[COM1]"-style text) before the actual binary log, so byte 0 of the raw response is
@@ -300,8 +326,7 @@ static uint8_t extract_bestxyzb_binary(
     const uint8_t *raw_buf, uint16_t raw_buf_len,
     uint8_t out_sample[GNSS_SAMPLE_SIZE]
 ) {
-    // Clear the sample slot. Important because nominally, the messages are a bit smaller than the
-    // full slot size.
+    // Clear the sample slot. Important in case the message(s) are a bit smaller than the full slot size.
     memset(out_sample, 0, GNSS_SAMPLE_SIZE);
 
     // Scan for the sync sequence, then copy up to GNSS_SAMPLE_SIZE bytes from there into the slot.
@@ -366,7 +391,8 @@ static uint8_t sample_and_store_bestxyzb() {
 }
 
 /// @brief Downlink up to `downlink_n` randomly-selected (with replacement) samples currently in
-///     the ring buffer.
+///     the ring buffer, each wrapped in a GNSS_bestxyzb_downlink_packet_t
+///     (COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE).
 /// @return Number of downlink failures (0 = all succeeded).
 static uint16_t downlink_random_samples(uint16_t downlink_n) {
     const uint16_t available = g_ring->count;
@@ -377,7 +403,13 @@ static uint16_t downlink_random_samples(uint16_t downlink_n) {
         const uint32_t rand_val = CRYPTO_generate_random_uint32(TIME_uptime_ms() + i);
         const uint16_t idx = (uint16_t)(rand_val % available);
 
-        const uint8_t tx_status = AX100_downlink_bytes(g_ring->samples[idx], GNSS_SAMPLE_SIZE);
+        GNSS_bestxyzb_downlink_packet_t packet;
+        packet.packet_type = COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE;
+        packet.downlink_seq_num = g_ring->downlink_seq_num++;
+        packet.ring_position = idx;
+        memcpy(packet.bestxyzb_data, g_ring->samples[idx], GNSS_SAMPLE_SIZE);
+
+        const uint8_t tx_status = AX100_downlink_bytes((uint8_t *)&packet, sizeof(packet));
         if (tx_status != 0) {
             fail_count++;
         }
