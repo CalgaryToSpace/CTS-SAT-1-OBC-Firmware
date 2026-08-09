@@ -9,8 +9,8 @@
 // that specified interval.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v2.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,9000)!
+// After uplinking the blob as "blobs/extended_beacon_v3.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v3.blob,0,9000)!
 //
 // Notes:
 //  1. Always use "0" as the second argument (i.e., always run with malloc).
@@ -24,7 +24,7 @@
 //      a command to run this blob on every uplink pass, whether or not it's already running.
 //  5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
 //      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-//      `CTS1+exec_blob_from_fs(blobs/extended_beacon_v2.blob,0,0)!` (which will run one last time,
+//      `CTS1+exec_blob_from_fs(blobs/extended_beacon_v3.blob,0,0)!` (which will run one last time,
 //      then cancel itself).
 
 #include <stdint.h>
@@ -68,7 +68,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char BLOB_NAME[] = "extended_beacon_blob";
+static const char BLOB_NAME[] = "extended_beacon_blob_v3";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -185,7 +185,10 @@ typedef struct {
     // End with a null-terminated configurable friendly message.
     char friendly_message[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
 
-    char end_message[4]; // "END\0" on basic packets; " X2\0" on extended packets (v2).
+    // "END\0" on basic packets.
+    // " X2\0" on extended packets (v2).
+    // " X3\0" on extended packets (v3).
+    char end_message[4];
 
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
     // MARK: Extended Fields
@@ -459,7 +462,9 @@ static int16_t cancel_other_scheduled_reruns_of_this_blob(int16_t current_slot_n
     return cancelled_count;
 }
 
-static uint8_t reexecute_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
+/// @brief Enqueue a copy of the currently executing tcmd, with a new time into the future to execute.
+/// @note This function avoids incrementing the "total telecommands" counter. Goal: Allow that counter to assess how many uplinked commands were successful.
+static uint8_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
     const int16_t slot_num = get_current_executing_tcmd_agenda_slot_num();
     if (slot_num < 0) {
         return 163;
@@ -474,6 +479,10 @@ static uint8_t reexecute_current_blob_tcmd(uint32_t time_into_future_to_execute_
     if (TCMD_add_tcmd_to_agenda(&new_tcmd) != 0) {
         return 164;
     }
+
+    // Added in v3+.
+    // Undo the counter increase in `TCMD_add_tcmd_to_agenda()`.
+    TCMD_total_tcmd_queued_count--;
 
     return 0;
 }
@@ -546,7 +555,7 @@ static void COMMS_fill_beacon_extended_packet(
         COMMS_beacon_friendly_message_str,
         strlen(COMMS_beacon_friendly_message_str)
     );
-    memcpy(beacon_packet->end_message, " X2", 4); // Extended beacon packet version.
+    memcpy(beacon_packet->end_message, " X3", 4); // Extended beacon packet version.
 
     // Set the extended beacon packet fields.
 
@@ -863,7 +872,7 @@ uint8_t blob_main(
 ) {
     // Log that the blob is starting (important for tracing crashes).
     LOG(
-        LOG_SEVERITY_NORMAL,
+        LOG_SEVERITY_DEBUG,
         "Blob (%s) args_str: '%s'",
         BLOB_NAME,
         args_str
@@ -952,11 +961,11 @@ uint8_t blob_main(
     }
 
     if (beacon_interval_ms > 0) {
-        const uint8_t reexec_result = reexecute_current_blob_tcmd(beacon_interval_ms);
+        const uint8_t reexec_result = reschedule_current_blob_tcmd(beacon_interval_ms);
         if (reexec_result != 0) {
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reexecute_current_blob_tcmd() -> %d%s",
+                "%s error: reschedule_current_blob_tcmd() -> %d%s",
                 BLOB_NAME,
                 reexec_result,
                 cancel_msg
