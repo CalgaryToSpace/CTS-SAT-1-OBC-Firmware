@@ -23,10 +23,11 @@
 //     (EPS_CHANNEL_3V3_GNSS) is enabled. If the GNSS power is disabled (e.g., EPS safety mode,
 //     forgot to enable it before, or intentionally disabled it), this blob ends and does not
 //     reschedule itself.
-//  4. If a GNSS query fails or the binary BESTXYZB log can't be found in the response (the
-//     receiver prefixes command-mode responses with an ASCII "<OK\n[COM1]"-style ack before the
-//     binary log), this run skips storing a new sample but still downlinks existing samples and
-//     reschedules normally, so transient GNSS comms errors self-heal on the next run.
+//  4. If a GNSS query fails for any reason, this run skips storing a new sample but still
+//     downlinks existing samples and reschedules normally, so transient GNSS comms errors
+//     "self-heal" on the next run.
+//  5. If GNSS firehose mode is activated, this blob skips collecting data samples while firehose
+//     mode is active, but will resume after firehose mode is disabled.
 
 // --------------------------
 
@@ -359,6 +360,11 @@ static uint8_t extract_bestxyzb_binary(
 ///     the persistent ring buffer (overwriting the oldest entry once full).
 /// @return 0 on success (sample stored), non-zero on GNSS comms or extraction failure.
 static uint8_t sample_and_store_bestxyzb() {
+    // Early exit condition: If in firehose mode, we can't do this.
+    if (GNSS_current_rx_mode == GNSS_RX_MODE_FIREHOSE_MODE) {
+        return 20;
+    }
+
     const char cmd[] = "log bestxyzb once\n";
     const uint16_t cmd_len = strlen(cmd);
 
