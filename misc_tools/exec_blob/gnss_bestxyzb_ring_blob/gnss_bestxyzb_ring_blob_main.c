@@ -28,6 +28,7 @@
 //     "self-heal" on the next run.
 //  5. If GNSS firehose mode is activated, this blob skips collecting data samples while firehose
 //     mode is active, but will resume after firehose mode is disabled.
+//  6. The ring buffer's contents may be retained between software reboots, watchdog resets, etc.
 
 // --------------------------
 
