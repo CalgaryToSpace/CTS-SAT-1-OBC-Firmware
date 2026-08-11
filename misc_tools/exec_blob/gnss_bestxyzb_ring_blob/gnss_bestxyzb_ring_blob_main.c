@@ -94,6 +94,47 @@ extern void LOG_message(
     LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
 
+// MARK: Error Enum
+
+// All named status/error codes returned by this blob's functions, including the values
+// `blob_main()` itself returns to the telecommand executor (0 = success).
+typedef enum {
+    BLOB_ERR_OK = 0,
+    BLOB_ERR_GNSS_COMMS_FAILED = 1, // GNSS_send_cmd_get_response() failed.
+    BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND = 2, // Sync bytes (AA 44 12) not found in GNSS response.
+    BLOB_ERR_EPS_QUERY_FAILED = 3, // EPS_CMD_get_pdu_housekeeping_data_eng() failed.
+    BLOB_ERR_FIREHOSE_MODE_ACTIVE = 20, // Skipped sampling because GNSS firehose mode is active.
+    BLOB_ERR_GNSS_POWERED_OFF = 50, // GNSS EPS channel is off (or EPS query failed); safety shutdown.
+    BLOB_ERR_DOWNLINK_PARTIAL_FAILURE = 60, // At least one downlink packet failed to send.
+    BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
+    BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
+    BLOB_ERR_CANCEL_RERUNS_FAILED = 137, // cancel_other_scheduled_reruns_of_this_blob() failed.
+    BLOB_ERR_NO_EXECUTING_AGENDA_SLOT = 163, // Couldn't find our own agenda slot to reschedule.
+    BLOB_ERR_AGENDA_ADD_FAILED = 164, // TCMD_add_tcmd_to_agenda() failed while rescheduling.
+} GNSS_ring_blob_error_enum_t;
+
+/// @brief Convert a GNSS_ring_blob_error_enum_t into a short human-readable name, for use in log
+///     messages and output strings.
+/// @return Static string; never NULL. "UNKNOWN_ERROR" for values not in the enum.
+static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) {
+    switch (err) {
+        case BLOB_ERR_OK: return "OK";
+        case BLOB_ERR_GNSS_COMMS_FAILED: return "GNSS_COMMS_FAILED";
+        case BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND: return "BESTXYZB_SYNC_NOT_FOUND";
+        case BLOB_ERR_EPS_QUERY_FAILED: return "EPS_QUERY_FAILED";
+        case BLOB_ERR_FIREHOSE_MODE_ACTIVE: return "FIREHOSE_MODE_ACTIVE";
+        case BLOB_ERR_GNSS_POWERED_OFF: return "GNSS_POWERED_OFF";
+        case BLOB_ERR_DOWNLINK_PARTIAL_FAILURE: return "DOWNLINK_PARTIAL_FAILURE";
+        case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
+        case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
+        case BLOB_ERR_CANCEL_RERUNS_FAILED: return "CANCEL_RERUNS_FAILED";
+        case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
+        case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
+        default: return "UNKNOWN_ERROR";
+    }
+}
+
+
 // MARK: Persistent Ring Buffer
 
 // See blob.ld for the memory reservation rationale.
@@ -262,10 +303,10 @@ static int16_t cancel_other_scheduled_reruns_of_this_blob(int16_t current_slot_n
 
 /// @brief Enqueue a copy of the currently executing tcmd, with a new time into the future to execute.
 /// @note This function avoids incrementing the "total telecommands" counter. Goal: Allow that counter to assess how many uplinked commands were successful.
-static uint8_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
+static GNSS_ring_blob_error_enum_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
     const int16_t slot_num = get_current_executing_tcmd_agenda_slot_num();
     if (slot_num < 0) {
-        return 163;
+        return BLOB_ERR_NO_EXECUTING_AGENDA_SLOT;
     }
 
     TCMD_parsed_tcmd_to_execute_t new_tcmd;
@@ -275,13 +316,13 @@ static uint8_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute
     new_tcmd.timestamp_to_execute = TIME_get_current_unix_epoch_time_ms() + time_into_future_to_execute_ms;
 
     if (TCMD_add_tcmd_to_agenda(&new_tcmd) != 0) {
-        return 164;
+        return BLOB_ERR_AGENDA_ADD_FAILED;
     }
 
     // Undo the counter increase in `TCMD_add_tcmd_to_agenda()`.
     TCMD_total_tcmd_queued_count--;
 
-    return 0;
+    return BLOB_ERR_OK;
 }
 
 
@@ -291,8 +332,9 @@ static uint8_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute
 ///     housekeeping enabled-channels bitfield (NOT a GNSS-side query -- there is no such thing).
 /// @param is_on_dest Set to 1 if the channel is enabled, 0 if disabled. Only meaningful if this
 ///     function returns 0.
-/// @return 0 on success (EPS query succeeded), non-zero if the EPS query itself failed.
-static uint8_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
+/// @return BLOB_ERR_OK on success (EPS query succeeded), BLOB_ERR_EPS_QUERY_FAILED
+///     if the EPS query itself failed.
+static GNSS_ring_blob_error_enum_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
     *is_on_dest = 0;
 
     EPS_struct_pdu_housekeeping_data_eng_t pdu_data;
@@ -307,7 +349,7 @@ static uint8_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
             );
 
             *is_on_dest = 1;
-            return 0;
+            return BLOB_ERR_OK;
         }
 
         LOG(
@@ -315,7 +357,7 @@ static uint8_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
             "%s: EPS_CMD_get_pdu_housekeeping_data_eng() -> %d",
             BLOB_NAME, eps_status
         );
-        return 1;
+        return BLOB_ERR_EPS_QUERY_FAILED;
     }
 
     // EPS_CHANNEL_3V3_GNSS == 8, which is < 16, so only stat_ch_on_bitfield is actually consulted;
@@ -323,7 +365,7 @@ static uint8_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
     *is_on_dest = EPS_check_status_bit_of_channel(
         pdu_data.stat_ch_on_bitfield, pdu_data.stat_ch_ext_on_bitfield, EPS_CHANNEL_3V3_GNSS
     );
-    return 0;
+    return BLOB_ERR_OK;
 }
 
 
@@ -335,8 +377,9 @@ static uint8_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
 /// @details GNSS command-mode responses are prefixed with an ASCII acknowledgment (observed as
 ///     "<OK\n[COM1]"-style text) before the actual binary log, so byte 0 of the raw response is
 ///     NOT the start of the binary packet -- this must be located by scanning for the sync bytes.
-/// @return 0 on success (sync found), 1 if the sync sequence was not found in the response.
-static uint8_t extract_bestxyzb_binary(
+/// @return BLOB_ERR_OK on success (sync found), BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND
+///     if the sync sequence was not found in the response.
+static GNSS_ring_blob_error_enum_t extract_bestxyzb_binary(
     const uint8_t *raw_buf, uint16_t raw_buf_len,
     uint8_t out_sample[GNSS_SAMPLE_SIZE]
 ) {
@@ -349,20 +392,20 @@ static uint8_t extract_bestxyzb_binary(
             const uint16_t available = raw_buf_len - i;
             const uint16_t copy_len = (available < GNSS_SAMPLE_SIZE) ? available : GNSS_SAMPLE_SIZE;
             memcpy(out_sample, &raw_buf[i], copy_len);
-            return 0;
+            return BLOB_ERR_OK;
         }
     }
 
-    return 1; // Sync sequence not found.
+    return BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND;
 }
 
 /// @brief Send "log bestxyzb once" to the GNSS and, on success, push the extracted binary log into
 ///     the persistent ring buffer (overwriting the oldest entry once full).
-/// @return 0 on success (sample stored), non-zero on GNSS comms or extraction failure.
-static uint8_t sample_and_store_bestxyzb() {
+/// @return BLOB_ERR_OK on success (sample stored), non-OK on GNSS comms or extraction failure.
+static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb() {
     // Early exit condition: If in firehose mode, we can't do this.
     if (GNSS_current_rx_mode == GNSS_RX_MODE_FIREHOSE_MODE) {
-        return 20;
+        return BLOB_ERR_FIREHOSE_MODE_ACTIVE;
     }
 
     const char cmd[] = "log bestxyzb once\n";
@@ -381,23 +424,23 @@ static uint8_t sample_and_store_bestxyzb() {
     if (gnss_status != 0) {
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: GNSS_send_cmd_get_response() -> %d",
-            BLOB_NAME, gnss_status
+            "%s: GNSS_send_cmd_get_response() -> %d (%s)",
+            BLOB_NAME, gnss_status, gnss_ring_blob_error_to_str(BLOB_ERR_GNSS_COMMS_FAILED)
         );
         g_ring->gnss_fetch_failure_count++;
-        return 1;
+        return BLOB_ERR_GNSS_COMMS_FAILED;
     }
 
     uint8_t sample[GNSS_SAMPLE_SIZE];
-    const uint8_t extract_status = extract_bestxyzb_binary(rx_buf, rx_buf_len, sample);
-    if (extract_status != 0) {
+    const GNSS_ring_blob_error_enum_t extract_status = extract_bestxyzb_binary(rx_buf, rx_buf_len, sample);
+    if (extract_status != BLOB_ERR_OK) {
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: BESTXYZB binary sync (AA 44 12) not found in %d-byte GNSS response",
-            BLOB_NAME, rx_buf_len
+            "%s: BESTXYZB binary sync (AA 44 12) not found in %d-byte GNSS response (%s)",
+            BLOB_NAME, rx_buf_len, gnss_ring_blob_error_to_str(extract_status)
         );
         g_ring->gnss_fetch_failure_count++;
-        return 2;
+        return extract_status;
     }
 
     memcpy(g_ring->samples[g_ring->write_idx], sample, GNSS_SAMPLE_SIZE);
@@ -406,7 +449,7 @@ static uint8_t sample_and_store_bestxyzb() {
         g_ring->count++;
     }
 
-    return 0;
+    return BLOB_ERR_OK;
 }
 
 /// @brief Downlink up to `downlink_n` randomly-selected (with replacement) samples currently in
@@ -462,8 +505,11 @@ uint8_t blob_main(
     pos = parse_token(args_str, pos, args_str_len, arg1_downlink_n, sizeof(arg1_downlink_n));
 
     if (arg0_repeat_interval_ms[0] == '\0' || arg1_downlink_n[0] == '\0') {
-        snprintf(response_buf, response_buf_len, "%s error: missing args!", BLOB_NAME);
-        return 135;
+        snprintf(
+            response_buf, response_buf_len, "%s error: missing args! (%s)",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_MISSING_ARGS)
+        );
+        return BLOB_ERR_MISSING_ARGS;
     }
 
     bool arg0_ok, arg1_ok;
@@ -471,8 +517,11 @@ uint8_t blob_main(
     const int32_t downlink_n = parse_int(arg1_downlink_n, &arg1_ok);
 
     if (!arg0_ok || !arg1_ok) {
-        snprintf(response_buf, response_buf_len, "%s error: invalid int args!", BLOB_NAME);
-        return 136;
+        snprintf(
+            response_buf, response_buf_len, "%s error: invalid int args! (%s)",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS)
+        );
+        return BLOB_ERR_INVALID_INT_ARGS;
     }
 
     // Protect the minimum repeat interval, same as the extended beacon blob: too low of a value
@@ -488,10 +537,10 @@ uint8_t blob_main(
     if (cancel_result < 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d",
-            BLOB_NAME, cancel_result
+            "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d (%s)",
+            BLOB_NAME, cancel_result, gnss_ring_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED)
         );
-        return 137;
+        return BLOB_ERR_CANCEL_RERUNS_FAILED;
     }
     else if (cancel_result > 0) {
         snprintf(cancel_msg, sizeof(cancel_msg), ", %d duplicate rerun(s) cancelled", cancel_result);
@@ -514,28 +563,28 @@ uint8_t blob_main(
     // This behaviour ensures the recurring blob doesn't  keep running (and consuming downlink
     // budget) once GNSS has been deliberately powered down.
     uint8_t gnss_is_on = 0;
-    const uint8_t power_check_status = is_gnss_channel_powered_on(&gnss_is_on);
-    if ((power_check_status != 0) || (!gnss_is_on)) {
+    const GNSS_ring_blob_error_enum_t power_check_status = is_gnss_channel_powered_on(&gnss_is_on);
+    if ((power_check_status != BLOB_ERR_OK) || (!gnss_is_on)) {
         snprintf(
             response_buf, response_buf_len,
-            "%s: GNSS channel is off (or EPS query failed, status=%d); NOT rescheduling, blob dying. "
+            "%s: GNSS channel is off (or EPS query failed, status=%s); NOT rescheduling, blob dying. "
             "gnss_fetch_failures=%lu%s",
-            BLOB_NAME, power_check_status, g_ring->gnss_fetch_failure_count, cancel_msg
+            BLOB_NAME, gnss_ring_blob_error_to_str(power_check_status), g_ring->gnss_fetch_failure_count, cancel_msg
         );
-        return 50; // This is the intended safety shutdown path.
+        return BLOB_ERR_GNSS_POWERED_OFF; // This is the intended safety shutdown path.
     }
 
     // GNSS channel is confirmed on: proceed with normal sampling/downlink.
-    const uint8_t sample_status = sample_and_store_bestxyzb();
+    const GNSS_ring_blob_error_enum_t sample_status = sample_and_store_bestxyzb();
     const uint16_t downlink_fail_count = downlink_random_samples((uint16_t)downlink_n);
 
     if (repeat_interval_ms > 0) {
-        const uint8_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
-        if (reexec_result != 0) {
+        const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
+        if (reexec_result != BLOB_ERR_OK) {
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reschedule_current_blob_tcmd() -> %d%s",
-                BLOB_NAME, reexec_result, cancel_msg
+                "%s error: reschedule_current_blob_tcmd() -> %s%s",
+                BLOB_NAME, gnss_ring_blob_error_to_str(reexec_result), cancel_msg
             );
             return reexec_result;
         }
@@ -543,23 +592,23 @@ uint8_t blob_main(
 
     snprintf(
         response_buf, response_buf_len,
-        "%s: sample_status=%d, ring_count=%d/%d, downlink_n=%ld, "
+        "%s: sample_status=%s, ring_count=%d/%d, downlink_n=%ld, "
         "gnss_fetch_failures=%lu%s",
-        BLOB_NAME, sample_status, g_ring->count, GNSS_RING_BUFFER_CAPACITY,
+        BLOB_NAME, gnss_ring_blob_error_to_str(sample_status), g_ring->count, GNSS_RING_BUFFER_CAPACITY,
         downlink_n, g_ring->gnss_fetch_failure_count, cancel_msg
     );
 
-    if (sample_status != 0) {
+    if (sample_status != BLOB_ERR_OK) {
         return 100 + sample_status; // Non-fatal: sample wasn't stored this run, but we still ran fully.
     }
     if (downlink_fail_count > 0) {
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: downlink_random_samples() -> %d failures",
-            BLOB_NAME, downlink_fail_count
+            "%s: downlink_random_samples() -> %d failures (%s)",
+            BLOB_NAME, downlink_fail_count, gnss_ring_blob_error_to_str(BLOB_ERR_DOWNLINK_PARTIAL_FAILURE)
         );
-        return 60; // Non-fatal: some downlinks failed.
+        return BLOB_ERR_DOWNLINK_PARTIAL_FAILURE; // Non-fatal: some downlinks failed.
     }
 
-    return 0;
+    return BLOB_ERR_OK;
 }
