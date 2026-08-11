@@ -396,6 +396,29 @@ const uint32_t GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
 // the data response takes a while.
 const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500;
 
+// MARK: GNSS Binary Frame Format
+//
+// NovAtel OEM7 binary log format (e.g., the body of a "log bestxyzb once" response), per the OEM7
+// Commands and Logs Reference Manual, "Binary" message format:
+//   Offset  Size  Field
+//   0       3     Sync bytes: 0xAA 0x44 0x12
+//   3       1     Header length (bytes), typically 28
+//   4-7     4     (Message ID, Message type, Port address -- not needed for framing)
+//   8       2     Message body length (bytes, little-endian uint16), NOT including header or CRC
+//   ...           Rest of header, then the message body, then a trailing 4-byte CRC32.
+// So the exact total frame length (from the sync bytes) is:
+//   header_length + body_length + GNSS_BINARY_CRC_LEN
+// This lets us detect end-of-message by byte count as soon as it's knowable, rather than only via
+// the (slow, and binary-data-unsafe) ASCII "*CRC\r\n" heuristic below, which doesn't apply to binary
+// responses at all.
+#define GNSS_BINARY_SYNC_0 0xAAu
+#define GNSS_BINARY_SYNC_1 0x44u
+#define GNSS_BINARY_SYNC_2 0x12u
+#define GNSS_BINARY_HEADER_LEN_OFFSET 3u // Offset (from sync) of the 1-byte header-length field.
+#define GNSS_BINARY_BODY_LEN_OFFSET 8u // Offset (from sync) of the 2-byte (LE) body-length field.
+#define GNSS_BINARY_MIN_BYTES_TO_READ_LENGTHS 10u // Bytes from sync needed to read both length fields.
+#define GNSS_BINARY_CRC_LEN 4u // Trailing CRC32, appended after the header+body.
+
 /// @brief Sends a log command to the GNSS, and receives the response.
 /// @param cmd_buf Log command string to send to the GNSS, without EOL characters.
 /// @param cmd_buf_len Exact length of the log command string.
@@ -451,6 +474,14 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
 
     // RX FROM GNSS, into UART_gnss_buffer
     const uint32_t start_rx_time = TIME_uptime_ms();
+
+    // State for the binary-frame fast-path end-of-message detection (see GNSS Binary Frame Format
+    // above). `binary_sync_offset` is -1 until the 0xAA 0x44 0x12 sync is found in the buffer (it's
+    // preceded by a short ASCII ack, e.g. "<OK\r\n[COM1]", for command-mode responses).
+    int32_t binary_sync_offset = -1;
+    uint8_t binary_lengths_parsed = 0;
+    uint32_t binary_expected_total_len = 0; // Valid only once binary_lengths_parsed is set.
+
     while (1) {
         if ((UART_gnss_buffer_write_idx == 0)) {
             // Check if we've timed out (before the first byte)
@@ -482,6 +513,42 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
                 break;
             }
 
+            // Fast path: detect a NovAtel OEM7 binary log frame (e.g. BESTXYZB) and compute its
+            // exact expected length from the header, so we can stop the instant it's fully received
+            // instead of waiting out GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS on every binary response.
+            if (binary_sync_offset < 0) {
+                for (uint16_t i = 0; (i + 3) <= UART_gnss_buffer_write_idx; i++) {
+                    if (
+                        (UART_gnss_buffer[i] == GNSS_BINARY_SYNC_0)
+                        && (UART_gnss_buffer[i + 1] == GNSS_BINARY_SYNC_1)
+                        && (UART_gnss_buffer[i + 2] == GNSS_BINARY_SYNC_2)
+                    ) {
+                        binary_sync_offset = (int32_t)i;
+                        break;
+                    }
+                }
+            }
+
+            if ((binary_sync_offset >= 0) && !binary_lengths_parsed) {
+                const uint32_t lengths_ready_at = (uint32_t)binary_sync_offset + GNSS_BINARY_MIN_BYTES_TO_READ_LENGTHS;
+                if (UART_gnss_buffer_write_idx >= lengths_ready_at) {
+                    const uint8_t header_len = UART_gnss_buffer[binary_sync_offset + GNSS_BINARY_HEADER_LEN_OFFSET];
+                    const uint16_t body_len = (uint16_t)(
+                        (uint16_t)UART_gnss_buffer[binary_sync_offset + GNSS_BINARY_BODY_LEN_OFFSET]
+                        | ((uint16_t)UART_gnss_buffer[binary_sync_offset + GNSS_BINARY_BODY_LEN_OFFSET + 1] << 8)
+                    );
+                    binary_expected_total_len = (uint32_t)binary_sync_offset + header_len + body_len + GNSS_BINARY_CRC_LEN;
+                    binary_lengths_parsed = 1;
+                }
+            }
+
+            if (binary_lengths_parsed && (UART_gnss_buffer_write_idx >= binary_expected_total_len)) {
+                // Full binary frame (header + body + CRC) received.
+                break;
+            }
+
+            // Fallback for ASCII/abbreviated-ASCII responses (this heuristic doesn't apply once a
+            // binary frame has been detected above -- binary payload bytes could spuriously match it).
             // Check for "end of message" section:
             // (asterisk, followed by 8 CRC-ish hex chars, followed by a newline).
             // Critical to end communication as fast as possible, especially for time-related and
@@ -490,7 +557,8 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
             // Index offset from write_idx:   -10  -9  -8  -7  -6  -5  -4  -3  -2  -1
             // Character:                       *   H   H   H   H   H   H   H   H  \n|r
             if (
-                (UART_gnss_buffer_write_idx > 12) // Semi-arbitrary minimum length (>10).
+                (binary_sync_offset < 0) // Only relevant to non-binary (ASCII) responses.
+                && (UART_gnss_buffer_write_idx > 12) // Semi-arbitrary minimum length (>10).
                 && (
                     (UART_gnss_buffer[UART_gnss_buffer_write_idx - 1] == '\r')
                     || (UART_gnss_buffer[UART_gnss_buffer_write_idx - 1] == '\n')
@@ -595,6 +663,7 @@ uint8_t GNSS_send_cmd_get_response_NEW(
     
     // We must first store any pending data in the UART_gnss_buffer to the file,
     // before clearing the buffer.
+    // VENDORING NOTE: In this blob, this step is unnecessary because we exit early if in firehose mode.
     // if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
     //     GNSS_subtask_store_firehose_data_to_file();
     // }
