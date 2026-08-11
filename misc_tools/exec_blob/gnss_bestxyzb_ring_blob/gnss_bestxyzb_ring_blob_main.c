@@ -543,16 +543,21 @@ uint8_t blob_main(
 
     snprintf(
         response_buf, response_buf_len,
-        "%s: sample_status=%d, ring_count=%d/%d, downlink_n=%ld, downlink_fail_count=%d, "
+        "%s: sample_status=%d, ring_count=%d/%d, downlink_n=%ld, "
         "gnss_fetch_failures=%lu%s",
         BLOB_NAME, sample_status, g_ring->count, GNSS_RING_BUFFER_CAPACITY,
-        downlink_n, downlink_fail_count, g_ring->gnss_fetch_failure_count, cancel_msg
+        downlink_n, g_ring->gnss_fetch_failure_count, cancel_msg
     );
 
     if (sample_status != 0) {
         return 100 + sample_status; // Non-fatal: sample wasn't stored this run, but we still ran fully.
     }
     if (downlink_fail_count > 0) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: downlink_random_samples() -> %d failures",
+            BLOB_NAME, downlink_fail_count
+        );
         return 60; // Non-fatal: some downlinks failed.
     }
 
