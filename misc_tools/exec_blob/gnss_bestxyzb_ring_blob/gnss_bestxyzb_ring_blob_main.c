@@ -58,6 +58,7 @@
 #include "comms_drivers/ax100_tx.h"
 #include "comms_drivers/comms_tx.h"
 #include "crypto/random_number_generator.h"
+#include "obc_systems/external_led_and_rbf.h"
 
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
@@ -296,6 +297,18 @@ static uint8_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
     EPS_struct_pdu_housekeeping_data_eng_t pdu_data;
     const uint8_t eps_status = EPS_CMD_get_pdu_housekeeping_data_eng(&pdu_data);
     if (eps_status != 0) {
+        // Special case for bench testing!
+        if (OBC_get_rbf_state() == OBC_RBF_STATE_BENCH) {
+            LOG(
+                LOG_SEVERITY_WARNING,
+                "%s: EPS query failed, but RBF=BENCH so steamroll",
+                BLOB_NAME
+            );
+
+            *is_on_dest = 1;
+            return 0;
+        }
+
         LOG(
             LOG_SEVERITY_WARNING,
             "%s: EPS_CMD_get_pdu_housekeeping_data_eng() -> %d",
