@@ -42,11 +42,16 @@
 // number at the start of that memory detects true cold-start (e.g., first ever run, or after a
 // full power-cycle that clears SRAM) vs. an already-initialized buffer.
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stddef.h>
+
+#define USE_HAL_DRIVER 1
+#define STM32L4R5xx 1
+
+#include "stm32l4xx_hal.h"
+#include "stm32l4xx_hal_def.h"
 
 #include "telecommand_exec/telecommand_executor.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -61,6 +66,7 @@
 #include "crypto/random_number_generator.h"
 #include "obc_systems/external_led_and_rbf.h"
 
+
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
     LOG_SEVERITY_NORMAL = 1 << 1,
@@ -69,11 +75,21 @@ typedef enum {
     LOG_SEVERITY_CRITICAL = 1 << 4,
 } LOG_severity_enum_t;
 
+static const uint32_t LOG_SYSTEM_GNSS = 1 << 3;
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
 static const char BLOB_NAME[] = "gnss_bestxyzb_ring_blob_v1";
+
+// Extern variables from core FW:
+extern const uint16_t UART_gnss_buffer_len;                      // Length of the GNSS response buffer
+extern volatile uint8_t UART_gnss_buffer[];                      // Buffer for GNSS response
+extern volatile uint16_t UART_gnss_buffer_write_idx;             // Write index for GNSS response buffer
+extern volatile uint32_t UART_gnss_last_write_time_ms;           // Last write time in milliseconds for GNSS response
+
+extern UART_HandleTypeDef *UART_gnss_port_handle;
+
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 // Note: TIME_uptime_ms() itself is not redeclared here -- it's already provided as a plain
@@ -85,6 +101,8 @@ extern int strcmp(const char *s1, const char *s2);
 extern void *memset(void *s, int c, size_t n);
 extern void *memcpy(void *__restrict dest, const void *__restrict src, size_t n);
 
+extern HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+
 extern void LOG_message(
     uint32_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
     const char *fmt, ...
@@ -93,6 +111,7 @@ extern void LOG_message(
 #define LOG(severity, fmt, ...) \
     LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
+extern void GNSS_set_uart_interrupt_state(uint8_t new_enabled);
 
 // MARK: Error Enum
 
@@ -100,7 +119,7 @@ extern void LOG_message(
 // `blob_main()` itself returns to the telecommand executor (0 = success).
 typedef enum {
     BLOB_ERR_OK = 0,
-    BLOB_ERR_GNSS_COMMS_FAILED = 1, // GNSS_send_cmd_get_response() failed.
+    BLOB_ERR_GNSS_COMMS_FAILED = 1, // GNSS_send_cmd_get_response_NEW() failed.
     BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND = 2, // Sync bytes (AA 44 12) not found in GNSS response.
     BLOB_ERR_EPS_QUERY_FAILED = 3, // EPS_CMD_get_pdu_housekeeping_data_eng() failed.
     BLOB_ERR_FIREHOSE_MODE_ACTIVE = 20, // Skipped sampling because GNSS firehose mode is active.
@@ -368,6 +387,243 @@ static GNSS_ring_blob_error_enum_t is_gnss_channel_powered_on(uint8_t *is_on_des
     return BLOB_ERR_OK;
 }
 
+// MARK: GNSS UART
+
+const uint32_t GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
+
+// Lots of commands pause in the middle (e.g., BESTXYZA) as it contemplates its position in the universe.
+// GNSS takes time to respond, first section of log response ie <OK\n [COM1] is quick but the rest of
+// the data response takes a while.
+const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500;
+
+/// @brief Sends a log command to the GNSS, and receives the response.
+/// @param cmd_buf Log command string to send to the GNSS, without EOL characters.
+/// @param cmd_buf_len Exact length of the log command string.
+/// @param rx_buf Buffer to store the response (not necessarily null terminated).
+/// @param rx_buf_max_size Size of the response buffer.
+/// @param rx_buf_len_dest Pointer to place to store the length of the response buffer (not necessarily null terminated).
+/// @return 0 on success, >0 if error.
+/// @note This function is intended for "once" log commands and control commands.
+/// @note This function does not validate the response, as related to the request.
+static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
+    const char *cmd_buf, uint8_t cmd_buf_len,
+    uint8_t rx_buf[],
+    const uint16_t rx_buf_max_size,
+    uint16_t* rx_buf_len_dest,
+    uint8_t remove_null_bytes_in_middle
+) {
+    // Reset the GNSS UART interrupt variables
+    GNSS_set_uart_interrupt_state(0); // Lock writing to the UART_gnss_buffer while we memset it
+    for (uint16_t i = 0; i < UART_gnss_buffer_len; i++) {
+        // Clear the buffer.
+        // Can't use memset because UART_gnss_buffer is volatile.
+        // Review comment: I think just setting the UART_gnss_buffer_write_idx to the start is good enough, but we'll keep this.
+        UART_gnss_buffer[i] = 0;
+    }
+    
+    // Make it start writing to the start of the buffer.
+    UART_gnss_buffer_write_idx = 0;
+
+    // TX TO GNSS
+    const HAL_StatusTypeDef tx_status_1 = HAL_UART_Transmit(
+        UART_gnss_port_handle,
+        (uint8_t *)cmd_buf,
+        cmd_buf_len,
+        100
+    );
+    const HAL_StatusTypeDef tx_status_2 = HAL_UART_Transmit(
+        UART_gnss_port_handle,
+        (uint8_t *)"\r\n",
+        3,
+        100
+    );
+
+    if (tx_status_1 != HAL_OK || tx_status_2 != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "GNSS ERROR: tx_status != HAL_OK (%d, %d)",
+            tx_status_1, tx_status_2
+        );
+        return 1;
+    }
+
+    GNSS_set_uart_interrupt_state(1);	// We are now expecting a response
+
+    // RX FROM GNSS, into UART_gnss_buffer
+    const uint32_t start_rx_time = TIME_uptime_ms();
+    while (1) {
+        if ((UART_gnss_buffer_write_idx == 0)) {
+            // Check if we've timed out (before the first byte)
+            if ((TIME_uptime_ms() - start_rx_time) > GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
+                LOG_message(
+                    LOG_SYSTEM_GNSS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                    "GNSS ERROR: Timeout before receiving any data"
+                );
+
+                // Disable the UART gnss channel
+                GNSS_set_uart_interrupt_state(0);
+
+                *rx_buf_len_dest = 0;
+            
+                return 2; // Error: Timeout before receiving any data.
+            }
+        }
+        else { // thus, UART_gnss_buffer_write_idx > 0
+            // Check if we've timed out (between bytes)
+            const uint32_t cur_time = TIME_uptime_ms();
+            // Note: Sometimes, because ISRs and C are fun, the UART_gnss_last_write_time_ms is
+            // greater than `cur_time`. Thus, we must do a safety check that the time difference
+            // is positive.
+            if (
+                (cur_time > UART_gnss_last_write_time_ms) // Important seemingly-obvious safety check.
+                && ((cur_time - UART_gnss_last_write_time_ms) > GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS)
+            ) {
+                // Non-fatal error. Parse what we've received.
+                break;
+            }
+
+            // Check for "end of message" section:
+            // (asterisk, followed by 8 CRC-ish hex chars, followed by a newline).
+            // Critical to end communication as fast as possible, especially for time-related and
+            // time-sensitive commands.
+            // End of message example: ...,38000,VALID*5ea733a7[\r or \n]
+            // Index offset from write_idx:   -10  -9  -8  -7  -6  -5  -4  -3  -2  -1
+            // Character:                       *   H   H   H   H   H   H   H   H  \n|r
+            if (
+                (UART_gnss_buffer_write_idx > 12) // Semi-arbitrary minimum length (>10).
+                && (
+                    (UART_gnss_buffer[UART_gnss_buffer_write_idx - 1] == '\r')
+                    || (UART_gnss_buffer[UART_gnss_buffer_write_idx - 1] == '\n')
+                )
+                && (UART_gnss_buffer[UART_gnss_buffer_write_idx - 10] == '*')
+            ) {
+                // Validate the 8 chars between '*' and EOL are all hex digits.
+                uint8_t is_valid_hex = 1;
+                for (int i = 2; i <= 9; i++) {
+                    const uint8_t c = UART_gnss_buffer[UART_gnss_buffer_write_idx - i];
+                    if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
+                        is_valid_hex = 0;
+                        break;
+                    }
+                }
+                if (is_valid_hex) {
+                    break;
+                }
+            }
+
+            // Exit if we've received all the buffer can hold.
+            if (UART_gnss_buffer_write_idx >= rx_buf_max_size) {
+                break;
+            }
+        }
+    }
+
+    // End Receiving
+    GNSS_set_uart_interrupt_state(0); // We are no longer expecting a response
+
+    // Review comment: This next line doesn't seem necessary.
+    UART_gnss_buffer[UART_gnss_buffer_write_idx] = '\0'; // Null-terminate the string.
+
+    // Check that we've received what we're expecting.
+    uint16_t bytes_received_count = 0; // Includes null bytes.
+    if (UART_gnss_buffer_write_idx >= rx_buf_max_size) {
+        LOG_message(
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "GNSS: Received more data (>=%d bytes) than rx_buf_max_size (%d bytes)",
+            UART_gnss_buffer_write_idx,
+            rx_buf_max_size
+        );
+        
+        bytes_received_count = rx_buf_max_size - 1;
+        // No need to return here. We can still pass back the data we have.
+    }
+    else {
+        bytes_received_count = UART_gnss_buffer_write_idx;
+    }
+
+    // Copy the log response from the UART gnss buffer to the rx_buf[] and clear the buffer.
+    uint16_t dest_write_idx = 0;
+    uint16_t remove_nulls_count = 0;
+    for (uint16_t i = 0; i < bytes_received_count; i++) {
+        if (remove_null_bytes_in_middle) {
+            if (UART_gnss_buffer[i] == '\0') {
+                remove_nulls_count++;
+                continue;
+            }
+        }
+
+        rx_buf[dest_write_idx++] = UART_gnss_buffer[i];
+    }
+    *rx_buf_len_dest = dest_write_idx;
+
+    if (remove_nulls_count > 0) {
+        LOG_message(
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+            "GNSS: Removed %d null bytes from response, %d bytes remain",
+            remove_nulls_count,
+            dest_write_idx
+        );
+    }
+
+    // Ensure the final output buffer (rx_buf) is null-terminated, no matter what.
+    rx_buf[rx_buf_max_size - 1] = '\0';
+    rx_buf[*rx_buf_len_dest] = '\0';
+
+    return 0;
+}
+
+
+/// @brief Sends a log command to the GNSS, and receives the response.
+/// @param cmd_buf Log command string to send to the GNSS, without EOL characters.
+/// @param cmd_buf_len Exact length of the log command string.
+/// @param rx_buf Buffer to store the response (not necessarily null terminated).
+/// @param rx_buf_max_size Size of the response buffer.
+/// @param rx_buf_len_dest Pointer to place to store the length of the response buffer (not necessarily null terminated).
+/// @param remove_null_bytes_in_middle If non-zero, remove any null bytes in the middle of the response.
+/// @return 0 on success, >0 if error.
+/// @note This function is intended for "once" log commands and control commands.
+/// @note This function does not validate the response, as related to the request.
+/// @note This function properly handles interactions with the firehose file, if enabled.
+uint8_t GNSS_send_cmd_get_response_NEW(
+    const char *cmd_buf, uint8_t cmd_buf_len,
+    uint8_t rx_buf[],
+    const uint16_t rx_buf_max_size,
+    uint16_t* rx_buf_len_dest,
+    uint8_t remove_null_bytes_in_middle
+) {
+    const GNSS_rx_mode_enum_t rx_mode_at_start = GNSS_current_rx_mode;
+    
+    // We must first store any pending data in the UART_gnss_buffer to the file,
+    // before clearing the buffer.
+    // if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
+    //     GNSS_subtask_store_firehose_data_to_file();
+    // }
+
+    GNSS_current_rx_mode = GNSS_RX_MODE_COMMAND_MODE;
+
+    // This is the main action! The rest is a wrapper to handle interactions with firehose storage mode.
+    const uint8_t ret = GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
+        cmd_buf, cmd_buf_len, rx_buf, rx_buf_max_size, rx_buf_len_dest,
+        remove_null_bytes_in_middle
+    );
+
+    // Reset back to the original RX mode.
+    GNSS_current_rx_mode = rx_mode_at_start;
+
+    // Write the data to the firehose file, or effectively discard it by resetting the buffer.
+    if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
+        // You may be tempted to call GNSS_subtask_store_firehose_data_to_file() here, but you shouldn't.
+        // This function must return ASAP in order to provide the data to caller quickly, in case the caller
+        // is doing a time sync.
+
+        // If we're in firehose mode, and the interrupt isn't currently enabled, we must ensure it's enabled.
+        GNSS_set_uart_interrupt_state(1);
+    }
+
+    return ret;
+}
+
+
 
 // MARK: GNSS Sampling
 
@@ -415,7 +671,7 @@ static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb() {
     uint16_t rx_buf_len = 0;
     memset(rx_buf, 0, sizeof(rx_buf));
 
-    const uint8_t gnss_status = GNSS_send_cmd_get_response(
+    const uint8_t gnss_status = GNSS_send_cmd_get_response_NEW(
         cmd, cmd_len,
         rx_buf, sizeof(rx_buf),
         &rx_buf_len,
@@ -424,7 +680,7 @@ static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb() {
     if (gnss_status != 0) {
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: GNSS_send_cmd_get_response() -> %d (%s)",
+            "%s: GNSS_send_cmd_get_response_NEW() -> %d (%s)",
             BLOB_NAME, gnss_status, gnss_ring_blob_error_to_str(BLOB_ERR_GNSS_COMMS_FAILED)
         );
         g_ring->gnss_fetch_failure_count++;

@@ -22,7 +22,14 @@ CFLAGS  = \
     -Os \
     -Wall \
     -Wextra \
-    -I../../../firmware/Core/Inc/
+    -I../../../firmware/Core/Inc/ \
+    -I../../../firmware/Drivers/STM32L4xx_HAL_Driver/Inc \
+    -I../../../firmware/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
+    -I../../../firmware/Middlewares/Third_Party/FreeRTOS/Source/include \
+    -I../../../firmware/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
+    -I../../../firmware/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+    -I../../../firmware/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+    -I../../../firmware/Drivers/CMSIS/Include
 
 CFLAGS += \
     -ffreestanding \
