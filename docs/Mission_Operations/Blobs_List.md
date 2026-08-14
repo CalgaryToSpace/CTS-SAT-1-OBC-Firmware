@@ -183,3 +183,49 @@ To transfer and downlink the latest file on the ADCS SD card, run:
 ```
 CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v1.blob,0,0)!
 ```
+
+## `blobs/gnss_bestxyzb_ring_v1.blob`
+
+* Available since: 2026-08-13
+
+### Description
+
+```c
+// This is a blob (executable) that periodically requests a "log bestxyzb once" sample from the
+// GNSS receiver, stores it into a persistent fixed-size in-memory ring buffer, downlinks
+// some random samples from that buffer on every run, and schedules itself for the next run.
+//
+// Motivation: Collect a rolling history of GNSS position/velocity samples in RAM, and slowly send
+// it down to the ground over many passes via random sampling, without needing a dedicated file.
+//
+// Args Format: <repeat_interval_ms>;<downlink_n>
+// - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
+//   interval (clamped to a minimum of 1100ms).
+// - downlink_n: Number of randomly-selected samples to downlink from the ring buffer.
+```
+
+
+### Example Usage
+
+After uplinking the blob as "blobs/gnss_bestxyzb_ring_v1.blob", run:
+
+```
+CTS1+eps_set_channel_enabled(gnss,1)!
+CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
+```
+
+### Notes
+
+1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
+2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
+   extended beacon blob (re-uplinking cancels any previously-scheduled rerun of this blob).
+3. SAFETY FEATURE: On each run, this blob checks whether the GNSS EPS power channel
+   (EPS_CHANNEL_3V3_GNSS) is enabled. If the GNSS power is disabled (e.g., EPS safety mode,
+   forgot to enable it before, or intentionally disabled it), this blob ends and does not
+   reschedule itself.
+4. If a GNSS query fails for any reason, this run skips storing a new sample but still
+   downlinks existing samples and reschedules normally, so transient GNSS comms errors
+   "self-heal" on the next run.
+5. If GNSS firehose mode is activated, this blob skips collecting data samples while firehose
+   mode is active, but will resume after firehose mode is disabled.
+6. The ring buffer's contents may be retained between software reboots, watchdog resets, etc.

@@ -11,7 +11,8 @@ typedef enum {
     COMMS_PACKET_TYPE_LOG_MESSAGE = 0x03,
     COMMS_PACKET_TYPE_TCMD_RESPONSE = 0x04,
     COMMS_PACKET_TYPE_BULK_FILE_DOWNLINK = 0x10,
-    COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20,
+    COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20, // Post-launch: See extended_beacon_blob.
+    COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE = 0x30, // Post-launch: See gnss_bestxyzb_ring_blob.
 } COMMS_packet_type_enum_t;
 
 

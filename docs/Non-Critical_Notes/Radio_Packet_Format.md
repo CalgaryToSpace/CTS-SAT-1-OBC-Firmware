@@ -9,6 +9,8 @@ The first byte of the packet (after the 4-byte CSP header) is the packet type. T
     * `0x03` - log message
     * `0x04` - telecommand response
     * `0x10` - bulk file downlink
+    * `0x20` - extended beacon
+    * `0x30` - GNSS BESTXYZB sample (sent by `misc_tools/exec_blob/gnss_bestxyzb_ring_blob`)
 
 ## Bytes 1-200 of the Packet, for each Packet Type
 
@@ -118,6 +120,18 @@ This packet type has sequence numbers.
 
 * Bytes 1,2,3,4: uint32_t of starting byte offset within file (index of Byte 5)
 * Bytes 5-200: Content of file
+
+
+### Bytes 1-end of GNSS BESTXYZB Sample Packets (Packet Type `0x30`)
+
+Sent by `misc_tools/exec_blob/gnss_bestxyzb_ring_blob`, a blob (not built into the main firmware
+image) that periodically samples `log bestxyzb once` from the GNSS receiver into an in-memory ring
+buffer, and downlinks randomly-selected samples from that buffer on each run. See
+`GNSS_bestxyzb_downlink_packet_t` in that blob's source for the authoritative struct definition.
+
+* Bytes 1,2: uint16_t sequence number of this downlinked packet (persisted across the blob's runs; wraps at 65536)
+* Bytes 3,4: uint16_t ring buffer position (0-299) this sample was read from
+* Bytes 5-end: Raw NovAtel BESTXYZB binary log (144 bytes).
 
 
 ## Other Details
