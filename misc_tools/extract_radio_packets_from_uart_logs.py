@@ -40,13 +40,16 @@ def reconstruct_bulk_downlinked_file(log_file_path: Path, output_file_path: Path
         for packet in extract_radio_packets_from_logs(0x10, log_file_path):
             # Read the offset in the file from bytes 5,6,7,8.
             offset = int.from_bytes(packet[5:9], "little")
+            packet_data = packet[9:]
+
             byte_offset_list.append(offset)
 
-            # Write the packet to the output file.
-            output_file.write(packet[9:])
+            # Write the packet data at its specified offset.
+            output_file.seek(offset)
+            output_file.write(packet_data)
 
             if len(byte_offset_list) == 1:
-                print(f"First packet data: offset_bytes={offset}, length_bytes={len(packet[9:])}")
+                print(f"First packet data: offset_bytes={offset}, length_bytes={len(packet_data)}")
 
     # Check if all packets are present
     if len(byte_offset_list) != len(set(byte_offset_list)):
