@@ -1049,6 +1049,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via stack overflow.
     },
 
+    { // Note: Added after CTS-SAT-1 launch.
+        .tcmd_name = "freertos_heap_stats_json",
+        .tcmd_func = TCMDEXEC_freertos_heap_stats_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
     // ****************** END SECTION: freertos_telecommand_defs ******************
 
 
