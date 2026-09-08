@@ -281,6 +281,7 @@ typedef struct {
     int16_t adcs_estimated_pitch_angle_cdeg;
     int16_t adcs_estimated_yaw_angle_cdeg;
 
+    // TODO: If adding more fields, then add "distinct_telecommands_pending" which counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue. Useful to confirm that all uplinks were successful.
 } COMMS_beacon_extended_packet_t;
 
 // Packet size limit:
@@ -559,7 +560,7 @@ static void COMMS_fill_beacon_extended_packet(
     beacon_packet->is_fs_mounted = LFS_is_lfs_mounted;
 
     beacon_packet->total_tcmd_queued_count = TCMD_total_tcmd_queued_count;
-    beacon_packet->pending_queued_tcmd_count = TCMD_get_agenda_used_slots_count();
+    beacon_packet->pending_queued_tcmd_count = TCMD_get_agenda_used_slots_count() + 1; // Since v4, add 1 for the currently executing tcmd. Prevents bouncing between basic and extended beacons.
 
     beacon_packet->total_beacon_count_since_boot = COMMS_total_beacon_count_since_boot;
 
