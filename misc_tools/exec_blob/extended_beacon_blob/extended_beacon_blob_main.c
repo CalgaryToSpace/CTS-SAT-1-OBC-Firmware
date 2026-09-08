@@ -9,8 +9,8 @@
 // that specified interval.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v3.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v3.blob,0,9000)!
+// After uplinking the blob as "blobs/extended_beacon_v4.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
 //
 // Notes:
 //  1. Always use "0" as the second argument (i.e., always run with malloc).
@@ -24,7 +24,7 @@
 //      a command to run this blob on every uplink pass, whether or not it's already running.
 //  5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
 //      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-//      `CTS1+exec_blob_from_fs(blobs/extended_beacon_v3.blob,0,0)!` (which will run one last time,
+//      `CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,0)!` (which will run one last time,
 //      then cancel itself).
 
 #include <stdint.h>
