@@ -68,7 +68,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char BLOB_NAME[] = "extended_beacon_blob_v3";
+static const char BLOB_NAME[] = "extended_beacon_blob_v4";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -99,7 +99,6 @@ extern uint8_t ADCS_i2c_request_telemetry_and_check(uint8_t id, uint8_t* data, u
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct);
 
-extern int32_t read_avg_temperature_cC_from_mpi_data_buffer(volatile uint8_t* large_buffer);
 extern volatile uint32_t MPI_buffer_one_last_filled_uptime_ms;
 extern volatile uint32_t MPI_buffer_two_last_filled_uptime_ms;
 
@@ -188,6 +187,7 @@ typedef struct {
     // "END\0" on basic packets.
     // " X2\0" on extended packets (v2).
     // " X3\0" on extended packets (v3).
+    // " X4\0" on extended packets (v4).
     char end_message[4];
 
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
@@ -358,6 +358,55 @@ static uint16_t integer_sqrt_u32(uint32_t value) {
     return (uint16_t)hi;
 }
 
+
+/// @brief Scan an MPI data buffer, averaging all temperature reports in it.
+/// @param large_buffer MPI data buffer input.
+/// @return Average temperature in 100ths of a degree Celsius (cC). Returns special value -9999 on error.
+/// @note The original version of this function in the CTS-SAT-1 firmware has a bug with negative temperatures
+///      (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/667).
+///      This vendored version fixes the bug.
+static int32_t read_avg_temperature_cC_from_mpi_data_buffer_NEW(
+    volatile uint8_t* large_buffer
+) {
+    const uint8_t sync_pattern[4] = {0x0c, 0xff, 0xff, 0x0c};
+
+    int64_t temp_sum_centi = 0;  // Use int64 to prevent overflow.
+    uint32_t temp_count = 0;
+
+    for (uint32_t i = 0; i + 7 < MPI_science_buffer_len; i++) {
+        // Check sync pattern.
+        if (large_buffer[i + 0] == sync_pattern[0] &&
+            large_buffer[i + 1] == sync_pattern[1] &&
+            large_buffer[i + 2] == sync_pattern[2] &&
+            large_buffer[i + 3] == sync_pattern[3]
+        ) {
+            // Ensure temperature bytes are inside buffer.
+            if (i + 7 < MPI_science_buffer_len) {
+                // Assumption: Negative values will be handled gracefully by C, just
+                // by storing the value in a signed int.
+                const int16_t raw_temp =
+                    ((int16_t)large_buffer[i + 6] << 8) |
+                    (int16_t)large_buffer[i + 7];
+
+                // Convert to centi-Celsius (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/462):
+                // Celsius = raw_temp / 128.0
+                // centi-Celsius = (raw_temp * 100) / 128
+                const int32_t temp_centi = (raw_temp * 100) / 128;
+
+                temp_sum_centi += temp_centi;
+                temp_count++;
+            }
+        }
+    }
+
+    if (temp_count == 0) {
+        return -9999;
+    }
+
+    return (int32_t)(temp_sum_centi / temp_count);
+}
+
+
 /// @brief Dig the current MPI temperature from the data buffer.
 /// @note Based heavily on the inline logic in `rtos_mpi_tasks.c`.
 /// @return Temperature in C, or -99 if MPI never active, or -98 if error calculating temperature.
@@ -367,12 +416,12 @@ static int8_t get_last_mpi_temperature_C() {
 
     // Pick the buffer with the most recent data.
     if (MPI_buffer_one_last_filled_uptime_ms > MPI_buffer_two_last_filled_uptime_ms) {
-        last_mpi_temperature_cC = read_avg_temperature_cC_from_mpi_data_buffer(
+        last_mpi_temperature_cC = read_avg_temperature_cC_from_mpi_data_buffer_NEW(
             MPI_science_buffer_one
         );
     }
     else if (MPI_buffer_two_last_filled_uptime_ms > MPI_buffer_one_last_filled_uptime_ms) {
-        last_mpi_temperature_cC = read_avg_temperature_cC_from_mpi_data_buffer(
+        last_mpi_temperature_cC = read_avg_temperature_cC_from_mpi_data_buffer_NEW(
             MPI_science_buffer_two
         );
     }
@@ -555,7 +604,7 @@ static void COMMS_fill_beacon_extended_packet(
         COMMS_beacon_friendly_message_str,
         strlen(COMMS_beacon_friendly_message_str)
     );
-    memcpy(beacon_packet->end_message, " X3", 4); // Extended beacon packet version.
+    memcpy(beacon_packet->end_message, " X4", 4); // Extended beacon packet version.
 
     // Set the extended beacon packet fields.
 
