@@ -380,22 +380,19 @@ static int32_t read_avg_temperature_cC_from_mpi_data_buffer_NEW(
             large_buffer[i + 2] == sync_pattern[2] &&
             large_buffer[i + 3] == sync_pattern[3]
         ) {
-            // Ensure temperature bytes are inside buffer.
-            if (i + 7 < MPI_science_buffer_len) {
-                // Assumption: Negative values will be handled gracefully by C, just
-                // by storing the value in a signed int.
-                const int16_t raw_temp =
-                    ((int16_t)large_buffer[i + 6] << 8) |
-                    (int16_t)large_buffer[i + 7];
+            // Assumption: Negative values will be handled gracefully by C, just
+            // by storing the value in a signed int.
+            const int16_t raw_temp =
+                ((int16_t)large_buffer[i + 6] << 8) |
+                (int16_t)large_buffer[i + 7];
 
-                // Convert to centi-Celsius (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/462):
-                // Celsius = raw_temp / 128.0
-                // centi-Celsius = (raw_temp * 100) / 128
-                const int32_t temp_centi = (raw_temp * 100) / 128;
+            // Convert to centi-Celsius (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/462):
+            // Celsius = raw_temp / 128.0
+            // centi-Celsius = (raw_temp * 100) / 128
+            const int32_t temp_centi = (raw_temp * 100) / 128;
 
-                temp_sum_centi += temp_centi;
-                temp_count++;
-            }
+            temp_sum_centi += temp_centi;
+            temp_count++;
         }
     }
 
