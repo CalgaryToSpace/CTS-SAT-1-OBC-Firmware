@@ -87,7 +87,7 @@ CTS1+comms_bulk_file_downlink_start(adcs_data/your_file.run,0,0)@tsexec=123456@t
 CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,adcs_data/your_file.run;0;0)@tsexec=123456@tssent=789!
 ```
 
-## `blobs/extended_beacon_v{2,3}.blob`
+## `blobs/extended_beacon_v{2,3,4}.blob`
 
 ### Description
 
@@ -105,8 +105,8 @@ Running this blob triggers the extended beacon.
 // that specified interval.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v3.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v3.blob,0,9000)!
+// After uplinking the blob as "blobs/extended_beacon_v4.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
 ```
 
 ### Notes
@@ -122,7 +122,7 @@ Running this blob triggers the extended beacon.
     a command to run this blob on every uplink pass, whether or not it's already running.
 5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
     use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v3.blob,0,0)!` (which will run one last time,
+    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,0)!` (which will run one last time,
     then cancel itself).
 
 ### Example Usage
@@ -130,7 +130,7 @@ Running this blob triggers the extended beacon.
 To start the extended beacon, repeating every 9 seconds, run:
 
 ```
-CTS1+exec_blob_from_fs(blobs/extended_beacon_v3.blob,0,9000)!
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
 ```
 
 ### Versions
@@ -140,11 +140,18 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v3.blob,0,9000)!
     * Has version string ` X2\0`
     * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20`
 * v3
-    * Tiny upgrade to v2. No changes to format.
+    * Tiny upgrade to v2. No changes to the format.
     * Has version string ` X3\0`
     * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20`
     * Change 1: Disable the log message with the args_str. Changed to log level DEBUG.
     * Change 2: Don't increment the `total_tcmd_queued_count` counter (which is downlinked in all beacon packets) when enqueing the blob to re-run.
+* v4
+    * Tiny upgrade to v3. No changes to the format.
+    * Has version string ` X4\0`
+    * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20`
+    * Change 1 (fix): MPI temperature fetching now supports negative Celsius temperatures.
+    * Change 2: Prevent bouncing in the `pending_queued_tcmd_count` field between extended and basic beacons.
+    * Improvement: Use error enum for error reporting.
 
 ## `blobs/adcs_get_latest_sd_file_v1.blob`
 
