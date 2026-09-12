@@ -182,6 +182,21 @@ To transfer and downlink the latest file on the ADCS SD card, run:
 CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v2.blob,0,0)!
 ```
 
+### Versions
+
+* v1
+    * Generally worked well. Huge improvement. Had some bugs though.
+    * Only reliable on SD cards with roughly 32 or fewer files. Beyond that, the OBC would reboot
+        partway through the command.
+    * Sometimes downlinked a file other than the latest one, or reported an empty file list, even
+        when the file you wanted was there. Re-running it would often pick a different file.
+* v2
+    * Same arguments and same response format as v1. Use it exactly the same way.
+    * Improvement: Handles way more files on the ADCS SD card (>100, probably). Runs way faster.
+    * Fix: Always downlinks the newest/latest file, or fails outright. Never downlinks older files.
+    * Feature: Response JSON adds `datetime` (the file's timestamp, from the ADCS).
+    * Feature: Better error codes/names via an error enum.
+
 ## `blobs/gnss_bestxyzb_ring_v1.blob`
 
 * Available since: 2026-08-13
