@@ -9,15 +9,14 @@
 //
 // Description of Blob:
 //  1. Sets the ADCS SD logging config to stop primary logging (in case it wasn't stopped yet).
-//  2. Walks the ADCS SD card's file list exactly once, keeping the last (highest-index) entry.
+//  2. Walks the ADCS SD card's file list, keeping the pointer at the last (highest-index) entry.
 //  3. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
-//      not yet downloaded, it downloads it. Otherwise, it does nothing.
+//      not yet downloaded, it downloads it from SD card into LittleFS. Otherwise, it does nothing.
 //  4. Starts the bulk downlink process to download the file.
-//  5. Sends a telecommand response with the file name, size, hash, and crc16.
+//  5. Sends a telecommand response with the file name, size, SHA256 hash, crc16, and file date.
 //
 // Notes:
-//  1. You MUST stop the ADCS SD logging before running this command (Step 1 tries to do it for
-//     you, but a file which is still being written will never clear its Busy Updating flag).
+//  1. You should stop the ADCS SD logging before running this command.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/adcs_get_latest_sd_file_v2.blob", run:
@@ -684,17 +683,44 @@ static int8_t bulk_downlink_start_fixed(
 }
 
 
+/// @brief Format an MS-DOS packed date/time (the ADCS's `file_date_time_msdos` field) as an
+///     ISO-8601-ish "YYYY-MM-DD hh:mm:ss" string.
+/// @param file_date_time_msdos The packed value, straight out of ADCS_get_file_info_telemetry().
+/// @param dest Destination buffer; must be at least 20 bytes.
+/// @param dest_size Size of `dest`.
+/// @note Bit layout is from Firmware Reference Manual [V7.5] Section 6.2.2, and matches the
+///     decoding that `ADCS_get_sd_card_file_list()` does in adcs_commands.c.
+/// @note This is the ADCS's own clock, which is not necessarily synced to the OBC's clock.
+static void format_msdos_datetime(
+    uint32_t file_date_time_msdos, char *dest, uint16_t dest_size
+) {
+    const uint16_t seconds = (file_date_time_msdos & 0x1f) << 1; // 5bits - 32 (2-second resolution)
+    const uint16_t minutes = (file_date_time_msdos >> 5) & 0x3f; // 6bits - 64
+    const uint16_t hour = (file_date_time_msdos >> 11) & 0x1f; // 5bits - 32
+    const uint16_t day = (file_date_time_msdos >> 16) & 0x1f; // 5bits - 32
+    const uint16_t month = (file_date_time_msdos >> 21) & 0x0f; // 4bits - 16
+    const uint16_t year = (file_date_time_msdos >> 25) + 1980; // 7bits - 128 (1980 to 21..)
+
+    snprintf(
+        dest, dest_size, "%04d-%02d-%02d %02d:%02d:%02d",
+        year, month, day, hour, minutes, seconds
+    );
+}
+
+
 /// @brief Fill the response output buffer with info about the downlinked file (very helpful for
 ///     re-assembling/decoding the file from the downlinked bulk-transfer packets).
 /// @param src_file_path Path, in LittleFS, of the file that was downlinked.
 /// @param sd_card_index The file's index in the ADCS SD card's file list, at the time it was found.
 /// @param advance_retries How many Advance File List Read Pointer commands had to be re-issued
 ///     during the walk. Non-zero means `sd_card_index` may under-count; the file is still correct.
+/// @param file_date_time_msdos The file's MS-DOS packed date/time, as reported by the ADCS.
 /// @param response_output_buf
 /// @param response_output_buf_len
 /// @return 0 on success, non-zero on error.
 static int8_t fill_response_output_buffer(
     const char *src_file_path, uint16_t sd_card_index, uint16_t advance_retries,
+    uint32_t file_date_time_msdos,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Prepare the SHA256 destination buffer.
@@ -729,16 +755,21 @@ static int8_t fill_response_output_buffer(
         return crc16_result;
     }
 
+    // Decode the ADCS's MS-DOS packed date/time for the file.
+    char datetime_str[20]; // "YYYY-MM-DD hh:mm:ss" + null terminator.
+    format_msdos_datetime(file_date_time_msdos, datetime_str, sizeof(datetime_str));
+
     // Format like JSON.
     snprintf(
         response_output_buf, response_output_buf_len,
         "{\"action\":\"%s\",\"file\":\"%s\",\"file_size\":%ld,\"crc16\":\"0x%x\",\"sha256\":\"%s\","
-        "\"sd_card_index\":%u,\"advance_retries\":%u}",
+        "\"datetime\":\"%s\",\"sd_card_index\":%u,\"advance_retries\":%u}",
         BLOB_NAME,
         src_file_path,
         file_size_bytes,
         crc16_calc,
         hex_hash_str,
+        datetime_str,
         sd_card_index,
         advance_retries
     );
@@ -878,6 +909,7 @@ uint8_t blob_main(
     // Send a telecommand response with the file name, size, hash, and crc16.
     const int8_t resp_err = fill_response_output_buffer(
         lfs_file_path, latest_file_index, advance_retries,
+        latest_file_info.file_date_time_msdos,
         response_buf, response_buf_len
     );
     if (resp_err != 0) {
