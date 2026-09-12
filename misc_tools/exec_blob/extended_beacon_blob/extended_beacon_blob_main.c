@@ -127,6 +127,39 @@ extern void LOG_message(
 //     #endif
 // }
 
+// MARK: Error Enum
+
+// All named status/error codes returned by this blob's functions, including the values
+// `blob_main()` itself returns to the telecommand executor (0 = success).
+typedef enum {
+    BLOB_ERR_OK = 0,
+    BLOB_ERR_DOWNLINK_FAILED = 60, // AX100_downlink_bytes() failed to send the beacon packet.
+    BLOB_ERR_PERIPHERAL_COMMS_FAILURES = 117, // Beacon was sent, but >=1 peripheral query failed.
+    BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
+    BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
+    BLOB_ERR_CANCEL_RERUNS_FAILED = 137, // cancel_other_scheduled_reruns_of_this_blob() failed.
+    BLOB_ERR_NO_EXECUTING_AGENDA_SLOT = 163, // Couldn't find our own agenda slot to reschedule.
+    BLOB_ERR_AGENDA_ADD_FAILED = 164, // TCMD_add_tcmd_to_agenda() failed while rescheduling.
+} BLOB_ext_beacon_error_enum_t;
+
+/// @brief Convert a BLOB_ext_beacon_error_enum_t into a short human-readable name, for use in log
+///     messages and output strings.
+/// @return Static string; never NULL. "UNKNOWN_ERROR" for values not in the enum.
+static const char *ext_beacon_blob_error_to_str(BLOB_ext_beacon_error_enum_t err) {
+    switch (err) {
+        case BLOB_ERR_OK: return "OK";
+        case BLOB_ERR_DOWNLINK_FAILED: return "DOWNLINK_FAILED";
+        case BLOB_ERR_PERIPHERAL_COMMS_FAILURES: return "PERIPHERAL_COMMS_FAILURES";
+        case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
+        case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
+        case BLOB_ERR_CANCEL_RERUNS_FAILED: return "CANCEL_RERUNS_FAILED";
+        case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
+        case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
+        default: return "UNKNOWN_ERROR";
+    }
+}
+
+
 #pragma pack(push, 1)
 
 typedef struct {
@@ -511,10 +544,10 @@ static int16_t cancel_other_scheduled_reruns_of_this_blob(int16_t current_slot_n
 
 /// @brief Enqueue a copy of the currently executing tcmd, with a new time into the future to execute.
 /// @note This function avoids incrementing the "total telecommands" counter. Goal: Allow that counter to assess how many uplinked commands were successful.
-static uint8_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
+static BLOB_ext_beacon_error_enum_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
     const int16_t slot_num = get_current_executing_tcmd_agenda_slot_num();
     if (slot_num < 0) {
-        return 163;
+        return BLOB_ERR_NO_EXECUTING_AGENDA_SLOT;
     }
 
     TCMD_parsed_tcmd_to_execute_t new_tcmd;
@@ -524,14 +557,14 @@ static uint8_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute
     new_tcmd.timestamp_to_execute = TIME_get_current_unix_epoch_time_ms() + time_into_future_to_execute_ms;
 
     if (TCMD_add_tcmd_to_agenda(&new_tcmd) != 0) {
-        return 164;
+        return BLOB_ERR_AGENDA_ADD_FAILED;
     }
 
     // Added in v3+.
     // Undo the counter increase in `TCMD_add_tcmd_to_agenda()`.
     TCMD_total_tcmd_queued_count--;
 
-    return 0;
+    return BLOB_ERR_OK;
 }
 
 // MARK: Fill Packet
@@ -936,10 +969,11 @@ uint8_t blob_main(
         // Missing args error.
         snprintf(
             response_buf, response_buf_len,
-            "%s error: missing args!",
-            BLOB_NAME
+            "%s error: missing args! (%s)",
+            BLOB_NAME,
+            ext_beacon_blob_error_to_str(BLOB_ERR_MISSING_ARGS)
         );
-        return 135;
+        return BLOB_ERR_MISSING_ARGS;
     }
 
     bool arg0_beacon_interval_ms_ok;
@@ -948,10 +982,11 @@ uint8_t blob_main(
     if (!arg0_beacon_interval_ms_ok) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: invalid int args!",
-            BLOB_NAME
+            "%s error: invalid int args! (%s)",
+            BLOB_NAME,
+            ext_beacon_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS)
         );
-        return 136;
+        return BLOB_ERR_INVALID_INT_ARGS;
     }
 
     // Protect the minimum repeat interval! Too low of value would make it so we can't uplink to
@@ -968,11 +1003,12 @@ uint8_t blob_main(
     if (cancel_result < 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d",
+            "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d (%s)",
             BLOB_NAME,
-            cancel_result
+            cancel_result,
+            ext_beacon_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED)
         );
-        return 137;
+        return BLOB_ERR_CANCEL_RERUNS_FAILED;
     }
     else if (cancel_result > 0) {
         snprintf(
@@ -992,29 +1028,32 @@ uint8_t blob_main(
     COMMS_fill_beacon_extended_packet(&beacon_packet, &peripheral_comms_error_count);
 
     // Downlink the beacon packet.
-    const uint8_t tx_success = AX100_downlink_bytes(
+    const uint8_t tx_status = AX100_downlink_bytes(
         (uint8_t *)(&beacon_packet), 
         sizeof(COMMS_beacon_extended_packet_t)
     );
-    if (tx_success != 0) {
+    if (tx_status != 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: downlink failed (AX100_downlink_bytes() -> %d)%s",
+            "%s error: downlink failed (AX100_downlink_bytes() -> %d) (%s)%s",
             BLOB_NAME,
-            tx_success,
+            tx_status,
+            ext_beacon_blob_error_to_str(BLOB_ERR_DOWNLINK_FAILED),
             cancel_msg
         );
-        return tx_success;
+        return BLOB_ERR_DOWNLINK_FAILED;
     }
 
     if (beacon_interval_ms > 0) {
-        const uint8_t reexec_result = reschedule_current_blob_tcmd(beacon_interval_ms);
-        if (reexec_result != 0) {
+        const BLOB_ext_beacon_error_enum_t reexec_result = reschedule_current_blob_tcmd(
+            (uint32_t)beacon_interval_ms
+        );
+        if (reexec_result != BLOB_ERR_OK) {
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reschedule_current_blob_tcmd() -> %d%s",
+                "%s error: reschedule_current_blob_tcmd() -> %s%s",
                 BLOB_NAME,
-                reexec_result,
+                ext_beacon_blob_error_to_str(reexec_result),
                 cancel_msg
             );
             return reexec_result;
@@ -1024,12 +1063,13 @@ uint8_t blob_main(
     if (peripheral_comms_error_count > 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: peripheral comms error count: %d%s",
+            "%s error: peripheral comms error count: %d (%s)%s",
             BLOB_NAME,
             peripheral_comms_error_count,
+            ext_beacon_blob_error_to_str(BLOB_ERR_PERIPHERAL_COMMS_FAILURES),
             cancel_msg
         );
-        return 117;
+        return BLOB_ERR_PERIPHERAL_COMMS_FAILURES;
     }
 
     snprintf(
@@ -1039,5 +1079,5 @@ uint8_t blob_main(
         cancel_msg
     );
 
-    return 0;
+    return BLOB_ERR_OK;
 }

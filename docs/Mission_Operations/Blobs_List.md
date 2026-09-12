@@ -151,6 +151,7 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
     * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20`
     * Change 1 (fix): MPI temperature fetching now supports negative Celsius temperatures.
     * Change 2: Prevent bouncing in the `pending_queued_tcmd_count` field between extended and basic beacons.
+    * Improvement: Use error enum for error reporting.
 
 ## `blobs/adcs_get_latest_sd_file_v1.blob`
 
