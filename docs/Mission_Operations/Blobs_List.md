@@ -4,6 +4,10 @@
 
 Blobs are small executable payloads (generally 100-5000 bytes), which are programmed in C code, compiled using special techniques, and uplinked to the satellite.
 
+Blobs are used to overcome bugs and add functionality beyond FrontierSat's core firmware when launched.
+
+Running a blob is effectively the same as running a single built-in telecommand, though some blobs are self-rescheduling (and thus run on repeat many times).
+
 Blobs are executed using the `CTS1+exec_blob_from_fs(blob_file,0,arguments_passed_to_blob)` core telecommand. The `0` argument is insignificant in normal use, and should just be 0.
 
 The following is the list of blobs which are ready-to-use on FrontierSat.
