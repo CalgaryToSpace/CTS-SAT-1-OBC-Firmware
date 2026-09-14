@@ -120,7 +120,7 @@ int32_t read_avg_temperature_cC_from_mpi_data_buffer(
             large_buffer[i + 2] == sync_pattern[2] &&
             large_buffer[i + 3] == sync_pattern[3]
         ) {
-            // Ensure temperature bytes are inside buffer.
+            // Ensure temperature bytes are inside buffer. // TODO: Remove this unnecessary if-statement.
             if (i + 7 < MPI_science_buffer_len) {
                 // Assumption: Negative values will be handled gracefully by C, just
                 // by storing the value in a signed int.
@@ -131,7 +131,7 @@ int32_t read_avg_temperature_cC_from_mpi_data_buffer(
                 // Convert to centi-Celsius (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/462):
                 // Celsius = raw_temp / 128.0
                 // centi-Celsius = (raw_temp * 100) / 128
-                const int32_t temp_centi = (raw_temp * 100U) / 128U;
+                const int32_t temp_centi = (raw_temp * 100U) / 128U; // TODO: Fix per https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/667
 
                 temp_sum_centi += temp_centi;
                 temp_count++;
