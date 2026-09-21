@@ -198,6 +198,9 @@ CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v1.blob,0,0)!
 ## `blobs/gnss_bestxyzb_ring_v1.blob`
 
 * Available since: 2026-08-13
+* Entirely superseded by `blobs/gnss_bestxyzb_ring_v2.blob`, which contains a very-different implementation.
+
+<details>
 
 ### Description
 
@@ -240,3 +243,99 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 5. If GNSS firehose mode is activated, this blob skips collecting data samples while firehose
    mode is active, but will resume after firehose mode is disabled.
 6. The ring buffer's contents may be retained between software reboots, watchdog resets, etc.
+
+</details>
+
+## `blobs/gnss_bestxyzb_ring_v2.blob`
+
+* Available since: 2026-09-20
+* Supersedes: `blobs/gnss_bestxyzb_ring_v1.blob`
+
+### Description
+
+```c
+// This is a blob (executable) that manages the GNSS receiver's power channel based on available
+// power/sun, periodically samples "log bestxyzb once" from the GNSS receiver, stores good fixes
+// into a ring of files in the LittleFS filesystem, periodically syncs the OBC clock to GNSS time,
+// downlinks a randomly-selected consecutive run of stored samples on every run, and schedules
+// itself for the next run.
+//
+// Args Format: <repeat_interval_ms>;<downlink_n>[;<flags>]
+// - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
+//   interval (clamped to a minimum of 1100ms).
+// - downlink_n: Number of ADDITIONAL consecutive samples to downlink after the randomly-selected
+//   starting sample. So a total of (1 + downlink_n) packets are sent per run, fewer if the
+//   randomly-chosen start lands near the end of the chosen file.
+// - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
+//     STOP       Permanently cancel this blob.
+//     RESUME     Clear the persistent stop flag set by STOP, and run normally.
+//     FAKE       Bench test mode: no GNSS/EPS access; samples synthesized from the RNG.
+//     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode.
+//     NOEPS      Never command the EPS channel on or off.
+```
+
+### Power Policy
+
+Evaluated fresh on every run, in this order; first match wins:
+
+| # | Condition | Action |
+|---|-----------|--------|
+| 1 | battery < 14000mV | **OFF** (hard floor; overrides everything below) |
+| 2 | `TRACK_MPI` set AND MPI is sensing | ON |
+| 3 | battery >= 15000mV AND in sun | ON |
+| 4 | eclipse OR battery < 14500mV | OFF |
+| 5 | otherwise | keep current channel state (hysteresis) |
+
+"In sun" means the sum of coarse sun sensors 1..6 is > 100. If the ADCS query fails, we
+conservatively treat it as eclipse (except on the bench, where `RBF=BENCH` steamrolls).
+
+Battery voltage comes from `OBC_read_vbat_with_adc_mV()`.
+
+### Storage
+
+Samples are stored in LittleFS under `gnss_ring/`, as a ring of 10 files (`gnss_ring/r0.bin` ..
+`gnss_ring/r9.bin`), each holding up to 50 fixed-size 144-byte records. When the current file
+fills, the blob advances to the next file index; after the last one it wraps back to index 0 and
+truncates it, evicting the oldest data. Only good, non-empty fixes are stored (solution status
+must be `SOL_COMPUTED`, position type must not be `NONE`, and the X/Y/Z position bytes must not
+be all-zero).
+
+Unlike v1, sample data is NOT kept in RAM. Only a small write cursor / flag / counter block lives
+in the fixed SRAM region, and it is rebuilt by measuring the on-disk files after a power cycle.
+
+### Example Usage
+
+After uplinking the blob as "blobs/gnss_bestxyzb_ring_v2.blob", run:
+
+```
+CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;TRACK_MPI)!
+```
+
+To permanently stop it (also turns the GNSS channel off and cancels all pending reruns):
+
+```
+CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
+```
+
+To restart it after a STOP:
+
+```
+CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;RESUME|TRACK_MPI)!
+```
+
+### Notes
+
+1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
+2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
+   extended beacon blob (re-uplinking cancels any previously-scheduled rerun of this blob).
+3. This blob turns the GNSS EPS channel on and off autonomously.
+4. SAFETY: The GNSS is never powered on while the battery is below 14000mV, and is actively
+   turned off if the battery falls below that, no matter what.
+5. While the GNSS is powered on, the blob re-syncs the OBC clock from GNSS time at most once
+   every 10 minutes.
+6. If a GNSS query fails for any reason, this run skips storing a new sample but still downlinks
+   existing samples and reschedules normally, so transient GNSS comms errors "self-heal".
+7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time syncs)
+   while firehose mode is active, but will resume after firehose mode is disabled.
+8. The STOP flag is latched in the same SRAM region as the write cursor, so it survives software
+   reboots but not a full power cycle that clears SRAM.
