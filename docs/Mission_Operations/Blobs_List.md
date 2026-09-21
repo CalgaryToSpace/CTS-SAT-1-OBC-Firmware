@@ -302,8 +302,17 @@ truncates it, evicting the oldest data. Only good, non-empty fixes are stored (s
 must be `SOL_COMPUTED`, position type must not be `NONE`, and the X/Y/Z position bytes must not
 be all-zero).
 
-Unlike v1, sample data is NOT kept in RAM. Only a small write cursor / flag / counter block lives
-in the fixed SRAM region, and it is rebuilt by measuring the on-disk files after a power cycle.
+Unlike v1, sample data is NOT kept in RAM. Only a small write cursor / flag / counter block (plus
+the handle of the ring file currently being written) lives in the fixed SRAM region. After a power
+cycle, that block is NOT rebuilt from disk: the ring simply restarts at `r0.bin` record 0,
+truncating each file as it first writes to it.
+
+For speed, the ring file being appended to is left OPEN between the blob's executions, so storing
+a sample is a single `lfs_file_write()` rather than an open/write/close cycle. It is closed (which
+is what commits its records to flash) when the file fills up, on `STOP`, and on a non-repeating
+(one-shot) run. Two consequences: an unexpected reboot loses the records in the file currently
+being written (up to 50), and that file is not downlinked while it's open -- its samples start
+going down once it fills up and the ring moves on to the next file.
 
 ### Example Usage
 

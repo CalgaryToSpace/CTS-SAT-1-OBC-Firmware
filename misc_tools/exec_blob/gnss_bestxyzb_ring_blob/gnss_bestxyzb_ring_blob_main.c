@@ -90,8 +90,23 @@
 // running rc3 firmware image's .data/.bss, so its contents physically survive between this blob's
 // separate executions. A magic number at the start of that memory detects true cold-start (e.g.,
 // first ever run, or after a full power-cycle that clears SRAM) vs. already-initialized state.
-// On cold-start we rebuild the write cursor by measuring the on-disk files, so a power cycle
-// costs us at most the tail of one file, not the whole history.
+// On cold-start we do NOT inspect the disk: the write cursor simply restarts at r0.bin/record 0,
+// and each ring file is truncated as we first write to it, so the ring refills from scratch.
+//
+// Open file handle: The ring file we're currently appending to is left OPEN between executions --
+// its lfs_file_t lives in the same persistent SRAM block. Appending a record is then just an
+// lfs_file_write(), instead of the open/write/close per record that the LFS_* helpers do: no
+// directory traversal and no cache-buffer malloc/free per sample. The handle is only trusted
+// after confirming it's still linked into the mounted filesystem's open-file list (see
+// ring_open_file_is_live()), and it's closed -- which is what commits its records to flash --
+// when the file fills up, when the blob is STOPped, and when a run isn't rescheduling itself.
+// So an unexpected reboot costs the records in the file currently being written (at most
+// GNSS_RING_RECORDS_PER_FILE of them); every earlier file is already committed. That's an
+// accepted trade: reboots are rare, and the ring holds far more than one file's worth.
+//
+// The file being written is never also read: it's excluded from the downlink candidates below, so
+// there's only ever one handle open on it. Its samples become downlinkable once it fills and is
+// closed.
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -264,7 +279,9 @@ extern uint8_t gnss_ring_state_base[];
 #define GNSS_RING_STATE_REGION_LEN 0x100u // Must match blob.ld's MEMORY.RING.LENGTH.
 #define GNSS_RING_STATE_MAGIC 0xB35779C1u // Deliberately != v1's magic, so v1 state is treated as cold.
 
-#pragma pack(push, 1)
+// NOT packed, deliberately: it holds a live lfs_file_t that littlefs accesses through an ordinary
+// (alignment-assuming) pointer, and the struct is only ever read/written by this blob at a fixed,
+// 4-byte-aligned base address, so there's nothing for packing to buy.
 typedef struct {
     uint32_t magic; // GNSS_RING_STATE_MAGIC once initialized; anything else means cold/garbage SRAM.
 
@@ -284,8 +301,12 @@ typedef struct {
     uint32_t last_time_sync_uptime_ms; // TIME_uptime_ms() at the last successful GNSS time sync.
     uint32_t time_sync_count; // Successful GNSS time syncs, since cold-init.
     uint32_t gnss_power_on_uptime_ms; // TIME_uptime_ms() when we last switched the channel on.
+
+    // The ring file we're appending to, held open across executions. See ring_open_write_file().
+    uint8_t open_file_is_valid; // 1 if we left `open_file` open; still verify it's live before use.
+    uint8_t open_file_idx; // Ring file index that `open_file` refers to, when valid.
+    lfs_file_t open_file; // Live littlefs handle; linked into LFS_filesystem.mlist while open.
 } GNSS_ring_state_t;
-#pragma pack(pop)
 
 _Static_assert(
     sizeof(GNSS_ring_state_t) <= GNSS_RING_STATE_REGION_LEN,
@@ -1054,65 +1075,125 @@ static uint16_t ring_file_record_count(uint8_t file_idx) {
     return count;
 }
 
-/// @brief Rebuild the persistent write cursor by measuring the ring files on disk.
-/// @details Called on cold-start (magic mismatch), e.g. the first ever run or after a power cycle
-///     that cleared SRAM but left the filesystem intact. We resume appending to the first file
-///     that isn't full; if every file is full, we've wrapped, so we start over at file 0 (whose
-///     contents are the oldest and are due for eviction anyway).
-static void recover_write_cursor_from_disk() {
-    for (uint8_t file_idx = 0; file_idx < GNSS_RING_FILE_COUNT; file_idx++) {
-        const uint16_t count = ring_file_record_count(file_idx);
-        if (count < GNSS_RING_RECORDS_PER_FILE) {
-            g_state->write_file_idx = file_idx;
-            g_state->write_record_idx = (uint8_t)count;
-            // If we found a partially-filled file after file 0, earlier files are full, which means
-            // we'd previously been through at least that much of the ring.
-            g_state->has_wrapped = 0;
-            return;
+/// @brief Is the persisted `open_file` handle still a live handle on the mounted filesystem?
+/// @details The handle survives in SRAM between executions, but the filesystem state it points
+///     into doesn't have to: an unmount/remount (or a firmware restart that happened to leave our
+///     SRAM intact) frees its cache buffer and leaves us holding a dangling handle. littlefs links
+///     every open file into `LFS_filesystem.mlist`, so walking that list is a cheap and
+///     authoritative check that the currently-mounted filesystem still knows about our handle.
+/// @return true only if the handle is safe to write to.
+static bool ring_open_file_is_live() {
+    if ((!g_state->open_file_is_valid) || (!LFS_is_lfs_mounted)) {
+        return false;
+    }
+
+    for (struct lfs_mlist *entry = LFS_filesystem.mlist; entry != NULL; entry = entry->next) {
+        if ((void *)entry == (void *)&g_state->open_file) {
+            return true;
+        }
+    }
+    return false; // Stale handle (remount, or something closed it for us); treat it as gone.
+}
+
+/// @brief Close the persisted write handle, committing its pending records, and mark it invalid.
+/// @details Safe to call at any time: does nothing if no live handle is currently held.
+static void ring_close_open_file() {
+    if (ring_open_file_is_live()) {
+        const int close_result = lfs_file_close(&LFS_filesystem, &g_state->open_file);
+        if (close_result < 0) {
+            LOG(
+                LOG_SEVERITY_ERROR,
+                "%s: lfs_file_close(r%d) -> %d",
+                BLOB_NAME, g_state->open_file_idx, close_result
+            );
         }
     }
 
-    // Every file is full: wrap around and begin evicting the oldest file.
-    g_state->write_file_idx = 0;
-    g_state->write_record_idx = 0;
-    g_state->has_wrapped = 1;
+    g_state->open_file_is_valid = 0;
 }
 
-/// @brief Append one sample record to the ring, advancing (and wrapping/truncating) as needed.
-/// @param sample The GNSS_SAMPLE_SIZE-byte record to store.
-/// @return BLOB_ERR_OK on success, BLOB_ERR_LFS_WRITE_FAILED if LittleFS rejected the write.
-static GNSS_ring_blob_error_enum_t store_sample_to_ring(const uint8_t sample[GNSS_SAMPLE_SIZE]) {
+/// @brief Make sure `g_state->open_file` is open on ring file `write_file_idx`, ready to append.
+/// @details Reuses the handle left open by a previous execution whenever it's still live and
+///     points at the right file, which is the common case: the open (a directory traversal plus a
+///     cache-buffer allocation) then happens once per ring file, not once per sample.
+/// @return BLOB_ERR_OK if a live handle is ready, BLOB_ERR_LFS_WRITE_FAILED otherwise.
+static GNSS_ring_blob_error_enum_t ring_open_write_file() {
+    if (ring_open_file_is_live()) {
+        if (g_state->open_file_idx == g_state->write_file_idx) {
+            return BLOB_ERR_OK; // Already open on the right file: nothing to do.
+        }
+        ring_close_open_file(); // We've rolled over to the next ring file; commit the old one.
+    }
+    else {
+        g_state->open_file_is_valid = 0; // Stale handle from before a remount; just drop it.
+    }
+
+    const int8_t mount_result = LFS_ensure_mounted();
+    if (mount_result < 0) {
+        LOG(LOG_SEVERITY_ERROR, "%s: LFS_ensure_mounted() -> %d", BLOB_NAME, mount_result);
+        return BLOB_ERR_LFS_WRITE_FAILED;
+    }
+
     char path[GNSS_RING_PATH_MAX_LEN];
     make_ring_file_path(g_state->write_file_idx, path, sizeof(path));
 
-    int8_t write_result;
-    if (g_state->write_record_idx == 0) {
-        // First record of this file: create it, or TRUNCATE it if it's an old file we've now
-        // wrapped around to. This is how the ring evicts its oldest data.
-        write_result = LFS_write_file(path, (uint8_t *)sample, GNSS_SAMPLE_SIZE);
-    }
-    else {
-        write_result = LFS_append_file(path, (uint8_t *)sample, GNSS_SAMPLE_SIZE);
+    // Starting a file at record 0 means creating it, or TRUNCATE-ing an old file we've now wrapped
+    // around to -- that's how the ring evicts its oldest data. Otherwise we're resuming a file
+    // that's partly full, so append to whatever is already on disk.
+    const int open_flags = LFS_O_WRONLY | LFS_O_CREAT | (
+        (g_state->write_record_idx == 0) ? LFS_O_TRUNC : LFS_O_APPEND
+    );
+
+    const int open_result = lfs_file_open(&LFS_filesystem, &g_state->open_file, path, open_flags);
+    if (open_result < 0) {
+        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        return BLOB_ERR_LFS_WRITE_FAILED;
     }
 
-    if (write_result < 0) {
+    g_state->open_file_idx = g_state->write_file_idx;
+    g_state->open_file_is_valid = 1;
+    return BLOB_ERR_OK;
+}
+
+/// @brief Append one sample record to the ring, advancing (and wrapping/truncating) as needed.
+/// @details Writes straight through the persistent handle with lfs_file_write(). The file stays
+///     open afterwards, and is only closed -- which is what commits its records -- once it fills
+///     up.
+/// @param sample The GNSS_SAMPLE_SIZE-byte record to store.
+/// @return BLOB_ERR_OK on success, BLOB_ERR_LFS_WRITE_FAILED if LittleFS rejected the write.
+static GNSS_ring_blob_error_enum_t store_sample_to_ring(const uint8_t sample[GNSS_SAMPLE_SIZE]) {
+    const GNSS_ring_blob_error_enum_t open_status = ring_open_write_file();
+    if (open_status != BLOB_ERR_OK) {
+        return open_status;
+    }
+
+    const lfs_ssize_t write_result = lfs_file_write(
+        &LFS_filesystem, &g_state->open_file, sample, GNSS_SAMPLE_SIZE
+    );
+    if (write_result != (lfs_ssize_t)GNSS_SAMPLE_SIZE) {
         LOG(
             LOG_SEVERITY_ERROR,
-            "%s: writing record %d to %s -> %d",
-            BLOB_NAME, g_state->write_record_idx, path, write_result
+            "%s: lfs_file_write(r%d, record %d) -> %ld",
+            BLOB_NAME, g_state->write_file_idx, g_state->write_record_idx, (long)write_result
         );
+        // The handle's write position is now unknown; drop it so the next run reopens cleanly.
+        ring_close_open_file();
         return BLOB_ERR_LFS_WRITE_FAILED;
     }
 
     g_state->stored_record_count++;
     g_state->write_record_idx++;
+
     if (g_state->write_record_idx >= GNSS_RING_RECORDS_PER_FILE) {
+        // This file is full: advance the cursor and close the file (which commits its pending
+        // records). The next stored sample opens the next file in the ring.
         g_state->write_record_idx = 0;
         g_state->write_file_idx++;
         if (g_state->write_file_idx >= GNSS_RING_FILE_COUNT) {
             g_state->write_file_idx = 0;
             g_state->has_wrapped = 1;
         }
+        ring_close_open_file();
     }
 
     return BLOB_ERR_OK;
@@ -1336,17 +1417,26 @@ static bool maybe_sync_time_from_gnss() {
 ///     contiguous arcs of the orbit, which are far more useful for fitting than scattered points.
 ///     The run stops at the end of the file rather than continuing into the next one, because
 ///     adjacent ring files aren't necessarily adjacent in time once the ring has wrapped.
+///
+///     The ring file we currently hold open for appending is never a candidate: we never read a
+///     file we're writing to. Its records are only partly committed to flash anyway, and they
+///     become downlinkable as soon as it fills up and is closed.
 /// @param downlink_n Number of ADDITIONAL records to send after the randomly-chosen first one.
 /// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
 /// @return Number of downlink failures (0 = all succeeded).
 static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent_count_dest) {
     *sent_count_dest = 0;
 
-    // Collect the ring files that currently hold at least one record.
+    // Collect the closed ring files that currently hold at least one record.
+    const bool write_file_is_open = ring_open_file_is_live();
     uint8_t candidate_files[GNSS_RING_FILE_COUNT];
     uint16_t candidate_counts[GNSS_RING_FILE_COUNT];
     uint8_t candidate_total = 0;
     for (uint8_t file_idx = 0; file_idx < GNSS_RING_FILE_COUNT; file_idx++) {
+        if (write_file_is_open && (file_idx == g_state->open_file_idx)) {
+            continue; // Skip the file we're appending to; see this function's @details.
+        }
+
         const uint16_t count = ring_file_record_count(file_idx);
         if (count > 0) {
             candidate_files[candidate_total] = file_idx;
@@ -1510,13 +1600,13 @@ uint8_t blob_main(
 
     // Initialize the persistent state on true cold-start (first ever run, or after a full
     // power-cycle that cleared SRAM). Otherwise, its contents survive from the previous execution
-    // of this blob. On cold-start, rebuild the write cursor from the files already on disk so a
-    // reboot doesn't restart the ring from scratch.
-    bool did_cold_start = false;
+    // of this blob. We deliberately do NOT measure the on-disk files to recover the write cursor:
+    // a cold-started ring simply starts over at r0.bin/record 0, truncating each file as it first
+    // writes to it. The memset also clears any stale `open_file` handle, which is essential --
+    // after a power cycle it would point into a filesystem/heap that no longer exists.
     if (g_state->magic != GNSS_RING_STATE_MAGIC) {
         memset(g_state, 0, sizeof(GNSS_ring_state_t));
         g_state->magic = GNSS_RING_STATE_MAGIC;
-        did_cold_start = true;
     }
 
     // Make sure "gnss_ring/" exists before anything tries to read or write inside it.
@@ -1530,10 +1620,6 @@ uint8_t blob_main(
         return mkdir_status;
     }
 
-    if (did_cold_start) {
-        recover_write_cursor_from_disk();
-    }
-
     // RESUME clears a previously-latched STOP. Checked before STOP so that passing both is a no-op
     // rather than an unstoppable blob.
     if (flag_resume) {
@@ -1544,6 +1630,7 @@ uint8_t blob_main(
     // were already cancelled above, so this run is the last one.
     if (flag_stop) {
         g_state->is_permanently_stopped = 1;
+        ring_close_open_file(); // Commit whatever is pending: nothing will reopen this file.
         if (!flag_no_eps) {
             EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0);
             g_state->gnss_channel_is_on = 0;
@@ -1626,9 +1713,15 @@ uint8_t blob_main(
         );
     }
 
-    if (repeat_interval_ms > 0) {
+    if (repeat_interval_ms <= 0) {
+        // One-shot run: no later execution will ever come back to flush or close the write file,
+        // so commit it now rather than leaving the handle (and its cache buffer) dangling.
+        ring_close_open_file();
+    }
+    else {
         const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
         if (reexec_result != BLOB_ERR_OK) {
+            ring_close_open_file(); // No rerun is coming to close it; commit what we have.
             snprintf(
                 response_buf, response_buf_len,
                 "%s error: reschedule_current_blob_tcmd() -> %s%s",
