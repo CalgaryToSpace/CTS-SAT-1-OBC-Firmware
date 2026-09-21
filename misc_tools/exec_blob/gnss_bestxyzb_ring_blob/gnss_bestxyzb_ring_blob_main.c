@@ -56,6 +56,10 @@
 //     sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
 //     Nothing is lost: the stored samples go down on a later run, once the MPI is idle. This
 //     applies whether or not the TRACK_MPI flag was passed.
+//  9. Likewise, no GNSS time sync (OBC clock set) is performed while the MPI is in active
+//     (sensing) mode, even if one is due: stepping the clock mid-campaign would corrupt the
+//     timestamps on the science data. The sync stays due and happens on the first run after the
+//     MPI goes idle. Also not gated behind the TRACK_MPI flag.
 //
 // --------------------------
 //
@@ -1282,6 +1286,15 @@ static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb(bool use_fake_data)
 static bool maybe_sync_time_from_gnss() {
     // Firehose mode owns the UART; don't interleave a time sync into it.
     if (GNSS_current_rx_mode == GNSS_RX_MODE_FIREHOSE_MODE) {
+        return false;
+    }
+
+    // While the MPI is actively collecting science data, never step the OBC clock: MPI science
+    // data is timestamped from that clock, so a jump mid-campaign would corrupt the timeline.
+    // A due sync simply waits -- `last_time_sync_uptime_ms` isn't touched, so the sync stays due
+    // and happens on the first run after the MPI goes idle. Like the downlink skip, this is
+    // checked unconditionally, NOT gated behind the TRACK_MPI flag.
+    if (is_mpi_active()) {
         return false;
     }
 
