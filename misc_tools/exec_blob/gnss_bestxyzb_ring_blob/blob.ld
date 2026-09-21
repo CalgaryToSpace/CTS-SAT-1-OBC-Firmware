@@ -3,7 +3,9 @@ ENTRY(blob_main)
 
 MEMORY
 {
-    /* Reserved for this blob's persistent GNSS BESTXYZB ring buffer.
+    /* Reserved for this blob's small persistent state block (write cursor,
+       flags, counters -- the sampled GNSS data itself lives in LittleFS, not
+       here; see GNSS_ring_state_t).
        This is real physical SRAM on the STM32L4R5 (640KB total, contiguous
        from 0x20000000 to 0x200A0000 across SRAM1+SRAM2+SRAM3 -- the "RAM2"/
        "RAM3" regions in the main firmware's linker script are aliases/
@@ -22,10 +24,10 @@ MEMORY
        executions of this blob (each execution is freshly loaded into a
        different malloc'd/MPI buffer elsewhere and jumped into -- this blob
        has no .data/.bss of its own, per the Makefile's build-time check).
-       We use this fixed physical range as the *only* persistent storage
-       available to this blob, so sampled GNSS data survives between the
+       We use this fixed physical range as the blob's only persistent RAM,
+       so the LittleFS write cursor and the stop flag survive between the
        blob's repeated, self-rescheduled executions. */
-    RING (xrw) : ORIGIN = 0x2008F000, LENGTH = 0x9000
+    RING (xrw) : ORIGIN = 0x2008F000, LENGTH = 0x100
 
     /* Wide-open region for the blob's own code/rodata (position-independent,
        loaded at a runtime-chosen malloc'd/MPI-buffer address -- this region
@@ -65,13 +67,13 @@ INSERT AFTER .text;
 
 /* Separate SECTIONS block (not part of the "INSERT AFTER" flow above, since
    it targets a completely different, fixed-address memory region): anchors
-   the `gnss_ring_buffer_base` symbol at RING's origin. Marked NOLOAD so
+   the `gnss_ring_state_base` symbol at RING's origin. Marked NOLOAD so
    objcopy -O binary emits zero bytes for it -- it reserves no space in
    blob.bin, and is never written into by the blob loader. */
 SECTIONS
 {
-    .gnss_ring_buffer (NOLOAD) : {
-        gnss_ring_buffer_base = .;
-        . = . + 0x9000;
+    .gnss_ring_state (NOLOAD) : {
+        gnss_ring_state_base = .;
+        . = . + 0x100;
     } > RING
 }
