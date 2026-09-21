@@ -43,10 +43,14 @@ LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 
 TARGET = gnss_bestxyzb_ring_blob
 
+# Name the blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
+BLOB_NAME = gnss_bestxyzb_ring_v1
+
 ELF = $(BUILD_DIR)/$(TARGET).elf
 BIN = $(BUILD_DIR)/$(TARGET).bin
+BLOB = $(BUILD_DIR)/$(BLOB_NAME).blob
 
-all: $(BIN)
+all: $(BIN) $(BLOB)
 
 # Ensure build directory exists
 $(BUILD_DIR):
@@ -62,6 +66,10 @@ $(ELF): gnss_bestxyzb_ring_blob_main.c $(FW_ELF) | $(BUILD_DIR)
 
 $(BIN): $(ELF)
 	$(OBJCOPY) -O binary $< $@
+
+# Same bytes as the .bin, named as it should be uplinked.
+$(BLOB): $(BIN)
+	cp $< $@
 
 clean:
 	rm -rf $(BUILD_DIR)
