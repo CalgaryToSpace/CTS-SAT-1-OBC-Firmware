@@ -25,6 +25,8 @@
 //                downlink, rescheduling) behaves normally.
 //     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode,
 //                regardless of sun/voltage -- except that the 14V hard floor still wins.
+//                (This flag only governs powering the GNSS *on*. Downlink is suppressed during
+//                MPI activity either way -- see note 8 below.)
 //     NOEPS      Never command the EPS channel on or off; just sample if the channel happens to
 //                already be on. For bench use and for handing power control back to the ground.
 //
@@ -50,6 +52,10 @@
 //     mode is active, but will resume after firehose mode is disabled.
 //  7. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
 //     position type must not be NONE, and the X/Y/Z position bytes must not be all-zero.
+//  8. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
+//     sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
+//     Nothing is lost: the stored samples go down on a later run, once the MPI is idle. This
+//     applies whether or not the TRACK_MPI flag was passed.
 //
 // --------------------------
 //
@@ -166,7 +172,7 @@ extern void GNSS_set_uart_interrupt_state(uint8_t new_enabled);
 #define GNSS_POWER_HARD_FLOOR_MV 14000 // NEVER power the GNSS on below this. Turn it off if we fall below it.
 #define GNSS_POWER_OFF_BELOW_MV 14500 // Below this (but above the hard floor), shed the GNSS.
 #define GNSS_POWER_ON_ABOVE_MV 15000 // At/above this, and in sun, power the GNSS on.
-#define GNSS_SUN_SENSOR_SUM_THRESHOLD 100 // Sum of coarse sun sensors 1..6 above which we're "in sun".
+#define GNSS_SUN_SENSOR_SUM_THRESHOLD 50 // Sum of coarse sun sensors 1..6 above which we're "in sun". Nominally 20-28 in eclipse and 50+ in sun.
 
 // How often to re-sync the OBC clock from the GNSS, while the GNSS is powered on and healthy.
 #define GNSS_TIME_SYNC_INTERVAL_MS 600000u // 10 minutes.
@@ -201,6 +207,7 @@ typedef enum {
     BLOB_ERR_GNSS_WARMING_UP = 51, // GNSS channel was just switched on; skipping sampling this run.
     BLOB_ERR_DOWNLINK_PARTIAL_FAILURE = 60, // At least one downlink packet failed to send.
     BLOB_ERR_NO_STORED_DATA = 61, // Nothing stored yet, so nothing to downlink.
+    BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE = 62, // Stored a sample, but stayed off the radio (MPI active).
     BLOB_ERR_PERMANENTLY_STOPPED = 70, // The persistent STOP flag is set; blob exits immediately.
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
@@ -226,6 +233,7 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
         case BLOB_ERR_GNSS_WARMING_UP: return "GNSS_WARMING_UP";
         case BLOB_ERR_DOWNLINK_PARTIAL_FAILURE: return "DOWNLINK_PARTIAL_FAILURE";
         case BLOB_ERR_NO_STORED_DATA: return "NO_STORED_DATA";
+        case BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE: return "DOWNLINK_SKIPPED_MPI_ACTIVE";
         case BLOB_ERR_PERMANENTLY_STOPPED: return "PERMANENTLY_STOPPED";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
@@ -1585,10 +1593,20 @@ uint8_t blob_main(
 
     // Downlink a random consecutive run of stored samples, regardless of whether the GNSS is
     // powered this run -- the history is on disk and is worth sending down either way.
+    //
+    // Exception: while the MPI is actively collecting science data, keep sampling and storing, but
+    // stay off the radio entirely, so this blob's downlink doesn't compete with the science
+    // campaign. The samples aren't lost -- they're on disk, and go down on a later run once the
+    // MPI is idle. Note this is checked unconditionally, NOT gated behind the TRACK_MPI flag:
+    // TRACK_MPI only governs whether MPI activity forces the GNSS *on*.
+    const bool skip_downlink_for_mpi = is_mpi_active();
     uint16_t downlink_sent_count = 0;
-    const uint16_t downlink_fail_count = downlink_consecutive_samples(
-        (uint16_t)downlink_n, &downlink_sent_count
-    );
+    uint16_t downlink_fail_count = 0;
+    if (!skip_downlink_for_mpi) {
+        downlink_fail_count = downlink_consecutive_samples(
+            (uint16_t)downlink_n, &downlink_sent_count
+        );
+    }
 
     if (repeat_interval_ms > 0) {
         const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
@@ -1602,10 +1620,21 @@ uint8_t blob_main(
         }
     }
 
+    char downlink_msg[24];
+    if (skip_downlink_for_mpi) {
+        snprintf(downlink_msg, sizeof(downlink_msg), "skipped(mpi_active)");
+    }
+    else {
+        snprintf(
+            downlink_msg, sizeof(downlink_msg), "%d/%d",
+            downlink_sent_count, downlink_sent_count + downlink_fail_count
+        );
+    }
+
     snprintf(
         response_buf, response_buf_len,
         "%s: gnss=%s (%s, vbatt=%dmV), sample=%s, cursor=r%d/%d%s, stored=%lu, "
-        "bad_fixes=%lu, fetch_fails=%lu, sync=%s(%lu), sent=%d/%d%s",
+        "bad_fixes=%lu, fetch_fails=%lu, sync=%s(%lu), sent=%s%s",
         BLOB_NAME,
         gnss_is_on ? "ON" : "OFF", power_reason, vbatt_mV,
         gnss_ring_blob_error_to_str(sample_status),
@@ -1615,7 +1644,7 @@ uint8_t blob_main(
         (unsigned long)g_state->bad_fix_skipped_count,
         (unsigned long)g_state->gnss_fetch_failure_count,
         did_time_sync ? "yes" : "no", (unsigned long)g_state->time_sync_count,
-        downlink_sent_count, downlink_sent_count + downlink_fail_count,
+        downlink_msg,
         cancel_msg
     );
 
@@ -1629,11 +1658,14 @@ uint8_t blob_main(
         );
         return BLOB_ERR_DOWNLINK_PARTIAL_FAILURE;
     }
-    if ((downlink_sent_count == 0) && (g_state->stored_record_count == 0)) {
-        return BLOB_ERR_NO_STORED_DATA; // Normal early in a campaign, before the first good fix.
-    }
     if (sample_status != BLOB_ERR_OK) {
         return 100 + sample_status; // Non-fatal: no sample stored this run, but we still ran fully.
+    }
+    if (skip_downlink_for_mpi) {
+        return BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE; // Deliberate radio silence, not a failure.
+    }
+    if ((downlink_sent_count == 0) && (g_state->stored_record_count == 0)) {
+        return BLOB_ERR_NO_STORED_DATA; // Normal early in a campaign, before the first good fix.
     }
 
     return BLOB_ERR_OK;
