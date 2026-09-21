@@ -119,10 +119,8 @@
 #include "obc_systems/external_led_and_rbf.h"
 #include "obc_systems/adc_vbat_monitor.h"
 #include "adcs_drivers/adcs_types.h"
-#include "adcs_drivers/adcs_commands.h"
 #include "mpi/mpi_types.h"
-#include "mpi/mpi_command_handling.h"
-#include "littlefs/lfs.h"
+#include "../lfs.h"
 #include "littlefs/littlefs_helper.h"
 
 
@@ -150,6 +148,8 @@ extern volatile uint32_t UART_gnss_last_write_time_ms;           // Last write t
 
 extern UART_HandleTypeDef *UART_gnss_port_handle;
 
+extern volatile MPI_rx_mode_enum_t MPI_current_uart_rx_mode;
+
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 // Note: TIME_uptime_ms() itself is not redeclared here -- it's already provided as a plain
@@ -158,6 +158,10 @@ extern UART_HandleTypeDef *UART_gnss_port_handle;
 // Note: strlen/strcmp/memset/memcpy are declared by <string.h>, which arrives transitively via
 // littlefs's lfs_util.h, so (unlike in the other blobs) they must NOT be re-declared here.
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
+extern int strlen(const char *s);
+extern int strcmp(const char *s1, const char *s2);
+extern void *memset(void *s, int c, size_t n);
+extern void *memcpy(void *__restrict dest, const void *__restrict src, size_t n);
 
 extern HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
 
@@ -170,6 +174,7 @@ extern void LOG_message(
     LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
 extern void GNSS_set_uart_interrupt_state(uint8_t new_enabled);
+extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
 
 // MARK: Tunable Parameters
 
