@@ -261,7 +261,7 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 // downlinks a randomly-selected consecutive run of stored samples on every run, and schedules
 // itself for the next run.
 //
-// Args Format: <repeat_interval_ms>;<downlink_n>[;<flags>]
+// Args Format: <repeat_interval_ms>;<downlink_n>[;<flag1|flag2|...>]
 // - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
 //   interval (clamped to a minimum of 1100ms).
 // - downlink_n: Number of ADDITIONAL consecutive samples to downlink after the randomly-selected
