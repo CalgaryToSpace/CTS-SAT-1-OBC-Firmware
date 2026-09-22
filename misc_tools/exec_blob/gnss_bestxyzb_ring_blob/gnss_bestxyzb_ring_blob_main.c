@@ -1,6 +1,7 @@
 // This is a blob (executable) that manages the GNSS receiver's power channel based on available
 // power/sun, periodically samples "log bestxyzb once" from the GNSS receiver, stores good fixes
-// into a ring of files in the LittleFS filesystem, periodically syncs the OBC clock to GNSS time,
+// into a ring of files in the LittleFS filesystem, periodically syncs the OBC clock to GNSS time
+// (and pushes that time out to the EPS and the ADCS),
 // downlinks a randomly-selected consecutive run of stored samples on every run, and schedules
 // itself for the next run.
 //
@@ -60,6 +61,8 @@
 //     (sensing) mode, even if one is due: stepping the clock mid-campaign would corrupt the
 //     timestamps on the science data. The sync stays due and happens on the first run after the
 //     MPI goes idle. Also not gated behind the TRACK_MPI flag.
+// 10. Every successful GNSS time sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time())
+//     and to the ADCS (ADCS_synchronize_unix_time()).
 //
 // --------------------------
 //
@@ -128,6 +131,7 @@
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_commands.h"
+#include "eps_drivers/eps_time.h"
 #include "comms_drivers/ax100_tx.h"
 #include "comms_drivers/comms_tx.h"
 #include "crypto/random_number_generator.h"
@@ -190,6 +194,7 @@ extern void LOG_message(
 
 extern void GNSS_set_uart_interrupt_state(uint8_t new_enabled);
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
+extern uint8_t ADCS_synchronize_unix_time();
 
 // MARK: Tunable Parameters
 
@@ -200,6 +205,10 @@ extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_
 
 // How often to re-sync the OBC clock from the GNSS, while the GNSS is powered on and healthy.
 #define GNSS_TIME_SYNC_INTERVAL_MS 600000u // 10 minutes.
+
+// Sentinel for the EPS/ADCS time-push statuses: no sync happened this run, so nothing was pushed.
+// Can't collide with a real status, since those are single-byte error codes well below 0xFF.
+#define TIME_PUSH_NOT_ATTEMPTED 0xFFu
 
 // After switching the GNSS channel on, the receiver needs to boot before it can answer logs.
 // We skip sampling on the run that powers it up, and sample from the next run onward.
@@ -1367,9 +1376,17 @@ static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb(bool use_fake_data)
 }
 
 /// @brief Re-sync the OBC clock from the GNSS, if it's been at least GNSS_TIME_SYNC_INTERVAL_MS
-///     since the last successful sync.
-/// @return true if a sync was attempted AND succeeded.
-static bool maybe_sync_time_from_gnss() {
+///     since the last successful sync, and then push the new time out to the EPS and the ADCS.
+/// @param[out] eps_push_status_dest Result of EPS_set_eps_time_based_on_obc_time(), or
+///     TIME_PUSH_NOT_ATTEMPTED if no sync happened this run. Never NULL.
+/// @param[out] adcs_push_status_dest Result of ADCS_synchronize_unix_time(), or
+///     TIME_PUSH_NOT_ATTEMPTED if no sync happened this run. Never NULL.
+/// @return true if a sync was attempted AND succeeded. A failed push to the EPS or the ADCS does
+///     NOT make this false: the OBC clock is correct either way, which is the sync's actual job.
+static bool maybe_sync_time_from_gnss(uint8_t *eps_push_status_dest, uint8_t *adcs_push_status_dest) {
+    *eps_push_status_dest = TIME_PUSH_NOT_ATTEMPTED;
+    *adcs_push_status_dest = TIME_PUSH_NOT_ATTEMPTED;
+
     // Firehose mode owns the UART; don't interleave a time sync into it.
     if (GNSS_current_rx_mode == GNSS_RX_MODE_FIREHOSE_MODE) {
         return false;
@@ -1404,6 +1421,40 @@ static bool maybe_sync_time_from_gnss() {
 
     g_state->last_time_sync_uptime_ms = TIME_uptime_ms();
     g_state->time_sync_count++;
+
+    // Propagate the freshly-disciplined OBC clock out to the two subsystems that keep clocks of
+    // their own.
+    //
+    // The EPS push is what makes a GNSS sync stick: the firmware's background upkeep task
+    // (subtask_sync_obc_time_based_on_eps_time(), every EPS_time_sync_period_sec, default 600s)
+    // treats the EPS RTC as authoritative and sets the OBC clock BACK to it whenever the two
+    // differ by more than EPS_max_time_deviation_for_sync_ms. Without this push, any correction we
+    // make larger than that threshold gets reverted within ~10 minutes, the EPS RTC's drift is
+    // never actually disciplined, and the two syncs fight each other forever.
+    //
+    // The ADCS push keeps the ADCS's own log/telemetry timestamps aligned with the OBC's, as well
+    // as orbit propagation.
+    //
+    // Neither failure invalidates the sync -- the OBC clock is already set -- so we record the
+    // statuses for the response string, log them, and carry on.
+    *eps_push_status_dest = EPS_set_eps_time_based_on_obc_time();
+    if (*eps_push_status_dest != 0) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: EPS_set_eps_time_based_on_obc_time() -> %d",
+            BLOB_NAME, *eps_push_status_dest
+        );
+    }
+
+    *adcs_push_status_dest = ADCS_synchronize_unix_time();
+    if (*adcs_push_status_dest != 0) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: ADCS_synchronize_unix_time() -> %d",
+            BLOB_NAME, *adcs_push_status_dest
+        );
+    }
+
     return true;
 }
 
@@ -1680,6 +1731,8 @@ uint8_t blob_main(
     // Sample the GNSS, if it's powered and has had time to boot.
     GNSS_ring_blob_error_enum_t sample_status = BLOB_ERR_GNSS_POWERED_OFF;
     bool did_time_sync = false;
+    uint8_t eps_time_push_status = TIME_PUSH_NOT_ATTEMPTED;
+    uint8_t adcs_time_push_status = TIME_PUSH_NOT_ATTEMPTED;
     if (gnss_is_on) {
         const uint32_t ms_since_power_on = TIME_uptime_ms() - g_state->gnss_power_on_uptime_ms;
         if ((!flag_fake) && (ms_since_power_on < GNSS_POWER_ON_SETTLE_MS)) {
@@ -1691,7 +1744,9 @@ uint8_t blob_main(
 
             // Keep the OBC clock disciplined while we have the receiver powered anyway.
             if (!flag_fake) {
-                did_time_sync = maybe_sync_time_from_gnss();
+                did_time_sync = maybe_sync_time_from_gnss(
+                    &eps_time_push_status, &adcs_time_push_status
+                );
             }
         }
     }
@@ -1742,10 +1797,23 @@ uint8_t blob_main(
         );
     }
 
+    // On a sync run, report the status of each downstream time push (0 = accepted). On every
+    // other run nothing was pushed, so this stays empty.
+    char time_push_msg[40];
+    if (did_time_sync) {
+        snprintf(
+            time_push_msg, sizeof(time_push_msg), ", eps_time=%d, adcs_time=%d",
+            eps_time_push_status, adcs_time_push_status
+        );
+    }
+    else {
+        time_push_msg[0] = '\0';
+    }
+
     snprintf(
         response_buf, response_buf_len,
         "%s: gnss=%s (%s, vbatt=%dmV), sample=%s, cursor=r%d/%d%s, stored=%lu, "
-        "bad_fixes=%lu, fetch_fails=%lu, sync=%s(%lu), sent=%s%s",
+        "bad_fixes=%lu, fetch_fails=%lu, sync=%s(%lu)%s, sent=%s%s",
         BLOB_NAME,
         gnss_is_on ? "ON" : "OFF", power_reason, vbatt_mV,
         gnss_ring_blob_error_to_str(sample_status),
@@ -1755,6 +1823,7 @@ uint8_t blob_main(
         (unsigned long)g_state->bad_fix_skipped_count,
         (unsigned long)g_state->gnss_fetch_failure_count,
         did_time_sync ? "yes" : "no", (unsigned long)g_state->time_sync_count,
+        time_push_msg,
         downlink_msg,
         cancel_msg
     );
