@@ -18,9 +18,7 @@
 //   randomly-chosen start lands near the end of the chosen file.
 // - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
 //     STOP       Permanently cancel this blob: set the persistent stop flag, cancel all pending
-//                reruns, turn the GNSS channel off, and exit. Every later invocation exits
-//                immediately (without sampling, downlinking, or rescheduling) until RESUME.
-//     RESUME     Clear the persistent stop flag set by STOP, and run normally.
+//                reruns, turn the GNSS channel off, and exit.
 //     FAKE       Local/bench test mode: never touch the GNSS UART or the EPS, and synthesize
 //                samples from the hardware RNG instead. Everything else (LittleFS storage,
 //                downlink, rescheduling) behaves normally.
@@ -34,7 +32,7 @@
 // Usage Example:
 // After uplinking the blob as "blobs/gnss_bestxyzb_ring_v2.blob", run:
 //  CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,60000;5;TRACK_MPI)!
-// To permanently stop it:
+// To stop it:
 //  CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
 //
 // Notes:
@@ -63,8 +61,14 @@
 //     MPI goes idle. Also not gated behind the TRACK_MPI flag.
 // 10. Every successful GNSS time sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time())
 //     and to the ADCS (ADCS_synchronize_unix_time()).
-// 11. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it logs CRITICAL
-//     and exits with LFS_NOT_MOUNTED (7) without rescheduling. Not latched like STOP.
+// 11. Five things mean "start over", and all five take the same path (reset_to_fresh_state()):
+//     cold/garbage SRAM, a reboot caught by the heap canary, an unmounted filesystem, a ring file
+//     handle the mounted filesystem doesn't recognise (remount/reformat without a reboot), and an
+//     operator STOP. Each commits and closes any live ring file, then resets the write cursor to
+//     r0.bin record 0 and zeroes the counters, so the ring refills from scratch.
+// 12. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it logs CRITICAL
+//     and exits with LFS_NOT_MOUNTED (7) without rescheduling, after resetting the ring (note
+//     11). A later run therefore starts a fresh campaign, it does not resume the old one.
 //
 // --------------------------
 //
@@ -249,7 +253,6 @@ typedef enum {
     BLOB_ERR_DOWNLINK_PARTIAL_FAILURE = 60, // At least one downlink packet failed to send.
     BLOB_ERR_NO_STORED_DATA = 61, // Nothing stored yet, so nothing to downlink.
     BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE = 62, // Stored a sample, but stayed off the radio (MPI active).
-    BLOB_ERR_PERMANENTLY_STOPPED = 70, // The persistent STOP flag is set; blob exits immediately.
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
     BLOB_ERR_CANCEL_RERUNS_FAILED = 137, // cancel_other_scheduled_reruns_of_this_blob() failed.
@@ -276,7 +279,6 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
         case BLOB_ERR_DOWNLINK_PARTIAL_FAILURE: return "DOWNLINK_PARTIAL_FAILURE";
         case BLOB_ERR_NO_STORED_DATA: return "NO_STORED_DATA";
         case BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE: return "DOWNLINK_SKIPPED_MPI_ACTIVE";
-        case BLOB_ERR_PERMANENTLY_STOPPED: return "PERMANENTLY_STOPPED";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
         case BLOB_ERR_CANCEL_RERUNS_FAILED: return "CANCEL_RERUNS_FAILED";
@@ -303,7 +305,6 @@ extern uint8_t gnss_ring_state_base[];
 typedef struct {
     uint32_t magic; // GNSS_RING_STATE_MAGIC once initialized; anything else means cold/garbage SRAM.
 
-    uint8_t is_permanently_stopped; // Set by the STOP flag; cleared by RESUME. Survives reboots-ish.
     uint8_t write_file_idx; // Ring file currently being appended to, 0..(GNSS_RING_FILE_COUNT-1).
     uint8_t write_record_idx; // Records already in that file, 0..GNSS_RING_RECORDS_PER_FILE.
     uint8_t has_wrapped; // 1 once we've cycled past the last file at least once (all files have data).
@@ -1203,6 +1204,30 @@ static void ring_close_open_file() {
     g_state->open_file_is_valid = 0;
 }
 
+/// @brief Reset the blob to its "nothing collected yet" state: the write cursor goes back to
+///     r0.bin record 0, every counter goes to zero, and the ring refills from scratch (each file
+///     is truncated as it's first written to).
+/// @details This is the single path used by all three things that mean "start over": cold/garbage
+///     SRAM, a reboot caught by the heap canary, and an operator STOP. Keeping them identical
+///     means there's only one "fresh start" behaviour to reason about on the ground.
+/// @param may_touch_existing_state true when g_state holds values this blob actually wrote, so a
+///     live ring file is worth committing and the heap canary pointer is worth keeping. False for
+///     cold/garbage SRAM, where neither can be trusted and must not be dereferenced.
+static void reset_to_fresh_state(bool may_touch_existing_state) {
+    // Preserved across the wipe so a reset doesn't cost us a canary re-allocation (and another
+    // "first allocation" log line) on the very next run.
+    uint32_t *canary_to_keep = NULL;
+
+    if (may_touch_existing_state) {
+        canary_to_keep = g_state->reboot_canary;
+        ring_close_open_file(); // Commits pending records; a no-op if the handle isn't live.
+    }
+
+    memset(g_state, 0, sizeof(GNSS_ring_state_t));
+    g_state->magic = GNSS_RING_STATE_MAGIC;
+    g_state->reboot_canary = canary_to_keep;
+}
+
 /// @brief Make sure `g_state->open_file` is open on ring file `write_file_idx`, ready to append.
 /// @details Reuses the handle left open by a previous execution whenever it's still live and
 ///     points at the right file, which is the common case: the open (a directory traversal plus a
@@ -1678,7 +1703,6 @@ uint8_t blob_main(
     parse_token(args_str, pos, args_str_len, arg2_flags, sizeof(arg2_flags)); // Optional; may be "".
 
     const bool flag_stop = has_flag(arg2_flags, "STOP");
-    const bool flag_resume = has_flag(arg2_flags, "RESUME");
     const bool flag_fake = has_flag(arg2_flags, "FAKE");
     const bool flag_track_mpi = has_flag(arg2_flags, "TRACK_MPI");
     const bool flag_no_eps = has_flag(arg2_flags, "NOEPS");
@@ -1728,12 +1752,29 @@ uint8_t blob_main(
         cancel_msg[0] = '\0';
     }
 
+    // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state
+    // block can be trusted, including the open file handle and the canary pointer, so reset
+    // without dereferencing either. We deliberately do NOT measure the on-disk files to recover
+    // the write cursor -- a fresh start simply begins again at r0.bin record 0.
+    //
+    // This runs before the mount check below so that the mount-failure path can safely reset a
+    // state block it knows this blob wrote.
+    if (g_state->magic != GNSS_RING_STATE_MAGIC) {
+        reset_to_fresh_state(false);
+    }
+
     // The filesystem must already be mounted; this blob never mounts it. An unmounted filesystem
     // is a serious anomaly for a blob whose whole job is storage, and remounting underneath it
     // would both hide that and invalidate the ring file handle we hold in SRAM. Reruns were
-    // cancelled above and we return without rescheduling, so the campaign simply stops. Not
-    // latched into is_permanently_stopped: re-running the blob restarts it, no RESUME needed.
+    // cancelled above and we return without rescheduling, so the campaign simply stops.
+    //
+    // Treated as a fresh start, same as a cold boot or a STOP: whatever happened to the
+    // filesystem, our cursor's claim about what's on disk is no longer worth anything, so the
+    // next run begins again at r0.bin record 0 rather than appending into the unknown. The close
+    // inside the reset is a no-op here -- ring_open_file_is_live() reports "not live" while the
+    // filesystem is unmounted, so nothing tries to write to it.
     if (!LFS_is_lfs_mounted) {
+        reset_to_fresh_state(true);
         snprintf(
             response_buf, response_buf_len,
             "%s error: %s. Not rescheduling.%s",
@@ -1742,22 +1783,27 @@ uint8_t blob_main(
         return BLOB_ERR_LFS_NOT_MOUNTED;
     }
 
-    // Initialize the persistent state on true cold-start (first ever run, or after a full
-    // power-cycle that cleared SRAM). Otherwise, its contents survive from the previous execution
-    // of this blob. We deliberately do NOT measure the on-disk files to recover the write cursor:
-    // a cold-started ring simply starts over at r0.bin/record 0, truncating each file as it first
-    // writes to it. The memset also clears any stale `open_file` handle, which is essential --
-    // after a power cycle it would point into a filesystem/heap that no longer exists.
-    if (g_state->magic != GNSS_RING_STATE_MAGIC) {
-        memset(g_state, 0, sizeof(GNSS_ring_state_t));
-        g_state->magic = GNSS_RING_STATE_MAGIC;
+    // Now that the state block is known-good, check whether the heap restarted under us since the
+    // previous run. If it did, the lfs_file_t we persisted points at a cache buffer from a heap
+    // that no longer exists, and we can't trust the cursor to match what's on disk either -- so
+    // start the ring over, exactly as a cold start would.
+    if (detect_reboot_via_heap_canary()) {
+        reset_to_fresh_state(true);
     }
 
-    // Now that the state block is known-good, check whether the heap restarted under us since the
-    // previous run. If it did, the lfs_file_t we persisted is pointing at a cache buffer from a
-    // heap that no longer exists, so drop it unread rather than letting anything touch it.
-    if (detect_reboot_via_heap_canary()) {
-        g_state->open_file_is_valid = 0;
+    // A handle we believe we're holding, that the currently-mounted filesystem doesn't know
+    // about, means the filesystem was unmounted/remounted or reformatted under us WITHOUT a
+    // reboot -- so the heap canary above saw nothing wrong. Our cursor no longer describes what's
+    // on disk, so start over. Note the `open_file_is_valid` guard: ring_open_file_is_live() also
+    // returns false in the perfectly normal case where we simply aren't holding a handle, and
+    // that must not trigger a reset.
+    if (g_state->open_file_is_valid && (!ring_open_file_is_live())) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: ring file handle is not in the filesystem's open list; starting over",
+            BLOB_NAME
+        );
+        reset_to_fresh_state(true);
     }
 
     // Make sure "gnss_ring/" exists before anything tries to read or write inside it.
@@ -1771,39 +1817,22 @@ uint8_t blob_main(
         return mkdir_status;
     }
 
-    // RESUME clears a previously-latched STOP. Checked before STOP so that passing both is a no-op
-    // rather than an unstoppable blob.
-    if (flag_resume) {
-        g_state->is_permanently_stopped = 0;
-    }
-
-    // STOP: latch the persistent stop flag, shed the GNSS, and exit without rescheduling. Reruns
-    // were already cancelled above, so this run is the last one.
+    // STOP: shed the GNSS, commit and close the ring file, wipe the cursor back to r0/0, and exit
+    // without rescheduling. Reruns were already cancelled above, so this run is the last one.
+    // There is no RESUME: the stop isn't latched, it's a reset. Running the blob again afterwards
+    // starts a brand new campaign from the beginning of the ring -- the old one is not resumable.
     if (flag_stop) {
-        g_state->is_permanently_stopped = 1;
-        ring_close_open_file(); // Commit whatever is pending: nothing will reopen this file.
         if (!flag_no_eps) {
             EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0);
-            g_state->gnss_channel_is_on = 0;
         }
-        
+        reset_to_fresh_state(true);
+
         snprintf(
             response_buf, response_buf_len,
-            "%s: STOP received. GNSS off, reruns cancelled, blob permanently stopped "
-            "(pass RESUME to restart). stored_records=%lu%s",
-            BLOB_NAME, (unsigned long)g_state->stored_record_count, cancel_msg
+            "%s: STOPped. GNSS off, reruns cancelled.%s",
+            BLOB_NAME, cancel_msg
         );
         return BLOB_ERR_OK; // A requested stop is a success, not an error.
-    }
-
-    // A previously-latched STOP keeps us dead across invocations until someone passes RESUME.
-    if (g_state->is_permanently_stopped) {
-        snprintf(
-            response_buf, response_buf_len,
-            "%s: %s; pass RESUME to restart.%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_PERMANENTLY_STOPPED), cancel_msg
-        );
-        return BLOB_ERR_PERMANENTLY_STOPPED;
     }
 
     // Decide and apply the GNSS power state for this run.
