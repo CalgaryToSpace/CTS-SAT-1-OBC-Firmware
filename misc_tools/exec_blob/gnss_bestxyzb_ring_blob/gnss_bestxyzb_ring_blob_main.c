@@ -63,6 +63,8 @@
 //     MPI goes idle. Also not gated behind the TRACK_MPI flag.
 // 10. Every successful GNSS time sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time())
 //     and to the ADCS (ADCS_synchronize_unix_time()).
+// 11. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it logs CRITICAL
+//     and exits with LFS_NOT_MOUNTED (7) without rescheduling. Not latched like STOP.
 //
 // --------------------------
 //
@@ -235,6 +237,7 @@ typedef enum {
     BLOB_ERR_BAD_FIX = 4, // Fix was not SOL_COMPUTED, was position-type NONE, or was all-zero.
     BLOB_ERR_LFS_WRITE_FAILED = 5, // Writing/appending the sample record to LittleFS failed.
     BLOB_ERR_LFS_MKDIR_FAILED = 6, // Couldn't create/confirm the GNSS_RING_DIR directory.
+    BLOB_ERR_LFS_NOT_MOUNTED = 7, // Filesystem wasn't mounted on entry; blob dies without rescheduling.
     BLOB_ERR_FIREHOSE_MODE_ACTIVE = 20, // Skipped sampling because GNSS firehose mode is active.
     BLOB_ERR_GNSS_POWERED_OFF = 50, // GNSS EPS channel is off this run; nothing sampled (not fatal).
     BLOB_ERR_GNSS_WARMING_UP = 51, // GNSS channel was just switched on; skipping sampling this run.
@@ -261,6 +264,7 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
         case BLOB_ERR_BAD_FIX: return "BAD_FIX";
         case BLOB_ERR_LFS_WRITE_FAILED: return "LFS_WRITE_FAILED";
         case BLOB_ERR_LFS_MKDIR_FAILED: return "LFS_MKDIR_FAILED";
+        case BLOB_ERR_LFS_NOT_MOUNTED: return "LFS_NOT_MOUNTED";
         case BLOB_ERR_FIREHOSE_MODE_ACTIVE: return "FIREHOSE_MODE_ACTIVE";
         case BLOB_ERR_GNSS_POWERED_OFF: return "GNSS_POWERED_OFF";
         case BLOB_ERR_GNSS_WARMING_UP: return "GNSS_WARMING_UP";
@@ -1053,14 +1057,14 @@ static void make_ring_file_path(uint8_t file_idx, char *path_dest, uint16_t path
 /// @return BLOB_ERR_OK if the directory exists (whether we just made it or not),
 ///     BLOB_ERR_LFS_MKDIR_FAILED otherwise.
 static GNSS_ring_blob_error_enum_t ensure_ring_dir_exists() {
-    const int8_t mkdir_result = LFS_make_directory(GNSS_RING_DIR);
+    const int mkdir_result = lfs_mkdir(&LFS_filesystem, GNSS_RING_DIR);
     if ((mkdir_result == 0) || (mkdir_result == LFS_ERR_EXIST)) {
         return BLOB_ERR_OK; // Already-exists is the normal case on every run but the first.
     }
 
     LOG(
         LOG_SEVERITY_ERROR,
-        "%s: LFS_make_directory(%s) -> %d",
+        "%s: lfs_mkdir(%s) -> %d",
         BLOB_NAME, GNSS_RING_DIR, mkdir_result
     );
     return BLOB_ERR_LFS_MKDIR_FAILED;
@@ -1135,12 +1139,6 @@ static GNSS_ring_blob_error_enum_t ring_open_write_file() {
     }
     else {
         g_state->open_file_is_valid = 0; // Stale handle from before a remount; just drop it.
-    }
-
-    const int8_t mount_result = LFS_ensure_mounted();
-    if (mount_result < 0) {
-        LOG(LOG_SEVERITY_ERROR, "%s: LFS_ensure_mounted() -> %d", BLOB_NAME, mount_result);
-        return BLOB_ERR_LFS_WRITE_FAILED;
     }
 
     char path[GNSS_RING_PATH_MAX_LEN];
@@ -1520,10 +1518,6 @@ static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent
     make_ring_file_path(chosen_file_idx, path, sizeof(path));
 
     // Open once and read consecutively, rather than re-opening the file per record.
-    if (LFS_ensure_mounted() < 0) {
-        return n_to_downlink; // Count the whole run as failed; nothing was sent.
-    }
-
     lfs_file_t file;
     if (lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY) < 0) {
         LOG(LOG_SEVERITY_WARNING, "%s: lfs_file_open(%s) failed", BLOB_NAME, path);
@@ -1647,6 +1641,20 @@ uint8_t blob_main(
     }
     else {
         cancel_msg[0] = '\0';
+    }
+
+    // The filesystem must already be mounted; this blob never mounts it. An unmounted filesystem
+    // is a serious anomaly for a blob whose whole job is storage, and remounting underneath it
+    // would both hide that and invalidate the ring file handle we hold in SRAM. Reruns were
+    // cancelled above and we return without rescheduling, so the campaign simply stops. Not
+    // latched into is_permanently_stopped: re-running the blob restarts it, no RESUME needed.
+    if (!LFS_is_lfs_mounted) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: LittleFS not mounted (%s). Not rescheduling.%s",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_LFS_NOT_MOUNTED), cancel_msg
+        );
+        return BLOB_ERR_LFS_NOT_MOUNTED;
     }
 
     // Initialize the persistent state on true cold-start (first ever run, or after a full
