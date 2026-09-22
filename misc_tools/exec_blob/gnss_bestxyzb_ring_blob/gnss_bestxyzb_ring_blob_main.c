@@ -1423,8 +1423,8 @@ static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb(bool use_fake_data)
         if (gnss_status != 0) {
             LOG(
                 LOG_SEVERITY_WARNING,
-                "%s: GNSS_send_cmd_get_response_NEW() -> %d (%s)",
-                BLOB_NAME, gnss_status, gnss_ring_blob_error_to_str(BLOB_ERR_GNSS_COMMS_FAILED)
+                "%s: %s (%d)",
+                BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_GNSS_COMMS_FAILED), gnss_status
             );
             g_state->gnss_fetch_failure_count++;
             return BLOB_ERR_GNSS_COMMS_FAILED;
@@ -1434,8 +1434,8 @@ static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb(bool use_fake_data)
         if (extract_status != BLOB_ERR_OK) {
             LOG(
                 LOG_SEVERITY_WARNING,
-                "%s: BESTXYZB binary sync (AA 44 12) not found in %d-byte GNSS response (%s)",
-                BLOB_NAME, rx_buf_len, gnss_ring_blob_error_to_str(extract_status)
+                "%s: %s (%d B)",
+                BLOB_NAME, gnss_ring_blob_error_to_str(extract_status), rx_buf_len
             );
             g_state->gnss_fetch_failure_count++;
             return extract_status;
@@ -1685,7 +1685,7 @@ uint8_t blob_main(
 
     if (arg0_repeat_interval_ms[0] == '\0' || arg1_downlink_n[0] == '\0') {
         snprintf(
-            response_buf, response_buf_len, "%s error: missing args! (%s)",
+            response_buf, response_buf_len, "%s error: %s",
             BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_MISSING_ARGS)
         );
         return BLOB_ERR_MISSING_ARGS;
@@ -1697,7 +1697,7 @@ uint8_t blob_main(
 
     if (!arg0_ok || !arg1_ok) {
         snprintf(
-            response_buf, response_buf_len, "%s error: invalid int args! (%s)",
+            response_buf, response_buf_len, "%s error: %s",
             BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS)
         );
         return BLOB_ERR_INVALID_INT_ARGS;
@@ -1716,8 +1716,8 @@ uint8_t blob_main(
     if (cancel_result < 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d (%s)",
-            BLOB_NAME, cancel_result, gnss_ring_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED)
+            "%s error: %s (%d)",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED), cancel_result
         );
         return BLOB_ERR_CANCEL_RERUNS_FAILED;
     }
@@ -1736,7 +1736,7 @@ uint8_t blob_main(
     if (!LFS_is_lfs_mounted) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: LittleFS not mounted (%s). Not rescheduling.%s",
+            "%s error: %s. Not rescheduling.%s",
             BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_LFS_NOT_MOUNTED), cancel_msg
         );
         return BLOB_ERR_LFS_NOT_MOUNTED;
@@ -1765,8 +1765,8 @@ uint8_t blob_main(
     if (mkdir_status != BLOB_ERR_OK) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: couldn't create %s/ (%s)%s",
-            BLOB_NAME, GNSS_RING_DIR, gnss_ring_blob_error_to_str(mkdir_status), cancel_msg
+            "%s error: %s (%s)%s",
+            BLOB_NAME, gnss_ring_blob_error_to_str(mkdir_status), GNSS_RING_DIR, cancel_msg
         );
         return mkdir_status;
     }
@@ -1786,7 +1786,7 @@ uint8_t blob_main(
             EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0);
             g_state->gnss_channel_is_on = 0;
         }
-        LOG(LOG_SEVERITY_NORMAL, "%s: STOP flag received; blob permanently stopped", BLOB_NAME);
+        
         snprintf(
             response_buf, response_buf_len,
             "%s: STOP received. GNSS off, reruns cancelled, blob permanently stopped "
@@ -1800,7 +1800,7 @@ uint8_t blob_main(
     if (g_state->is_permanently_stopped) {
         snprintf(
             response_buf, response_buf_len,
-            "%s: permanently stopped (%s); pass RESUME to restart. Not rescheduling.%s",
+            "%s: %s; pass RESUME to restart.%s",
             BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_PERMANENTLY_STOPPED), cancel_msg
         );
         return BLOB_ERR_PERMANENTLY_STOPPED;
@@ -1879,7 +1879,7 @@ uint8_t blob_main(
             ring_close_open_file(); // No rerun is coming to close it; commit what we have.
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reschedule_current_blob_tcmd() -> %s%s",
+                "%s error: %s%s",
                 BLOB_NAME, gnss_ring_blob_error_to_str(reexec_result), cancel_msg
             );
             return reexec_result;
@@ -1933,8 +1933,8 @@ uint8_t blob_main(
     if (downlink_fail_count > 0) {
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: downlink_consecutive_samples() -> %d failures (%s)",
-            BLOB_NAME, downlink_fail_count, gnss_ring_blob_error_to_str(BLOB_ERR_DOWNLINK_PARTIAL_FAILURE)
+            "%s: %s (%d)",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_DOWNLINK_PARTIAL_FAILURE), downlink_fail_count
         );
         return BLOB_ERR_DOWNLINK_PARTIAL_FAILURE;
     }
