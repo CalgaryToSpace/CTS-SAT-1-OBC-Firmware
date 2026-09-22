@@ -10,7 +10,7 @@
 // power when the satellite can afford it, and slowly send that history to the ground over many
 // passes via random sampling.
 //
-// Args Format: <repeat_interval_ms>;<downlink_n>[;<flags>]
+// Args Format: <repeat_interval_ms>;<downlink_n>[;<flag1|flag2|...>]
 // - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
 //   interval (clamped to a minimum of 1100ms).
 // - downlink_n: Number of ADDITIONAL consecutive samples to downlink after the randomly-selected
