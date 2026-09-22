@@ -257,7 +257,6 @@ typedef enum {
     BLOB_ERR_GNSS_POWERED_OFF = 50, // GNSS EPS channel is off this run; nothing sampled (not fatal).
     BLOB_ERR_GNSS_WARMING_UP = 51, // GNSS channel was just switched on; skipping sampling this run.
     BLOB_ERR_DOWNLINK_PARTIAL_FAILURE = 60, // At least one downlink packet failed to send.
-    BLOB_ERR_NO_STORED_DATA = 61, // Nothing stored yet, so nothing to downlink.
     BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE = 62, // Stored a sample, but stayed off the radio (MPI active).
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
@@ -283,7 +282,6 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
         case BLOB_ERR_GNSS_POWERED_OFF: return "GNSS_POWERED_OFF";
         case BLOB_ERR_GNSS_WARMING_UP: return "GNSS_WARMING_UP";
         case BLOB_ERR_DOWNLINK_PARTIAL_FAILURE: return "DOWNLINK_PARTIAL_FAILURE";
-        case BLOB_ERR_NO_STORED_DATA: return "NO_STORED_DATA";
         case BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE: return "DOWNLINK_SKIPPED_MPI_ACTIVE";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
@@ -1581,7 +1579,7 @@ static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent
         : g_state->write_file_idx;   // Only what we've filled since the last fresh start.
 
     if (full_file_count == 0) {
-        return 0; // Nothing complete yet; caller reports BLOB_ERR_NO_STORED_DATA.
+        return 0; // No files written completely yet.
     }
 
     // 1 step back = the file we filled most recently; full_file_count steps back = the oldest one
@@ -1959,9 +1957,6 @@ uint8_t blob_main(
     if (skip_downlink_for_mpi) {
         return BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE; // Deliberate radio silence, not a failure.
     }
-    if ((downlink_sent_count == 0) && (g_state->stored_record_count == 0)) {
-        return BLOB_ERR_NO_STORED_DATA; // Normal early in a campaign, before the first good fix.
-    }
-
+    
     return BLOB_ERR_OK;
 }
