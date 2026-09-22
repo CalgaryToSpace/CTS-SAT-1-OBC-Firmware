@@ -1013,7 +1013,7 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
 /// @note This function is intended for "once" log commands and control commands.
 /// @note This function does not validate the response, as related to the request.
 /// @note This function properly handles interactions with the firehose file, if enabled.
-uint8_t GNSS_send_cmd_get_response_NEW(
+static uint8_t GNSS_send_cmd_get_response_NEW(
     const char *cmd_buf, uint8_t cmd_buf_len,
     uint8_t rx_buf[],
     const uint16_t rx_buf_max_size,
