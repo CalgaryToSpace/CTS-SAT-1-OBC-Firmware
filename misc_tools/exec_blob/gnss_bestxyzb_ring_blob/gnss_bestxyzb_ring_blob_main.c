@@ -116,6 +116,12 @@
 // The file being written is never also read: it's excluded from the downlink candidates below, so
 // there's only ever one handle open on it. Its samples become downlinkable once it fills and is
 // closed.
+//
+// Ring files left over from a PREVIOUS campaign are excluded too. A reset (see note 11) zeroes
+// the write cursor but doesn't erase the disk -- files are truncated lazily, as each is first
+// written to -- so without this, a freshly-reset blob would immediately downlink the old
+// campaign's r1..r9 as though they were current. Downlink candidates are therefore limited to
+// files below the write cursor until the ring wraps, after which every file is ours again.
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -1149,24 +1155,6 @@ static GNSS_ring_blob_error_enum_t ensure_ring_dir_exists() {
     return BLOB_ERR_LFS_MKDIR_FAILED;
 }
 
-/// @brief Number of whole records currently stored in ring file `file_idx`.
-/// @return 0..GNSS_RING_RECORDS_PER_FILE. Returns 0 if the file is missing or unreadable.
-static uint16_t ring_file_record_count(uint8_t file_idx) {
-    char path[GNSS_RING_PATH_MAX_LEN];
-    make_ring_file_path(file_idx, path, sizeof(path));
-
-    const lfs_ssize_t size = LFS_file_size(path, 0); // 0 == don't log; a missing file is normal here.
-    if (size <= 0) {
-        return 0;
-    }
-
-    uint16_t count = (uint16_t)((uint32_t)size / GNSS_SAMPLE_SIZE);
-    if (count > GNSS_RING_RECORDS_PER_FILE) {
-        count = GNSS_RING_RECORDS_PER_FILE; // Defensive: ignore any over-long tail.
-    }
-    return count;
-}
-
 /// @brief Is the persisted `open_file` handle still a live handle on the mounted filesystem?
 /// @details The handle survives in SRAM between executions, but the filesystem state it points
 ///     into doesn't have to: an unmount/remount (or a firmware restart that happened to leave our
@@ -1570,49 +1558,45 @@ static bool maybe_sync_time_from_gnss(uint8_t *eps_push_status_dest, uint8_t *ad
 ///     The run stops at the end of the file rather than continuing into the next one, because
 ///     adjacent ring files aren't necessarily adjacent in time once the ring has wrapped.
 ///
-///     The ring file we currently hold open for appending is never a candidate: we never read a
-///     file we're writing to. Its records are only partly committed to flash anyway, and they
-///     become downlinkable as soon as it fills up and is closed.
+///     The ring file the write cursor is on is never picked: we never read a file we're writing
+///     to, and its records are only partly committed to flash anyway. It becomes downlinkable
+///     once it fills up and the cursor moves on. Files left over from a previous campaign (a
+///     fresh start zeroes the cursor without erasing the disk) are excluded too, by counting only
+///     the files behind the cursor until the ring has wrapped.
 /// @param downlink_n Number of ADDITIONAL records to send after the randomly-chosen first one.
 /// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
 /// @return Number of downlink failures (0 = all succeeded).
 static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent_count_dest) {
     *sent_count_dest = 0;
 
-    // Collect the closed ring files that currently hold at least one record.
-    const bool write_file_is_open = ring_open_file_is_live();
-    uint8_t candidate_files[GNSS_RING_FILE_COUNT];
-    uint16_t candidate_counts[GNSS_RING_FILE_COUNT];
-    uint8_t candidate_total = 0;
-    for (uint8_t file_idx = 0; file_idx < GNSS_RING_FILE_COUNT; file_idx++) {
-        if (write_file_is_open && (file_idx == g_state->open_file_idx)) {
-            continue; // Skip the file we're appending to; see this function's @details.
-        }
+    // The downlinkable files are always a contiguous run sitting immediately BEHIND the write
+    // cursor, so there's nothing to search: just count them and step back a random number of
+    // places. The cursor only advances off a file once that file is full (see
+    // store_sample_to_ring()), so every file behind it holds exactly GNSS_RING_RECORDS_PER_FILE
+    // records -- no need to measure anything on disk.
+    const uint8_t full_file_count = g_state->has_wrapped
+        ? (GNSS_RING_FILE_COUNT - 1) // Everything except the file the cursor is on.
+        : g_state->write_file_idx;   // Only what we've filled since the last fresh start.
 
-        const uint16_t count = ring_file_record_count(file_idx);
-        if (count > 0) {
-            candidate_files[candidate_total] = file_idx;
-            candidate_counts[candidate_total] = count;
-            candidate_total++;
-        }
+    if (full_file_count == 0) {
+        return 0; // Nothing complete yet; caller reports BLOB_ERR_NO_STORED_DATA.
     }
 
-    if (candidate_total == 0) {
-        return 0; // Nothing stored yet; caller reports BLOB_ERR_NO_STORED_DATA.
-    }
-
-    // Pick a random file that has data, then a random starting record within it.
+    // 1 step back = the file we filled most recently; full_file_count steps back = the oldest one
+    // still holding this campaign's data. Adding GNSS_RING_FILE_COUNT before the modulo keeps the
+    // subtraction positive as the walk wraps around past r0.
     const uint32_t file_rand = CRYPTO_generate_random_uint32(TIME_uptime_ms());
-    const uint8_t chosen_slot = (uint8_t)(file_rand % candidate_total);
-    const uint8_t chosen_file_idx = candidate_files[chosen_slot];
-    const uint16_t records_in_file = candidate_counts[chosen_slot];
+    const uint8_t steps_back = (uint8_t)(1u + (file_rand % full_file_count));
+    const uint8_t chosen_file_idx = (uint8_t)(
+        (g_state->write_file_idx + GNSS_RING_FILE_COUNT - steps_back) % GNSS_RING_FILE_COUNT
+    );
 
     const uint32_t record_rand = CRYPTO_generate_random_uint32(TIME_uptime_ms() + 1);
-    const uint16_t start_record_idx = (uint16_t)(record_rand % records_in_file);
+    const uint16_t start_record_idx = (uint16_t)(record_rand % GNSS_RING_RECORDS_PER_FILE);
 
     // Send the starting record plus up to `downlink_n` more, stopping at the end of the file.
     const uint32_t requested_total = 1u + (uint32_t)downlink_n;
-    const uint32_t available_total = (uint32_t)(records_in_file - start_record_idx);
+    const uint32_t available_total = (uint32_t)(GNSS_RING_RECORDS_PER_FILE - start_record_idx);
     const uint16_t n_to_downlink = (uint16_t)(
         (requested_total < available_total) ? requested_total : available_total
     );
