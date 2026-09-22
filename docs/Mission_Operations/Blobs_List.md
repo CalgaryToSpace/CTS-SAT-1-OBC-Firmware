@@ -345,7 +345,7 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
    sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
    Nothing is lost: the stored samples go down on a later run, once the MPI is idle. This applies
    whether or not the `TRACK_MPI` flag was passed. Such runs return
-   `DOWNLINK_SKIPPED_MPI_ACTIVE` (62) and report `sent=skipped(mpi_active)`.
+   `SEND_SKIPPED_MPI_ACTIVE` (62) and report `sent=skipped(mpi_active)`.
 10. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it logs CRITICAL
     and exits with LFS_NOT_MOUNTED (7) without rescheduling, after resetting the ring (note 8).
     A later run therefore starts a fresh campaign; it does not resume the old one.

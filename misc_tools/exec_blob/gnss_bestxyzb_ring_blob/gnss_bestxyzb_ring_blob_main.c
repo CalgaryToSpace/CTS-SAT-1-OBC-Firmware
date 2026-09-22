@@ -256,8 +256,8 @@ typedef enum {
     BLOB_ERR_FIREHOSE_MODE_ACTIVE = 20, // Skipped sampling because GNSS firehose mode is active.
     BLOB_ERR_GNSS_POWERED_OFF = 50, // GNSS EPS channel is off this run; nothing sampled (not fatal).
     BLOB_ERR_GNSS_WARMING_UP = 51, // GNSS channel was just switched on; skipping sampling this run.
-    BLOB_ERR_DOWNLINK_PARTIAL_FAILURE = 60, // At least one downlink packet failed to send.
-    BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE = 62, // Stored a sample, but stayed off the radio (MPI active).
+    BLOB_ERR_SEND_PARTIAL_FAILURE = 60, // At least one downlink packet failed to send.
+    BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE = 62, // Stored a sample, but stayed off the radio (MPI active).
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
     BLOB_ERR_CANCEL_RERUNS_FAILED = 137, // cancel_other_scheduled_reruns_of_this_blob() failed.
@@ -281,8 +281,8 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
         case BLOB_ERR_FIREHOSE_MODE_ACTIVE: return "FIREHOSE_MODE_ACTIVE";
         case BLOB_ERR_GNSS_POWERED_OFF: return "GNSS_POWERED_OFF";
         case BLOB_ERR_GNSS_WARMING_UP: return "GNSS_WARMING_UP";
-        case BLOB_ERR_DOWNLINK_PARTIAL_FAILURE: return "DOWNLINK_PARTIAL_FAILURE";
-        case BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE: return "DOWNLINK_SKIPPED_MPI_ACTIVE";
+        case BLOB_ERR_SEND_PARTIAL_FAILURE: return "SEND_PARTIAL_FAILURE";
+        case BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE: return "SEND_SKIPPED_MPI_ACTIVE";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
         case BLOB_ERR_CANCEL_RERUNS_FAILED: return "CANCEL_RERUNS_FAILED";
@@ -314,7 +314,6 @@ typedef struct {
     uint8_t has_wrapped; // 1 once we've cycled past the last file at least once (all files have data).
 
     uint8_t gnss_channel_is_on; // Our latest knowledge of the GNSS EPS channel state (1=on).
-    uint8_t reserved_padding;
 
     uint16_t downlink_seq_num; // Next sequence number to stamp on a downlinked packet. Wraps at 65536.
 
@@ -1947,16 +1946,14 @@ uint8_t blob_main(
         LOG(
             LOG_SEVERITY_WARNING,
             "%s: %s (%d)",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_DOWNLINK_PARTIAL_FAILURE), downlink_fail_count
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_SEND_PARTIAL_FAILURE), downlink_fail_count
         );
-        return BLOB_ERR_DOWNLINK_PARTIAL_FAILURE;
+        return BLOB_ERR_SEND_PARTIAL_FAILURE;
     }
-    if (sample_status != BLOB_ERR_OK) {
-        return 100 + sample_status; // Non-fatal: no sample stored this run, but we still ran fully.
-    }
+
     if (skip_downlink_for_mpi) {
-        return BLOB_ERR_DOWNLINK_SKIPPED_MPI_ACTIVE; // Deliberate radio silence, not a failure.
+        return BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE; // Deliberate radio silence, not a failure.
     }
-    
+
     return BLOB_ERR_OK;
 }
