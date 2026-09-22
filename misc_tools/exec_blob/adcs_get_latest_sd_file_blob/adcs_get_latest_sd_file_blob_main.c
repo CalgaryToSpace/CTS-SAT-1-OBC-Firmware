@@ -9,6 +9,7 @@
 //
 // Description of Blob:
 //  1. Sets the ADCS SD logging config to stop primary logging (in case it wasn't stopped yet).
+//      Failing to stop it is not an error; the blob logs a warning and carries on.
 //  2. Walks the ADCS SD card's file list, keeping the pointer at the last (highest-index) entry.
 //  3. Checks if that file is already downloaded/transfered into the `ADCS/` directory, and that
 //      the local copy's size matches the size the ADCS reports. If it is not yet downloaded, or
@@ -54,14 +55,26 @@
 //    the fixed delays are replaced by polling.
 //
 //    The watchdog is also in window mode (Window=1975, Reload=2000), so a pet sooner than ~200 ms
-//    after the previous one is itself a reset. The pet rate-limiter must therefore count *every*
-//    pet, including the ones the firmware makes inside the functions this blob calls
-//    (`ADCS_load_sd_file_block_to_filesystem()` pets twice per download burst, right after its
-//    `HAL_Delay(100)` calls). Tracking that in a blob-local variable is not enough: it misses the
-//    firmware's pets, so the pet at the top of the next download-block iteration could land only
-//    a few ms after the firmware's, which is exactly the too-fast (low-side) reset that was seen
-//    in flight. We instead read the firmware's own `STM32_watchdog_uptime_last_pet_ms` global,
-//    which `STM32_pet_watchdog()` updates on every pet from anywhere.
+//    after the previous one is a reset just as surely as a late one. Two things follow, and both
+//    were learned the hard way in flight (each cost an OBC reboot mid-transfer):
+//
+//    a. The pet rate-limiter must count *every* pet, including the ones the firmware makes inside
+//       the functions this blob calls. Tracking it in a blob-local variable misses those, so we
+//       read the firmware's own `STM32_watchdog_uptime_last_pet_ms`, which `STM32_pet_watchdog()`
+//       updates on every pet from anywhere.
+//
+//    b. Rate-limiting our own pets is still not enough, because a pet is also unsafe when the
+//       *firmware* is about to pet shortly afterwards. `ADCS_load_sd_file_block_to_filesystem()`
+//       pets roughly 100-150 ms after it is entered (`HAL_Delay(100)` then `STM32_pet_watchdog()`,
+//       adcs_commands.c:1332, and again at :1404). A blob pet immediately before that call puts
+//       two pets inside one window, and the ADCS driver's pet is the one that resets the OBC.
+//       That is what killed the transfer of block 2/2 of a 26740-byte file ~380 ms after the
+//       block started: the walk/download loop petted, then the driver petted.
+//
+//       So the blob does not pet before entering the driver. It *waits* instead, until the last
+//       pet is old enough that the driver's own pet is safely outside the window (see
+//       wait_until_watchdog_window_open()). The driver pets at least once per block, and a block
+//       takes ~3.5 s, so the blob has no need to pet during the download at all.
 //
 // Also: the file list is now walked only once. v1 walked it a second time inside
 // `ADCS_save_sd_file_to_lfs_by_checksum()` to re-find the file. That is unnecessary, because
@@ -230,6 +243,12 @@ static const uint8_t ADCS_ADVANCE_MAX_TRIES = 3;
 // that, and well under the ~16 s timeout.
 static const uint32_t WATCHDOG_PET_INTERVAL_MS = 1000;
 
+// How old the last watchdog pet must be before the blob calls a firmware function that pets the
+// watchdog itself shortly after being entered. It only has to exceed the IWDG window (~200 ms at
+// the LSI's nominal 32 kHz, ~250 ms at the low end of the LSI's tolerance), and waiting costs
+// nothing against the ~16 s timeout, so this is set well clear of it.
+static const uint32_t WATCHDOG_WINDOW_CLEAR_MS = 500;
+
 // ADCS file download block size, in bytes (20 bytes/packet * 1024 packets).
 static const uint32_t ADCS_DOWNLOAD_BLOCK_SIZE_BYTES = 20480;
 
@@ -261,6 +280,19 @@ static void pet_watchdog_if_due(void) {
     const uint32_t last_pet_ms = STM32_watchdog_uptime_last_pet_ms;
     if ((TIME_uptime_ms() - last_pet_ms) >= WATCHDOG_PET_INTERVAL_MS) {
         STM32_pet_watchdog();
+    }
+}
+
+/// @brief Block until the last watchdog pet is at least WATCHDOG_WINDOW_CLEAR_MS old.
+/// @note Call this instead of pet_watchdog_if_due() before entering firmware code that pets the
+///     watchdog itself soon after being entered. The IWDG's window makes a too-early pet a reset,
+///     and the pet that trips it is the firmware's, which we cannot rate-limit -- so the only
+///     thing the blob can do is make sure the window is already open before handing control over.
+/// @note Never waits longer than WATCHDOG_WINDOW_CLEAR_MS, and typically doesn't wait at all,
+///     since the previous block's download takes seconds.
+static void wait_until_watchdog_window_open(void) {
+    while ((TIME_uptime_ms() - STM32_watchdog_uptime_last_pet_ms) < WATCHDOG_WINDOW_CLEAR_MS) {
+        HAL_Delay(10);
     }
 }
 
@@ -498,6 +530,9 @@ static ADCS_latest_file_blob_error_enum_t build_adcs_lfs_filename(
 /// @note Returns int16_t rather than ADCS_latest_file_blob_error_enum_t because it also passes
 ///     through negative LittleFS error codes and the bit-packed error codes from
 ///     ADCS_load_sd_file_block_to_filesystem(), neither of which live in the blob's error enum.
+/// @note This function deliberately never pets the watchdog. Each
+///     ADCS_load_sd_file_block_to_filesystem() call pets at least once (adcs_commands.c:1332),
+///     and a block takes ~3.5 s, comfortably inside the ~16 s timeout.
 /// @note This replaces the call to `ADCS_save_sd_file_to_lfs_by_checksum()` that the previous
 ///     version of this blob made. That function re-walks the entire file list to re-find the file
 ///     we *just* found. `ADCS_load_sd_file_block_to_filesystem()` selects the file by
@@ -526,7 +561,10 @@ static int16_t download_adcs_file_to_lfs(
 
     int16_t download_err = 0;
     for (uint32_t current_block = 0; current_block < total_blocks; current_block++) {
-        pet_watchdog_if_due();
+        // ADCS_load_sd_file_block_to_filesystem() pets the watchdog ~100-150 ms after it is
+        // entered, so the blob must not pet here; it must only ensure the IWDG window is open by
+        // then. The driver's pets are also what keeps the watchdog fed during the block itself.
+        wait_until_watchdog_window_open();
 
         LOG_message(
             LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
@@ -809,6 +847,9 @@ uint8_t blob_main(
     );
 
     // Step 0: Stop the ADCS SD logging.
+    // Best-effort only: this fails routinely when logging wasn't running in the first place
+    // (nothing to stop), which is not a reason to give up on fetching the file. The failure must
+    // not be allowed to leak into Step 1 either -- see the ACK drain below.
     {
         const uint8_t sd_log_config[10] = {0,0,0,0,0,0,0,0,0,0};
         const uint8_t *sd_log_config_ptr[1] = {sd_log_config};
@@ -822,13 +863,27 @@ uint8_t blob_main(
 
         HAL_Delay(250);
 
+        // ADCS_set_sd_log_config() can poll the ACK up to ADCS_PROCESSED_TIMEOUT_TRIES (1000)
+        // times without petting, so make sure the watchdog is fed before moving on. Safe to do
+        // here: nothing in Step 1 pets, so this can't land inside the IWDG window.
+        pet_watchdog_if_due();
+
         if (stop_status != 0) {
             LOG_message(
-                LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "%s - Error stopping ADCS SD logging: %d",
+                LOG_SYSTEM_ADCS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                "%s: Couldn't stop ADCS SD logging (%d). Continuing; this is expected "
+                "if logging was already stopped.",
                 BLOB_NAME,
                 stop_status
             );
+
+            // Drain the Telecommand Acknowledge frame, which still describes *this* failed
+            // command. Step 1's "command failed but ACK is clean" incantations read that frame
+            // after their own command, so a stale error flag left here would be misattributed to
+            // the file-list commands and abort the walk with a bogus ADCS error code.
+            ADCS_cmd_ack_struct_t stale_ack;
+            ADCS_cmd_ack(&stale_ack);
+
             // Steamroll on error.
         }
     }
@@ -854,7 +909,7 @@ uint8_t blob_main(
 
     LOG_message(
         LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "%s - Latest ADCS SD file: index=%u, type=%d, counter=%d, size=%lu, crc16=0x%x (advance_retries=%u).",
+        "%s: Latest ADCS SD file: index=%u, type=%d, counter=%d, size=%lu, crc16=0x%x (advance_retries=%u).",
         BLOB_NAME, latest_file_index, latest_file_info.file_type, latest_file_info.file_counter,
         latest_file_info.file_size, latest_file_info.file_crc16, advance_retries
     );
@@ -905,7 +960,7 @@ uint8_t blob_main(
         else {
             LOG_message(
                 LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "%s - '%s' exists but is %ld bytes; ADCS reports %lu. Re-transferring.",
+                "%s: '%s' exists but is %ld bytes; ADCS reports %lu. Re-transferring.",
                 BLOB_NAME, lfs_file_path, existing_size_bytes, latest_file_info.file_size
             );
         }
