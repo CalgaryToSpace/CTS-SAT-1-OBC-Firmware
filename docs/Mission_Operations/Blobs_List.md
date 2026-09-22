@@ -269,7 +269,6 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 //   randomly-chosen start lands near the end of the chosen file.
 // - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
 //     STOP       Permanently cancel this blob.
-//     RESUME     Clear the persistent stop flag set by STOP, and run normally.
 //     FAKE       Bench test mode: no GNSS/EPS access; samples synthesized from the RNG.
 //     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode.
 //                (Only governs powering the GNSS on; downlink is suppressed during MPI
@@ -329,11 +328,6 @@ To permanently stop it (also turns the GNSS channel off and cancels all pending 
 CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
 ```
 
-To restart it after a STOP:
-
-```
-CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;RESUME|TRACK_MPI)!
-```
 
 ### Notes
 
@@ -354,12 +348,16 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;RESUME|TRACK_MP
    existing samples and reschedules normally, so transient GNSS comms errors "self-heal".
 7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time syncs)
    while firehose mode is active, but will resume after firehose mode is disabled.
-8. The STOP flag is latched in the same SRAM region as the write cursor, so it survives software
-   reboots but not a full power cycle that clears SRAM.
+8. Five things mean "start over", and all five behave identically: cold/garbage SRAM (first
+   run, or a power cycle), a reboot detected by the heap canary, an unmounted filesystem, a ring
+   file handle the mounted filesystem no longer recognises (an unmount/remount or reformat that
+   didn't involve a reboot), and an operator `STOP`. Each commits and closes any live ring file,
+   resets the write cursor to `r0.bin` record 0, and zeroes the counters.
 9. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
    sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
    Nothing is lost: the stored samples go down on a later run, once the MPI is idle. This applies
    whether or not the `TRACK_MPI` flag was passed. Such runs return
    `DOWNLINK_SKIPPED_MPI_ACTIVE` (62) and report `sent=skipped(mpi_active)`.
-11. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it logs CRITICAL
-    and exits with LFS_NOT_MOUNTED (7) without rescheduling. Not latched like STOP.
+10. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it logs CRITICAL
+    and exits with LFS_NOT_MOUNTED (7) without rescheduling, after resetting the ring (note 8).
+    A later run therefore starts a fresh campaign; it does not resume the old one.
