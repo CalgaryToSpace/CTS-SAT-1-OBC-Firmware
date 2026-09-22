@@ -176,8 +176,10 @@ Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` f
 
 1. Sets the ADCS SD logging config to stop primary logging (in case it wasn't stopped yet).
 2. Walks the ADCS SD card's file list, keeping the pointer at the last (highest-index) entry.
-3. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
-    not yet downloaded, it downloads it from SD card into LittleFS. Otherwise, it does nothing.
+3. Checks if that file is already downloaded/transfered into the `ADCS/` directory, and that the
+    local copy's size matches the size the ADCS reports. If it is not yet downloaded, or the local
+    copy is the wrong size (e.g. an earlier run was interrupted part-way through the transfer), it
+    (re-)downloads it from SD card into LittleFS. Otherwise, it does nothing.
 4. Starts the bulk downlink process to download the file.
 5. Sends a telecommand response with the file name, size, SHA256 hash, crc16, and file date.
 
@@ -207,6 +209,10 @@ CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v2.blob,0,0)!
     * Fix: Always downlinks the newest/latest file, or fails outright. Never downlinks older files.
     * Feature: Response JSON adds `datetime` (the file's timestamp, from the ADCS).
     * Feature: Better error codes/names via an error enum.
+    * Fix: No longer pets the watchdog too soon after the firmware's own pets during the file
+        transfer, which tripped the IWDG's window (low-side) and rebooted the OBC.
+    * Fix: A file that's already in `ADCS/` is only reused if its size matches the size the ADCS
+        reports; a partial file left by an interrupted run is re-transferred instead of downlinked.
 
 ## `blobs/gnss_bestxyzb_ring_v1.blob`
 
