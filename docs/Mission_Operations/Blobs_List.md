@@ -256,7 +256,8 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 ```c
 // This is a blob (executable) that manages the GNSS receiver's power channel based on available
 // power/sun, periodically samples "log bestxyzb once" from the GNSS receiver, stores good fixes
-// into a ring of files in the LittleFS filesystem, periodically syncs the OBC clock to GNSS time,
+// into a ring of files in the LittleFS filesystem, periodically syncs the OBC clock to GNSS time
+// (and pushes that time out to the EPS and the ADCS),
 // downlinks a randomly-selected consecutive run of stored samples on every run, and schedules
 // itself for the next run.
 //
@@ -343,7 +344,12 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;RESUME|TRACK_MP
 4. SAFETY: The GNSS is never powered on while the battery is below 14000mV, and is actively
    turned off if the battery falls below that, no matter what.
 5. While the GNSS is powered on, the blob re-syncs the OBC clock from GNSS time at most once
-   every 10 minutes.
+   every 10 minutes, and then pushes that time onward to the EPS and the ADCS, so GNSS is the
+   authoritative time reference while the receiver is powered. The EPS push is what makes the
+   sync stick -- the firmware's background upkeep task treats the EPS RTC as authoritative and
+   would otherwise revert the OBC clock to it within `EPS_time_sync_period_sec`. Both pushes are
+   best-effort and reported in the response string as `eps_time=`/`adcs_time=` (0 = accepted).
+   The `NOEPS` flag does not suppress the EPS time push; it only governs channel power control.
 6. If a GNSS query fails for any reason, this run skips storing a new sample but still downlinks
    existing samples and reschedules normally, so transient GNSS comms errors "self-heal".
 7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time syncs)
