@@ -1028,7 +1028,9 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
     GNSS_set_uart_interrupt_state(0); // We are no longer expecting a response
 
     // Review comment: This next line doesn't seem necessary.
-    UART_gnss_buffer[UART_gnss_buffer_write_idx] = '\0'; // Null-terminate the string.
+    // NOTE: Disabled in blob because apparently it has the potential to write out-of-bounds, and also we don't transfer ASCII.
+    // Discussion: https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/669
+    // UART_gnss_buffer[UART_gnss_buffer_write_idx] = '\0'; // Null-terminate the string.
 
     // Check that we've received what we're expecting.
     uint16_t bytes_received_count = 0; // Includes null bytes.
