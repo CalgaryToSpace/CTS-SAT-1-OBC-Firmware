@@ -194,6 +194,7 @@ extern void LOG_message(
 #define LOG(severity, fmt, ...) \
     LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
+extern void *pvPortMalloc(size_t xWantedSize);
 extern void GNSS_set_uart_interrupt_state(uint8_t new_enabled);
 extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
 extern uint8_t ADCS_synchronize_unix_time();
@@ -319,6 +320,10 @@ typedef struct {
     uint32_t time_sync_count; // Successful GNSS time syncs, since cold-init.
     uint32_t gnss_power_on_uptime_ms; // TIME_uptime_ms() when we last switched the channel on.
 
+    // Heap allocation holding GNSS_REBOOT_CANARY_MAGIC, used to spot reboots that left this SRAM
+    // block intact. NULL until the first allocation. See detect_reboot_via_heap_canary().
+    uint32_t *reboot_canary;
+
     // The ring file we're appending to, held open across executions. See ring_open_write_file().
     uint8_t open_file_is_valid; // 1 if we left `open_file` open; still verify it's live before use.
     uint8_t open_file_idx; // Ring file index that `open_file` refers to, when valid.
@@ -331,6 +336,71 @@ _Static_assert(
 );
 
 #define g_state ((GNSS_ring_state_t *)gnss_ring_state_base)
+
+
+// MARK: Soft-Reboot Detection
+
+// Value written into the heap canary allocation. Anything else means the heap no longer holds what
+// we left there.
+#define GNSS_REBOOT_CANARY_MAGIC 0x5C0FFEE5u
+
+/// @brief Detect a reboot that left this blob's fixed SRAM state block intact but reset the heap.
+/// @details `magic` in the state block can't tell "previous run of this blob" apart from "previous
+///     run, then a reboot": that block sits at a fixed SRAM address specifically so it survives a
+///     software reset. The heap can tell them apart. FreeRTOS allocates out of `ucHeap`, a static
+///     array that is re-initialised from scratch on every boot, so an allocation we made before a
+///     reboot is no longer ours afterwards and its contents aren't preserved. We keep one 4-byte
+///     allocation holding a magic value; if it no longer reads back as our magic, something
+///     restarted underneath us.
+///
+///     Dereferencing the old pointer after a reboot is safe: it points into `ucHeap`, which is a
+///     fixed static array, so the address is always mapped and readable whatever the heap has
+///     since done with it. We deliberately never vPortFree() the old allocation -- the heap that
+///     owned it no longer exists, and freeing it would corrupt the new heap's free list.
+/// @return true if a reboot was detected this run. False on the very first allocation (there was
+///     no previous boot to have left anything behind) and on every nominal run after it.
+static bool detect_reboot_via_heap_canary() {
+    const bool is_first_allocation = (g_state->reboot_canary == NULL);
+
+    if (!is_first_allocation) {
+        const uint32_t canary_value = *(g_state->reboot_canary);
+        if (canary_value == GNSS_REBOOT_CANARY_MAGIC) {
+            return false; // Nominal: same boot as the previous run. Deliberately silent.
+        }
+
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: heap reboot canary reads 0x%08lX, not 0x%08lX -- reboot detected; "
+            "re-allocating magic reboot detector",
+            BLOB_NAME, (unsigned long)canary_value, (unsigned long)GNSS_REBOOT_CANARY_MAGIC
+        );
+    }
+    else {
+        LOG(
+            LOG_SEVERITY_NORMAL,
+            "%s: doing first magic reboot-detector allocation",
+            BLOB_NAME
+        );
+    }
+
+    // Abandon the old pointer without freeing it (see @details) and take a fresh one.
+    uint32_t *const new_canary = (uint32_t *)pvPortMalloc(sizeof(uint32_t));
+    if (new_canary == NULL) {
+        LOG(
+            LOG_SEVERITY_ERROR,
+            "%s: pvPortMalloc() for the reboot canary failed",
+            BLOB_NAME
+        );
+        g_state->reboot_canary = NULL; // Retry the allocation on the next run.
+        return !is_first_allocation;
+    }
+
+    // The only write: from here on we only ever read this word back.
+    *new_canary = GNSS_REBOOT_CANARY_MAGIC;
+    g_state->reboot_canary = new_canary;
+
+    return !is_first_allocation;
+}
 
 
 // MARK: Packet
@@ -1681,6 +1751,13 @@ uint8_t blob_main(
     if (g_state->magic != GNSS_RING_STATE_MAGIC) {
         memset(g_state, 0, sizeof(GNSS_ring_state_t));
         g_state->magic = GNSS_RING_STATE_MAGIC;
+    }
+
+    // Now that the state block is known-good, check whether the heap restarted under us since the
+    // previous run. If it did, the lfs_file_t we persisted is pointing at a cache buffer from a
+    // heap that no longer exists, so drop it unread rather than letting anything touch it.
+    if (detect_reboot_via_heap_canary()) {
+        g_state->open_file_is_valid = 0;
     }
 
     // Make sure "gnss_ring/" exists before anything tries to read or write inside it.
