@@ -176,10 +176,8 @@ Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` f
 
 1. Sets the ADCS SD logging config to stop primary logging (in case it wasn't stopped yet).
 2. Walks the ADCS SD card's file list, keeping the pointer at the last (highest-index) entry.
-3. Checks if that file is already downloaded/transfered into the `ADCS/` directory, and that the
-    local copy's size matches the size the ADCS reports. If it is not yet downloaded, or the local
-    copy is the wrong size (e.g. an earlier run was interrupted part-way through the transfer), it
-    (re-)downloads it from SD card into LittleFS. Otherwise, it does nothing.
+3. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
+    not yet downloaded, it downloads it from SD card into LittleFS. Otherwise, it does nothing.
 4. Starts the bulk downlink process to download the file.
 5. Sends a telecommand response with the file name, size, SHA256 hash, crc16, and file date.
 
