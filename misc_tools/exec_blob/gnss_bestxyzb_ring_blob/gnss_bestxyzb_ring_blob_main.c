@@ -224,6 +224,10 @@ extern uint8_t ADCS_synchronize_unix_time();
 #define GNSS_SAMPLE_SIZE 144 // Record size. Each BESTXYZB is 144 bytes. Larger values add trailing padding.
 #define GNSS_RING_PATH_MAX_LEN 32 // Enough for "gnss_ring/r<n>.bin".
 
+// Total record slots across the whole ring. Used to flatten a (file_idx, record_idx) pair into the
+// single `ring_position` that the downlink packet carries, and that the ground already parses.
+#define GNSS_RING_TOTAL_RECORDS (GNSS_RING_FILE_COUNT * GNSS_RING_RECORDS_PER_FILE)
+
 
 // MARK: Error Enum
 
@@ -336,8 +340,7 @@ typedef struct {
     uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE.
 
     uint16_t downlink_seq_num; // Sequence number of this downlinked packet (persisted, wraps at 65536).
-    uint8_t file_idx; // Which ring file (0..GNSS_RING_FILE_COUNT-1) this sample was read from.
-    uint16_t record_idx; // Which record within that file this sample was read from.
+    uint16_t ring_position; // Index (0..GNSS_RING_TOTAL_RECORDS-1) within the ring this sample came from.
 
     uint8_t bestxyzb_data[GNSS_SAMPLE_SIZE]; // Raw BESTXYZB binary log sample.
 } GNSS_bestxyzb_downlink_packet_t;
@@ -346,6 +349,11 @@ typedef struct {
 _Static_assert(
     sizeof(GNSS_bestxyzb_downlink_packet_t) <= AX100_DOWNLINK_MAX_BYTES,
     "GNSS_bestxyzb_downlink_packet_t must fit within a single AX100 downlink packet"
+);
+
+_Static_assert(
+    GNSS_RING_TOTAL_RECORDS <= 65535,
+    "Flattened ring_position must fit in the packet's uint16_t field"
 );
 
 
@@ -1532,11 +1540,18 @@ static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent
 
     uint16_t fail_count = 0;
     for (uint16_t i = 0; i < n_to_downlink; i++) {
+        const uint16_t record_idx = (uint16_t)(start_record_idx + i);
+
         GNSS_bestxyzb_downlink_packet_t packet;
         packet.packet_type = COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE;
         packet.downlink_seq_num = g_state->downlink_seq_num;
-        packet.file_idx = chosen_file_idx;
-        packet.record_idx = (uint16_t)(start_record_idx + i);
+
+        // Flatten the (file, record) pair into the flat ring index the ground already understands.
+        // Stable across runs: a given slot always maps to the same position, and the position tells
+        // you the file (position / GNSS_RING_RECORDS_PER_FILE) if you need it back.
+        packet.ring_position = (uint16_t)(
+            ((uint16_t)chosen_file_idx * GNSS_RING_RECORDS_PER_FILE) + record_idx
+        );
 
         const lfs_ssize_t read_len = lfs_file_read(
             &LFS_filesystem, &file, packet.bestxyzb_data, GNSS_SAMPLE_SIZE
@@ -1545,7 +1560,7 @@ static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent
             LOG(
                 LOG_SEVERITY_WARNING,
                 "%s: short read (%ld) at %s record %d",
-                BLOB_NAME, (long)read_len, path, packet.record_idx
+                BLOB_NAME, (long)read_len, path, record_idx
             );
             fail_count += (uint16_t)(n_to_downlink - i); // The rest of the run is unreachable too.
             break;
