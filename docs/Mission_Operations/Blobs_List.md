@@ -240,3 +240,51 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 5. If GNSS firehose mode is activated, this blob skips collecting data samples while firehose
    mode is active, but will resume after firehose mode is disabled.
 6. The ring buffer's contents may be retained between software reboots, watchdog resets, etc.
+
+## `blobs/get_file_map_v1.blob`
+
+Blob to get a "map" of a file (hashes, null-byte ranges, and per-chunk CRC16s), to find which parts of a partially-downlinked or partially-uplinked file are wrong or empty.
+
+### Description
+
+```c
+// Args Format: <file_path>  or  <file_path>;kwarg1=val;kwarg2=val
+// Supported kwargs:
+//  - minimum_null_length: Minimum length of a run of 0x00 bytes to be reported. Default: 40.
+//  - crc16_chunk_size: Size, in bytes, of each chunk in the crc16_map. Default: file size split
+//      into 16 chunks (rounded up). Max of 64 chunks.
+```
+
+The response is tightly-packet JSON, like:
+
+```json
+{
+    "action": "get_file_map_v1",
+    "file": "t1.bin",
+    "sha256": "4f2d...ae91",
+    "crc16": "0xee52",
+    "size": 4794,
+    "null_ranges": [
+        [100,140],[194,1194],[4194,4794]
+    ],
+    "crc16_map": {
+        "0":"0xaaa2","300":"0x0000",...,"4500":"0x0000"
+    },
+    "null_range_count": 3,
+    "null_ranges_truncated": false
+}
+```
+
+### Example Usage
+
+```
+CTS1+exec_blob_from_fs(blobs/get_file_map_v1.blob,0,your_file.bin)!
+CTS1+exec_blob_from_fs(blobs/get_file_map_v1.blob,0,your_file.bin;minimum_null_length=100;crc16_chunk_size=4096)!
+```
+
+### Notes
+
+1. Null ranges are `[start, end)` with an exclusive end, like a Python slice (`data[start:end]`).
+    Each `crc16_map` key is a chunk's start offset; the chunk runs until the next key's offset (or the end of the file).
+2. The CRC16 is the same algorithm as the ADCS file CRC16 (ADCS Firmware ICD `CRC_Calc()`).
+3. If the null ranges don't fit in the response, the list is cut short and `null_ranges_truncated` is `true`. `null_range_count` is always the full count. Re-run with a larger `minimum_null_length` to see them all.
