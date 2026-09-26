@@ -41,8 +41,9 @@
 #include "crypto/sha256.h"
 
 #define LFS_MAX_PATH_LENGTH 200
+#define BLOB_ENABLE_LOGS 0
 
-
+#if BLOB_ENABLE_LOGS
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
     LOG_SEVERITY_NORMAL = 1 << 1,
@@ -53,6 +54,8 @@ typedef enum {
 
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
+
+#endif
 
 static const char ARG_DELIM = ';';
 static const char KWARG_DELIM = '=';
@@ -71,10 +74,12 @@ extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int vsnprintf(char *buf, unsigned int size, const char *fmt, va_list args);
 extern int strlen (const char *s);
 
+#if BLOB_ENABLE_LOGS
 extern void LOG_message(
     uint32_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
     const char *fmt, ...
 );
+#endif
 
 lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages);
 
@@ -441,12 +446,14 @@ uint8_t blob_main(
     char *response_buf, unsigned short response_buf_len
 ) {
     // Log that the blob is starting (important for tracing crashes).
+    #if BLOB_ENABLE_LOGS
     LOG(
         LOG_SEVERITY_NORMAL,
         "Blob (%s) args_str: '%s'",
         BLOB_NAME,
         args_str
     );
+    #endif
 
     const uint16_t args_str_len = strlen(args_str);
     uint16_t pos = 0;
