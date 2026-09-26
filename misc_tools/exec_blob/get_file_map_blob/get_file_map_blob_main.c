@@ -70,7 +70,6 @@ static const uint16_t RESPONSE_TAIL_RESERVE_BYTES = 96;
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
-extern volatile uint32_t TIME_uptime_ms_from_tim6;
 
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int vsnprintf(char *buf, unsigned int size, const char *fmt, va_list args);
@@ -90,10 +89,6 @@ lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages);
 #define LOG(severity, fmt, ...) \
     LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
-// Must redefine here because it's inlined in the main code.
-static inline uint32_t TIME_uptime_ms() {
-    return TIME_uptime_ms_from_tim6;
-}
 
 static uint16_t parse_token(
     const char *src, uint16_t src_offset, uint16_t src_len,
