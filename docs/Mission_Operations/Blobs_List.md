@@ -267,11 +267,10 @@ The response is tightly-packet JSON, like:
     "null_ranges": [
         [100,140],[194,1194],[4194,4794]
     ],
+    "null_range_count": 3,
     "crc16_map": {
         "0":"0xaaa2","300":"0x0000",...,"4500":"0x0000"
-    },
-    "null_range_count": 3,
-    "null_ranges_truncated": false
+    }
 }
 ```
 
@@ -287,4 +286,4 @@ CTS1+exec_blob_from_fs(blobs/get_file_map_v1.blob,0,your_file.bin;minimum_null_l
 1. Null ranges are `[start, end)` with an exclusive end, like a Python slice (`data[start:end]`).
     Each `crc16_map` key is a chunk's start offset; the chunk runs until the next key's offset (or the end of the file).
 2. The CRC16 is the same algorithm as the ADCS file CRC16 (ADCS Firmware ICD `CRC_Calc()`).
-3. If the null ranges don't fit in the response, the list is cut short and `null_ranges_truncated` is `true`. `null_range_count` is always the full count. Re-run with a larger `minimum_null_length` to see them all.
+3. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON). Re-run with a larger `minimum_null_length` to fit fewer null ranges.

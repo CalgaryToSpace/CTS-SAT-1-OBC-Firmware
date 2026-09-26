@@ -14,13 +14,12 @@
 //
 // Response Format (JSON):
 // {"action":"get_file_map_v1","file":"<path>","sha256":"<hex>","crc16":"0xabcd","size":1234,
-//  "null_ranges":[[start,end],...],"crc16_map":{"start":"0xabcd",...},
-//  "null_range_count":N,"null_ranges_truncated":false}
+//  "null_ranges":[[start,end],...],"null_range_count":N,"crc16_map":{"start":"0xabcd",...}}
 //
 // Null ranges are [start, end) in bytes, with an exclusive end (like a Python slice), so
 // `data[start:end]` is the range. Each crc16_map key is a chunk's start offset; the chunk runs
-// until the next key's offset (or the end of the file). If the null ranges don't fit in the response buffer, the list
-// is cut short and "null_ranges_truncated" is true; "null_range_count" is always the full count.
+// until the next key's offset (or the end of the file). If the response doesn't fit in the response
+// buffer, it's silently cut off at the end of the buffer (i.e., the JSON will be incomplete).
 //
 // Usage Example:
 // After uplinking the blob as "blobs/get_file_map_v1.blob", run:
@@ -31,7 +30,7 @@
 // 1. Null ranges are `[start, end)` with an exclusive end, like a Python slice (`data[start:end]`).
 //     Each `crc16_map` key is a chunk's start offset; the chunk runs until the next key's offset (or the end of the file).
 // 2. The CRC16 is the same algorithm as the ADCS file CRC16 (ADCS Firmware ICD `CRC_Calc()`).
-// 3. If the null ranges don't fit in the response, the list is cut short and `null_ranges_truncated` is `true`. `null_range_count` is always the full count. Re-run with a larger `minimum_null_length` to see them all.
+// 3. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON). Re-run with a larger `minimum_null_length` to fit fewer null ranges.
 
 
 #include <stdint.h>
@@ -64,9 +63,6 @@ static const uint32_t DEFAULT_CRC16_CHUNK_COUNT = 16;
 #define MAX_CRC16_CHUNK_COUNT 64
 
 #define READ_BUFFER_SIZE 512
-
-// Space kept free at the end of the response for the trailing keys after crc16_map.
-static const uint16_t RESPONSE_TAIL_RESERVE_BYTES = 96;
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -205,37 +201,31 @@ typedef struct {
     uint16_t chunk_crc16s[MAX_CRC16_CHUNK_COUNT];
 } file_checksums_t;
 
-/// @brief Appends to a response buffer, tracking the position and whether it overflowed.
+/// @brief Appends to a response buffer, tracking the position.
+/// @note Anything that doesn't fit is silently cut off at the end of the buffer.
 typedef struct {
     char *buf;
     uint16_t size;
     uint16_t pos;
-    bool overflow;
 } response_writer_t;
 
 static void response_append(response_writer_t *w, const char *fmt, ...) {
-    if (w->overflow) return;
-
     va_list args;
     va_start(args, fmt);
     const int written = vsnprintf(&w->buf[w->pos], w->size - w->pos, fmt, args);
     va_end(args);
 
-    if (written < 0 || written >= (w->size - w->pos)) {
-        w->overflow = true;
-        w->buf[w->pos] = '\0'; // Drop the partial write.
-        return;
-    }
     w->pos += written;
+    if (w->pos >= w->size) w->pos = w->size - 1; // Full (vsnprintf null-terminated it).
 }
 
 /// @brief Overwrite `byte_count` bytes' worth of lowercase hex in place (no null terminator).
 /// @note Used to fill in placeholders once the checksums are known.
-static void write_hex_in_place(char *dest, const uint8_t *bytes, uint8_t byte_count) {
+/// @param max_chars Max hex chars to write (so a placeholder cut off by truncation stays cut off).
+static void write_hex_in_place(char *dest, const uint8_t *bytes, uint8_t byte_count, uint16_t max_chars) {
     static const char HEX_DIGITS[] = "0123456789abcdef";
-    for (uint8_t i = 0; i < byte_count; i++) {
-        dest[i * 2] = HEX_DIGITS[bytes[i] >> 4];
-        dest[i * 2 + 1] = HEX_DIGITS[bytes[i] & 0x0f];
+    for (uint16_t i = 0; i < byte_count * 2 && i < max_chars; i++) {
+        dest[i] = HEX_DIGITS[(i & 1) ? (bytes[i / 2] & 0x0f) : (bytes[i / 2] >> 4)];
     }
 }
 
@@ -261,20 +251,16 @@ static void append_crc16_map(response_writer_t *w, const file_checksums_t *check
 /// @param minimum_null_length Minimum null run length to report.
 /// @param[in,out] checksums `size`, `chunk_size`, and `chunk_count` must be set before calling.
 /// @param w The response to append the null ranges list to.
-/// @param reserve_bytes Bytes to leave free in the response for everything after the list.
-/// @param[out] null_range_count Set to the total number of null ranges (including unlisted ones).
-/// @param[out] truncated Set to true if some null ranges didn't fit in the response.
+/// @param[out] null_range_count Set to the total number of null ranges.
 /// @return 0 on success, negative LFS error code on read error, 1 if the file size changed.
 static int32_t scan_file(
     const char *file_path, uint32_t minimum_null_length,
     file_checksums_t *checksums,
-    response_writer_t *w, uint16_t reserve_bytes,
-    uint32_t *null_range_count, bool *truncated
+    response_writer_t *w, uint32_t *null_range_count
 ) {
     uint8_t read_buffer[READ_BUFFER_SIZE];
 
     *null_range_count = 0;
-    *truncated = false;
 
     lfs_file_t file;
     const int32_t open_result = lfs_file_open(&LFS_filesystem, &file, file_path, LFS_O_RDONLY);
@@ -335,19 +321,11 @@ static int32_t scan_file(
             }
 
             if (run_len >= minimum_null_length) {
-                char range_str[32];
-                const int range_str_len = snprintf(
-                    range_str, sizeof(range_str), "%s[%lu,%lu]",
+                response_append(
+                    w, "%s[%lu,%lu]",
                     (*null_range_count == 0) ? "" : ",",
                     run_start, run_start + run_len
                 );
-
-                if (!*truncated && (w->pos + range_str_len + reserve_bytes < w->size)) {
-                    response_append(w, "%s", range_str);
-                }
-                else {
-                    *truncated = true;
-                }
                 (*null_range_count)++;
             }
             run_len = 0;
@@ -385,8 +363,7 @@ static int32_t scan_file(
 /// @details The file is only read once, but the sha256 and crc16 come before the null ranges in
 ///     the JSON. Since the file size is known up front and both checksums are fixed-width, the
 ///     header is written first with placeholders, and the placeholders are overwritten after the
-///     scan. Likewise, the crc16_map's length is known before the scan, so the null ranges know
-///     how much room to leave for it.
+///     scan.
 static uint8_t get_file_map(
     const char *file_path, uint32_t minimum_null_length, uint32_t crc16_chunk_size,
     char *response_buf, uint16_t response_buf_len
@@ -422,21 +399,9 @@ static uint8_t get_file_map(
         return 21;
     }
     checksums.chunk_count = (uint16_t)chunk_count;
-    for (uint16_t i = 0; i < MAX_CRC16_CHUNK_COUNT; i++) {
-        checksums.chunk_crc16s[i] = 0;
-    }
-
-    // Measure the crc16_map's length (values are fixed-width, so zeros give the real length).
-    response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0, .overflow = false };
-    append_crc16_map(&w, &checksums);
-    if (w.overflow) {
-        snprintf(response_buf, response_buf_len, "%s error: crc16_map too long for response", BLOB_NAME);
-        return 23;
-    }
-    const uint16_t crc16_map_len = w.pos;
 
     // Write the header, with placeholders for the checksums.
-    w.pos = 0;
+    response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0 };
     response_append(&w, "{\"action\":\"%s\",\"file\":\"%s\",\"sha256\":\"", BLOB_NAME, file_path);
     const uint16_t sha256_pos = w.pos;
     response_append(&w, "%064d\",\"crc16\":\"0x", 0);
@@ -445,11 +410,8 @@ static uint8_t get_file_map(
 
     // Scan the file, appending the null ranges.
     uint32_t null_range_count;
-    bool null_ranges_truncated;
     const int32_t scan_result = scan_file(
-        file_path, minimum_null_length, &checksums,
-        &w, crc16_map_len + RESPONSE_TAIL_RESERVE_BYTES,
-        &null_range_count, &null_ranges_truncated
+        file_path, minimum_null_length, &checksums, &w, &null_range_count
     );
     if (scan_result != 0) {
         snprintf(
@@ -460,23 +422,14 @@ static uint8_t get_file_map(
         return 22;
     }
 
-    response_append(&w, ",\"crc16_map\":");
+    response_append(&w, ",\"null_range_count\":%lu,\"crc16_map\":", null_range_count);
     append_crc16_map(&w, &checksums);
-    response_append(
-        &w, ",\"null_range_count\":%lu,\"null_ranges_truncated\":%s}",
-        null_range_count, null_ranges_truncated ? "true" : "false"
-    );
+    response_append(&w, "}");
 
-    if (w.overflow) {
-        // Should never happen (space is reserved), but don't send broken JSON silently.
-        snprintf(response_buf, response_buf_len, "%s error: response overflow", BLOB_NAME);
-        return 24;
-    }
-
-    // Fill in the placeholders.
-    write_hex_in_place(&response_buf[sha256_pos], checksums.sha256, 32);
+    // Fill in the placeholders (only the parts that weren't cut off).
+    write_hex_in_place(&response_buf[sha256_pos], checksums.sha256, 32, w.pos - sha256_pos);
     const uint8_t crc16_bytes[2] = { checksums.crc16 >> 8, checksums.crc16 & 0xff };
-    write_hex_in_place(&response_buf[crc16_pos], crc16_bytes, 2);
+    write_hex_in_place(&response_buf[crc16_pos], crc16_bytes, 2, w.pos - crc16_pos);
 
     return 0;
 }
