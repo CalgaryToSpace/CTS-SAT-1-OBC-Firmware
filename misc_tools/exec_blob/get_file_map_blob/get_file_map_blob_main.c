@@ -111,49 +111,20 @@ static uint16_t parse_token(
     return i;
 }
 
-static int8_t hex_to_int(char c) {
-    if (c >= '0' && c <= '9') return c - '0';
-    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-    return -1; // Error.
-}
-
-/// @brief Parse a string into an integer.
-/// @param s String to parse. Valid formats: "0x<digits>" or "<digits>". Underscores are ignored.
+/// @brief Parse a string of decimal digits into an integer.
+/// @param s String to parse. Decimal digits only (no sign, no "0x" prefix).
+/// @param[out] ok Set to true if `s` is a valid non-empty decimal number.
 /// @returns Parsed integer, or 0 if invalid.
 static int32_t parse_int(const char *s, bool *ok) {
     uint32_t result = 0;
-    bool hex = false;
-    uint8_t i = 0;
-
-    if (ok) *ok = false;
-    if (!s || s[0] == '\0') return 0;
-
-    // Detect 0x prefix
-    if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) {
-        hex = true;
-        i = 2;
-        if (s[i] == '\0') return 0; // bare "0x" is invalid
-    }
-
-    bool has_digits = false;
-    while (s[i] != '\0') {
-        if (s[i] == '_') { i++; continue; } // skip delimiter
-
-        if (hex) {
-            int8_t d = hex_to_int(s[i]);
-            if (d < 0) return 0; // invalid char
-            result = (result << 4) | (uint8_t)d;
-        } else {
-            if (s[i] < '0' || s[i] > '9') return 0; // invalid char
-            result = result * 10 + (s[i] - '0');
+    *ok = (s[0] != '\0');
+    for (; *s != '\0'; s++) {
+        if (*s < '0' || *s > '9') {
+            *ok = false;
+            return 0;
         }
-        has_digits = true;
-        i++;
+        result = result * 10 + (*s - '0');
     }
-
-    if (!has_digits) return 0;
-    if (ok) *ok = true;
     return (int32_t)result;
 }
 
