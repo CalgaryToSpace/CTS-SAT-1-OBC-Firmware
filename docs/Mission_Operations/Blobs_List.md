@@ -157,7 +157,7 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
     * Change 2: Prevent bouncing in the `pending_queued_tcmd_count` field between extended and basic beacons.
     * Improvement: Use error enum for error reporting.
 
-## `blobs/adcs_get_latest_sd_file_v1.blob`
+## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 
 Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` folder, and then bulk downlinks it.
 
@@ -166,7 +166,7 @@ Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` f
 //
 // Motivation: Each ADCS commissioning step requires collecting data into an SD file, downlinking
 // the list of files, selecting the right file (by its checksum), and then bulk downlinking it. It
-// requires two uplink overpasses to get the file. This blob makes it so a single commissioning 
+// requires two uplink overpasses to get the file. This blob makes it so a single commissioning
 // step requires only one uplink overpass to fetch the file.
 //
 // Args Format: 0 (placeholder, not used)
@@ -175,25 +175,42 @@ Running this blobs transfers a file from the ADCS SD card into the LFS `ADCS/` f
 ### Description of Blob (Steps)
 
 1. Sets the ADCS SD logging config to stop primary logging (in case it wasn't stopped yet).
-2. Lists all files on the ADCS SD card.
-3. Determine's the latest file, by index, on the SD card.
-4. Checks if that file has "is_busy_updating = true". Returns error code 96 if it does.
-5. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
-    not yet downloaded, it downloads it. Otherwise, it does nothing.
-6. Starts the bulk downlink process to download the file.
-7. Sends a telecommand response with the file name, size, hash, and crc16.
+2. Walks the ADCS SD card's file list, keeping the pointer at the last (highest-index) entry.
+3. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
+    not yet downloaded, it downloads it from SD card into LittleFS. Otherwise, it does nothing.
+4. Starts the bulk downlink process to download the file.
+5. Sends a telecommand response with the file name, size, SHA256 hash, crc16, and file date.
 
 ### Notes
-1. Likely doesn't work if there are more than 70 files on the SD card. It's the way it has to be.
-2. You MUST stop the ADCS SD logging before running this command.
+
+1. You should stop the ADCS SD logging before running this command.
 
 ### Example Usage
 
 To transfer and downlink the latest file on the ADCS SD card, run:
 
 ```
-CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v1.blob,0,0)!
+CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v2.blob,0,0)!
 ```
+
+### Versions
+
+* v1
+    * Generally worked well. Huge improvement. Had some bugs though.
+    * Only reliable on SD cards with roughly 32 or fewer files. Beyond that, the OBC would reboot
+        partway through the command.
+    * Sometimes downlinked a file other than the latest one, or reported an empty file list, even
+        when the file you wanted was there. Re-running it would often pick a different file.
+* v2
+    * Same arguments and same response format as v1. Use it exactly the same way.
+    * Improvement: Handles way more files on the ADCS SD card (>100, probably). Runs way faster.
+    * Fix: Always downlinks the newest/latest file, or fails outright. Never downlinks older files.
+    * Feature: Response JSON adds `datetime` (the file's timestamp, from the ADCS).
+    * Feature: Better error codes/names via an error enum.
+    * Fix: No longer pets the watchdog too soon after the firmware's own pets during the file
+        transfer, which tripped the IWDG's window (low-side) and rebooted the OBC.
+    * Fix: A file that's already in `ADCS/` is only reused if its size matches the size the ADCS
+        reports; a partial file left by an interrupted run is re-transferred instead of downlinked.
 
 ## `blobs/gnss_bestxyzb_ring_v1.blob`
 

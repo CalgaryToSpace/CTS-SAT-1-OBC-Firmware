@@ -34,7 +34,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char *BLOB_NAME = "bulk_downlink_start_blob";
+static const char *BLOB_NAME = "bulk_downlink_start_blob"; // TODO: Add version number.
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;

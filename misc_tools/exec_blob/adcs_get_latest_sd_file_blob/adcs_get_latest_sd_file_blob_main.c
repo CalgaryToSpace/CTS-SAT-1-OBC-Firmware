@@ -2,32 +2,85 @@
 //
 // Motivation: Each ADCS commissioning step requires collecting data into an SD file, downlinking
 // the list of files, selecting the right file (by its checksum), and then bulk downlinking it. It
-// requires two uplink overpasses to get the file. This blob makes it so a single commissioning 
+// requires two uplink overpasses to get the file. This blob makes it so a single commissioning
 // step requires only one uplink overpass to fetch the file.
 //
 // Args Format: 0 (placeholder, not used)
 //
 // Description of Blob:
 //  1. Sets the ADCS SD logging config to stop primary logging (in case it wasn't stopped yet).
-//  2. Lists all files on the ADCS SD card.
-//  3. Determine's the latest file, by index, on the SD card.
-//  4. Checks if that file has "is_busy_updating = true". Returns error code 96 if it does.
-//  5. Checks if that file is already downloaded/transfered into the `ADCS/` directory. If it is
-//      not yet downloaded, it downloads it. Otherwise, it does nothing.
-//  6. Starts the bulk downlink process to download the file.
-//  7. Sends a telecommand response with the file name, size, hash, and crc16.
+//      Failing to stop it is not an error; the blob logs a warning and carries on.
+//  2. Walks the ADCS SD card's file list, keeping the pointer at the last (highest-index) entry.
+//  3. Checks if that file is already downloaded/transfered into the `ADCS/` directory, and that
+//      the local copy's size matches the size the ADCS reports. If it is not yet downloaded, or
+//      the local copy is the wrong size (e.g. an earlier run was interrupted mid-transfer), it
+//      (re-)downloads it from SD card into LittleFS. Otherwise, it does nothing.
+//  4. Starts the bulk downlink process to download the file.
+//  5. Sends a telecommand response with the file name, size, SHA256 hash, crc16, and file date.
 //
 // Notes:
-//  1. Likely doesn't work if there are more than 70 files on the SD card. It's the way it has to be.
-//  2. You MUST stop the ADCS SD logging before running this command.
+//  1. You should stop the ADCS SD logging before running this command.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/adcs_get_latest_sd_file_v1.blob", run:
-// CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v1.blob,0,0)!
+// After uplinking the blob as "blobs/adcs_get_latest_sd_file_v2.blob", run:
+// CTS1+exec_blob_from_fs(blobs/adcs_get_latest_sd_file_v2.blob,0,0)!
 //
 // Implementation Note: This blob also includes the fix from the `bulk_downlink_start_blob` blob,
 // as is required to initiate bulk file downlinks.
 // Full description of bug: https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/653
+//
+// ---------------------------------------------------------------------------------------------
+// Fixes in v2, relative to v1. The same three bugs exist in the main firmware, in
+// every `ADCS_reset_file_list_read_pointer()` walk in `adcs_commands.c` (`ADCS_get_sd_card_file_list()`,
+// `ADCS_save_sd_file_to_lfs_by_index()`, `ADCS_save_sd_file_to_lfs_by_checksum()`, and the
+// `ADCS_get_file_*_by_index()` family):
+//
+// 1. The Busy Updating flag was never polled. Firmware Reference Manual [V7.5] Section 6.2.1 says:
+//    "The File Information telemetry frame should be polled until the Busy Updating flag is
+//    cleared. At this point the populated file information will be valid." v1 instead did one
+//    fixed `HAL_Delay(100)` and a single read. If the ADCS had not finished populating the frame,
+//    the read came back partially/entirely zeroed, which the all-zero check then misread as
+//    "end of file list" -- the early end-of-list bug. We now poll until Busy Updating clears.
+//
+// 2. Symmetrically, a read issued *before* the ADCS started repopulating the frame returns the
+//    *previous* file with Busy Updating already clear -- the "file pointer didn't advance" bug.
+//    We now detect a repeated entry (file_type + file_counter uniquely identify a file, per the
+//    manual) and re-read, then re-issue the advance, rather than silently accepting a duplicate.
+//
+// 3. The blob never petted the watchdog. The IWDG is configured with prescaler 256 / reload 2000
+//    off the ~32 kHz LSI (see `MX_IWDG_Init()`), i.e. a ~16 s timeout, and the only nominal pet is
+//    at the top of `TASK_execute_telecommands`, which does not run while a telecommand (this blob)
+//    is executing. At the ~500 ms/file that v1 spent, the OBC rebooted at roughly 32 files. We now
+//    pet during the walk and between download blocks, and the per-file cost is much lower because
+//    the fixed delays are replaced by polling.
+//
+//    The watchdog is also in window mode (Window=1975, Reload=2000), so a pet sooner than ~200 ms
+//    after the previous one is a reset just as surely as a late one. Two things follow, and both
+//    were learned the hard way in flight (each cost an OBC reboot mid-transfer):
+//
+//    a. The pet rate-limiter must count *every* pet, including the ones the firmware makes inside
+//       the functions this blob calls. Tracking it in a blob-local variable misses those, so we
+//       read the firmware's own `STM32_watchdog_uptime_last_pet_ms`, which `STM32_pet_watchdog()`
+//       updates on every pet from anywhere.
+//
+//    b. Rate-limiting our own pets is still not enough, because a pet is also unsafe when the
+//       *firmware* is about to pet shortly afterwards. `ADCS_load_sd_file_block_to_filesystem()`
+//       pets roughly 100-150 ms after it is entered (`HAL_Delay(100)` then `STM32_pet_watchdog()`,
+//       adcs_commands.c:1332, and again at :1404). A blob pet immediately before that call puts
+//       two pets inside one window, and the ADCS driver's pet is the one that resets the OBC.
+//       That is what killed the transfer of block 2/2 of a 26740-byte file ~380 ms after the
+//       block started: the walk/download loop petted, then the driver petted.
+//
+//       So the blob does not pet before entering the driver. It *waits* instead, until the last
+//       pet is old enough that the driver's own pet is safely outside the window (see
+//       wait_until_watchdog_window_open()). The driver pets at least once per block, and a block
+//       takes ~3.5 s, so the blob has no need to pet during the download at all.
+//
+// Also: the file list is now walked only once. v1 walked it a second time inside
+// `ADCS_save_sd_file_to_lfs_by_checksum()` to re-find the file. That is unnecessary, because
+// `ADCS_load_sd_file_block_to_filesystem()` selects the file by (file_type, file_counter) from the
+// `file_info` struct and does not use the file list read pointer at all.
+// ---------------------------------------------------------------------------------------------
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -51,7 +104,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SYSTEM_ADCS = 1 << 7;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
-static const char *BLOB_NAME = "adcs_get_latest_sd_file_blob";
+static const char *BLOB_NAME = "adcs_get_latest_sd_file_blob_v2";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -72,6 +125,10 @@ extern int8_t LFS_read_file_checksum_sha256(
 
 void HAL_Delay(uint32_t Delay);
 
+// Petting the watchdog also updates STM32_watchdog_uptime_last_pet_ms, for all callers.
+void STM32_pet_watchdog();
+extern volatile uint32_t STM32_watchdog_uptime_last_pet_ms;
+
 // Bulk file downlink state and control.
 typedef enum {
     COMMS_BULK_FILE_DOWNLINK_STATE_IDLE,
@@ -88,18 +145,112 @@ extern uint8_t LFS_is_lfs_mounted;
 uint8_t ADCS_reset_file_list_read_pointer();
 uint8_t ADCS_advance_file_list_read_pointer();
 uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct);
-// int16_t ADCS_save_sd_file_to_lfs_by_index(
-//     bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum
-// );
-int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file_checksum);
+// Selects the file by (file_info.file_type, file_info.file_counter); does NOT use the file list
+// read pointer. This is what lets us avoid a second walk of the file list.
+int16_t ADCS_load_sd_file_block_to_filesystem(
+    ADCS_file_info_struct_t file_info, uint8_t current_block, lfs_file_t *file
+);
 uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack);
 uint8_t ADCS_set_sd_log_config(
     uint8_t which_log, const uint8_t **log_array, uint8_t log_array_len, uint16_t log_period,
     ADCS_sd_log_destination_enum_t which_sd
 );
 
-// Worst-case time to walk the ADCS file-list pointer across all 255 files; same bound the firmware uses.
-static const uint16_t ADCS_FILE_POINTER_TIMEOUT_MS = 60000;
+// MARK: Error Enum
+
+// All named status/error codes returned by this blob's functions, including the values
+// `blob_main()` itself returns to the telecommand executor (0 = success).
+// Values 1-4 are the ADCS's own error codes, passed through unchanged from whichever ADCS command
+// failed; everything from 7 up is generated by this blob.
+typedef enum {
+    BLOB_ERR_OK = 0,
+    BLOB_ERR_ADCS_INVALID_TC = 1, // ADCS: Invalid telecommand.
+    BLOB_ERR_ADCS_INCORRECT_LENGTH = 2, // ADCS: Incorrect telecommand length.
+    BLOB_ERR_ADCS_INCORRECT_PARAMETER = 3, // ADCS: Incorrect telecommand parameter.
+    BLOB_ERR_ADCS_CRC_CHECK_FAILED = 4, // ADCS: CRC check failed.
+    BLOB_ERR_ADCS_DOWNLOAD_TIMEOUT = 7, // Ran past ADCS_FILE_DOWNLOAD_TIMEOUT_MS mid-download.
+    BLOB_ERR_RESPONSE_BUILD_FAILED = 10, // Downlink started, but the response JSON couldn't be built.
+    BLOB_ERR_BULK_DOWNLINK_START_FAILED = 20, // bulk_downlink_start_fixed() failed.
+    BLOB_ERR_LFS_NOT_MOUNTED = 43, // LittleFS isn't mounted, so nothing can be written.
+    BLOB_ERR_FILE_LIST_EMPTY = 91, // The ADCS SD card's file list has no entries at all.
+    BLOB_ERR_UNKNOWN_FILE_TYPE = 92, // The latest file's file_type isn't downloadable.
+    BLOB_ERR_LFS_EXISTS_CHECK_FAILED = 93, // LFS_file_size_if_exists() hit an LFS error.
+    BLOB_ERR_FILE_TRANSFER_FAILED = 94, // download_adcs_file_to_lfs() failed.
+    BLOB_ERR_BUSY_UPDATING_NEVER_CLEARED = 96, // File Information's Busy Updating flag stayed set.
+    BLOB_ERR_READ_POINTER_STUCK = 97, // Advance File List Read Pointer wouldn't move off an entry.
+    BLOB_ERR_FILE_LIST_WALK_TIMEOUT = 98, // Timed out before reaching the end-of-list sentinel.
+} ADCS_latest_file_blob_error_enum_t;
+
+/// @brief Convert an ADCS_latest_file_blob_error_enum_t into a short human-readable name, for use
+///     in log messages and output strings.
+/// @return Static string; never NULL. "UNKNOWN_ERROR" for values not in the enum.
+static const char *adcs_latest_file_blob_error_to_str(ADCS_latest_file_blob_error_enum_t err) {
+    switch (err) {
+        case BLOB_ERR_OK: return "OK";
+        case BLOB_ERR_ADCS_INVALID_TC: return "ADCS_INVALID_TC";
+        case BLOB_ERR_ADCS_INCORRECT_LENGTH: return "ADCS_INCORRECT_LENGTH";
+        case BLOB_ERR_ADCS_INCORRECT_PARAMETER: return "ADCS_INCORRECT_PARAMETER";
+        case BLOB_ERR_ADCS_CRC_CHECK_FAILED: return "ADCS_CRC_CHECK_FAILED";
+        case BLOB_ERR_ADCS_DOWNLOAD_TIMEOUT: return "ADCS_DOWNLOAD_TIMEOUT";
+        case BLOB_ERR_RESPONSE_BUILD_FAILED: return "RESPONSE_BUILD_FAILED";
+        case BLOB_ERR_BULK_DOWNLINK_START_FAILED: return "BULK_DOWNLINK_START_FAILED";
+        case BLOB_ERR_LFS_NOT_MOUNTED: return "LFS_NOT_MOUNTED";
+        case BLOB_ERR_FILE_LIST_EMPTY: return "FILE_LIST_EMPTY";
+        case BLOB_ERR_UNKNOWN_FILE_TYPE: return "UNKNOWN_FILE_TYPE";
+        case BLOB_ERR_LFS_EXISTS_CHECK_FAILED: return "LFS_EXISTS_CHECK_FAILED";
+        case BLOB_ERR_FILE_TRANSFER_FAILED: return "FILE_TRANSFER_FAILED";
+        case BLOB_ERR_BUSY_UPDATING_NEVER_CLEARED: return "BUSY_UPDATING_NEVER_CLEARED";
+        case BLOB_ERR_READ_POINTER_STUCK: return "READ_POINTER_STUCK";
+        case BLOB_ERR_FILE_LIST_WALK_TIMEOUT: return "FILE_LIST_WALK_TIMEOUT";
+        default: return "UNKNOWN_ERROR";
+    }
+}
+
+
+// MARK: Constants
+
+// Overall cap on how long the single walk of the file list may take. Much larger than the
+// firmware's 60 s, because we now pet the watchdog during the walk and each entry is far cheaper
+// (poll-until-ready instead of two blind 100 ms delays).
+static const uint32_t ADCS_FILE_POINTER_TIMEOUT_MS = 120000;
+
+// Same value as the firmware's ADCS_FILE_DOWNLOAD_TIMEOUT_MS (adcs_internal_drivers.h).
+static const uint32_t ADCS_FILE_DOWNLOAD_TIMEOUT_MS = 290000;
+
+// Upper bound on entries in the ADCS SD card's file list. Only a backstop against a file list that
+// never terminates; the real limit is ADCS_FILE_POINTER_TIMEOUT_MS.
+static const uint16_t ADCS_MAX_FILE_LIST_ENTRIES = 4096;
+
+// After a Reset/Advance File List Read Pointer command, wait this long before the first File
+// Information read, so that the ADCS has started repopulating the frame (and thus has raised its
+// Busy Updating flag) before we look at it.
+static const uint32_t ADCS_FILE_POINTER_SETTLE_MS = 50;
+
+// Busy Updating polling parameters (Firmware Reference Manual Section 6.2.1).
+static const uint32_t ADCS_FILE_INFO_POLL_INTERVAL_MS = 20;
+static const uint16_t ADCS_FILE_INFO_POLL_MAX_TRIES = 100; // => up to ~2 s per entry.
+
+// If the entry we read back is identical to the previous one, re-read this many times (the frame
+// may simply be stale) before concluding that the read pointer did not advance.
+static const uint8_t ADCS_STALE_ENTRY_MAX_REREADS = 5;
+
+// How many times to re-issue Advance File List Read Pointer for a single step before giving up.
+static const uint8_t ADCS_ADVANCE_MAX_TRIES = 3;
+
+// Minimum interval between watchdog pets, measured against the last pet by *anyone* (see
+// pet_watchdog_if_due()). The IWDG is in window mode (Window=1975, Reload=2000), so petting
+// sooner than ~200 ms after the previous pet triggers a reset. 1000 ms is a safe margin above
+// that, and well under the ~16 s timeout.
+static const uint32_t WATCHDOG_PET_INTERVAL_MS = 1000;
+
+// How old the last watchdog pet must be before the blob calls a firmware function that pets the
+// watchdog itself shortly after being entered. It only has to exceed the IWDG window (~200 ms at
+// the LSI's nominal 32 kHz, ~250 ms at the low end of the LSI's tolerance), and waiting costs
+// nothing against the ~16 s timeout, so this is set well clear of it.
+static const uint32_t WATCHDOG_WINDOW_CLEAR_MS = 500;
+
+// ADCS file download block size, in bytes (20 bytes/packet * 1024 packets).
+static const uint32_t ADCS_DOWNLOAD_BLOCK_SIZE_BYTES = 20480;
 
 // lfs_file_open/size/seek/read/write/close are already declared in lfs.h;
 // their definitions are resolved against the firmware ELF at link time.
@@ -113,14 +264,176 @@ static inline uint32_t TIME_uptime_ms() {
 }
 
 
-/// @brief Find the file at the highest index in the ADCS SD card's file list.
+// MARK: Watchdog
+
+/// @brief Pet the STM32 watchdog, but only if enough time has passed since the last pet.
+/// @note The blob runs inside a telecommand, and `TASK_execute_telecommands` (the only nominal
+///     petter) does not get to run again until the telecommand returns. Anything in here that can
+///     take more than ~16 s must therefore pet the watchdog itself.
+/// @note "Last pet" is the firmware's `STM32_watchdog_uptime_last_pet_ms`, not a blob-local
+///     timestamp, because the IWDG's window mode makes an *early* pet a reset just as surely as a
+///     late one, and the firmware functions this blob calls pet the watchdog themselves. A
+///     blob-local timestamp doesn't see those pets, so it can re-pet within the window and reset
+///     the OBC. This also means the blob keeps no pet state of its own, which suits the ban on
+///     globals (the Makefile rejects a non-empty .data/.bss).
+static void pet_watchdog_if_due(void) {
+    const uint32_t last_pet_ms = STM32_watchdog_uptime_last_pet_ms;
+    if ((TIME_uptime_ms() - last_pet_ms) >= WATCHDOG_PET_INTERVAL_MS) {
+        STM32_pet_watchdog();
+    }
+}
+
+/// @brief Block until the last watchdog pet is at least WATCHDOG_WINDOW_CLEAR_MS old.
+/// @note Call this instead of pet_watchdog_if_due() before entering firmware code that pets the
+///     watchdog itself soon after being entered. The IWDG's window makes a too-early pet a reset,
+///     and the pet that trips it is the firmware's, which we cannot rate-limit -- so the only
+///     thing the blob can do is make sure the window is already open before handing control over.
+/// @note Never waits longer than WATCHDOG_WINDOW_CLEAR_MS, and typically doesn't wait at all,
+///     since the previous block's download takes seconds.
+static void wait_until_watchdog_window_open(void) {
+    while ((TIME_uptime_ms() - STM32_watchdog_uptime_last_pet_ms) < WATCHDOG_WINDOW_CLEAR_MS) {
+        HAL_Delay(10);
+    }
+}
+
+// MARK: ADCS File List Walk
+
+/// @brief Check whether a file_info entry is the all-zero end-of-list sentinel.
+/// @note Per Firmware Reference Manual Section 6.2.1: "If the populated file information comes
+///     back as all zeroes, the end of the file list has been reached."
+static bool is_end_of_file_list(const ADCS_file_info_struct_t *file_info) {
+    return (file_info->file_crc16 == 0)
+        && (file_info->file_date_time_msdos == 0)
+        && (file_info->file_size == 0);
+}
+
+/// @brief Check whether two file_info entries describe the same file.
+/// @note Per the Firmware Reference Manual, a file is uniquely identified by its File Type and
+///     File Counter, so those two fields alone are sufficient.
+static bool is_same_file(const ADCS_file_info_struct_t *a, const ADCS_file_info_struct_t *b) {
+    return (a->file_type == b->file_type) && (a->file_counter == b->file_counter);
+}
+
+/// @brief Read the File Information telemetry frame, polling until its Busy Updating flag clears.
+/// @param[out] out_file_info Set to the (now valid) file info, on success.
+/// @return BLOB_ERR_OK on success, BLOB_ERR_BUSY_UPDATING_NEVER_CLEARED if Busy Updating never
+///     cleared (e.g. ADCS SD logging is still running and writing to this file), otherwise the
+///     non-OK ADCS error code from the failed command.
+/// @note This is the core fix: Firmware Reference Manual Section 6.2.1 requires polling here, and
+///     reading the frame early returns zeroed/partial data that looks like the end-of-list sentinel.
+static ADCS_latest_file_blob_error_enum_t read_file_info_when_ready(
+    ADCS_file_info_struct_t *out_file_info
+) {
+    for (uint16_t try_num = 0; try_num < ADCS_FILE_INFO_POLL_MAX_TRIES; try_num++) {
+        const uint8_t file_info_status = ADCS_get_file_info_telemetry(out_file_info);
+        if (file_info_status != 0) {
+            return (ADCS_latest_file_blob_error_enum_t)file_info_status;
+        }
+
+        if (!out_file_info->busy_updating) {
+            return BLOB_ERR_OK; // The populated file information is now valid.
+        }
+
+        HAL_Delay(ADCS_FILE_INFO_POLL_INTERVAL_MS);
+        pet_watchdog_if_due();
+    }
+
+    return BLOB_ERR_BUSY_UPDATING_NEVER_CLEARED;
+}
+
+/// @brief Send an Advance File List Read Pointer command, tolerating a failed command whose ACK is
+///     nonetheless clean.
+/// @return BLOB_ERR_OK on success, otherwise the ADCS ACK's error flag.
+static ADCS_latest_file_blob_error_enum_t advance_file_list_read_pointer_checked() {
+    const uint8_t advance_status = ADCS_advance_file_list_read_pointer();
+    if (advance_status != 0) {
+        // Incantation: If the command fails but ACK succeeds, allow continuing.
+        // (Separate ACK, to avoid interference from the EPS.)
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return (ADCS_latest_file_blob_error_enum_t)ack_status.error_flag;
+        }
+    }
+    return BLOB_ERR_OK;
+}
+
+/// @brief Advance the file list read pointer by one, and read back the entry it now points at.
+/// @param prev_file_info The entry the pointer was on before this call.
+/// @param[out] out_file_info Set to the next entry (or the all-zero end-of-list sentinel).
+/// @param[in,out] out_advance_retries Incremented each time the Advance command had to be re-issued.
+/// @return BLOB_ERR_OK on success, BLOB_ERR_READ_POINTER_STUCK if the read pointer would not
+///     advance off `prev_file_info`, otherwise the non-OK error code from the underlying ADCS
+///     command that failed.
+/// @note Handles the "pointer didn't advance" symptom: if we read back the same file we were
+///     already on, we first assume the telemetry frame is merely stale and re-read a few times;
+///     only if the entry is still unchanged do we re-issue the Advance command.
+static ADCS_latest_file_blob_error_enum_t advance_and_read_next(
+    const ADCS_file_info_struct_t *prev_file_info, ADCS_file_info_struct_t *out_file_info,
+    uint16_t *out_advance_retries
+) {
+    for (uint8_t advance_try = 0; advance_try < ADCS_ADVANCE_MAX_TRIES; advance_try++) {
+        if (advance_try > 0) {
+            (*out_advance_retries)++;
+        }
+
+        const ADCS_latest_file_blob_error_enum_t advance_status = advance_file_list_read_pointer_checked();
+        if (advance_status != BLOB_ERR_OK) {
+            return advance_status;
+        }
+
+        // Give the ADCS time to start repopulating the frame (and raise Busy Updating), so that
+        // read_file_info_when_ready() below doesn't just see the pre-advance contents.
+        HAL_Delay(ADCS_FILE_POINTER_SETTLE_MS);
+        pet_watchdog_if_due();
+
+        for (uint8_t reread = 0; reread < ADCS_STALE_ENTRY_MAX_REREADS; reread++) {
+            const ADCS_latest_file_blob_error_enum_t read_status = read_file_info_when_ready(
+                out_file_info
+            );
+            if (read_status != BLOB_ERR_OK) {
+                return read_status;
+            }
+
+            if (is_end_of_file_list(out_file_info) || !is_same_file(out_file_info, prev_file_info)) {
+                return BLOB_ERR_OK; // The pointer moved (or we reached the end of the list).
+            }
+
+            // Same file as before: probably a stale frame. Wait a little and look again.
+            HAL_Delay(ADCS_FILE_POINTER_SETTLE_MS);
+            pet_watchdog_if_due();
+        }
+
+        // Still the same file after several re-reads; the Advance command likely didn't take.
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "%s - File list read pointer did not advance off (type=%d, counter=%d); retrying. (%s)",
+            BLOB_NAME, prev_file_info->file_type, prev_file_info->file_counter,
+            adcs_latest_file_blob_error_to_str(BLOB_ERR_READ_POINTER_STUCK)
+        );
+    }
+
+    return BLOB_ERR_READ_POINTER_STUCK;
+}
+
+/// @brief Find the file at the highest index in the ADCS SD card's file list, walking the list once.
 /// @param[out] out_file_info Set to the file_info of the latest (highest-index) file, on success.
 /// @param[out] out_index Set to the index (starting at 0) of the latest file, on success.
-/// @return 0 on success (at least one file exists), 91 if the SD card's file list is empty,
-///     otherwise the non-zero error code from the underlying ADCS command that failed.
-///     ADCS error codes: 1 (Invalid TC), 2 (Incorrect Length), 3 (Incorrect Parameter), 4 (CRC check failed).
-static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint16_t *out_index) {
+/// @param[out] out_advance_retries Set to the number of times an Advance command had to be
+///     re-issued. Non-zero means `out_index` may under-count (a retried Advance can step twice),
+///     but the file itself is still correct, since it is identified by type/counter/CRC16.
+/// @return BLOB_ERR_OK on success (at least one file exists), BLOB_ERR_FILE_LIST_EMPTY if the SD
+///     card's file list is empty, BLOB_ERR_BUSY_UPDATING_NEVER_CLEARED if a Busy Updating flag
+///     never cleared, BLOB_ERR_READ_POINTER_STUCK if the read pointer got stuck,
+///     BLOB_ERR_FILE_LIST_WALK_TIMEOUT if the walk timed out before reaching the end of the list,
+///     otherwise the non-OK ADCS error code from the underlying command that failed.
+/// @note A timeout is a hard error rather than "use the best file so far", because the whole point
+///     of this blob is that the file it downlinks is definitely the last one.
+static ADCS_latest_file_blob_error_enum_t find_latest_sd_file(
+    ADCS_file_info_struct_t *out_file_info, uint16_t *out_index, uint16_t *out_advance_retries
+) {
     const uint32_t function_start_time = TIME_uptime_ms();
+    *out_advance_retries = 0;
 
     const uint8_t reset_status = ADCS_reset_file_list_read_pointer();
     HAL_Delay(200);
@@ -129,54 +442,53 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
         ADCS_cmd_ack_struct_t ack_status;
         ADCS_cmd_ack(&ack_status);
         if (ack_status.error_flag != 0) {
-            return ack_status.error_flag;
+            return (ADCS_latest_file_blob_error_enum_t)ack_status.error_flag;
         }
     }
 
-    bool found_any = false;
-    uint16_t latest_index = 0;
+    // Read the first entry. Note that Reset File List Read Pointer leaves the pointer *on* the
+    // first file, so this read must happen before any Advance command.
+    ADCS_file_info_struct_t file_info;
+    const ADCS_latest_file_blob_error_enum_t first_read_status = read_file_info_when_ready(
+        &file_info
+    );
+    if (first_read_status != BLOB_ERR_OK) {
+        return first_read_status;
+    }
+    if (is_end_of_file_list(&file_info)) {
+        return BLOB_ERR_FILE_LIST_EMPTY;
+    }
 
-    // Walk the file list (bounded to 256 entries, matching ADCS_save_sd_file_to_lfs_by_index's limit)
-    // until we hit the all-zero sentinel that marks the end of the list.
-    for (uint16_t index = 0; index < 256; index++) {
-        ADCS_file_info_struct_t file_info;
-        const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
-        HAL_Delay(100);
-        if (file_info_status != 0) {
-            return file_info_status;
-        }
-
-        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
-            // All-zero file_info means we've reached the end of the file list.
-            break;
-        }
-
+    // Walk the rest of the list, keeping the most recent entry, until we hit the all-zero sentinel.
+    for (uint16_t index = 0; index < ADCS_MAX_FILE_LIST_ENTRIES; index++) {
         *out_file_info = file_info; // Copy struct into the caller's buffer.
-        latest_index = index;
-        found_any = true;
+        *out_index = index;
 
-        if (TIME_uptime_ms() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
-            break; // Timed out; use the latest file found so far.
+        pet_watchdog_if_due();
+
+        if ((TIME_uptime_ms() - function_start_time) > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            // Timed out; we can't prove we found the last file, so don't guess.
+            return BLOB_ERR_FILE_LIST_WALK_TIMEOUT;
         }
 
-        const uint8_t advance_status = ADCS_advance_file_list_read_pointer();
-        HAL_Delay(100);
-        if (advance_status != 0) {
-            ADCS_cmd_ack_struct_t ack_status;
-            ADCS_cmd_ack(&ack_status);
-            if (ack_status.error_flag != 0) {
-                return ack_status.error_flag;
-            }
+        const ADCS_latest_file_blob_error_enum_t advance_status = advance_and_read_next(
+            out_file_info, &file_info, out_advance_retries
+        );
+        if (advance_status != BLOB_ERR_OK) {
+            return advance_status;
+        }
+
+        if (is_end_of_file_list(&file_info)) {
+            // End of the file list: *out_file_info / *out_index hold the last real file.
+            return BLOB_ERR_OK;
         }
     }
 
-    if (!found_any) {
-        return 91; // No files found on the ADCS SD card.
-    }
-
-    *out_index = latest_index;
-    return 0;
+    // Ran off the end of the bound without finding the end-of-list sentinel.
+    return BLOB_ERR_FILE_LIST_WALK_TIMEOUT;
 }
+
+// MARK: ADCS File Download
 
 /// @brief Build the LittleFS path that `ADCS_save_sd_file_to_lfs_by_{index,checksum}()` uses/would use for a
 ///     given file, matching its naming convention exactly (see adcs_commands.c).
@@ -184,8 +496,9 @@ static uint8_t find_latest_sd_file(ADCS_file_info_struct_t *out_file_info, uint1
 /// @param file_crc16 The file's CRC16, as reported by ADCS_get_file_info_telemetry().
 /// @param dest Destination buffer (at least 17 bytes, matching the firmware's `filename_string`).
 /// @param dest_size Size of `dest`.
-/// @return 0 on success, 92 if `file_type` isn't a recognized/downloadable type.
-static uint8_t build_adcs_lfs_filename(
+/// @return BLOB_ERR_OK on success, BLOB_ERR_UNKNOWN_FILE_TYPE if `file_type` isn't a
+///     recognized/downloadable type.
+static ADCS_latest_file_blob_error_enum_t build_adcs_lfs_filename(
     ADCS_file_type_enum_t file_type, uint16_t file_crc16,
     char *dest, uint16_t dest_size
 ) {
@@ -203,29 +516,109 @@ static uint8_t build_adcs_lfs_filename(
             snprintf(dest, dest_size, "ADCS/index_file");
             break;
         default:
-            return 92; // Unrecognized/undownloadable file type.
+            return BLOB_ERR_UNKNOWN_FILE_TYPE;
     }
-    return 0;
+    return BLOB_ERR_OK;
 }
 
-/// @brief Check whether a regular file already exists in LittleFS at the given path.
-/// @param file_path Path to check.
-/// @return 1 if the file exists, 0 if it does not, negative on an LFS error other than "not found".
-static int8_t LFS_does_file_exist(const char *file_path) {
-    lfs_file_t file;
-    const int open_result = lfs_file_open(&LFS_filesystem, &file, file_path, LFS_O_RDONLY);
-    if (open_result == LFS_ERR_NOENT) {
-        return 0;
+/// @brief Copy a file from the ADCS SD card into LittleFS, without touching the file list read pointer.
+/// @param file_info The file to download, as returned by find_latest_sd_file().
+/// @param dest_file_path LittleFS path to write to; any existing file is overwritten.
+/// @return BLOB_ERR_OK on success, BLOB_ERR_LFS_NOT_MOUNTED if LittleFS isn't mounted,
+///     BLOB_ERR_ADCS_DOWNLOAD_TIMEOUT on download timeout, negative on an LFS error, otherwise the
+///     non-zero error code from ADCS_load_sd_file_block_to_filesystem().
+/// @note Returns int16_t rather than ADCS_latest_file_blob_error_enum_t because it also passes
+///     through negative LittleFS error codes and the bit-packed error codes from
+///     ADCS_load_sd_file_block_to_filesystem(), neither of which live in the blob's error enum.
+/// @note This function deliberately never pets the watchdog. Each
+///     ADCS_load_sd_file_block_to_filesystem() call pets at least once (adcs_commands.c:1332),
+///     and a block takes ~3.5 s, comfortably inside the ~16 s timeout.
+/// @note This replaces the call to `ADCS_save_sd_file_to_lfs_by_checksum()` that the previous
+///     version of this blob made. That function re-walks the entire file list to re-find the file
+///     we *just* found. `ADCS_load_sd_file_block_to_filesystem()` selects the file by
+///     (file_type, file_counter) out of `file_info`, so the second walk buys nothing.
+static int16_t download_adcs_file_to_lfs(
+    const ADCS_file_info_struct_t *file_info, const char *dest_file_path
+) {
+    const uint32_t function_start_time = TIME_uptime_ms();
+
+    if (!LFS_is_lfs_mounted) {
+        return BLOB_ERR_LFS_NOT_MOUNTED;
     }
+
+    lfs_file_t file;
+    const int open_result = lfs_file_open(
+        &LFS_filesystem, &file, dest_file_path, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
+    );
     if (open_result < 0) {
         return open_result;
     }
 
+    // Integer ceiling division, to avoid pulling floating-point math into the blob.
+    const uint32_t total_blocks = (
+        (file_info->file_size + ADCS_DOWNLOAD_BLOCK_SIZE_BYTES - 1) / ADCS_DOWNLOAD_BLOCK_SIZE_BYTES
+    );
+
+    int16_t download_err = 0;
+    for (uint32_t current_block = 0; current_block < total_blocks; current_block++) {
+        // ADCS_load_sd_file_block_to_filesystem() pets the watchdog ~100-150 ms after it is
+        // entered, so the blob must not pet here; it must only ensure the IWDG window is open by
+        // then. The driver's pets are also what keeps the watchdog fed during the block itself.
+        wait_until_watchdog_window_open();
+
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "%s - Loading block %lu/%lu from ADCS to LittleFS.",
+            BLOB_NAME, current_block + 1, total_blocks
+        );
+
+        const int16_t load_block_status = ADCS_load_sd_file_block_to_filesystem(
+            *file_info, (uint8_t)current_block, &file
+        );
+        if (load_block_status != 0) {
+            download_err = load_block_status;
+            break; // Fall through to close the file.
+        }
+
+        if ((TIME_uptime_ms() - function_start_time) > ADCS_FILE_DOWNLOAD_TIMEOUT_MS) {
+            download_err = BLOB_ERR_ADCS_DOWNLOAD_TIMEOUT;
+            break;
+        }
+    }
+
+    // The file isn't updated in LittleFS until it's closed, so always close it.
     const int close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (download_err != 0) {
+        return download_err;
+    }
     if (close_result < 0) {
         return close_result;
     }
-    return 1;
+    return BLOB_ERR_OK;
+}
+
+// MARK: LittleFS Helpers
+
+/// @brief Get the size of a file in LittleFS, if it exists.
+/// @param file_path Path to check.
+/// @return The file's size in bytes (>= 0), LFS_ERR_NOENT if no such file exists, or another
+///     negative LFS error code.
+static int32_t LFS_file_size_if_exists(const char *file_path) {
+    lfs_file_t file;
+    const int open_result = lfs_file_open(&LFS_filesystem, &file, file_path, LFS_O_RDONLY);
+    if (open_result < 0) {
+        return open_result; // Includes LFS_ERR_NOENT, i.e. "the file isn't there".
+    }
+
+    const lfs_soff_t size_bytes = lfs_file_size(&LFS_filesystem, &file);
+    const int close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (size_bytes < 0) {
+        return size_bytes;
+    }
+    if (close_result < 0) {
+        return close_result;
+    }
+    return size_bytes;
 }
 
 /// @brief Computes a CRC16 checksum of a file in LittleFS, reading it in 256-byte chunks.
@@ -297,16 +690,18 @@ void GEN_byte_array_to_lower_hex_str(
 }
 
 
+// MARK: Bulk Downlink
+
 /// @brief Main operation in this blob.
-/// @param src_file_path 
-/// @param start_offset 
-/// @param byte_count 
-/// @return  
+/// @param src_file_path
+/// @param start_offset
+/// @param byte_count
+/// @return
 /// @details Implementation is like this:
 /// The goal here is not to re-implement `COMMS_bulk_file_downlink_start()`, but rather to
 /// set the state to trick that function into first closing the open file (if applicable), and
 /// *then* doing its normal thing (which is 100% correct).
-/// 
+///
 /// We are fixing a bug in the "end of bulk downlink" logic by a hack at the start of the next
 /// downlink, basically.
 static int8_t bulk_downlink_start_fixed(
@@ -342,16 +737,44 @@ static int8_t bulk_downlink_start_fixed(
 }
 
 
+/// @brief Format an MS-DOS packed date/time (the ADCS's `file_date_time_msdos` field) as an
+///     ISO-8601-ish "YYYY-MM-DD hh:mm:ss" string.
+/// @param file_date_time_msdos The packed value, straight out of ADCS_get_file_info_telemetry().
+/// @param dest Destination buffer; must be at least 20 bytes.
+/// @param dest_size Size of `dest`.
+/// @note Bit layout is from Firmware Reference Manual [V7.5] Section 6.2.2, and matches the
+///     decoding that `ADCS_get_sd_card_file_list()` does in adcs_commands.c.
+/// @note This is the ADCS's own clock, which is not necessarily synced to the OBC's clock.
+static void format_msdos_datetime(
+    uint32_t file_date_time_msdos, char *dest, uint16_t dest_size
+) {
+    const uint16_t seconds = (file_date_time_msdos & 0x1f) << 1; // 5bits - 32 (2-second resolution)
+    const uint16_t minutes = (file_date_time_msdos >> 5) & 0x3f; // 6bits - 64
+    const uint16_t hour = (file_date_time_msdos >> 11) & 0x1f; // 5bits - 32
+    const uint16_t day = (file_date_time_msdos >> 16) & 0x1f; // 5bits - 32
+    const uint16_t month = (file_date_time_msdos >> 21) & 0x0f; // 4bits - 16
+    const uint16_t year = (file_date_time_msdos >> 25) + 1980; // 7bits - 128 (1980 to 21..)
+
+    snprintf(
+        dest, dest_size, "%04d-%02d-%02d %02d:%02d:%02d",
+        year, month, day, hour, minutes, seconds
+    );
+}
+
+
 /// @brief Fill the response output buffer with info about the downlinked file (very helpful for
 ///     re-assembling/decoding the file from the downlinked bulk-transfer packets).
 /// @param src_file_path Path, in LittleFS, of the file that was downlinked.
-/// @param adcs_crc16 The file's CRC16, as reported by the ADCS (from ADCS_get_file_info_telemetry()).
 /// @param sd_card_index The file's index in the ADCS SD card's file list, at the time it was found.
+/// @param advance_retries How many Advance File List Read Pointer commands had to be re-issued
+///     during the walk. Non-zero means `sd_card_index` may under-count; the file is still correct.
+/// @param file_date_time_msdos The file's MS-DOS packed date/time, as reported by the ADCS.
 /// @param response_output_buf
 /// @param response_output_buf_len
 /// @return 0 on success, non-zero on error.
 static int8_t fill_response_output_buffer(
-    const char *src_file_path, uint16_t sd_card_index,
+    const char *src_file_path, uint16_t sd_card_index, uint16_t advance_retries,
+    uint32_t file_date_time_msdos,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Prepare the SHA256 destination buffer.
@@ -386,20 +809,29 @@ static int8_t fill_response_output_buffer(
         return crc16_result;
     }
 
+    // Decode the ADCS's MS-DOS packed date/time for the file.
+    char datetime_str[20]; // "YYYY-MM-DD hh:mm:ss" + null terminator.
+    format_msdos_datetime(file_date_time_msdos, datetime_str, sizeof(datetime_str));
+
     // Format like JSON.
     snprintf(
         response_output_buf, response_output_buf_len,
-        "{\"action\":\"%s\",\"file\":\"%s\",\"file_size\":%ld,\"crc16\":\"0x%x\",\"sha256\":\"%s\",\"sd_card_index\":%u}",
+        "{\"action\":\"%s\",\"file\":\"%s\",\"file_size\":%ld,\"crc16\":\"0x%x\",\"sha256\":\"%s\","
+        "\"datetime\":\"%s\",\"sd_card_index\":%u,\"advance_retries\":%u}",
         BLOB_NAME,
         src_file_path,
         file_size_bytes,
         crc16_calc,
         hex_hash_str,
-        sd_card_index
+        datetime_str,
+        sd_card_index,
+        advance_retries
     );
     return 0;
 }
 
+
+// MARK: Main
 
 __attribute__((used, section(".text.entry")))
 uint8_t blob_main(
@@ -415,6 +847,9 @@ uint8_t blob_main(
     );
 
     // Step 0: Stop the ADCS SD logging.
+    // Best-effort only: this fails routinely when logging wasn't running in the first place
+    // (nothing to stop), which is not a reason to give up on fetching the file. The failure must
+    // not be allowed to leak into Step 1 either -- see the ACK drain below.
     {
         const uint8_t sd_log_config[10] = {0,0,0,0,0,0,0,0,0,0};
         const uint8_t *sd_log_config_ptr[1] = {sd_log_config};
@@ -428,80 +863,124 @@ uint8_t blob_main(
 
         HAL_Delay(250);
 
+        // ADCS_set_sd_log_config() can poll the ACK up to ADCS_PROCESSED_TIMEOUT_TRIES (1000)
+        // times without petting, so make sure the watchdog is fed before moving on. Safe to do
+        // here: nothing in Step 1 pets, so this can't land inside the IWDG window.
+        pet_watchdog_if_due();
+
         if (stop_status != 0) {
             LOG_message(
-                LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "%s - Error stopping ADCS SD logging: %d",
+                LOG_SYSTEM_ADCS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                "%s: Couldn't stop ADCS SD logging (%d). Continuing; this is expected "
+                "if logging was already stopped.",
                 BLOB_NAME,
                 stop_status
             );
+
+            // Drain the Telecommand Acknowledge frame, which still describes *this* failed
+            // command. Step 1's "command failed but ACK is clean" incantations read that frame
+            // after their own command, so a stale error flag left here would be misattributed to
+            // the file-list commands and abort the walk with a bogus ADCS error code.
+            ADCS_cmd_ack_struct_t stale_ack;
+            ADCS_cmd_ack(&stale_ack);
+
             // Steamroll on error.
         }
     }
 
-    // Step 1: find the latest (highest-index) file on the ADCS SD card.
+    // Step 1: find the latest (highest-index) file on the ADCS SD card. This is the only walk of
+    // the ADCS file list that this blob performs.
+    // Note that find_latest_sd_file() polls each entry's Busy Updating flag until it clears, so
+    // there's no separate "is the latest file still busy_updating?" check to make here.
     ADCS_file_info_struct_t latest_file_info;
-    uint16_t latest_file_index;
-    const uint8_t find_latest_err = find_latest_sd_file(&latest_file_info, &latest_file_index);
-    if (find_latest_err != 0) {
+    uint16_t latest_file_index = 0;
+    uint16_t advance_retries = 0;
+    const ADCS_latest_file_blob_error_enum_t find_latest_err = find_latest_sd_file(
+        &latest_file_info, &latest_file_index, &advance_retries
+    );
+    if (find_latest_err != BLOB_ERR_OK) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: find_latest_sd_file() -> %d.",
-            BLOB_NAME, find_latest_err
+            "%s error: find_latest_sd_file() -> %d (%s).",
+            BLOB_NAME, find_latest_err, adcs_latest_file_blob_error_to_str(find_latest_err)
         );
         return find_latest_err;
     }
 
-    if (latest_file_info.busy_updating) {
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: latest file (index %u) is still busy_updating.",
-            BLOB_NAME, latest_file_index
-        );
-        return 96;
-    }
+    LOG_message(
+        LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "%s: Latest ADCS SD file: index=%u, type=%d, counter=%d, size=%lu, crc16=0x%x (advance_retries=%u).",
+        BLOB_NAME, latest_file_index, latest_file_info.file_type, latest_file_info.file_counter,
+        latest_file_info.file_size, latest_file_info.file_crc16, advance_retries
+    );
 
     // Step 2: figure out the LittleFS path this file would live at, and check whether it's
     // already been transferred from the ADCS SD card.
     char lfs_file_path[LFS_MAX_PATH_LENGTH];
-    const uint8_t build_filename_err = build_adcs_lfs_filename(
+    const ADCS_latest_file_blob_error_enum_t build_filename_err = build_adcs_lfs_filename(
         latest_file_info.file_type, latest_file_info.file_crc16,
         lfs_file_path, sizeof(lfs_file_path)
     );
-    if (build_filename_err != 0) {
+    if (build_filename_err != BLOB_ERR_OK) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: unrecognized file_type %d for latest file (index %u).",
-            BLOB_NAME, latest_file_info.file_type, latest_file_index
+            "%s error: unrecognized file_type %d for latest file (index %u). (%s)",
+            BLOB_NAME, latest_file_info.file_type, latest_file_index,
+            adcs_latest_file_blob_error_to_str(build_filename_err)
         );
         return build_filename_err;
     }
 
-    const int8_t exists_result = LFS_does_file_exist(lfs_file_path);
-    if (exists_result < 0) {
+    const int32_t existing_size_bytes = LFS_file_size_if_exists(lfs_file_path);
+    if ((existing_size_bytes < 0) && (existing_size_bytes != LFS_ERR_NOENT)) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: LFS_does_file_exist('%s') -> %d.",
-            BLOB_NAME, lfs_file_path, exists_result
+            "%s error: LFS_file_size_if_exists('%s') -> %ld (%s).",
+            BLOB_NAME, lfs_file_path, existing_size_bytes,
+            adcs_latest_file_blob_error_to_str(BLOB_ERR_LFS_EXISTS_CHECK_FAILED)
         );
-        return 93;
+        return BLOB_ERR_LFS_EXISTS_CHECK_FAILED;
     }
-    const bool already_transferred = (exists_result == 1);
 
-    // Step 3: transfer the file from the ADCS SD card to LittleFS, unless it's already there.
-    // Checksum validation guards against the SD card's file list shifting between our
-    // find_latest_sd_file() call above and this transfer (e.g. a file being deleted/added).
+    // The destination filename embeds the file's CRC16, so a file at this path is the right file,
+    // but it is not necessarily a *complete* copy of it: a previous run that was interrupted
+    // partway through the transfer (reboot, ADCS error, download timeout) leaves a short file
+    // behind. Only skip the transfer if the size on LittleFS matches the size the ADCS reports.
+    bool already_transferred = false;
+    if (existing_size_bytes >= 0) {
+        if (latest_file_info.file_type == ADCS_FILE_TYPE_INDEX) {
+            // There's no way to ask the ADCS how large the index file is (see the hole-map
+            // handling in ADCS_load_sd_file_block_to_filesystem()), so there's nothing
+            // trustworthy to compare against; keep the existing copy.
+            already_transferred = true;
+        }
+        else if ((uint32_t)existing_size_bytes == latest_file_info.file_size) {
+            already_transferred = true;
+        }
+        else {
+            LOG_message(
+                LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "%s: '%s' exists but is %ld bytes; ADCS reports %lu. Re-transferring.",
+                BLOB_NAME, lfs_file_path, existing_size_bytes, latest_file_info.file_size
+            );
+        }
+    }
+
+    // Step 3: transfer the file from the ADCS SD card to LittleFS, unless a complete copy is
+    // already there. download_adcs_file_to_lfs() opens with LFS_O_TRUNC, so a short file left by
+    // an interrupted earlier run is overwritten rather than appended to.
     if (!already_transferred) {
-        const int16_t transfer_err = ADCS_save_sd_file_to_lfs_by_checksum(
-            false, latest_file_info.file_crc16
+        const int16_t transfer_err = download_adcs_file_to_lfs(
+            &latest_file_info, lfs_file_path
         );
         if (transfer_err != 0) {
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: ADCS_save_sd_file_to_lfs_by_checksum(index=%u) -> %d.",
-                BLOB_NAME, latest_file_index, transfer_err
+                "%s error: download_adcs_file_to_lfs('%s', index=%u) -> %d (%s).",
+                BLOB_NAME, lfs_file_path, latest_file_index, transfer_err,
+                adcs_latest_file_blob_error_to_str(BLOB_ERR_FILE_TRANSFER_FAILED)
             );
-            return 94;
+            return BLOB_ERR_FILE_TRANSFER_FAILED;
         }
     }
 
@@ -510,25 +989,28 @@ uint8_t blob_main(
     if (start_bulk_err != 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: bulk_downlink_start_fixed('%s') -> %d.",
-            BLOB_NAME, lfs_file_path, start_bulk_err
+            "%s error: bulk_downlink_start_fixed('%s') -> %d (%s).",
+            BLOB_NAME, lfs_file_path, start_bulk_err,
+            adcs_latest_file_blob_error_to_str(BLOB_ERR_BULK_DOWNLINK_START_FAILED)
         );
-        return 20;
+        return BLOB_ERR_BULK_DOWNLINK_START_FAILED;
     }
 
     // Send a telecommand response with the file name, size, hash, and crc16.
     const int8_t resp_err = fill_response_output_buffer(
-        lfs_file_path, latest_file_index,
+        lfs_file_path, latest_file_index, advance_retries,
+        latest_file_info.file_date_time_msdos,
         response_buf, response_buf_len
     );
     if (resp_err != 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s: downlink of '%s' started, but building the response failed. Error: %d.",
-            BLOB_NAME, lfs_file_path, resp_err
+            "%s: downlink of '%s' started, but building the response failed. Error: %d (%s).",
+            BLOB_NAME, lfs_file_path, resp_err,
+            adcs_latest_file_blob_error_to_str(BLOB_ERR_RESPONSE_BUILD_FAILED)
         );
-        return 10;
+        return BLOB_ERR_RESPONSE_BUILD_FAILED;
     }
 
-    return 0;
+    return BLOB_ERR_OK;
 }
