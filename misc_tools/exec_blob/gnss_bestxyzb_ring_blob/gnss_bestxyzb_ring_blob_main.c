@@ -1702,6 +1702,21 @@ static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent
 }
 
 
+/// @brief Common tail of every failure exit that won't reschedule: turn the GNSS off (unless
+///     NO_EPS_CTRL), write "<blob> error: <ERR>. Not rescheduling. <GNSS power><cancel msg>" to
+///     the response, and hand back `err` for blob_main() to return.
+static uint8_t fail_without_rescheduling(
+    GNSS_ring_blob_error_enum_t err, bool no_eps_ctrl, const char *cancel_msg,
+    char *response_buf, unsigned short response_buf_len
+) {
+    const char *shed_msg = shed_gnss_power_before_exit(no_eps_ctrl);
+    snprintf(
+        response_buf, response_buf_len, "%s error: %s. Not rescheduling.%s%s",
+        BLOB_NAME, gnss_ring_blob_error_to_str(err), shed_msg, cancel_msg
+    );
+    return err;
+}
+
 // MARK: Main
 
 __attribute__((used, section(".text.entry")))
@@ -1735,14 +1750,9 @@ uint8_t blob_main(
     const bool flag_track_mpi = has_flag(arg2_flags, "TRACK_MPI");
     const bool flag_no_eps = has_flag(arg2_flags, "NO_EPS_CTRL");
 
-    // Every return below that doesn't reschedule calls shed_gnss_power_before_exit() first.
+    // Every failure return below goes through fail_without_rescheduling(), which sheds the GNSS.
     if (arg0_repeat_interval_ms[0] == '\0' || arg1_downlink_n[0] == '\0') {
-        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
-        snprintf(
-            response_buf, response_buf_len, "%s error: %s.%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_MISSING_ARGS), shed_msg
-        );
-        return BLOB_ERR_MISSING_ARGS;
+        return fail_without_rescheduling(BLOB_ERR_MISSING_ARGS, flag_no_eps, "", response_buf, response_buf_len);
     }
 
     bool arg0_ok, arg1_ok;
@@ -1750,12 +1760,7 @@ uint8_t blob_main(
     const int32_t downlink_n = parse_int(arg1_downlink_n, &arg1_ok);
 
     if (!arg0_ok || !arg1_ok) {
-        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
-        snprintf(
-            response_buf, response_buf_len, "%s error: %s.%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS), shed_msg
-        );
-        return BLOB_ERR_INVALID_INT_ARGS;
+        return fail_without_rescheduling(BLOB_ERR_INVALID_INT_ARGS, flag_no_eps, "", response_buf, response_buf_len);
     }
 
     // Protect the minimum repeat interval, same as the extended beacon blob: too low of a value
@@ -1769,14 +1774,7 @@ uint8_t blob_main(
     const int16_t cancel_result = cancel_other_scheduled_reruns_of_this_blob(get_current_executing_tcmd_agenda_slot_num());
     char cancel_msg[50];
     if (cancel_result < 0) {
-        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: %s (%d).%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED), cancel_result,
-            shed_msg
-        );
-        return BLOB_ERR_CANCEL_RERUNS_FAILED;
+        return fail_without_rescheduling(BLOB_ERR_CANCEL_RERUNS_FAILED, flag_no_eps, "", response_buf, response_buf_len);
     }
     else if (cancel_result > 0) {
         snprintf(cancel_msg, sizeof(cancel_msg), ", %d duplicate rerun(s) cancelled", cancel_result);
@@ -1808,13 +1806,7 @@ uint8_t blob_main(
     // filesystem is unmounted, so nothing tries to write to it.
     if (!LFS_is_lfs_mounted) {
         reset_to_fresh_state(true);
-        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: %s. Not rescheduling.%s%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_LFS_NOT_MOUNTED), shed_msg, cancel_msg
-        );
-        return BLOB_ERR_LFS_NOT_MOUNTED;
+        return fail_without_rescheduling(BLOB_ERR_LFS_NOT_MOUNTED, flag_no_eps, cancel_msg, response_buf, response_buf_len);
     }
 
     // Now that the state block is known-good, check whether the heap restarted under us since the
@@ -1843,13 +1835,7 @@ uint8_t blob_main(
     // Make sure "gnss_ring/" exists before anything tries to read or write inside it.
     const GNSS_ring_blob_error_enum_t mkdir_status = ensure_ring_dir_exists();
     if (mkdir_status != BLOB_ERR_OK) {
-        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: %s (%s).%s%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(mkdir_status), GNSS_RING_DIR, shed_msg, cancel_msg
-        );
-        return mkdir_status;
+        return fail_without_rescheduling(mkdir_status, flag_no_eps, cancel_msg, response_buf, response_buf_len);
     }
 
     // STOP: shed the GNSS, commit and close the ring file, wipe the cursor back to r0/0, and exit
@@ -1934,13 +1920,7 @@ uint8_t blob_main(
     const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
     if (reexec_result != BLOB_ERR_OK) {
         ring_close_open_file(); // No rerun is coming to close it; commit what we have.
-        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: %s.%s%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(reexec_result), shed_msg, cancel_msg
-        );
-        return reexec_result;
+        return fail_without_rescheduling(reexec_result, flag_no_eps, cancel_msg, response_buf, response_buf_len);
     }
 
     char downlink_msg[24];
