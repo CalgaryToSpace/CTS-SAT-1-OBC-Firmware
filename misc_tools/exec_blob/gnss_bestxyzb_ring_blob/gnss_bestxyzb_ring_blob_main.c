@@ -474,7 +474,7 @@ static uint16_t parse_token(
 }
 
 /// @brief Parse a string into an integer.
-/// @param s String to parse. Valid format: "<digits>". Underscores are ignored.
+/// @param s String to parse. Valid format: "<digits>" (digits only; no sign or separators).
 /// @returns Parsed integer, or 0 if invalid.
 static int32_t parse_int(const char *s, bool *ok) {
     uint32_t result = 0;
@@ -483,17 +483,12 @@ static int32_t parse_int(const char *s, bool *ok) {
     if (ok) *ok = false;
     if (!s || s[0] == '\0') return 0;
 
-    bool has_digits = false;
     while (s[i] != '\0') {
-        if (s[i] == '_') { i++; continue; } // skip delimiter
-
         if (s[i] < '0' || s[i] > '9') return 0; // invalid char
         result = result * 10 + (s[i] - '0');
-        has_digits = true;
         i++;
     }
 
-    if (!has_digits) return 0;
     if (ok) *ok = true;
     return (int32_t)result;
 }
