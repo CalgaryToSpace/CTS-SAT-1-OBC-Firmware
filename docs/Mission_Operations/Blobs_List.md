@@ -295,20 +295,18 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 //   randomly-chosen start lands near the end of the chosen file.
 // - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
 //     STOP       Cancel all pending reruns, turn the GNSS channel off (unless NO_EPS_CTRL), reset the
-//                ring (note 11), and exit. Nothing is latched: running the blob again afterwards
-//                starts a brand new campaign; the old one is not resumable.
+//                ring, and exit.
 //     FAKE       Local/bench test mode: never touch the GNSS UART, never run the power policy
 //                or a time sync, and synthesize samples from the hardware RNG instead. Everything
-//                else (LittleFS storage, downlink, rescheduling) behaves normally. Exception:
-//                exits that don't reschedule still turn the GNSS channel off (note 4).
+//                else (LittleFS storage, downlink, rescheduling) behaves normally.
 //     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode,
 //                regardless of sun/voltage -- except that the 14V hard floor still wins.
-//                (This flag only governs powering the GNSS *on*. Downlink is suppressed during
-//                MPI activity either way -- see note 8 below.)
+//                This flag only governs powering the GNSS *on*. Downlink is suppressed during
+//                MPI activity either way.
 //     NO_EPS_CTRL  Never command the EPS channel on or off; just sample if the channel happens to
-//                already be on. For bench use and for handing power control back to the ground.
-//                The EPS is still read every run (PDU housekeeping, for the channel state), and
-//                the EPS clock is still set on every time sync (note 10).
+//                already be on. For bench use and for handing power control back to EPS telecommands.
+//                The EPS is still queried every run (PDU housekeeping, for the channel state), and
+//                the EPS clock is still set on every time sync.
 ```
 
 ### Power Policy
@@ -370,31 +368,25 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
    downlinks existing samples and reschedules normally, so transient GNSS comms errors
    "self-heal" on the next run.
 7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
-   syncs) while firehose mode is active, but will resume after firehose mode is disabled.
+   syncs) while firehose mode is active, but will resume after GNSS firehose mode is disabled.
 8. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
    position type must not be NONE, and the X/Y/Z position bytes must not be all-zero.
 9. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
    sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
-   Nothing is lost: the stored samples go down on a later run, once the MPI is idle. This
-   applies whether or not the TRACK_MPI flag was passed.
- 10. Likewise, no GNSS time sync (OBC clock set) is performed while the MPI is in active
-    (sensing) mode, even if one is due: stepping the clock mid-campaign would corrupt the
+   This applies whether or not the TRACK_MPI flag was passed.
+10. Likewise, no GNSS time sync (OBC clock set) is performed while the MPI is in active
+    (sensing) mode, even if one is due: stepping the clock mid-campaign could corrupt the
     timestamps on the science data. The sync stays due and happens on the first run after the
     MPI goes idle. Also not gated behind the TRACK_MPI flag.
-11. The GNSS time sync runs on runs where the GNSS is on and sampled, at most once every
-    GNSS_TIME_SYNC_INTERVAL_MS (10 minutes); the first one after a reset happens immediately.
-    It's skipped in FAKE mode, in firehose mode, and while the MPI is active (note 9). Every
+11. The GNSS time sync executes when the GNSS is on and sampled, at most once every
+    GNSS_TIME_SYNC_INTERVAL_MS (10 minutes).
+    It's skipped in FAKE mode, in firehose mode, and while the MPI is active. Every
     successful sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time()) and to
     the ADCS (ADCS_synchronize_unix_time()), even under NO_EPS_CTRL.
-12. Five things mean "start over", and all five take the same path (reset_to_fresh_state()):
-    cold/garbage SRAM, a reboot caught by the heap canary, an unmounted filesystem, a ring file
-    handle the mounted filesystem doesn't recognise (remount/reformat without a reboot), and an
-    operator STOP. Each resets the write cursor to r0.bin record 0 and zeroes the counters, so
-    the ring refills from scratch. Only STOP actually has a live ring file to commit and close;
-    in the other four the handle is untrusted or no longer live, so its uncommitted records are
-    simply lost.
+12. On a STOP, reset, or serious anomaly, the blob's state is reset, and the collected samples
+    are discarded.
 13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE good
-    fixes), because the file being written is never downlinked. After any reset (note 11),
+    fixes), because the file being written is never downlinked. Thus, after any reset,
     runs report "sent=0/0" until then.
 14. A run that switches the GNSS channel on doesn't sample: the receiver gets
     GNSS_POWER_ON_SETTLE_MS (5s) to boot, and sampling starts on the next run. There's no
