@@ -25,7 +25,7 @@
 //     FAKE       Local/bench test mode: never touch the GNSS UART, never run the power policy
 //                or a time sync, and synthesize samples from the hardware RNG instead. Everything
 //                else (LittleFS storage, downlink, rescheduling) behaves normally. Exception:
-//                FAKE|STOP still commands the GNSS channel off, unless NO_EPS_CTRL is also given.
+//                exits that don't reschedule still turn the GNSS channel off (note 4).
 //     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode,
 //                regardless of sun/voltage -- except that the 14V hard floor still wins.
 //                (This flag only governs powering the GNSS *on*. Downlink is suppressed during
@@ -50,37 +50,35 @@
 //  4. SAFETY: The GNSS is never powered on while the battery is below
 //     GNSS_POWER_HARD_FLOOR_MV (14000mV), and is actively turned off if the battery falls below
 //     that, regardless of MPI state or sun.
-//  5. If a GNSS query fails for any reason, this run skips storing a new sample but still
+//  5. SAFETY: Any failure exit which results in non-rescheduling turns the GNSS channel off first,
+//     unless NO_EPS_CTRL is given.
+//  6. If a GNSS query fails for any reason, this run skips storing a new sample but still
 //     downlinks existing samples and reschedules normally, so transient GNSS comms errors
 //     "self-heal" on the next run.
-//  6. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
+//  7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
 //     syncs) while firehose mode is active, but will resume after firehose mode is disabled.
-//  7. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
+//  8. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
 //     position type must not be NONE, and the X/Y/Z position bytes must not be all-zero.
-//  8. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
+//  9. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
 //     sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
 //     Nothing is lost: the stored samples go down on a later run, once the MPI is idle. This
 //     applies whether or not the TRACK_MPI flag was passed.
-//  9. Likewise, no GNSS time sync (OBC clock set) is performed while the MPI is in active
+//  10. Likewise, no GNSS time sync (OBC clock set) is performed while the MPI is in active
 //     (sensing) mode, even if one is due: stepping the clock mid-campaign would corrupt the
 //     timestamps on the science data. The sync stays due and happens on the first run after the
 //     MPI goes idle. Also not gated behind the TRACK_MPI flag.
-// 10. The GNSS time sync runs on runs where the GNSS is on and sampled, at most once every
+// 11. The GNSS time sync runs on runs where the GNSS is on and sampled, at most once every
 //     GNSS_TIME_SYNC_INTERVAL_MS (10 minutes); the first one after a reset happens immediately.
 //     It's skipped in FAKE mode, in firehose mode, and while the MPI is active (note 9). Every
 //     successful sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time()) and to
 //     the ADCS (ADCS_synchronize_unix_time()), even under NO_EPS_CTRL.
-// 11. Five things mean "start over", and all five take the same path (reset_to_fresh_state()):
+// 12. Five things mean "start over", and all five take the same path (reset_to_fresh_state()):
 //     cold/garbage SRAM, a reboot caught by the heap canary, an unmounted filesystem, a ring file
 //     handle the mounted filesystem doesn't recognise (remount/reformat without a reboot), and an
 //     operator STOP. Each resets the write cursor to r0.bin record 0 and zeroes the counters, so
 //     the ring refills from scratch. Only STOP actually has a live ring file to commit and close;
 //     in the other four the handle is untrusted or no longer live, so its uncommitted records are
 //     simply lost.
-// 12. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it exits with
-//     LFS_NOT_MOUNTED (7) in the response, without logging and without rescheduling, after
-//     resetting the ring (note 11). A later run therefore starts a fresh campaign, it does not
-//     resume the old one.
 // 13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE good
 //     fixes), because the file being written is never downlinked. After any reset (note 11),
 //     runs report "sent=0/0" until then.
@@ -832,6 +830,32 @@ static GNSS_ring_blob_error_enum_t apply_gnss_power_decision(
     *is_on_dest = is_on_now;
     g_state->gnss_channel_is_on = is_on_now;
     return BLOB_ERR_OK;
+}
+
+/// @brief Turn the GNSS channel off, because this run is about to exit without rescheduling.
+/// @details Once the blob stops rescheduling itself, nothing is left to run the Power Policy --
+///     including the hard floor -- so a GNSS left on would stay on indefinitely. Every exit path
+///     that doesn't reschedule (STOP, and every failure) calls this first.
+///
+///     Deliberately doesn't touch `g_state`: some callers run before the state block has been
+///     validated, and the next run re-reads the channel state from the EPS anyway.
+/// @param no_eps_ctrl If true (NO_EPS_CTRL flag), leave the channel alone.
+/// @return Short suffix for the response string, saying what happened to the GNSS power.
+static const char *shed_gnss_power_before_exit(bool no_eps_ctrl) {
+    if (no_eps_ctrl) {
+        return " GNSS power untouched (NO_EPS_CTRL).";
+    }
+
+    const uint8_t set_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0);
+    if (set_status != 0) {
+        LOG(
+            LOG_SEVERITY_ERROR,
+            "%s: EPS_set_channel_enabled(GNSS, 0) before exit -> %d",
+            BLOB_NAME, set_status
+        );
+        return " GNSS power-off FAILED.";
+    }
+    return " GNSS off.";
 }
 
 
@@ -1715,10 +1739,12 @@ uint8_t blob_main(
     const bool flag_track_mpi = has_flag(arg2_flags, "TRACK_MPI");
     const bool flag_no_eps = has_flag(arg2_flags, "NO_EPS_CTRL");
 
+    // Every return below that doesn't reschedule calls shed_gnss_power_before_exit() first.
     if (arg0_repeat_interval_ms[0] == '\0' || arg1_downlink_n[0] == '\0') {
+        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
         snprintf(
-            response_buf, response_buf_len, "%s error: %s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_MISSING_ARGS)
+            response_buf, response_buf_len, "%s error: %s.%s",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_MISSING_ARGS), shed_msg
         );
         return BLOB_ERR_MISSING_ARGS;
     }
@@ -1728,9 +1754,10 @@ uint8_t blob_main(
     const int32_t downlink_n = parse_int(arg1_downlink_n, &arg1_ok);
 
     if (!arg0_ok || !arg1_ok) {
+        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
         snprintf(
-            response_buf, response_buf_len, "%s error: %s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS)
+            response_buf, response_buf_len, "%s error: %s.%s",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS), shed_msg
         );
         return BLOB_ERR_INVALID_INT_ARGS;
     }
@@ -1746,10 +1773,12 @@ uint8_t blob_main(
     const int16_t cancel_result = cancel_other_scheduled_reruns_of_this_blob(get_current_executing_tcmd_agenda_slot_num());
     char cancel_msg[50];
     if (cancel_result < 0) {
+        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
         snprintf(
             response_buf, response_buf_len,
-            "%s error: %s (%d)",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED), cancel_result
+            "%s error: %s (%d).%s",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED), cancel_result,
+            shed_msg
         );
         return BLOB_ERR_CANCEL_RERUNS_FAILED;
     }
@@ -1783,10 +1812,11 @@ uint8_t blob_main(
     // filesystem is unmounted, so nothing tries to write to it.
     if (!LFS_is_lfs_mounted) {
         reset_to_fresh_state(true);
+        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
         snprintf(
             response_buf, response_buf_len,
-            "%s error: %s. Not rescheduling.%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_LFS_NOT_MOUNTED), cancel_msg
+            "%s error: %s. Not rescheduling.%s%s",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_LFS_NOT_MOUNTED), shed_msg, cancel_msg
         );
         return BLOB_ERR_LFS_NOT_MOUNTED;
     }
@@ -1817,10 +1847,11 @@ uint8_t blob_main(
     // Make sure "gnss_ring/" exists before anything tries to read or write inside it.
     const GNSS_ring_blob_error_enum_t mkdir_status = ensure_ring_dir_exists();
     if (mkdir_status != BLOB_ERR_OK) {
+        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
         snprintf(
             response_buf, response_buf_len,
-            "%s error: %s (%s)%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(mkdir_status), GNSS_RING_DIR, cancel_msg
+            "%s error: %s (%s).%s%s",
+            BLOB_NAME, gnss_ring_blob_error_to_str(mkdir_status), GNSS_RING_DIR, shed_msg, cancel_msg
         );
         return mkdir_status;
     }
@@ -1830,15 +1861,13 @@ uint8_t blob_main(
     // There is no RESUME: the stop isn't latched, it's a reset. Running the blob again afterwards
     // starts a brand new campaign from the beginning of the ring -- the old one is not resumable.
     if (flag_stop) {
-        if (!flag_no_eps) {
-            EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0);
-        }
+        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
         reset_to_fresh_state(true);
 
         snprintf(
             response_buf, response_buf_len,
-            "%s: STOPped. GNSS off, reruns cancelled.%s",
-            BLOB_NAME, cancel_msg
+            "%s: STOPped. Reruns cancelled.%s%s",
+            BLOB_NAME, shed_msg, cancel_msg
         );
         return BLOB_ERR_OK; // A requested stop is a success, not an error.
     }
@@ -1914,10 +1943,11 @@ uint8_t blob_main(
         const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
         if (reexec_result != BLOB_ERR_OK) {
             ring_close_open_file(); // No rerun is coming to close it; commit what we have.
+            const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: %s%s",
-                BLOB_NAME, gnss_ring_blob_error_to_str(reexec_result), cancel_msg
+                "%s error: %s.%s%s",
+                BLOB_NAME, gnss_ring_blob_error_to_str(reexec_result), shed_msg, cancel_msg
             );
             return reexec_result;
         }

@@ -300,7 +300,7 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 //     FAKE       Local/bench test mode: never touch the GNSS UART, never run the power policy
 //                or a time sync, and synthesize samples from the hardware RNG instead. Everything
 //                else (LittleFS storage, downlink, rescheduling) behaves normally. Exception:
-//                FAKE|STOP still commands the GNSS channel off, unless NO_EPS_CTRL is also given.
+//                exits that don't reschedule still turn the GNSS channel off (note 4).
 //     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode,
 //                regardless of sun/voltage -- except that the 14V hard floor still wins.
 //                (This flag only governs powering the GNSS *on*. Downlink is suppressed during
@@ -356,46 +356,43 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
 
 
 ### Notes
-
- 1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
- 2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
-    extended beacon blob (re-uplinking cancels any previously-scheduled rerun of this blob).
- 3. Unlike v1, this blob TURNS THE GNSS CHANNEL ON AND OFF ITSELF (see Power Policy below).
-    It no longer dies when it finds the GNSS powered off -- that's now an expected state.
- 4. SAFETY: The GNSS is never powered on while the battery is below
-    GNSS_POWER_HARD_FLOOR_MV (14000mV), and is actively turned off if the battery falls below
-    that, regardless of MPI state or sun.
- 5. If a GNSS query fails for any reason, this run skips storing a new sample but still
-    downlinks existing samples and reschedules normally, so transient GNSS comms errors
-    "self-heal" on the next run.
- 6. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
-    syncs) while firehose mode is active, but will resume after firehose mode is disabled.
- 7. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
-    position type must not be NONE, and the X/Y/Z position bytes must not be all-zero.
- 8. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
-    sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
-    Nothing is lost: the stored samples go down on a later run, once the MPI is idle. This
-    applies whether or not the TRACK_MPI flag was passed.
- 9. Likewise, no GNSS time sync (OBC clock set) is performed while the MPI is in active
+1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
+2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
+   extended beacon blob (re-uplinking cancels any previously-scheduled rerun of this blob).
+3. Unlike v1, this blob TURNS THE GNSS CHANNEL ON AND OFF ITSELF (see Power Policy below).
+   It no longer dies when it finds the GNSS powered off -- that's now an expected state.
+4. SAFETY: The GNSS is never powered on while the battery is below
+   GNSS_POWER_HARD_FLOOR_MV (14000mV), and is actively turned off if the battery falls below
+   that, regardless of MPI state or sun.
+5. SAFETY: Any failure exit which results in non-rescheduling turns the GNSS channel off first,
+   unless NO_EPS_CTRL is given.
+6. If a GNSS query fails for any reason, this run skips storing a new sample but still
+   downlinks existing samples and reschedules normally, so transient GNSS comms errors
+   "self-heal" on the next run.
+7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
+   syncs) while firehose mode is active, but will resume after firehose mode is disabled.
+8. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
+   position type must not be NONE, and the X/Y/Z position bytes must not be all-zero.
+9. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
+   sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
+   Nothing is lost: the stored samples go down on a later run, once the MPI is idle. This
+   applies whether or not the TRACK_MPI flag was passed.
+ 10. Likewise, no GNSS time sync (OBC clock set) is performed while the MPI is in active
     (sensing) mode, even if one is due: stepping the clock mid-campaign would corrupt the
     timestamps on the science data. The sync stays due and happens on the first run after the
     MPI goes idle. Also not gated behind the TRACK_MPI flag.
-10. The GNSS time sync runs on runs where the GNSS is on and sampled, at most once every
+11. The GNSS time sync runs on runs where the GNSS is on and sampled, at most once every
     GNSS_TIME_SYNC_INTERVAL_MS (10 minutes); the first one after a reset happens immediately.
     It's skipped in FAKE mode, in firehose mode, and while the MPI is active (note 9). Every
     successful sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time()) and to
     the ADCS (ADCS_synchronize_unix_time()), even under NO_EPS_CTRL.
-11. Five things mean "start over", and all five take the same path (reset_to_fresh_state()):
+12. Five things mean "start over", and all five take the same path (reset_to_fresh_state()):
     cold/garbage SRAM, a reboot caught by the heap canary, an unmounted filesystem, a ring file
     handle the mounted filesystem doesn't recognise (remount/reformat without a reboot), and an
     operator STOP. Each resets the write cursor to r0.bin record 0 and zeroes the counters, so
     the ring refills from scratch. Only STOP actually has a live ring file to commit and close;
     in the other four the handle is untrusted or no longer live, so its uncommitted records are
     simply lost.
-12. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it exits with
-    LFS_NOT_MOUNTED (7) in the response, without logging and without rescheduling, after
-    resetting the ring (note 11). A later run therefore starts a fresh campaign, it does not
-    resume the old one.
 13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE good
     fixes), because the file being written is never downlinked. After any reset (note 11),
     runs report "sent=0/0" until then.
