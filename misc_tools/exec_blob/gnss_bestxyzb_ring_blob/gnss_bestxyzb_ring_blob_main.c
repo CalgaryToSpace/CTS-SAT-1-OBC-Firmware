@@ -385,45 +385,28 @@ _Static_assert(
 /// @return true if a reboot was detected this run. False on the very first allocation (there was
 ///     no previous boot to have left anything behind) and on every nominal run after it.
 static bool detect_reboot_via_heap_canary() {
-    const bool is_first_allocation = (g_state->reboot_canary == NULL);
+    uint32_t *canary = g_state->reboot_canary;
+    const bool rebooted = (canary != NULL) && (*canary != GNSS_REBOOT_CANARY_MAGIC);
 
-    if (!is_first_allocation) {
-        const uint32_t canary_value = *(g_state->reboot_canary);
-        if (canary_value == GNSS_REBOOT_CANARY_MAGIC) {
-            return false; // Nominal: same boot as the previous run. Deliberately silent.
+    // First run, or the old allocation belongs to a dead heap: abandon it (see @details) and
+    // take a fresh one. A failed allocation leaves NULL, so the next run simply retries.
+    if ((canary == NULL) || rebooted) {
+        canary = (uint32_t *)pvPortMalloc(sizeof(uint32_t));
+        if (canary != NULL) {
+            *canary = GNSS_REBOOT_CANARY_MAGIC; // The only write: from here on we only read it.
         }
-
-        LOG(
-            LOG_SEVERITY_WARNING,
-            "%s: reboot detected (canary 0x%08lX != 0x%08lX)",
-            BLOB_NAME, (unsigned long)canary_value, (unsigned long)GNSS_REBOOT_CANARY_MAGIC
-        );
-    }
-    else {
-        LOG(
-            LOG_SEVERITY_NORMAL,
-            "%s: allocating reboot canary",
-            BLOB_NAME
-        );
+        g_state->reboot_canary = canary;
     }
 
-    // Abandon the old pointer without freeing it (see @details) and take a fresh one.
-    uint32_t *const new_canary = (uint32_t *)pvPortMalloc(sizeof(uint32_t));
-    if (new_canary == NULL) {
+    // One log line covers both notable events: a detected reboot, and/or a failed allocation.
+    // Nominal runs (same boot, canary intact) stay silent.
+    if (rebooted || (canary == NULL)) {
         LOG(
-            LOG_SEVERITY_ERROR,
-            "%s: pvPortMalloc() for the reboot canary failed",
-            BLOB_NAME
+            LOG_SEVERITY_WARNING, "%s: heap canary: reboot=%d, alloc_ok=%d",
+            BLOB_NAME, rebooted, (canary != NULL)
         );
-        g_state->reboot_canary = NULL; // Retry the allocation on the next run.
-        return !is_first_allocation;
     }
-
-    // The only write: from here on we only ever read this word back.
-    *new_canary = GNSS_REBOOT_CANARY_MAGIC;
-    g_state->reboot_canary = new_canary;
-
-    return !is_first_allocation;
+    return rebooted;
 }
 
 
