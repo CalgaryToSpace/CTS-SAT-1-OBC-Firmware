@@ -397,15 +397,14 @@ static bool detect_reboot_via_heap_canary() {
 
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: heap reboot canary reads 0x%08lX, not 0x%08lX -- reboot detected; "
-            "re-allocating magic reboot detector",
+            "%s: reboot detected (canary 0x%08lX != 0x%08lX)",
             BLOB_NAME, (unsigned long)canary_value, (unsigned long)GNSS_REBOOT_CANARY_MAGIC
         );
     }
     else {
         LOG(
             LOG_SEVERITY_NORMAL,
-            "%s: doing first magic reboot-detector allocation",
+            "%s: allocating reboot canary",
             BLOB_NAME
         );
     }
@@ -1838,7 +1837,7 @@ uint8_t blob_main(
     if (g_state->open_file_is_valid && (!ring_open_file_is_live())) {
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: ring file handle is not in the filesystem's open list; starting over",
+            "%s: stale ring file handle; resetting",
             BLOB_NAME
         );
         reset_to_fresh_state(true);
