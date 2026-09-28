@@ -288,8 +288,8 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 // itself for the next run.
 //
 // Args Format: <repeat_interval_ms>;<downlink_n>[;<flag1|flag2|...>]
-// - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
-//   interval (clamped to a minimum of 1100ms).
+// - repeat_interval_ms: Interval at which the blob re-runs itself. Anything below 1100ms
+//   (including 0) is clamped up to 1100ms.
 // - downlink_n: Number of ADDITIONAL consecutive samples to downlink after the randomly-selected
 //   starting sample. So a total of (1 + downlink_n) packets are sent per run, fewer if the
 //   randomly-chosen start lands near the end of the chosen file.

@@ -13,8 +13,8 @@
 //  5. When the GNSS is active, set the OBC, EPS, and ADCS time based on the GNSS time.
 //
 // Args Format: <repeat_interval_ms>;<downlink_n>[;<flag1|flag2|...>]
-// - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
-//   interval (clamped to a minimum of 1100ms).
+// - repeat_interval_ms: Interval at which the blob re-runs itself. Anything below 1100ms
+//   (including 0) is clamped up to 1100ms.
 // - downlink_n: Number of ADDITIONAL consecutive samples to downlink after the randomly-selected
 //   starting sample. So a total of (1 + downlink_n) packets are sent per run, fewer if the
 //   randomly-chosen start lands near the end of the chosen file.
@@ -128,7 +128,7 @@
 // directory traversal and no cache-buffer malloc/free per sample. The handle is only trusted
 // after confirming it's still linked into the mounted filesystem's open-file list (see
 // ring_open_file_is_live()), and it's closed -- which is what commits its records to flash --
-// when the file fills up, when the blob is STOPped, and when a run isn't rescheduling itself.
+// when the file fills up, when the blob is STOPped, and when rescheduling the next run fails.
 // So an unexpected reboot loses the uncommitted records in the file currently being written (at
 // most GNSS_RING_RECORDS_PER_FILE of them). Earlier files are committed and stay on disk, but a
 // reboot is also a reset (note 11), so they are never downlinked again: the cursor restarts at
@@ -1764,7 +1764,7 @@ uint8_t blob_main(
 
     // Protect the minimum repeat interval, same as the extended beacon blob: too low of a value
     // would leave the satellite always transmitting, blocking uplink passes.
-    if ((repeat_interval_ms != 0) && (repeat_interval_ms < 1100)) {
+    if (repeat_interval_ms < 1100) {
         repeat_interval_ms = 1100;
     }
 
@@ -1934,23 +1934,17 @@ uint8_t blob_main(
         );
     }
 
-    if (repeat_interval_ms <= 0) {
-        // One-shot run: no later execution will ever come back to flush or close the write file,
-        // so commit it now rather than leaving the handle (and its cache buffer) dangling.
-        ring_close_open_file();
-    }
-    else {
-        const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
-        if (reexec_result != BLOB_ERR_OK) {
-            ring_close_open_file(); // No rerun is coming to close it; commit what we have.
-            const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
-            snprintf(
-                response_buf, response_buf_len,
-                "%s error: %s.%s%s",
-                BLOB_NAME, gnss_ring_blob_error_to_str(reexec_result), shed_msg, cancel_msg
-            );
-            return reexec_result;
-        }
+    // Reschedule the blob for the next run.
+    const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
+    if (reexec_result != BLOB_ERR_OK) {
+        ring_close_open_file(); // No rerun is coming to close it; commit what we have.
+        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: %s.%s%s",
+            BLOB_NAME, gnss_ring_blob_error_to_str(reexec_result), shed_msg, cancel_msg
+        );
+        return reexec_result;
     }
 
     char downlink_msg[24];
