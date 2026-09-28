@@ -916,12 +916,18 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
 ) {
     // Reset the GNSS UART interrupt variables
     GNSS_set_uart_interrupt_state(0); // Lock writing to the UART_gnss_buffer while we memset it
+
+    // VENDORING NOTE: Compiled out in this blob to save ~50 bytes (a bit of time).
+    // Resetting UART_gnss_buffer_write_idx below is enough here: every read
+    // in this function stays below write_idx, so stale bytes past it are never looked at.
+#if 0
     for (uint16_t i = 0; i < UART_gnss_buffer_len; i++) {
         // Clear the buffer.
         // Can't use memset because UART_gnss_buffer is volatile.
         // Review comment: I think just setting the UART_gnss_buffer_write_idx to the start is good enough, but we'll keep this.
         UART_gnss_buffer[i] = 0;
     }
+#endif
 
     // Make it start writing to the start of the buffer.
     UART_gnss_buffer_write_idx = 0;
@@ -1148,12 +1154,14 @@ static uint8_t GNSS_send_cmd_get_response_NEW(
 ) {
     const GNSS_rx_mode_enum_t rx_mode_at_start = GNSS_current_rx_mode;
 
+    // VENDORING NOTE: In this blob, this step is unnecessary because we exit early if in firehose mode.
+#if 0
     // We must first store any pending data in the UART_gnss_buffer to the file,
     // before clearing the buffer.
-    // VENDORING NOTE: In this blob, this step is unnecessary because we exit early if in firehose mode.
-    // if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
-    //     GNSS_subtask_store_firehose_data_to_file();
-    // }
+    if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
+        GNSS_subtask_store_firehose_data_to_file();
+    }
+#endif
 
     GNSS_current_rx_mode = GNSS_RX_MODE_COMMAND_MODE;
 
@@ -1166,6 +1174,9 @@ static uint8_t GNSS_send_cmd_get_response_NEW(
     // Reset back to the original RX mode.
     GNSS_current_rx_mode = rx_mode_at_start;
 
+    // VENDORING NOTE: Compiled out in this blob (~25 bytes), for the same reason as the firehose
+    // store step above: the only caller exits early in firehose mode, so this can never run.
+#if 0
     // Write the data to the firehose file, or effectively discard it by resetting the buffer.
     if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
         // You may be tempted to call GNSS_subtask_store_firehose_data_to_file() here, but you shouldn't.
@@ -1175,6 +1186,7 @@ static uint8_t GNSS_send_cmd_get_response_NEW(
         // If we're in firehose mode, and the interrupt isn't currently enabled, we must ensure it's enabled.
         GNSS_set_uart_interrupt_state(1);
     }
+#endif
 
     return ret;
 }
