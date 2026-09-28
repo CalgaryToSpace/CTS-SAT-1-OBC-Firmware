@@ -281,7 +281,7 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 
 ```c
 // This is a blob (executable) that manages the GNSS receiver's power channel based on available
-// power/sun, periodically samples "log bestxyzb once" from the GNSS receiver, stores good fixes
+// power/sun, periodically samples "log bestxyzb once" from the GNSS receiver, stores the fixes
 // into a ring of files in the LittleFS filesystem, periodically syncs the OBC clock to GNSS time
 // (and pushes that time out to the EPS and the ADCS),
 // downlinks a randomly-selected consecutive run of stored samples on every run, and schedules
@@ -307,6 +307,8 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 //                already be on. For bench use and for handing power control back to EPS telecommands.
 //                The EPS is still queried every run (PDU housekeeping, for the channel state), and
 //                the EPS clock is still set on every time sync.
+//     GOOD_ONLY  Only store good, non-empty fixes (see the note on fix filtering). Without it,
+//                every BESTXYZB record the receiver returns is stored and downlinked.
 ```
 
 ### Power Policy
@@ -333,9 +335,10 @@ Battery voltage comes from `OBC_read_vbat_with_adc_mV()`.
 Samples are stored in LittleFS under `gnss_ring/`, as a ring of 10 files (`gnss_ring/r0.bin` ..
 `gnss_ring/r9.bin`), each holding up to 50 fixed-size 144-byte records. When the current file
 fills, the blob advances to the next file index; after the last one it wraps back to index 0 and
-truncates it, evicting the oldest data. Only good, non-empty fixes are stored (solution status
-must be `SOL_COMPUTED`, position type must not be `NONE`, and the X/Y/Z position bytes must not
-be all-zero).
+truncates it, evicting the oldest data. By default, every BESTXYZB record the receiver returns is
+stored. With the `GOOD_ONLY` flag, only good, non-empty fixes are stored (solution status must be
+`SOL_COMPUTED`, position type must not be `NONE`, and the X/Y/Z position bytes must not be
+all-zero).
 
 ### Example Usage
 
@@ -369,8 +372,11 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
    "self-heal" on the next run.
 7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
    syncs) while firehose mode is active, but will resume after GNSS firehose mode is disabled.
-8. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
-   position type must not be NONE, and the X/Y/Z position bytes must not be all-zero.
+8. Fix filtering: by default, every BESTXYZB record the receiver returns is stored and
+   downlinked, including warm-up and no-solution records, so the ground sees exactly what the
+   receiver reported. With GOOD_ONLY, only good, non-empty fixes are stored: the solution status
+   must be SOL_COMPUTED, the position type must not be NONE, and the X/Y/Z position bytes must
+   not be all-zero. The response's `bad_fixes` counter only counts records dropped by GOOD_ONLY.
 9. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
    sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
    This applies whether or not the TRACK_MPI flag was passed.
@@ -385,7 +391,7 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
     the ADCS (ADCS_synchronize_unix_time()), even under NO_EPS_CTRL.
 12. On a STOP, reset, or serious anomaly, the blob's state is reset, and the collected samples
     are discarded.
-13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE good
+13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE stored
     fixes), because the file being written is never downlinked. Thus, after any reset,
     runs report "sent=0/0" until then.
 14. A run that switches the GNSS channel on doesn't sample: the receiver gets

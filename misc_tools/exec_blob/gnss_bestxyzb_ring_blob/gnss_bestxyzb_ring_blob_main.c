@@ -1,5 +1,5 @@
 // This is a blob (executable) that manages the GNSS receiver's power channel based on available
-// power/sun, periodically samples "log bestxyzb once" from the GNSS receiver, stores good fixes
+// power/sun, periodically samples "log bestxyzb once" from the GNSS receiver, stores the fixes
 // into a ring of files in the LittleFS filesystem, periodically syncs the OBC clock to GNSS time
 // (and pushes that time out to the EPS and the ADCS),
 // downlinks a randomly-selected consecutive run of stored samples on every run, and schedules
@@ -32,6 +32,8 @@
 //                already be on. For bench use and for handing power control back to EPS telecommands.
 //                The EPS is still queried every run (PDU housekeeping, for the channel state), and
 //                the EPS clock is still set on every time sync.
+//     GOOD_ONLY  Only store good, non-empty fixes (see the note on fix filtering). Without it,
+//                every BESTXYZB record the receiver returns is stored and downlinked.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/gnss_bestxyzb_ring_v2.blob", run:
@@ -55,8 +57,11 @@
 //     "self-heal" on the next run.
 //  7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
 //     syncs) while firehose mode is active, but will resume after GNSS firehose mode is disabled.
-//  8. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
-//     position type must not be NONE, and the X/Y/Z position bytes must not be all-zero.
+//  8. Fix filtering: by default, every BESTXYZB record the receiver returns is stored and
+//     downlinked, including warm-up and no-solution records, so the ground sees exactly what the
+//     receiver reported. With GOOD_ONLY, only good, non-empty fixes are stored: the solution status
+//     must be SOL_COMPUTED, the position type must not be NONE, and the X/Y/Z position bytes must
+//     not be all-zero. The response's `bad_fixes` counter only counts records dropped by GOOD_ONLY.
 //  9. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
 //     sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
 //     This applies whether or not the TRACK_MPI flag was passed.
@@ -71,7 +76,7 @@
 //     the ADCS (ADCS_synchronize_unix_time()), even under NO_EPS_CTRL.
 // 12. On a STOP, reset, or serious anomaly, the blob's state is reset, and the collected samples
 //     are discarded.
-// 13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE good
+// 13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE stored
 //     fixes), because the file being written is never downlinked. Thus, after any reset,
 //     runs report "sent=0/0" until then.
 // 14. A run that switches the GNSS channel on doesn't sample: the receiver gets
@@ -272,7 +277,7 @@ typedef enum {
     BLOB_ERR_GNSS_COMMS_FAILED = 1, // GNSS_send_cmd_get_response_NEW() failed.
     BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND = 2, // Sync bytes (AA 44 12) not found in GNSS response.
     BLOB_ERR_EPS_QUERY_FAILED = 3, // EPS_CMD_get_pdu_housekeeping_data_eng() failed.
-    BLOB_ERR_BAD_FIX = 4, // Fix was not SOL_COMPUTED, was position-type NONE, or was all-zero.
+    BLOB_ERR_BAD_FIX = 4, // GOOD_ONLY: fix was not SOL_COMPUTED, was position-type NONE, or was all-zero.
     BLOB_ERR_LFS_WRITE_FAILED = 5, // Writing/appending the sample record to LittleFS failed.
     BLOB_ERR_LFS_MKDIR_FAILED = 6, // Couldn't create/confirm the GNSS_RING_DIR directory.
     BLOB_ERR_LFS_NOT_MOUNTED = 7, // Filesystem wasn't mounted on entry; blob dies without rescheduling.
@@ -1445,11 +1450,12 @@ static void generate_fake_sample(uint8_t out_sample[GNSS_SAMPLE_SIZE]) {
     }
 }
 
-/// @brief Sample the GNSS (or the RNG, in FAKE mode) and, if the fix is good and non-empty, store
-///     it as a new record in the LittleFS ring.
+/// @brief Sample the GNSS (or the RNG, in FAKE mode) and store it as a new record in the
+///     LittleFS ring -- unconditionally, or only if the fix is good and non-empty (GOOD_ONLY).
 /// @param use_fake_data If true, don't touch the GNSS UART; synthesize the sample from the RNG.
+/// @param good_only If true (GOOD_ONLY flag), drop records that fail is_good_nonempty_fix().
 /// @return BLOB_ERR_OK if a sample was stored, otherwise the reason it wasn't.
-static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb(bool use_fake_data) {
+static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb(bool use_fake_data, bool good_only) {
     uint8_t sample[GNSS_SAMPLE_SIZE];
 
     if (use_fake_data) {
@@ -1496,8 +1502,9 @@ static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb(bool use_fake_data)
         }
     }
 
-    // Only good, non-empty fixes earn a slot in the ring.
-    if (!is_good_nonempty_fix(sample)) {
+    // By default every extracted record is stored, so the ground sees exactly what the receiver
+    // said (warm-up and no-solution records included). GOOD_ONLY keeps only solved, non-empty fixes.
+    if (good_only && !is_good_nonempty_fix(sample)) {
         g_state->bad_fix_skipped_count++;
         return BLOB_ERR_BAD_FIX;
     }
@@ -1751,6 +1758,7 @@ uint8_t blob_main(
     const bool flag_fake = has_flag(arg2_flags, "FAKE");
     const bool flag_track_mpi = has_flag(arg2_flags, "TRACK_MPI");
     const bool flag_no_eps = has_flag(arg2_flags, "NO_EPS_CTRL");
+    const bool flag_good_only = has_flag(arg2_flags, "GOOD_ONLY");
 
     // Every failure return below goes through fail_without_rescheduling(), which sheds the GNSS.
     if (arg0_repeat_interval_ms[0] == '\0' || arg1_downlink_n[0] == '\0') {
@@ -1890,7 +1898,7 @@ uint8_t blob_main(
             sample_status = BLOB_ERR_GNSS_WARMING_UP;
         }
         else {
-            sample_status = sample_and_store_bestxyzb(flag_fake);
+            sample_status = sample_and_store_bestxyzb(flag_fake, flag_good_only);
 
             // Keep the OBC clock disciplined while we have the receiver powered anyway.
             if (!flag_fake) {
