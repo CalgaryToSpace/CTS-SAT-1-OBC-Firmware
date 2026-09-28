@@ -5,10 +5,12 @@
 // downlinks a randomly-selected consecutive run of stored samples on every run, and schedules
 // itself for the next run.
 //
-// Motivation: Collect a long rolling history of GNSS position/velocity fixes in non-volatile
-// storage (surviving reboots), while autonomously duty-cycling the GNSS receiver so it only draws
-// power when the satellite can afford it, and slowly send that history to the ground over many
-// passes via random sampling.
+// High-Level Overview:
+//  1. Collect a long rolling history of GNSS position/velocity fixes.
+//  2. Collect GNSS history during MPI operations (with the `TRACK_MPI` flag).
+//  3. Duty-cycle the GNSS receiver so it only draws power when the satellite can afford it.
+//  4. Slowly send that history to the ground over many random SatNOGS passes via random sampling.
+//  5. When the GNSS is active, set the OBC, EPS, and ADCS time based on the GNSS time.
 //
 // Args Format: <repeat_interval_ms>;<downlink_n>[;<flag1|flag2|...>]
 // - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
@@ -17,17 +19,21 @@
 //   starting sample. So a total of (1 + downlink_n) packets are sent per run, fewer if the
 //   randomly-chosen start lands near the end of the chosen file.
 // - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
-//     STOP       Permanently cancel this blob: set the persistent stop flag, cancel all pending
-//                reruns, turn the GNSS channel off, and exit.
-//     FAKE       Local/bench test mode: never touch the GNSS UART or the EPS, and synthesize
-//                samples from the hardware RNG instead. Everything else (LittleFS storage,
-//                downlink, rescheduling) behaves normally.
+//     STOP       Cancel all pending reruns, turn the GNSS channel off (unless NO_EPS_CTRL), reset the
+//                ring (note 11), and exit. Nothing is latched: running the blob again afterwards
+//                starts a brand new campaign; the old one is not resumable.
+//     FAKE       Local/bench test mode: never touch the GNSS UART, never run the power policy
+//                or a time sync, and synthesize samples from the hardware RNG instead. Everything
+//                else (LittleFS storage, downlink, rescheduling) behaves normally. Exception:
+//                FAKE|STOP still commands the GNSS channel off, unless NO_EPS_CTRL is also given.
 //     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode,
 //                regardless of sun/voltage -- except that the 14V hard floor still wins.
 //                (This flag only governs powering the GNSS *on*. Downlink is suppressed during
 //                MPI activity either way -- see note 8 below.)
-//     NOEPS      Never command the EPS channel on or off; just sample if the channel happens to
+//     NO_EPS_CTRL  Never command the EPS channel on or off; just sample if the channel happens to
 //                already be on. For bench use and for handing power control back to the ground.
+//                The EPS is still read every run (PDU housekeeping, for the channel state), and
+//                the EPS clock is still set on every time sync (note 10).
 //
 // Usage Example:
 // After uplinking the blob as "blobs/gnss_bestxyzb_ring_v2.blob", run:
@@ -47,8 +53,8 @@
 //  5. If a GNSS query fails for any reason, this run skips storing a new sample but still
 //     downlinks existing samples and reschedules normally, so transient GNSS comms errors
 //     "self-heal" on the next run.
-//  6. If GNSS firehose mode is activated, this blob skips collecting data samples while firehose
-//     mode is active, but will resume after firehose mode is disabled.
+//  6. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
+//     syncs) while firehose mode is active, but will resume after firehose mode is disabled.
 //  7. Only good, non-empty fixes are stored: the solution status must be SOL_COMPUTED, the
 //     position type must not be NONE, and the X/Y/Z position bytes must not be all-zero.
 //  8. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
@@ -59,16 +65,30 @@
 //     (sensing) mode, even if one is due: stepping the clock mid-campaign would corrupt the
 //     timestamps on the science data. The sync stays due and happens on the first run after the
 //     MPI goes idle. Also not gated behind the TRACK_MPI flag.
-// 10. Every successful GNSS time sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time())
-//     and to the ADCS (ADCS_synchronize_unix_time()).
+// 10. The GNSS time sync runs on runs where the GNSS is on and sampled, at most once every
+//     GNSS_TIME_SYNC_INTERVAL_MS (10 minutes); the first one after a reset happens immediately.
+//     It's skipped in FAKE mode, in firehose mode, and while the MPI is active (note 9). Every
+//     successful sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time()) and to
+//     the ADCS (ADCS_synchronize_unix_time()), even under NO_EPS_CTRL.
 // 11. Five things mean "start over", and all five take the same path (reset_to_fresh_state()):
 //     cold/garbage SRAM, a reboot caught by the heap canary, an unmounted filesystem, a ring file
 //     handle the mounted filesystem doesn't recognise (remount/reformat without a reboot), and an
-//     operator STOP. Each commits and closes any live ring file, then resets the write cursor to
-//     r0.bin record 0 and zeroes the counters, so the ring refills from scratch.
-// 12. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it logs CRITICAL
-//     and exits with LFS_NOT_MOUNTED (7) without rescheduling, after resetting the ring (note
-//     11). A later run therefore starts a fresh campaign, it does not resume the old one.
+//     operator STOP. Each resets the write cursor to r0.bin record 0 and zeroes the counters, so
+//     the ring refills from scratch. Only STOP actually has a live ring file to commit and close;
+//     in the other four the handle is untrusted or no longer live, so its uncommitted records are
+//     simply lost.
+// 12. This blob never mounts the filesystem. If LittleFS is unmounted on entry, it exits with
+//     LFS_NOT_MOUNTED (7) in the response, without logging and without rescheduling, after
+//     resetting the ring (note 11). A later run therefore starts a fresh campaign, it does not
+//     resume the old one.
+// 13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE good
+//     fixes), because the file being written is never downlinked. After any reset (note 11),
+//     runs report "sent=0/0" until then.
+// 14. A run that switches the GNSS channel on doesn't sample: the receiver gets
+//     GNSS_POWER_ON_SETTLE_MS (5s) to boot, and sampling starts on the next run. There's no
+//     warm-up wait if the channel was already on (e.g., switched on by the ground, or under NO_EPS_CTRL).
+// 15. Return codes: SEND_PARTIAL_FAILURE and SEND_SKIPPED_MPI_ACTIVE are non-zero, but both mean
+//     the run completed and rescheduled itself as normal. They are not failures of the campaign.
 //
 // --------------------------
 //
@@ -78,8 +98,10 @@
 //   3. battery >= 15000mV AND in sun           -> ON
 //   4. eclipse OR battery < 14500mV            -> OFF
 //   5. otherwise                               -> keep the channel in its current state (hysteresis)
-// "In sun" means the sum of coarse sun sensors 1..6 is > 100; if the ADCS query fails, we
-// conservatively treat it as eclipse (except on the bench, where RBF=BENCH steamrolls).
+// "In sun" means the sum of coarse sun sensors 1..6 is > GNSS_SUN_SENSOR_SUM_THRESHOLD (50); if
+// the ADCS query fails, we conservatively treat it as eclipse (except on the bench, where
+// RBF=BENCH steamrolls). Likewise, if the EPS query for the channel state fails, we treat the
+// GNSS as off and don't sample -- except on the bench, where RBF=BENCH treats it as on.
 //
 // --------------------------
 //
@@ -94,7 +116,7 @@
 // Persistent RAM: This blob has NO .data/.bss of its own (enforced by the Makefile's build check
 // -- see FATAL check), because each execution is freshly loaded into a transient malloc'd/MPI
 // buffer and jumped into, so ordinary globals would reset every run. Instead, a small state block
-// (the LittleFS write cursor, the stop flag, and counters -- NOT the sample data any more) lives
+// (the LittleFS write cursor, the open ring file handle, and counters -- NOT the sample data) lives
 // at a fixed physical SRAM address (see `RING` in blob.ld) that is NOT used by the currently-
 // running rc3 firmware image's .data/.bss, so its contents physically survive between this blob's
 // separate executions. A magic number at the start of that memory detects true cold-start (e.g.,
@@ -109,9 +131,12 @@
 // after confirming it's still linked into the mounted filesystem's open-file list (see
 // ring_open_file_is_live()), and it's closed -- which is what commits its records to flash --
 // when the file fills up, when the blob is STOPped, and when a run isn't rescheduling itself.
-// So an unexpected reboot costs the records in the file currently being written (at most
-// GNSS_RING_RECORDS_PER_FILE of them); every earlier file is already committed. That's an
-// accepted trade: reboots are rare, and the ring holds far more than one file's worth.
+// So an unexpected reboot loses the uncommitted records in the file currently being written (at
+// most GNSS_RING_RECORDS_PER_FILE of them). Earlier files are committed and stay on disk, but a
+// reboot is also a reset (note 11), so they are never downlinked again: the cursor restarts at
+// r0, the old files are excluded from downlink (see below), and each is truncated as the cursor
+// reaches it. In effect, a reboot abandons the whole ring. That's an accepted trade: reboots
+// are rare.
 //
 // The file being written is never also read: it's excluded from the downlink candidates below, so
 // there's only ever one handle open on it. Its samples become downlinkable once it fills and is
@@ -1688,7 +1713,7 @@ uint8_t blob_main(
     const bool flag_stop = has_flag(arg2_flags, "STOP");
     const bool flag_fake = has_flag(arg2_flags, "FAKE");
     const bool flag_track_mpi = has_flag(arg2_flags, "TRACK_MPI");
-    const bool flag_no_eps = has_flag(arg2_flags, "NOEPS");
+    const bool flag_no_eps = has_flag(arg2_flags, "NO_EPS_CTRL");
 
     if (arg0_repeat_interval_ms[0] == '\0' || arg1_downlink_n[0] == '\0') {
         snprintf(
