@@ -1647,8 +1647,10 @@ static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent
 
     // Open once and read consecutively, rather than re-opening the file per record.
     lfs_file_t file;
-    if (lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY) < 0) {
-        LOG(LOG_SEVERITY_WARNING, "%s: lfs_file_open(%s) failed", BLOB_NAME, path);
+    const int open_result = lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY);
+    if (open_result < 0) {
+        // Same format string as the write-side open in ring_open_write_file(), so it's stored once.
+        LOG(LOG_SEVERITY_WARNING, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
         return n_to_downlink;
     }
 
