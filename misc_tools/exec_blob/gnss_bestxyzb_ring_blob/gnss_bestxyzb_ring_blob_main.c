@@ -336,8 +336,6 @@ typedef struct {
     uint8_t write_record_idx; // Records already in that file, 0..GNSS_RING_RECORDS_PER_FILE.
     uint8_t has_wrapped; // 1 once we've cycled past the last file at least once (all files have data).
 
-    uint8_t gnss_channel_is_on; // Our latest knowledge of the GNSS EPS channel state (1=on).
-
     uint16_t downlink_seq_num; // Next sequence number to stamp on a downlinked packet. Wraps at 65536.
 
     uint32_t gnss_fetch_failure_count; // GNSS comms + extraction failures, since cold-init.
@@ -810,7 +808,7 @@ static GNSS_ring_blob_error_enum_t apply_gnss_power_decision(
             );
             // Report the state we know we were in, since the change didn't take.
             *is_on_dest = is_on_now;
-            g_state->gnss_channel_is_on = is_on_now;
+            
             return BLOB_ERR_OK;
         }
 
@@ -827,7 +825,7 @@ static GNSS_ring_blob_error_enum_t apply_gnss_power_decision(
     }
 
     *is_on_dest = is_on_now;
-    g_state->gnss_channel_is_on = is_on_now;
+
     return BLOB_ERR_OK;
 }
 
