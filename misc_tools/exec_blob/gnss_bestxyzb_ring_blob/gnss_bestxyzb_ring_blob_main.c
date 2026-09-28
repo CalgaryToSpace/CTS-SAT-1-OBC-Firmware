@@ -879,9 +879,7 @@ const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500;
 //   ...           Rest of header, then the message body, then a trailing 4-byte CRC32.
 // So the exact total frame length (from the sync bytes) is:
 //   header_length + body_length + GNSS_BINARY_CRC_LEN
-// This lets us detect end-of-message by byte count as soon as it's knowable, rather than only via
-// the (slow, and binary-data-unsafe) ASCII "*CRC\r\n" heuristic below, which doesn't apply to binary
-// responses at all.
+// This lets us detect end-of-message by byte count as soon as it's knowable.
 #define GNSS_BINARY_SYNC_0 0xAAu
 #define GNSS_BINARY_SYNC_1 0x44u
 #define GNSS_BINARY_SYNC_2 0x12u
@@ -1030,6 +1028,11 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
                 break;
             }
 
+            // VENDORING NOTE: Compiled out in this blob to save ~170 bytes. The only command it sends
+            // is "log bestxyzb once", whose binary reply always ends via the length check above. An
+            // ASCII reply (e.g. "<ERROR") now ends via GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS instead:
+            // same result, ~2.5s later.
+#if 0
             // Fallback for ASCII/abbreviated-ASCII responses (this heuristic doesn't apply once a
             // binary frame has been detected above -- binary payload bytes could spuriously match it).
             // Check for "end of message" section:
@@ -1061,6 +1064,7 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
                     break;
                 }
             }
+#endif
 
             // Exit if we've received all the buffer can hold.
             if (UART_gnss_buffer_write_idx >= rx_buf_max_size) {
