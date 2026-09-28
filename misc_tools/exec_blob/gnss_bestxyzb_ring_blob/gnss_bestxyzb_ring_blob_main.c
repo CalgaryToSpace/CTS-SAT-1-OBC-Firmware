@@ -1117,6 +1117,8 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
     }
     *rx_buf_len_dest = dest_write_idx;
 
+
+    // VENDORING NOTE: This blob is unreachable. `remove_nulls_count` is always 0.
     if (remove_nulls_count > 0) {
         LOG_message(
             LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
@@ -1729,12 +1731,15 @@ uint8_t blob_main(
     const char *args_str,
     char *response_buf, unsigned short response_buf_len
 ) {
+    // Not too useful, save a bit of space by disabling.
+#if 0
     LOG(
         LOG_SEVERITY_DEBUG,
         "Blob (%s) args_str: '%s'",
         BLOB_NAME,
         args_str
     );
+#endif
 
     const uint16_t args_str_len = strlen(args_str);
     uint16_t pos = 0;
