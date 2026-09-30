@@ -36,10 +36,14 @@
 //                every BESTXYZB record the receiver returns is stored and downlinked.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/gnss_bestxyzb_ring_v2.blob", run:
-//  CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;TRACK_MPI)!
-// To stop it:
-//  CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
+//   Default:
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5)!
+//
+//   Also, log GNSS when the MPI is active:
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;TRACK_MPI)!
+//
+//   Stop/disable this feature, and turn the GNSS off:
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
 //
 // Notes:
 //  1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).

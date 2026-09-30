@@ -345,16 +345,15 @@ all-zero).
 After uplinking the blob as "blobs/gnss_bestxyzb_ring_v2.blob", run:
 
 ```
+# Default:
+CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5)!
+
+# Also, log GNSS when the MPI is active:
 CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;TRACK_MPI)!
-```
 
-To stop it (also turns the GNSS channel off, unless `NO_EPS_CTRL` is given, and cancels all pending
-reruns; running it again later starts a fresh campaign):
-
-```
+# Stop/disable this feature, and turn the GNSS off:
 CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
 ```
-
 
 ### Notes
 1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
