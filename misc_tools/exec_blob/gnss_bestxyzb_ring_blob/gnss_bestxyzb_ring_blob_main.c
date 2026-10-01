@@ -1,47 +1,159 @@
-// This is a blob (executable) that periodically requests a "log bestxyzb once" sample from the
-// GNSS receiver, stores it into a persistent fixed-size in-memory ring buffer, downlinks
-// some random samples from that buffer on every run, and schedules itself for the next run.
+// This is a blob (executable) that manages the GNSS receiver's power channel based on available
+// power/sun, periodically samples "log bestxyzb once" from the GNSS receiver, stores the fixes
+// into a ring of files in the LittleFS filesystem, periodically syncs the OBC clock to GNSS time
+// (and pushes that time out to the EPS and the ADCS),
+// downlinks a randomly-selected consecutive run of stored samples on every run, and schedules
+// itself for the next run.
 //
-// Motivation: Collect a rolling history of GNSS position/velocity samples in RAM, and slowly send
-// it down to the ground over many passes via random sampling, without needing a dedicated file.
+// High-Level Overview:
+//  1. Collect a long rolling history of GNSS position/velocity fixes.
+//  2. Collect GNSS history during MPI operations (with the `TRACK_MPI` flag).
+//  3. Duty-cycle the GNSS receiver so it only draws power when the satellite can afford it.
+//  4. Slowly send that history to the ground over many random SatNOGS passes via random sampling.
+//  5. When the GNSS is active, set the OBC, EPS, and ADCS time based on the GNSS time.
 //
-// Args Format: <repeat_interval_ms>;<downlink_n>
-// - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
-//   interval (clamped to a minimum of 1100ms).
-// - downlink_n: Number of randomly-selected samples to downlink from the ring buffer.
+// Args Format: <repeat_interval_ms>;<downlink_n>[;<flag1|flag2|...>]
+// - repeat_interval_ms: Interval at which the blob re-runs itself. Anything below 1100ms
+//   (including 0) is clamped up to 1100ms.
+// - downlink_n: Number of ADDITIONAL consecutive samples to downlink after the randomly-selected
+//   starting sample. So a total of (1 + downlink_n) packets are sent per run, fewer if the
+//   randomly-chosen start lands near the end of the chosen file.
+// - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
+//     STOP       Cancel all pending reruns, turn the GNSS channel off (unless NO_EPS_CTRL), reset the
+//                ring, and exit.
+//     FAKE       Local/bench test mode: never touch the GNSS UART, never run the power policy
+//                or a time sync, and synthesize samples from the hardware RNG instead. Everything
+//                else (LittleFS storage, downlink, rescheduling) behaves normally.
+//     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode,
+//                regardless of sun/voltage -- except that the 14V hard floor still wins.
+//                This flag only governs powering the GNSS *on*. Downlink is suppressed during
+//                MPI activity either way.
+//     NO_EPS_CTRL  Never command the EPS channel on or off; just sample if the channel happens to
+//                already be on. For bench use and for handing power control back to EPS telecommands.
+//                The EPS is still queried every run (PDU housekeeping, for the channel state), and
+//                the EPS clock is still set on every time sync.
+//     GOOD_ONLY  Only store good, non-empty fixes (see the note on fix filtering). Without it,
+//                every BESTXYZB record the receiver returns is stored and downlinked.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/gnss_bestxyzb_ring_v1.blob", run:
-//  CTS1+eps_set_channel_enabled(gnss,1)!
-//  CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
+//   Default:
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5)!
+//
+//   Also, log GNSS when the MPI is active:
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;TRACK_MPI)!
+//
+//   Stop/disable this feature, and turn the GNSS off:
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
 //
 // Notes:
 //  1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
 //  2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
 //     extended beacon blob (re-uplinking cancels any previously-scheduled rerun of this blob).
-//  3. SAFETY FEATURE: On each run, this blob checks whether the GNSS EPS power channel
-//     (EPS_CHANNEL_3V3_GNSS) is enabled. If the GNSS power is disabled (e.g., EPS safety mode,
-//     forgot to enable it before, or intentionally disabled it), this blob ends and does not
-//     reschedule itself.
-//  4. If a GNSS query fails for any reason, this run skips storing a new sample but still
+//  3. Unlike v1, this blob TURNS THE GNSS CHANNEL ON AND OFF ITSELF (see Power Policy below).
+//     It no longer dies when it finds the GNSS powered off -- that's now an expected state.
+//  4. SAFETY: The GNSS is never powered on while the battery is below
+//     GNSS_POWER_HARD_FLOOR_MV (14000mV), and is actively turned off if the battery falls below
+//     that, regardless of MPI state or sun.
+//  5. SAFETY: Any failure exit which results in non-rescheduling turns the GNSS channel off first,
+//     unless NO_EPS_CTRL is given.
+//  6. If a GNSS query fails for any reason, this run skips storing a new sample but still
 //     downlinks existing samples and reschedules normally, so transient GNSS comms errors
 //     "self-heal" on the next run.
-//  5. If GNSS firehose mode is activated, this blob skips collecting data samples while firehose
-//     mode is active, but will resume after firehose mode is disabled.
-//  6. The ring buffer's contents may be retained between software reboots, watchdog resets, etc.
-
+//  7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
+//     syncs) while firehose mode is active, but will resume after GNSS firehose mode is disabled.
+//  8. Fix filtering: by default, every BESTXYZB record the receiver returns is stored and
+//     downlinked, including warm-up and no-solution records, so the ground sees exactly what the
+//     receiver reported. With GOOD_ONLY, only good, non-empty fixes are stored: the solution status
+//     must be SOL_COMPUTED, the position type must not be NONE, and the X/Y/Z position bytes must
+//     not be all-zero. The response's `bad_fixes` counter only counts records dropped by GOOD_ONLY.
+//  9. While the MPI is in active (sensing) mode, this blob still samples and stores to disk, but
+//     sends NOTHING over the radio that run, so it doesn't compete with the science campaign.
+//     This applies whether or not the TRACK_MPI flag was passed.
+// 10. Likewise, no GNSS time sync (OBC clock set) is performed while the MPI is in active
+//     (sensing) mode, even if one is due: stepping the clock mid-campaign could corrupt the
+//     timestamps on the science data. The sync stays due and happens on the first run after the
+//     MPI goes idle. Also not gated behind the TRACK_MPI flag.
+// 11. The GNSS time sync executes when the GNSS is on and sampled, at most once every
+//     GNSS_TIME_SYNC_INTERVAL_MS (10 minutes).
+//     It's skipped in FAKE mode, in firehose mode, and while the MPI is active. Every
+//     successful sync is pushed onward to the EPS (EPS_set_eps_time_based_on_obc_time()) and to
+//     the ADCS (ADCS_synchronize_unix_time()), even under NO_EPS_CTRL.
+// 12. On a STOP, reset, or serious anomaly, the blob's state is reset, and the collected samples
+//     are discarded.
+// 13. Nothing is downlinked until the first ring file fills (GNSS_RING_RECORDS_PER_FILE stored
+//     fixes), because the file being written is never downlinked. Thus, after any reset,
+//     runs report "sent=0/0" until then.
+// 14. A run that switches the GNSS channel on doesn't sample: the receiver gets
+//     GNSS_POWER_ON_SETTLE_MS (5s) to boot, and sampling starts on the next run. There's no
+//     warm-up wait if the channel was already on (e.g., switched on by the ground, or under NO_EPS_CTRL).
+// 15. Return codes: SEND_PARTIAL_FAILURE and SEND_SKIPPED_MPI_ACTIVE are non-zero, but both mean
+//     the run completed and rescheduled itself as normal. They are not failures of the campaign.
+//
 // --------------------------
-
+//
+// Power Policy (evaluated fresh on every run, in this order; first match wins):
+//   1. battery < 14000mV                      -> OFF  (hard floor; overrides everything below)
+//   2. TRACK_MPI flag set AND MPI is sensing   -> ON
+//   3. battery >= 15000mV AND in sun           -> ON
+//   4. eclipse OR battery < 14500mV            -> OFF
+//   5. otherwise                               -> keep the channel in its current state (hysteresis)
+// "In sun" means the sum of coarse sun sensors 1..6 is > GNSS_SUN_SENSOR_SUM_THRESHOLD (50); if
+// the ADCS query fails, we conservatively treat it as eclipse (except on the bench, where
+// RBF=BENCH steamrolls). Likewise, if the EPS query for the channel state fails, we treat the
+// GNSS as off and don't sample -- except on the bench, where RBF=BENCH treats it as on.
+//
+// --------------------------
+//
 // Implementation Details:
 //
-// Persistent storage: This blob has NO .data/.bss of its own (enforced by the Makefile's build
-// check -- see FATAL check), because each execution is freshly loaded into a transient malloc'd/
-// MPI buffer and jumped into, so ordinary globals would reset every run. Instead, the ring buffer
-// lives at a fixed physical SRAM address (see `RING` in blob.ld) that is NOT used by the
-// currently-running rc3 firmware image's .data/.bss, so its contents physically survive between
-// this blob's separate executions, and are treated as this blob's only persistent state. A magic
-// number at the start of that memory detects true cold-start (e.g., first ever run, or after a
-// full power-cycle that clears SRAM) vs. an already-initialized buffer.
+// Storage: Samples live in the LittleFS filesystem, under "gnss_ring/", as a ring of
+// GNSS_RING_FILE_COUNT files ("gnss_ring/r0.bin" .. "gnss_ring/r9.bin"), each holding up to
+// GNSS_RING_RECORDS_PER_FILE fixed-size records. When the current file fills, we advance to the
+// next file index; after the last one we wrap back to index 0 and TRUNCATE it (rewrite from
+// scratch), evicting the oldest data.
+//
+// Persistent RAM: This blob has NO .data/.bss of its own (enforced by the Makefile's build check
+// -- see FATAL check), because each execution is freshly loaded into a transient malloc'd/MPI
+// buffer and jumped into, so ordinary globals would reset every run. Instead, a small state block
+// (the LittleFS write cursor, the open ring file handle, and counters -- NOT the sample data) lives
+// at a fixed physical SRAM address (see `RING` in blob.ld) that is NOT used by the currently-
+// running rc3 firmware image's .data/.bss, so its contents physically survive between this blob's
+// separate executions. A magic number at the start of that memory detects true cold-start (e.g.,
+// first ever run, or after a full power-cycle that clears SRAM) vs. already-initialized state.
+// On cold-start we do NOT inspect the disk: the write cursor simply restarts at r0.bin/record 0,
+// and each ring file is truncated as we first write to it, so the ring refills from scratch.
+//
+// Open file handle: The ring file we're currently appending to is left OPEN between executions --
+// its lfs_file_t lives in the same persistent SRAM block. Appending a record is then just an
+// lfs_file_write(), instead of the open/write/close per record that the LFS_* helpers do: no
+// directory traversal and no cache-buffer malloc/free per sample. The handle is only trusted
+// after confirming it's still linked into the mounted filesystem's open-file list (see
+// ring_open_file_is_live()), and it's closed -- which is what commits its records to flash --
+// when the file fills up, when the blob is STOPped, and when rescheduling the next run fails.
+// So an unexpected reboot loses the uncommitted records in the file currently being written (at
+// most GNSS_RING_RECORDS_PER_FILE of them). Earlier files are committed and stay on disk, but a
+// reboot is also a reset, so they are never downlinked again: the cursor restarts at
+// r0, the old files are excluded from downlink (see below), and each is truncated as the cursor
+// reaches it. In effect, a reboot abandons the whole ring. That's an accepted trade: reboots
+// are rare.
+//
+// The file being written is never also read: it's excluded from the downlink candidates below, so
+// there's only ever one handle open on it. Its samples become downlinkable once it fills and is
+// closed.
+//
+// Ring files left over from a PREVIOUS campaign are excluded too. A reset zeroes
+// the write cursor but doesn't erase the disk -- files are truncated lazily, as each is first
+// written to -- so without this, a freshly-reset blob would immediately downlink the old
+// campaign's r1..r9 as though they were current. Downlink candidates are therefore limited to
+// files below the write cursor until the ring wraps, after which every file is ours again.
+//
+// Five things mean "start over", and all five take the same path:
+// cold/garbage SRAM, a reboot, an unmounted filesystem, a ring file
+// handle the mounted filesystem doesn't recognise (remount/reformat without a reboot), and an
+// operator STOP. Each resets the write cursor to r0.bin record 0 and zeroes the counters, so
+// the ring refills from scratch. Only STOP actually has a live ring file to commit and close;
+// in the other four the handle is untrusted or no longer live, so its uncommitted records are
+// simply lost.
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -59,13 +171,20 @@
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "timekeeping/timekeeping.h"
 #include "gnss_receiver/gnss_internal_drivers.h"
+#include "gnss_receiver/gnss_time.h"
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_commands.h"
+#include "eps_drivers/eps_time.h"
 #include "comms_drivers/ax100_tx.h"
 #include "comms_drivers/comms_tx.h"
 #include "crypto/random_number_generator.h"
 #include "obc_systems/external_led_and_rbf.h"
+#include "obc_systems/adc_vbat_monitor.h"
+#include "adcs_drivers/adcs_types.h"
+#include "mpi/mpi_types.h"
+#include "../lfs.h"
+#include "littlefs/littlefs_helper.h"
 
 
 typedef enum {
@@ -81,7 +200,8 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char BLOB_NAME[] = "gnss_bestxyzb_ring_blob_v1";
+static const char FLAG_DELIM = '|';
+static const char BLOB_NAME[] = "gnss_bestxyzb_ring_blob_v2";
 
 // Extern variables from core FW:
 extern const uint16_t UART_gnss_buffer_len;                      // Length of the GNSS response buffer
@@ -91,11 +211,15 @@ extern volatile uint32_t UART_gnss_last_write_time_ms;           // Last write t
 
 extern UART_HandleTypeDef *UART_gnss_port_handle;
 
+extern volatile MPI_rx_mode_enum_t MPI_current_uart_rx_mode;
+
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 // Note: TIME_uptime_ms() itself is not redeclared here -- it's already provided as a plain
 // `inline` function by the included "timekeeping/timekeeping.h" (same as extended_beacon_blob).
 
+// Note: strlen/strcmp/memset/memcpy are declared by <string.h>, which arrives transitively via
+// littlefs's lfs_util.h, so (unlike in the other blobs) they must NOT be re-declared here.
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int strlen(const char *s);
 extern int strcmp(const char *s1, const char *s2);
@@ -112,7 +236,41 @@ extern void LOG_message(
 #define LOG(severity, fmt, ...) \
     LOG_message(LOG_SYSTEM_TELECOMMAND, severity, LOG_SINK_ALL, fmt, ##__VA_ARGS__)
 
+extern void *pvPortMalloc(size_t xWantedSize);
 extern void GNSS_set_uart_interrupt_state(uint8_t new_enabled);
+extern uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
+extern uint8_t ADCS_synchronize_unix_time();
+
+// MARK: Tunable Parameters
+
+#define GNSS_POWER_HARD_FLOOR_MV 14000 // NEVER power the GNSS on below this. Turn it off if we fall below it.
+#define GNSS_POWER_OFF_BELOW_MV 14500 // Below this (but above the hard floor), shed the GNSS.
+#define GNSS_POWER_ON_ABOVE_MV 15000 // At/above this, and in sun, power the GNSS on.
+#define GNSS_SUN_SENSOR_SUM_THRESHOLD 50 // Sum of coarse sun sensors 1..6 above which we're "in sun". Nominally 20-28 in eclipse and 50+ in sun.
+
+// How often to re-sync the OBC clock from the GNSS, while the GNSS is powered on and healthy.
+#define GNSS_TIME_SYNC_INTERVAL_MS 600000u // 10 minutes.
+
+// Sentinel for the EPS/ADCS time-push statuses: no sync happened this run, so nothing was pushed.
+// Can't collide with a real status, since those are single-byte error codes well below 0xFF.
+#define TIME_PUSH_NOT_ATTEMPTED 0xFFu
+
+// After switching the GNSS channel on, the receiver needs to boot before it can answer logs.
+// We skip sampling on the run that powers it up, and sample from the next run onward.
+#define GNSS_POWER_ON_SETTLE_MS 5000u
+
+// MARK: Storage Layout
+
+#define GNSS_RING_DIR "gnss_ring"
+#define GNSS_RING_FILE_COUNT 10 // Number of files in the ring, before wrapping back to r0.bin.
+#define GNSS_RING_RECORDS_PER_FILE 50 // Records per file, before advancing to the next file.
+#define GNSS_SAMPLE_SIZE 144 // Record size. Each BESTXYZB is 144 bytes. Larger values add trailing padding.
+#define GNSS_RING_PATH_MAX_LEN 32 // Enough for "gnss_ring/r<n>.bin".
+
+// Total record slots across the whole ring. Used to flatten a (file_idx, record_idx) pair into the
+// single `ring_position` that the downlink packet carries, and that the ground already parses.
+#define GNSS_RING_TOTAL_RECORDS (GNSS_RING_FILE_COUNT * GNSS_RING_RECORDS_PER_FILE)
+
 
 // MARK: Error Enum
 
@@ -123,9 +281,15 @@ typedef enum {
     BLOB_ERR_GNSS_COMMS_FAILED = 1, // GNSS_send_cmd_get_response_NEW() failed.
     BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND = 2, // Sync bytes (AA 44 12) not found in GNSS response.
     BLOB_ERR_EPS_QUERY_FAILED = 3, // EPS_CMD_get_pdu_housekeeping_data_eng() failed.
+    BLOB_ERR_BAD_FIX = 4, // GOOD_ONLY: fix was not SOL_COMPUTED, was position-type NONE, or was all-zero.
+    BLOB_ERR_LFS_WRITE_FAILED = 5, // Writing/appending the sample record to LittleFS failed.
+    BLOB_ERR_LFS_MKDIR_FAILED = 6, // Couldn't create/confirm the GNSS_RING_DIR directory.
+    BLOB_ERR_LFS_NOT_MOUNTED = 7, // Filesystem wasn't mounted on entry; blob dies without rescheduling.
     BLOB_ERR_FIREHOSE_MODE_ACTIVE = 20, // Skipped sampling because GNSS firehose mode is active.
-    BLOB_ERR_GNSS_POWERED_OFF = 50, // GNSS EPS channel is off (or EPS query failed); safety shutdown.
-    BLOB_ERR_DOWNLINK_PARTIAL_FAILURE = 60, // At least one downlink packet failed to send.
+    BLOB_ERR_GNSS_POWERED_OFF = 50, // GNSS EPS channel is off this run; nothing sampled (not fatal).
+    BLOB_ERR_GNSS_WARMING_UP = 51, // GNSS channel was just switched on; skipping sampling this run.
+    BLOB_ERR_SEND_PARTIAL_FAILURE = 60, // At least one downlink packet failed to send.
+    BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE = 62, // MPI was active, so this run stayed off the radio (whether or not it stored a sample).
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
     BLOB_ERR_CANCEL_RERUNS_FAILED = 137, // cancel_other_scheduled_reruns_of_this_blob() failed.
@@ -142,51 +306,117 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
         case BLOB_ERR_GNSS_COMMS_FAILED: return "GNSS_COMMS_FAILED";
         case BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND: return "BESTXYZB_SYNC_NOT_FOUND";
         case BLOB_ERR_EPS_QUERY_FAILED: return "EPS_QUERY_FAILED";
+        case BLOB_ERR_BAD_FIX: return "BAD_FIX";
+        case BLOB_ERR_LFS_WRITE_FAILED: return "LFS_WRITE_FAILED";
+        case BLOB_ERR_LFS_MKDIR_FAILED: return "LFS_MKDIR_FAILED";
+        case BLOB_ERR_LFS_NOT_MOUNTED: return "LFS_NOT_MOUNTED";
         case BLOB_ERR_FIREHOSE_MODE_ACTIVE: return "FIREHOSE_MODE_ACTIVE";
         case BLOB_ERR_GNSS_POWERED_OFF: return "GNSS_POWERED_OFF";
-        case BLOB_ERR_DOWNLINK_PARTIAL_FAILURE: return "DOWNLINK_PARTIAL_FAILURE";
+        case BLOB_ERR_GNSS_WARMING_UP: return "GNSS_WARMING_UP";
+        case BLOB_ERR_SEND_PARTIAL_FAILURE: return "SEND_PARTIAL_FAILURE";
+        case BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE: return "SEND_SKIPPED_MPI_ACTIVE";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
         case BLOB_ERR_CANCEL_RERUNS_FAILED: return "CANCEL_RERUNS_FAILED";
         case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
         case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
-        default: return "UNKNOWN_ERROR";
     }
+    return "UNKNOWN_ERROR";
 }
 
 
-// MARK: Persistent Ring Buffer
+// MARK: Persistent State
 
 // See blob.ld for the memory reservation rationale.
 
 // Defined by blob.ld: a NOLOAD symbol anchored at the start of the fixed `RING` memory region.
-extern uint8_t gnss_ring_buffer_base[];
+extern uint8_t gnss_ring_state_base[];
 
-#define GNSS_RING_BUFFER_REGION_LEN 0x9000u // Must match blob.ld's MEMORY.RING.LENGTH.
+#define GNSS_RING_STATE_REGION_LEN 0x100u // Must match blob.ld's MEMORY.RING.LENGTH.
+#define GNSS_RING_STATE_MAGIC 0xB35779C1u // Deliberately != v1's magic, so v1 state is treated as cold.
 
-#define GNSS_SAMPLE_SIZE 144 // Slot size. Each BESTXYZB is 144 bytes. Value can be larger to add optional trailing padding.
-#define GNSS_RING_BUFFER_CAPACITY 255
-#define GNSS_RING_BUFFER_MAGIC 0xB35779C0u
-
-#pragma pack(push, 1)
+// NOT packed, deliberately: it holds a live lfs_file_t that littlefs accesses through an ordinary
+// (alignment-assuming) pointer, and the struct is only ever read/written by this blob at a fixed,
+// 4-byte-aligned base address, so there's nothing for packing to buy.
 typedef struct {
-    uint32_t magic; // GNSS_RING_BUFFER_MAGIC once initialized; anything else means cold/garbage SRAM.
-    uint16_t write_idx; // Next slot to write, 0..(CAPACITY-1). Wraps around (circular eviction).
-    uint16_t count; // Number of valid samples stored so far, capped at GNSS_RING_BUFFER_CAPACITY.
-    uint32_t gnss_fetch_failure_count; // Total GNSS data fetch failures across all blob executions
-        // (GNSS comms failures + BESTXYZB sync-not-found extraction failures), since cold-init.
-    uint16_t downlink_seq_num; // Next sequence number to stamp on a downlinked GNSS_bestxyzb_downlink_packet_t.
-        // Incremented (and wraps) per packet downlinked, persisted across this blob's executions.
-    uint8_t samples[GNSS_RING_BUFFER_CAPACITY][GNSS_SAMPLE_SIZE];
-} GNSS_ring_buffer_t;
-#pragma pack(pop)
+    uint32_t magic; // GNSS_RING_STATE_MAGIC once initialized; anything else means cold/garbage SRAM.
+
+    uint8_t write_file_idx; // Ring file currently being appended to, 0..(GNSS_RING_FILE_COUNT-1).
+    uint8_t write_record_idx; // Records already in that file, 0..GNSS_RING_RECORDS_PER_FILE.
+    uint8_t has_wrapped; // 1 once we've cycled past the last file at least once (all files have data).
+
+    uint16_t downlink_seq_num; // Next sequence number to stamp on a downlinked packet. Wraps at 65536.
+
+    uint32_t gnss_fetch_failure_count; // GNSS comms + extraction failures, since cold-init.
+    uint32_t bad_fix_skipped_count; // Fixes discarded for being invalid/empty, since cold-init.
+    uint32_t stored_record_count; // Total records written to LittleFS, since cold-init.
+    uint32_t last_time_sync_uptime_ms; // TIME_uptime_ms() at the last successful GNSS time sync.
+    uint32_t time_sync_count; // Successful GNSS time syncs, since cold-init.
+    uint32_t gnss_power_on_uptime_ms; // TIME_uptime_ms() when we last switched the channel on.
+
+    // Heap allocation holding GNSS_REBOOT_CANARY_MAGIC, used to spot reboots that left this SRAM
+    // block intact. NULL until the first allocation. See detect_reboot_via_heap_canary().
+    uint32_t *reboot_canary;
+
+    // The ring file we're appending to, held open across executions. See ring_open_write_file().
+    uint8_t open_file_is_valid; // 1 if we left `open_file` open; still verify it's live before use.
+    uint8_t open_file_idx; // Ring file index that `open_file` refers to, when valid.
+    lfs_file_t open_file; // Live littlefs handle; linked into LFS_filesystem.mlist while open.
+} GNSS_ring_state_t;
 
 _Static_assert(
-    sizeof(GNSS_ring_buffer_t) <= GNSS_RING_BUFFER_REGION_LEN,
-    "GNSS_ring_buffer_t must fit within the RING memory region reserved in blob.ld"
+    sizeof(GNSS_ring_state_t) <= GNSS_RING_STATE_REGION_LEN,
+    "GNSS_ring_state_t must fit within the RING memory region reserved in blob.ld"
 );
 
-#define g_ring ((GNSS_ring_buffer_t *)gnss_ring_buffer_base)
+#define g_state ((GNSS_ring_state_t *)gnss_ring_state_base)
+
+
+// MARK: Soft-Reboot Detection
+
+// Value written into the heap canary allocation. Anything else means the heap no longer holds what
+// we left there.
+#define GNSS_REBOOT_CANARY_MAGIC 0x5C0FFEE5u
+
+/// @brief Detect a reboot that left this blob's fixed SRAM state block intact but reset the heap.
+/// @details `magic` in the state block can't tell "previous run of this blob" apart from "previous
+///     run, then a reboot": that block sits at a fixed SRAM address specifically so it survives a
+///     software reset. The heap can tell them apart. FreeRTOS allocates out of `ucHeap`, a static
+///     array that is re-initialised from scratch on every boot, so an allocation we made before a
+///     reboot is no longer ours afterwards and its contents aren't preserved. We keep one 4-byte
+///     allocation holding a magic value; if it no longer reads back as our magic, something
+///     restarted underneath us.
+///
+///     Dereferencing the old pointer after a reboot is safe: it points into `ucHeap`, which is a
+///     fixed static array, so the address is always mapped and readable whatever the heap has
+///     since done with it. We deliberately never vPortFree() the old allocation -- the heap that
+///     owned it no longer exists, and freeing it would corrupt the new heap's free list.
+/// @return true if a reboot was detected this run. False on the very first allocation (there was
+///     no previous boot to have left anything behind) and on every nominal run after it.
+static bool detect_reboot_via_heap_canary() {
+    uint32_t *canary = g_state->reboot_canary;
+    const bool rebooted = (canary != NULL) && (*canary != GNSS_REBOOT_CANARY_MAGIC);
+
+    // First run, or the old allocation belongs to a dead heap: abandon it (see @details) and
+    // take a fresh one. A failed allocation leaves NULL, so the next run simply retries.
+    if ((canary == NULL) || rebooted) {
+        canary = (uint32_t *)pvPortMalloc(sizeof(uint32_t));
+        if (canary != NULL) {
+            *canary = GNSS_REBOOT_CANARY_MAGIC; // The only write: from here on we only read it.
+        }
+        g_state->reboot_canary = canary;
+    }
+
+    // One log line covers both notable events: a detected reboot, and/or a failed allocation.
+    // Nominal runs (same boot, canary intact) stay silent.
+    if (rebooted || (canary == NULL)) {
+        LOG(
+            LOG_SEVERITY_WARNING, "%s: heap canary: reboot=%d, alloc_ok=%d",
+            BLOB_NAME, rebooted, (canary != NULL)
+        );
+    }
+    return rebooted;
+}
 
 
 // MARK: Packet
@@ -196,7 +426,7 @@ typedef struct {
     uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE.
 
     uint16_t downlink_seq_num; // Sequence number of this downlinked packet (persisted, wraps at 65536).
-    uint16_t ring_position; // Index (0..GNSS_RING_BUFFER_CAPACITY-1) within the ring buffer this sample came from.
+    uint16_t ring_position; // Index (0..GNSS_RING_TOTAL_RECORDS-1) within the ring this sample came from.
 
     uint8_t bestxyzb_data[GNSS_SAMPLE_SIZE]; // Raw BESTXYZB binary log sample.
 } GNSS_bestxyzb_downlink_packet_t;
@@ -205,6 +435,11 @@ typedef struct {
 _Static_assert(
     sizeof(GNSS_bestxyzb_downlink_packet_t) <= AX100_DOWNLINK_MAX_BYTES,
     "GNSS_bestxyzb_downlink_packet_t must fit within a single AX100 downlink packet"
+);
+
+_Static_assert(
+    GNSS_RING_TOTAL_RECORDS <= 65535,
+    "Flattened ring_position must fit in the packet's uint16_t field"
 );
 
 
@@ -231,7 +466,7 @@ static uint16_t parse_token(
 }
 
 /// @brief Parse a string into an integer.
-/// @param s String to parse. Valid format: "<digits>". Underscores are ignored.
+/// @param s String to parse. Valid format: "<digits>" (digits only; no sign or separators).
 /// @returns Parsed integer, or 0 if invalid.
 static int32_t parse_int(const char *s, bool *ok) {
     uint32_t result = 0;
@@ -240,19 +475,67 @@ static int32_t parse_int(const char *s, bool *ok) {
     if (ok) *ok = false;
     if (!s || s[0] == '\0') return 0;
 
-    bool has_digits = false;
     while (s[i] != '\0') {
-        if (s[i] == '_') { i++; continue; } // skip delimiter
-
         if (s[i] < '0' || s[i] > '9') return 0; // invalid char
         result = result * 10 + (s[i] - '0');
-        has_digits = true;
         i++;
     }
 
-    if (!has_digits) return 0;
     if (ok) *ok = true;
     return (int32_t)result;
+}
+
+/// @brief Lowercase a single ASCII character. Non-letters pass through unchanged.
+/// @note Hand-rolled because the firmware ELF doesn't export tolower() for us to link against.
+static char to_lower_char(char c) {
+    if ((c >= 'A') && (c <= 'Z')) {
+        return (char)(c + ('a' - 'A'));
+    }
+    return c;
+}
+
+/// @brief Check whether `flags_str` contains `flag_name` as a whole, vertical-bar-separated token,
+///     compared case-insensitively (so "track_mpi", "TRACK_MPI" and "Fake|Track_MPI" all match).
+/// @details Whole-token matching (rather than a plain substring search) matters so that, e.g.,
+///     a future "NOSTOP" flag would not accidentally trigger the "STOP" behaviour.
+/// @return true if the flag is present.
+static bool has_flag(const char *flags_str, const char *flag_name) {
+    if (!flags_str || !flag_name) {
+        return false;
+    }
+
+    uint16_t i = 0;
+    while (flags_str[i] != '\0') {
+        // Skip any leading delimiters/spaces before this token.
+        while ((flags_str[i] == FLAG_DELIM) || (flags_str[i] == ' ')) {
+            i++;
+        }
+        if (flags_str[i] == '\0') {
+            break;
+        }
+
+        // Compare this token against flag_name, case-insensitively.
+        uint16_t j = 0;
+        while (
+            (flags_str[i + j] != '\0')
+            && (flags_str[i + j] != FLAG_DELIM)
+            && (flag_name[j] != '\0')
+            && (to_lower_char(flags_str[i + j]) == to_lower_char(flag_name[j]))
+        ) {
+            j++;
+        }
+        const bool token_ended = (flags_str[i + j] == '\0') || (flags_str[i + j] == FLAG_DELIM);
+        if (token_ended && (flag_name[j] == '\0')) {
+            return true;
+        }
+
+        // Advance to the next token.
+        while ((flags_str[i] != '\0') && (flags_str[i] != FLAG_DELIM)) {
+            i++;
+        }
+    }
+
+    return false;
 }
 
 
@@ -346,12 +629,12 @@ static GNSS_ring_blob_error_enum_t reschedule_current_blob_tcmd(uint32_t time_in
 }
 
 
-// MARK: GNSS Power Check
+// MARK: Power Management
 
 /// @brief Check whether the GNSS EPS power channel is currently enabled, via the EPS PDU
 ///     housekeeping enabled-channels bitfield (NOT a GNSS-side query -- there is no such thing).
 /// @param is_on_dest Set to 1 if the channel is enabled, 0 if disabled. Only meaningful if this
-///     function returns 0.
+///     function returns BLOB_ERR_OK.
 /// @return BLOB_ERR_OK on success (EPS query succeeded), BLOB_ERR_EPS_QUERY_FAILED
 ///     if the EPS query itself failed.
 static GNSS_ring_blob_error_enum_t is_gnss_channel_powered_on(uint8_t *is_on_dest) {
@@ -388,6 +671,178 @@ static GNSS_ring_blob_error_enum_t is_gnss_channel_powered_on(uint8_t *is_on_des
     return BLOB_ERR_OK;
 }
 
+/// @brief Determine whether the satellite is currently in sunlight, from the sum of coarse sun
+///     sensors 1 through 6.
+/// @details Conservative on failure: if the ADCS query fails we report "not in sun", so a dead or
+///     powered-off ADCS can only ever cause us to leave the GNSS off, never to switch it on. The
+///     bench (RBF=BENCH) is the exception, where we report "in sun" so the blob is testable
+///     indoors without an ADCS.
+/// @return true if in sun.
+static bool is_in_sun() {
+    ADCS_raw_coarse_sun_sensor_1_to_6_struct_t css;
+    memset(&css, 0, sizeof(css));
+
+    const uint8_t adcs_status = ADCS_get_raw_coarse_sun_sensor_1_to_6(&css);
+    if (adcs_status != 0) {
+        if (OBC_get_rbf_state() == OBC_RBF_STATE_BENCH) {
+            return true; // Bench testing: pretend it's sunny.
+        }
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: ADCS_get_raw_coarse_sun_sensor_1_to_6() -> %d; assuming eclipse",
+            BLOB_NAME, adcs_status
+        );
+        return false;
+    }
+
+    const uint16_t css_sum = (uint16_t)css.coarse_sun_sensor_1 + (uint16_t)css.coarse_sun_sensor_2
+        + (uint16_t)css.coarse_sun_sensor_3 + (uint16_t)css.coarse_sun_sensor_4
+        + (uint16_t)css.coarse_sun_sensor_5 + (uint16_t)css.coarse_sun_sensor_6;
+
+    return (css_sum > GNSS_SUN_SENSOR_SUM_THRESHOLD);
+}
+
+/// @brief Whether the MPI is currently actively collecting science data.
+static bool is_mpi_active() {
+    return (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE);
+}
+
+typedef enum {
+    GNSS_POWER_DECISION_KEEP = 0, // Hysteresis band: leave the channel however it already is.
+    GNSS_POWER_DECISION_ON = 1,
+    GNSS_POWER_DECISION_OFF = 2,
+} GNSS_power_decision_enum_t;
+
+/// @brief Apply the Power Policy (see the file header) to decide whether the GNSS channel should
+///     be on, off, or left alone this run.
+/// @param track_mpi Whether the TRACK_MPI flag was passed (MPI sensing mode forces the GNSS on).
+/// @param vbatt_mV_dest Battery voltage read during the decision, for logging. Never NULL.
+/// @param reason_dest Set to a short static string naming the rule that fired. Never NULL.
+static GNSS_power_decision_enum_t decide_gnss_power(
+    bool track_mpi, int16_t *vbatt_mV_dest, const char **reason_dest
+) {
+    const int16_t vbatt_mV = OBC_read_vbat_with_adc_mV();
+    *vbatt_mV_dest = vbatt_mV;
+
+    // Rule 1: Hard floor. This check comes first and has no exceptions -- not the MPI, not the sun.
+    if (vbatt_mV < GNSS_POWER_HARD_FLOOR_MV) {
+        *reason_dest = "vbatt<hard_floor";
+        return GNSS_POWER_DECISION_OFF;
+    }
+
+    // Rule 2: The MPI outranks the sun/voltage rules below, so GNSS fixes accompany science data.
+    if (track_mpi && is_mpi_active()) {
+        *reason_dest = "mpi_active";
+        return GNSS_POWER_DECISION_ON;
+    }
+
+    const bool in_sun = is_in_sun();
+
+    // Rule 3: Plenty of charge and actively charging -> collect.
+    if ((vbatt_mV >= GNSS_POWER_ON_ABOVE_MV) && in_sun) {
+        *reason_dest = "vbatt_high+sun";
+        return GNSS_POWER_DECISION_ON;
+    }
+
+    // Rule 4: Eclipse or a sagging battery -> shed the load.
+    if (!in_sun) {
+        *reason_dest = "eclipse";
+        return GNSS_POWER_DECISION_OFF;
+    }
+    if (vbatt_mV < GNSS_POWER_OFF_BELOW_MV) {
+        *reason_dest = "vbatt_low";
+        return GNSS_POWER_DECISION_OFF;
+    }
+
+    // Rule 5: In the hysteresis band -- don't thrash the channel.
+    *reason_dest = "hysteresis_hold";
+    return GNSS_POWER_DECISION_KEEP;
+}
+
+/// @brief Drive the GNSS EPS channel to the state that decide_gnss_power() asked for, and record
+///     the resulting state in persistent RAM.
+/// @param decision What decide_gnss_power() returned.
+/// @param no_eps If true, never command the EPS; just report the channel's existing state.
+/// @param is_on_dest Set to the channel's state after this function runs (1=on).
+/// @return BLOB_ERR_OK, or BLOB_ERR_EPS_QUERY_FAILED if we couldn't read the channel state.
+static GNSS_ring_blob_error_enum_t apply_gnss_power_decision(
+    GNSS_power_decision_enum_t decision, bool no_eps, uint8_t *is_on_dest
+) {
+    uint8_t is_on_now = 0;
+    const GNSS_ring_blob_error_enum_t query_status = is_gnss_channel_powered_on(&is_on_now);
+    if (query_status != BLOB_ERR_OK) {
+        // Conservative: if we can't tell, report "off" and don't command anything. The next run
+        // re-evaluates from scratch.
+        *is_on_dest = 0;
+        return query_status;
+    }
+
+    uint8_t want_on = is_on_now;
+    if (decision == GNSS_POWER_DECISION_ON) {
+        want_on = 1;
+    }
+    else if (decision == GNSS_POWER_DECISION_OFF) {
+        want_on = 0;
+    }
+
+    if ((want_on != is_on_now) && (!no_eps)) {
+        const uint8_t set_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, want_on);
+        if (set_status != 0) {
+            LOG(
+                LOG_SEVERITY_WARNING,
+                "%s: EPS_set_channel_enabled(GNSS, %d) -> %d",
+                BLOB_NAME, want_on, set_status
+            );
+            // Report the state we know we were in, since the change didn't take.
+            *is_on_dest = is_on_now;
+            
+            return BLOB_ERR_OK;
+        }
+
+        LOG(
+            LOG_SEVERITY_NORMAL,
+            "%s: GNSS channel switched %s",
+            BLOB_NAME, want_on ? "ON" : "OFF"
+        );
+        if (want_on) {
+            // Remember when it came up, so we can let the receiver boot before querying it.
+            g_state->gnss_power_on_uptime_ms = TIME_uptime_ms();
+        }
+        is_on_now = want_on;
+    }
+
+    *is_on_dest = is_on_now;
+
+    return BLOB_ERR_OK;
+}
+
+/// @brief Turn the GNSS channel off, because this run is about to exit without rescheduling.
+/// @details Once the blob stops rescheduling itself, nothing is left to run the Power Policy --
+///     including the hard floor -- so a GNSS left on would stay on indefinitely. Every exit path
+///     that doesn't reschedule (STOP, and every failure) calls this first.
+///
+///     Deliberately doesn't touch `g_state`: some callers run before the state block has been
+///     validated, and the next run re-reads the channel state from the EPS anyway.
+/// @param no_eps_ctrl If true (NO_EPS_CTRL flag), leave the channel alone.
+/// @return Short suffix for the response string, saying what happened to the GNSS power.
+static const char *shed_gnss_power_before_exit(bool no_eps_ctrl) {
+    if (no_eps_ctrl) {
+        return " GNSS power untouched (NO_EPS_CTRL).";
+    }
+
+    const uint8_t set_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0);
+    if (set_status != 0) {
+        LOG(
+            LOG_SEVERITY_ERROR,
+            "%s: EPS_set_channel_enabled(GNSS, 0) before exit -> %d",
+            BLOB_NAME, set_status
+        );
+        return " GNSS power-off FAILED.";
+    }
+    return " GNSS off.";
+}
+
+
 // MARK: GNSS UART
 
 const uint32_t GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
@@ -409,9 +864,7 @@ const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500;
 //   ...           Rest of header, then the message body, then a trailing 4-byte CRC32.
 // So the exact total frame length (from the sync bytes) is:
 //   header_length + body_length + GNSS_BINARY_CRC_LEN
-// This lets us detect end-of-message by byte count as soon as it's knowable, rather than only via
-// the (slow, and binary-data-unsafe) ASCII "*CRC\r\n" heuristic below, which doesn't apply to binary
-// responses at all.
+// This lets us detect end-of-message by byte count as soon as it's knowable.
 #define GNSS_BINARY_SYNC_0 0xAAu
 #define GNSS_BINARY_SYNC_1 0x44u
 #define GNSS_BINARY_SYNC_2 0x12u
@@ -419,6 +872,18 @@ const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500;
 #define GNSS_BINARY_BODY_LEN_OFFSET 8u // Offset (from sync) of the 2-byte (LE) body-length field.
 #define GNSS_BINARY_MIN_BYTES_TO_READ_LENGTHS 10u // Bytes from sync needed to read both length fields.
 #define GNSS_BINARY_CRC_LEN 4u // Trailing CRC32, appended after the header+body.
+
+// BESTXYZ message body layout (offsets from the START OF THE BODY, i.e. past the header):
+//   0   4  P-sol status (enum uint32, LE). 0 == SOL_COMPUTED; anything else is an unusable fix.
+//   4   4  Position type (enum uint32, LE). 0 == NONE; anything else is some kind of real fix.
+//   8   24 P-X, P-Y, P-Z (3x double, LE), in meters (ECEF).
+#define GNSS_BESTXYZ_SOL_STATUS_OFFSET 0u
+#define GNSS_BESTXYZ_POS_TYPE_OFFSET 4u
+#define GNSS_BESTXYZ_POS_XYZ_OFFSET 8u
+#define GNSS_BESTXYZ_POS_XYZ_LEN 24u // 3 doubles.
+#define GNSS_BESTXYZ_MIN_BODY_LEN (GNSS_BESTXYZ_POS_XYZ_OFFSET + GNSS_BESTXYZ_POS_XYZ_LEN)
+#define GNSS_SOL_STATUS_SOL_COMPUTED 0u
+#define GNSS_POS_TYPE_NONE 0u
 
 /// @brief Sends a log command to the GNSS, and receives the response.
 /// @param cmd_buf Log command string to send to the GNSS, without EOL characters.
@@ -438,13 +903,19 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
 ) {
     // Reset the GNSS UART interrupt variables
     GNSS_set_uart_interrupt_state(0); // Lock writing to the UART_gnss_buffer while we memset it
+
+    // VENDORING NOTE: Compiled out in this blob to save ~50 bytes (a bit of time).
+    // Resetting UART_gnss_buffer_write_idx below is enough here: every read
+    // in this function stays below write_idx, so stale bytes past it are never looked at.
+#if 0
     for (uint16_t i = 0; i < UART_gnss_buffer_len; i++) {
         // Clear the buffer.
         // Can't use memset because UART_gnss_buffer is volatile.
         // Review comment: I think just setting the UART_gnss_buffer_write_idx to the start is good enough, but we'll keep this.
         UART_gnss_buffer[i] = 0;
     }
-    
+#endif
+
     // Make it start writing to the start of the buffer.
     UART_gnss_buffer_write_idx = 0;
 
@@ -496,7 +967,7 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
                 GNSS_set_uart_interrupt_state(0);
 
                 *rx_buf_len_dest = 0;
-            
+
                 return 2; // Error: Timeout before receiving any data.
             }
         }
@@ -548,6 +1019,11 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
                 break;
             }
 
+            // VENDORING NOTE: Compiled out in this blob to save ~170 bytes. The only command it sends
+            // is "log bestxyzb once", whose binary reply always ends via the length check above. An
+            // ASCII reply (e.g. "<ERROR") now ends via GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS instead:
+            // same result, ~2.5s later.
+#if 0
             // Fallback for ASCII/abbreviated-ASCII responses (this heuristic doesn't apply once a
             // binary frame has been detected above -- binary payload bytes could spuriously match it).
             // Check for "end of message" section:
@@ -579,6 +1055,7 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
                     break;
                 }
             }
+#endif
 
             // Exit if we've received all the buffer can hold.
             if (UART_gnss_buffer_write_idx >= rx_buf_max_size) {
@@ -591,7 +1068,9 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
     GNSS_set_uart_interrupt_state(0); // We are no longer expecting a response
 
     // Review comment: This next line doesn't seem necessary.
-    UART_gnss_buffer[UART_gnss_buffer_write_idx] = '\0'; // Null-terminate the string.
+    // NOTE: Disabled in blob because apparently it has the potential to write out-of-bounds, and also we don't transfer ASCII.
+    // Discussion: https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/669
+    // UART_gnss_buffer[UART_gnss_buffer_write_idx] = '\0'; // Null-terminate the string.
 
     // Check that we've received what we're expecting.
     uint16_t bytes_received_count = 0; // Includes null bytes.
@@ -602,7 +1081,7 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
             UART_gnss_buffer_write_idx,
             rx_buf_max_size
         );
-        
+
         bytes_received_count = rx_buf_max_size - 1;
         // No need to return here. We can still pass back the data we have.
     }
@@ -625,6 +1104,8 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
     }
     *rx_buf_len_dest = dest_write_idx;
 
+
+    // VENDORING NOTE: This blob is unreachable. `remove_nulls_count` is always 0.
     if (remove_nulls_count > 0) {
         LOG_message(
             LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
@@ -653,7 +1134,7 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled_new(
 /// @note This function is intended for "once" log commands and control commands.
 /// @note This function does not validate the response, as related to the request.
 /// @note This function properly handles interactions with the firehose file, if enabled.
-uint8_t GNSS_send_cmd_get_response_NEW(
+static uint8_t GNSS_send_cmd_get_response_NEW(
     const char *cmd_buf, uint8_t cmd_buf_len,
     uint8_t rx_buf[],
     const uint16_t rx_buf_max_size,
@@ -661,13 +1142,15 @@ uint8_t GNSS_send_cmd_get_response_NEW(
     uint8_t remove_null_bytes_in_middle
 ) {
     const GNSS_rx_mode_enum_t rx_mode_at_start = GNSS_current_rx_mode;
-    
+
+    // VENDORING NOTE: In this blob, this step is unnecessary because we exit early if in firehose mode.
+#if 0
     // We must first store any pending data in the UART_gnss_buffer to the file,
     // before clearing the buffer.
-    // VENDORING NOTE: In this blob, this step is unnecessary because we exit early if in firehose mode.
-    // if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
-    //     GNSS_subtask_store_firehose_data_to_file();
-    // }
+    if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
+        GNSS_subtask_store_firehose_data_to_file();
+    }
+#endif
 
     GNSS_current_rx_mode = GNSS_RX_MODE_COMMAND_MODE;
 
@@ -680,6 +1163,9 @@ uint8_t GNSS_send_cmd_get_response_NEW(
     // Reset back to the original RX mode.
     GNSS_current_rx_mode = rx_mode_at_start;
 
+    // VENDORING NOTE: Compiled out in this blob (~25 bytes), for the same reason as the firehose
+    // store step above: the only caller exits early in firehose mode, so this can never run.
+#if 0
     // Write the data to the firehose file, or effectively discard it by resetting the buffer.
     if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
         // You may be tempted to call GNSS_subtask_store_firehose_data_to_file() here, but you shouldn't.
@@ -689,16 +1175,183 @@ uint8_t GNSS_send_cmd_get_response_NEW(
         // If we're in firehose mode, and the interrupt isn't currently enabled, we must ensure it's enabled.
         GNSS_set_uart_interrupt_state(1);
     }
+#endif
 
     return ret;
 }
 
 
+// MARK: LittleFS Ring Storage
+
+/// @brief Build the LittleFS path of ring file `file_idx` (e.g. "gnss_ring/r3.bin").
+static void make_ring_file_path(uint8_t file_idx, char *path_dest, uint16_t path_dest_size) {
+    snprintf(path_dest, path_dest_size, "%s/r%d.bin", GNSS_RING_DIR, (int)file_idx);
+}
+
+/// @brief Create the "gnss_ring/" directory if it doesn't already exist.
+/// @return BLOB_ERR_OK if the directory exists (whether we just made it or not),
+///     BLOB_ERR_LFS_MKDIR_FAILED otherwise.
+static GNSS_ring_blob_error_enum_t ensure_ring_dir_exists() {
+    const int mkdir_result = lfs_mkdir(&LFS_filesystem, GNSS_RING_DIR);
+    if ((mkdir_result == 0) || (mkdir_result == LFS_ERR_EXIST)) {
+        return BLOB_ERR_OK; // Already-exists is the normal case on every run but the first.
+    }
+
+    LOG(
+        LOG_SEVERITY_ERROR,
+        "%s: lfs_mkdir(%s) -> %d",
+        BLOB_NAME, GNSS_RING_DIR, mkdir_result
+    );
+    return BLOB_ERR_LFS_MKDIR_FAILED;
+}
+
+/// @brief Is the persisted `open_file` handle still a live handle on the mounted filesystem?
+/// @details The handle survives in SRAM between executions, but the filesystem state it points
+///     into doesn't have to: an unmount/remount (or a firmware restart that happened to leave our
+///     SRAM intact) frees its cache buffer and leaves us holding a dangling handle. littlefs links
+///     every open file into `LFS_filesystem.mlist`, so walking that list is a cheap and
+///     authoritative check that the currently-mounted filesystem still knows about our handle.
+/// @return true only if the handle is safe to write to.
+static bool ring_open_file_is_live() {
+    if ((!g_state->open_file_is_valid) || (!LFS_is_lfs_mounted)) {
+        return false;
+    }
+
+    for (struct lfs_mlist *entry = LFS_filesystem.mlist; entry != NULL; entry = entry->next) {
+        if ((void *)entry == (void *)&g_state->open_file) {
+            return true;
+        }
+    }
+    return false; // Stale handle (remount, or something closed it for us); treat it as gone.
+}
+
+/// @brief Close the persisted write handle, committing its pending records, and mark it invalid.
+/// @details Safe to call at any time: does nothing if no live handle is currently held.
+static void ring_close_open_file() {
+    if (ring_open_file_is_live()) {
+        const int close_result = lfs_file_close(&LFS_filesystem, &g_state->open_file);
+        if (close_result < 0) {
+            LOG(
+                LOG_SEVERITY_ERROR,
+                "%s: lfs_file_close(r%d) -> %d",
+                BLOB_NAME, g_state->open_file_idx, close_result
+            );
+        }
+    }
+
+    g_state->open_file_is_valid = 0;
+}
+
+/// @brief Reset the blob to its "nothing collected yet" state: the write cursor goes back to
+///     r0.bin record 0, every counter goes to zero, and the ring refills from scratch (each file
+///     is truncated as it's first written to).
+/// @details This is the single path used by all three things that mean "start over": cold/garbage
+///     SRAM, a reboot caught by the heap canary, and an operator STOP. Keeping them identical
+///     means there's only one "fresh start" behaviour to reason about on the ground.
+/// @param may_touch_existing_state true when g_state holds values this blob actually wrote, so a
+///     live ring file is worth committing and the heap canary pointer is worth keeping. False for
+///     cold/garbage SRAM, where neither can be trusted and must not be dereferenced.
+static void reset_to_fresh_state(bool may_touch_existing_state) {
+    // Preserved across the wipe so a reset doesn't cost us a canary re-allocation (and another
+    // "first allocation" log line) on the very next run.
+    uint32_t *canary_to_keep = NULL;
+
+    if (may_touch_existing_state) {
+        canary_to_keep = g_state->reboot_canary;
+        ring_close_open_file(); // Commits pending records; a no-op if the handle isn't live.
+    }
+
+    memset(g_state, 0, sizeof(GNSS_ring_state_t));
+    g_state->magic = GNSS_RING_STATE_MAGIC;
+    g_state->reboot_canary = canary_to_keep;
+}
+
+/// @brief Make sure `g_state->open_file` is open on ring file `write_file_idx`, ready to append.
+/// @details Reuses the handle left open by a previous execution whenever it's still live and
+///     points at the right file, which is the common case: the open (a directory traversal plus a
+///     cache-buffer allocation) then happens once per ring file, not once per sample.
+/// @return BLOB_ERR_OK if a live handle is ready, BLOB_ERR_LFS_WRITE_FAILED otherwise.
+static GNSS_ring_blob_error_enum_t ring_open_write_file() {
+    if (ring_open_file_is_live()) {
+        if (g_state->open_file_idx == g_state->write_file_idx) {
+            return BLOB_ERR_OK; // Already open on the right file: nothing to do.
+        }
+        ring_close_open_file(); // We've rolled over to the next ring file; commit the old one.
+    }
+    else {
+        g_state->open_file_is_valid = 0; // Stale handle from before a remount; just drop it.
+    }
+
+    char path[GNSS_RING_PATH_MAX_LEN];
+    make_ring_file_path(g_state->write_file_idx, path, sizeof(path));
+
+    // Starting a file at record 0 means creating it, or TRUNCATE-ing an old file we've now wrapped
+    // around to -- that's how the ring evicts its oldest data. Otherwise we're resuming a file
+    // that's partly full, so append to whatever is already on disk.
+    const int open_flags = LFS_O_WRONLY | LFS_O_CREAT | (
+        (g_state->write_record_idx == 0) ? LFS_O_TRUNC : LFS_O_APPEND
+    );
+
+    const int open_result = lfs_file_open(&LFS_filesystem, &g_state->open_file, path, open_flags);
+    if (open_result < 0) {
+        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        return BLOB_ERR_LFS_WRITE_FAILED;
+    }
+
+    g_state->open_file_idx = g_state->write_file_idx;
+    g_state->open_file_is_valid = 1;
+    return BLOB_ERR_OK;
+}
+
+/// @brief Append one sample record to the ring, advancing (and wrapping/truncating) as needed.
+/// @details Writes straight through the persistent handle with lfs_file_write(). The file stays
+///     open afterwards, and is only closed -- which is what commits its records -- once it fills
+///     up.
+/// @param sample The GNSS_SAMPLE_SIZE-byte record to store.
+/// @return BLOB_ERR_OK on success, BLOB_ERR_LFS_WRITE_FAILED if LittleFS rejected the write.
+static GNSS_ring_blob_error_enum_t store_sample_to_ring(const uint8_t sample[GNSS_SAMPLE_SIZE]) {
+    const GNSS_ring_blob_error_enum_t open_status = ring_open_write_file();
+    if (open_status != BLOB_ERR_OK) {
+        return open_status;
+    }
+
+    const lfs_ssize_t write_result = lfs_file_write(
+        &LFS_filesystem, &g_state->open_file, sample, GNSS_SAMPLE_SIZE
+    );
+    if (write_result != (lfs_ssize_t)GNSS_SAMPLE_SIZE) {
+        LOG(
+            LOG_SEVERITY_ERROR,
+            "%s: lfs_file_write(r%d, record %d) -> %ld",
+            BLOB_NAME, g_state->write_file_idx, g_state->write_record_idx, (long)write_result
+        );
+        // The handle's write position is now unknown; drop it so the next run reopens cleanly.
+        ring_close_open_file();
+        return BLOB_ERR_LFS_WRITE_FAILED;
+    }
+
+    g_state->stored_record_count++;
+    g_state->write_record_idx++;
+
+    if (g_state->write_record_idx >= GNSS_RING_RECORDS_PER_FILE) {
+        // This file is full: advance the cursor and close the file (which commits its pending
+        // records). The next stored sample opens the next file in the ring.
+        g_state->write_record_idx = 0;
+        g_state->write_file_idx++;
+        if (g_state->write_file_idx >= GNSS_RING_FILE_COUNT) {
+            g_state->write_file_idx = 0;
+            g_state->has_wrapped = 1;
+        }
+        ring_close_open_file();
+    }
+
+    return BLOB_ERR_OK;
+}
+
 
 // MARK: GNSS Sampling
 
 /// @brief Find the NovAtel binary log sync sequence (0xAA 0x44 0x12) in a GNSS command-mode
-///     response, and copy up to GNSS_BESTXYZB_BINARY_LEN bytes from there into a maybe-zero-padded,
+///     response, and copy up to GNSS_SAMPLE_SIZE bytes from there into a maybe-zero-padded,
 ///     GNSS_SAMPLE_SIZE-byte sample slot.
 /// @details GNSS command-mode responses are prefixed with an ASCII acknowledgment (observed as
 ///     "<OK\n[COM1]"-style text) before the actual binary log, so byte 0 of the raw response is
@@ -725,87 +1378,357 @@ static GNSS_ring_blob_error_enum_t extract_bestxyzb_binary(
     return BLOB_ERR_BESTXYZB_SYNC_NOT_FOUND;
 }
 
-/// @brief Send "log bestxyzb once" to the GNSS and, on success, push the extracted binary log into
-///     the persistent ring buffer (overwriting the oldest entry once full).
-/// @return BLOB_ERR_OK on success (sample stored), non-OK on GNSS comms or extraction failure.
-static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb() {
-    // Early exit condition: If in firehose mode, we can't do this.
-    if (GNSS_current_rx_mode == GNSS_RX_MODE_FIREHOSE_MODE) {
-        return BLOB_ERR_FIREHOSE_MODE_ACTIVE;
-    }
-
-    const char cmd[] = "log bestxyzb once\n";
-    const uint16_t cmd_len = strlen(cmd);
-
-    uint8_t rx_buf[256];
-    uint16_t rx_buf_len = 0;
-    memset(rx_buf, 0, sizeof(rx_buf));
-
-    const uint8_t gnss_status = GNSS_send_cmd_get_response_NEW(
-        cmd, cmd_len,
-        rx_buf, sizeof(rx_buf),
-        &rx_buf_len,
-        0 // KEEP null bytes -- this is a binary response.
-    );
-    if (gnss_status != 0) {
-        LOG(
-            LOG_SEVERITY_WARNING,
-            "%s: GNSS_send_cmd_get_response_NEW() -> %d (%s)",
-            BLOB_NAME, gnss_status, gnss_ring_blob_error_to_str(BLOB_ERR_GNSS_COMMS_FAILED)
-        );
-        g_ring->gnss_fetch_failure_count++;
-        return BLOB_ERR_GNSS_COMMS_FAILED;
-    }
-
-    uint8_t sample[GNSS_SAMPLE_SIZE];
-    const GNSS_ring_blob_error_enum_t extract_status = extract_bestxyzb_binary(rx_buf, rx_buf_len, sample);
-    if (extract_status != BLOB_ERR_OK) {
-        LOG(
-            LOG_SEVERITY_WARNING,
-            "%s: BESTXYZB binary sync (AA 44 12) not found in %d-byte GNSS response (%s)",
-            BLOB_NAME, rx_buf_len, gnss_ring_blob_error_to_str(extract_status)
-        );
-        g_ring->gnss_fetch_failure_count++;
-        return extract_status;
-    }
-
-    memcpy(g_ring->samples[g_ring->write_idx], sample, GNSS_SAMPLE_SIZE);
-    g_ring->write_idx = (uint16_t)((g_ring->write_idx + 1) % GNSS_RING_BUFFER_CAPACITY);
-    if (g_ring->count < GNSS_RING_BUFFER_CAPACITY) {
-        g_ring->count++;
-    }
-
-    return BLOB_ERR_OK;
+/// @brief Read a little-endian uint32 out of a byte buffer.
+static uint32_t read_le_uint32(const uint8_t *buf) {
+    return (uint32_t)buf[0]
+        | ((uint32_t)buf[1] << 8)
+        | ((uint32_t)buf[2] << 16)
+        | ((uint32_t)buf[3] << 24);
 }
 
-/// @brief Downlink up to `downlink_n` randomly-selected (with replacement) samples currently in
-///     the ring buffer, each wrapped in a GNSS_bestxyzb_downlink_packet_t
-///     (COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE).
+/// @brief Decide whether an extracted BESTXYZB record is worth keeping.
+/// @details We only store fixes that the receiver actually solved: the solution status must be
+///     SOL_COMPUTED, the position type must not be NONE, and the 24 position bytes must not be
+///     all zero (an "empty" fix). This keeps the ring full of usable data rather than of the
+///     receiver's warm-up chatter, which matters a lot given we duty-cycle its power.
+/// @return true if the fix should be stored.
+static bool is_good_nonempty_fix(const uint8_t sample[GNSS_SAMPLE_SIZE]) {
+    // The body begins after the variable-length header, whose length is byte 3 of the frame.
+    const uint8_t header_len = sample[GNSS_BINARY_HEADER_LEN_OFFSET];
+    if ((uint32_t)header_len + GNSS_BESTXYZ_MIN_BODY_LEN > GNSS_SAMPLE_SIZE) {
+        return false; // Nonsense header length; can't trust this record.
+    }
+
+    const uint8_t *body = &sample[header_len];
+
+    const uint32_t sol_status = read_le_uint32(&body[GNSS_BESTXYZ_SOL_STATUS_OFFSET]);
+    if (sol_status != GNSS_SOL_STATUS_SOL_COMPUTED) {
+        return false;
+    }
+
+    const uint32_t pos_type = read_le_uint32(&body[GNSS_BESTXYZ_POS_TYPE_OFFSET]);
+    if (pos_type == GNSS_POS_TYPE_NONE) {
+        return false;
+    }
+
+    // Reject an all-zero position, which a healthy-looking header can still carry.
+    for (uint16_t i = 0; i < GNSS_BESTXYZ_POS_XYZ_LEN; i++) {
+        if (body[GNSS_BESTXYZ_POS_XYZ_OFFSET + i] != 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/// @brief Synthesize a plausible-looking BESTXYZB record from the hardware RNG, for FAKE mode.
+/// @details The record is built to pass is_good_nonempty_fix(), so the whole storage/downlink
+///     path can be exercised on the bench with no GNSS receiver attached (and no EPS).
+static void generate_fake_sample(uint8_t out_sample[GNSS_SAMPLE_SIZE]) {
+    memset(out_sample, 0, GNSS_SAMPLE_SIZE);
+
+    // Header: sync bytes, a standard 28-byte header length, and a body length covering the fields
+    // we care about.
+    out_sample[0] = GNSS_BINARY_SYNC_0;
+    out_sample[1] = GNSS_BINARY_SYNC_1;
+    out_sample[2] = GNSS_BINARY_SYNC_2;
+    const uint8_t header_len = 28;
+    out_sample[GNSS_BINARY_HEADER_LEN_OFFSET] = header_len;
+    const uint16_t body_len = GNSS_SAMPLE_SIZE - header_len - (uint16_t)GNSS_BINARY_CRC_LEN;
+    out_sample[GNSS_BINARY_BODY_LEN_OFFSET] = (uint8_t)(body_len & 0xFF);
+    out_sample[GNSS_BINARY_BODY_LEN_OFFSET + 1] = (uint8_t)((body_len >> 8) & 0xFF);
+
+    uint8_t *body = &out_sample[header_len];
+
+    // Solution status SOL_COMPUTED (0) and position type 16 (SINGLE), so it reads as a real fix.
+    body[GNSS_BESTXYZ_POS_TYPE_OFFSET] = 16;
+
+    // Random, definitely-non-zero position bytes.
+    for (uint16_t i = 0; i < GNSS_BESTXYZ_POS_XYZ_LEN; i += 4) {
+        const uint32_t rand_val = CRYPTO_generate_random_uint32(TIME_uptime_ms() + i);
+        body[GNSS_BESTXYZ_POS_XYZ_OFFSET + i] = (uint8_t)(rand_val & 0xFF);
+        body[GNSS_BESTXYZ_POS_XYZ_OFFSET + i + 1] = (uint8_t)((rand_val >> 8) & 0xFF);
+        body[GNSS_BESTXYZ_POS_XYZ_OFFSET + i + 2] = (uint8_t)((rand_val >> 16) & 0xFF);
+        // Keep the high byte small so the value reads as a sane-magnitude double, and ensure at
+        // least one byte of each coordinate is non-zero.
+        body[GNSS_BESTXYZ_POS_XYZ_OFFSET + i + 3] = (uint8_t)(0x40 | (rand_val >> 28));
+    }
+}
+
+/// @brief Sample the GNSS (or the RNG, in FAKE mode) and store it as a new record in the
+///     LittleFS ring -- unconditionally, or only if the fix is good and non-empty (GOOD_ONLY).
+/// @param use_fake_data If true, don't touch the GNSS UART; synthesize the sample from the RNG.
+/// @param good_only If true (GOOD_ONLY flag), drop records that fail is_good_nonempty_fix().
+/// @return BLOB_ERR_OK if a sample was stored, otherwise the reason it wasn't.
+static GNSS_ring_blob_error_enum_t sample_and_store_bestxyzb(bool use_fake_data, bool good_only) {
+    uint8_t sample[GNSS_SAMPLE_SIZE];
+
+    if (use_fake_data) {
+        generate_fake_sample(sample);
+    }
+    else {
+        // Early exit condition: If in firehose mode, we can't do this.
+        if (GNSS_current_rx_mode == GNSS_RX_MODE_FIREHOSE_MODE) {
+            return BLOB_ERR_FIREHOSE_MODE_ACTIVE;
+        }
+
+        const char cmd[] = "log bestxyzb once\n";
+        const uint16_t cmd_len = strlen(cmd);
+
+        uint8_t rx_buf[256];
+        uint16_t rx_buf_len = 0;
+        memset(rx_buf, 0, sizeof(rx_buf));
+
+        const uint8_t gnss_status = GNSS_send_cmd_get_response_NEW(
+            cmd, cmd_len,
+            rx_buf, sizeof(rx_buf),
+            &rx_buf_len,
+            0 // KEEP null bytes -- this is a binary response.
+        );
+        if (gnss_status != 0) {
+            LOG(
+                LOG_SEVERITY_WARNING,
+                "%s: %s (%d)",
+                BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_GNSS_COMMS_FAILED), gnss_status
+            );
+            g_state->gnss_fetch_failure_count++;
+            return BLOB_ERR_GNSS_COMMS_FAILED;
+        }
+
+        const GNSS_ring_blob_error_enum_t extract_status = extract_bestxyzb_binary(rx_buf, rx_buf_len, sample);
+        if (extract_status != BLOB_ERR_OK) {
+            LOG(
+                LOG_SEVERITY_WARNING,
+                "%s: %s (%d B)",
+                BLOB_NAME, gnss_ring_blob_error_to_str(extract_status), rx_buf_len
+            );
+            g_state->gnss_fetch_failure_count++;
+            return extract_status;
+        }
+    }
+
+    // By default every extracted record is stored, so the ground sees exactly what the receiver
+    // said (warm-up and no-solution records included). GOOD_ONLY keeps only solved, non-empty fixes.
+    if (good_only && !is_good_nonempty_fix(sample)) {
+        g_state->bad_fix_skipped_count++;
+        return BLOB_ERR_BAD_FIX;
+    }
+
+    return store_sample_to_ring(sample);
+}
+
+/// @brief Re-sync the OBC clock from the GNSS, if it's been at least GNSS_TIME_SYNC_INTERVAL_MS
+///     since the last successful sync, and then push the new time out to the EPS and the ADCS.
+/// @param[out] eps_push_status_dest Result of EPS_set_eps_time_based_on_obc_time(), or
+///     TIME_PUSH_NOT_ATTEMPTED if no sync happened this run. Never NULL.
+/// @param[out] adcs_push_status_dest Result of ADCS_synchronize_unix_time(), or
+///     TIME_PUSH_NOT_ATTEMPTED if no sync happened this run. Never NULL.
+/// @return true if a sync was attempted AND succeeded. A failed push to the EPS or the ADCS does
+///     NOT make this false: the OBC clock is correct either way, which is the sync's actual job.
+static bool maybe_sync_time_from_gnss(uint8_t *eps_push_status_dest, uint8_t *adcs_push_status_dest) {
+    *eps_push_status_dest = TIME_PUSH_NOT_ATTEMPTED;
+    *adcs_push_status_dest = TIME_PUSH_NOT_ATTEMPTED;
+
+    // Firehose mode owns the UART; don't interleave a time sync into it.
+    if (GNSS_current_rx_mode == GNSS_RX_MODE_FIREHOSE_MODE) {
+        return false;
+    }
+
+    // While the MPI is actively collecting science data, never step the OBC clock: MPI science
+    // data is timestamped from that clock, so a jump mid-campaign would corrupt the timeline.
+    // A due sync simply waits -- `last_time_sync_uptime_ms` isn't touched, so the sync stays due
+    // and happens on the first run after the MPI goes idle. Like the downlink skip, this is
+    // checked unconditionally, NOT gated behind the TRACK_MPI flag.
+    if (is_mpi_active()) {
+        return false;
+    }
+
+    const uint32_t now_ms = TIME_uptime_ms();
+    if (
+        (g_state->time_sync_count > 0)
+        && ((now_ms - g_state->last_time_sync_uptime_ms) < GNSS_TIME_SYNC_INTERVAL_MS)
+    ) {
+        return false; // Synced recently enough.
+    }
+
+    const uint8_t sync_status = GNSS_set_obc_time_based_on_gnss_time_uart();
+    if (sync_status != 0) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: GNSS_set_obc_time_based_on_gnss_time_uart() -> %d",
+            BLOB_NAME, sync_status
+        );
+        return false;
+    }
+
+    g_state->last_time_sync_uptime_ms = TIME_uptime_ms();
+    g_state->time_sync_count++;
+
+    // Propagate the freshly-disciplined OBC clock out to the two subsystems that keep clocks of
+    // their own.
+    //
+    // The EPS push is what makes a GNSS sync stick: the firmware's background upkeep task
+    // (subtask_sync_obc_time_based_on_eps_time(), every EPS_time_sync_period_sec, default 600s)
+    // treats the EPS RTC as authoritative and sets the OBC clock BACK to it whenever the two
+    // differ by more than EPS_max_time_deviation_for_sync_ms. Without this push, any correction we
+    // make larger than that threshold gets reverted within ~10 minutes, the EPS RTC's drift is
+    // never actually disciplined, and the two syncs fight each other forever.
+    //
+    // The ADCS push keeps the ADCS's own log/telemetry timestamps aligned with the OBC's, as well
+    // as orbit propagation.
+    //
+    // Neither failure invalidates the sync -- the OBC clock is already set -- so we record the
+    // statuses for the response string, log them, and carry on.
+    *eps_push_status_dest = EPS_set_eps_time_based_on_obc_time();
+    if (*eps_push_status_dest != 0) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: EPS_set_eps_time_based_on_obc_time() -> %d",
+            BLOB_NAME, *eps_push_status_dest
+        );
+    }
+
+    *adcs_push_status_dest = ADCS_synchronize_unix_time();
+    if (*adcs_push_status_dest != 0) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: ADCS_synchronize_unix_time() -> %d",
+            BLOB_NAME, *adcs_push_status_dest
+        );
+    }
+
+    return true;
+}
+
+
+// MARK: Downlink
+
+/// @brief Downlink a randomly-chosen run of consecutive stored samples: pick a random ring file
+///     that holds data, pick a random record index within it, and send that record plus up to
+///     `downlink_n` more consecutive records from the same file.
+/// @details Consecutive (rather than v1's independent random picks) so the ground receives short
+///     contiguous arcs of the orbit, which are far more useful for fitting than scattered points.
+///     The run stops at the end of the file rather than continuing into the next one, because
+///     adjacent ring files aren't necessarily adjacent in time once the ring has wrapped.
+///
+///     The ring file the write cursor is on is never picked: we never read a file we're writing
+///     to, and its records are only partly committed to flash anyway. It becomes downlinkable
+///     once it fills up and the cursor moves on. Files left over from a previous campaign (a
+///     fresh start zeroes the cursor without erasing the disk) are excluded too, by counting only
+///     the files behind the cursor until the ring has wrapped.
+/// @param downlink_n Number of ADDITIONAL records to send after the randomly-chosen first one.
+/// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
 /// @return Number of downlink failures (0 = all succeeded).
-static uint16_t downlink_random_samples(uint16_t downlink_n) {
-    const uint16_t available = g_ring->count;
-    const uint16_t n_to_downlink = (downlink_n < available) ? downlink_n : available;
+static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent_count_dest) {
+    *sent_count_dest = 0;
+
+    // The downlinkable files are always a contiguous run sitting immediately BEHIND the write
+    // cursor, so there's nothing to search: just count them and step back a random number of
+    // places. The cursor only advances off a file once that file is full (see
+    // store_sample_to_ring()), so every file behind it holds exactly GNSS_RING_RECORDS_PER_FILE
+    // records -- no need to measure anything on disk.
+    const uint8_t full_file_count = g_state->has_wrapped
+        ? (GNSS_RING_FILE_COUNT - 1) // Everything except the file the cursor is on.
+        : g_state->write_file_idx;   // Only what we've filled since the last fresh start.
+
+    if (full_file_count == 0) {
+        return 0; // No files written completely yet.
+    }
+
+    // 1 step back = the file we filled most recently; full_file_count steps back = the oldest one
+    // still holding this campaign's data. Adding GNSS_RING_FILE_COUNT before the modulo keeps the
+    // subtraction positive as the walk wraps around past r0.
+    const uint32_t file_rand = CRYPTO_generate_random_uint32(TIME_uptime_ms());
+    const uint8_t steps_back = (uint8_t)(1u + (file_rand % full_file_count));
+    const uint8_t chosen_file_idx = (uint8_t)(
+        (g_state->write_file_idx + GNSS_RING_FILE_COUNT - steps_back) % GNSS_RING_FILE_COUNT
+    );
+
+    const uint32_t record_rand = CRYPTO_generate_random_uint32(TIME_uptime_ms() + 1);
+    const uint16_t start_record_idx = (uint16_t)(record_rand % GNSS_RING_RECORDS_PER_FILE);
+
+    // Send the starting record plus up to `downlink_n` more, stopping at the end of the file.
+    const uint32_t requested_total = 1u + (uint32_t)downlink_n;
+    const uint32_t available_total = (uint32_t)(GNSS_RING_RECORDS_PER_FILE - start_record_idx);
+    const uint16_t n_to_downlink = (uint16_t)(
+        (requested_total < available_total) ? requested_total : available_total
+    );
+
+    char path[GNSS_RING_PATH_MAX_LEN];
+    make_ring_file_path(chosen_file_idx, path, sizeof(path));
+
+    // Open once and read consecutively, rather than re-opening the file per record.
+    lfs_file_t file;
+    const int open_result = lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY);
+    if (open_result < 0) {
+        // Same format string as the write-side open in ring_open_write_file(), so it's stored once.
+        LOG(LOG_SEVERITY_WARNING, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        return n_to_downlink;
+    }
+
+    if (lfs_file_seek(&LFS_filesystem, &file, (lfs_soff_t)start_record_idx * GNSS_SAMPLE_SIZE, LFS_SEEK_SET) < 0) {
+        LOG(LOG_SEVERITY_WARNING, "%s: lfs_file_seek(%s) failed", BLOB_NAME, path);
+        lfs_file_close(&LFS_filesystem, &file);
+        return n_to_downlink;
+    }
 
     uint16_t fail_count = 0;
     for (uint16_t i = 0; i < n_to_downlink; i++) {
-        const uint32_t rand_val = CRYPTO_generate_random_uint32(TIME_uptime_ms() + i);
-        const uint16_t idx = (uint16_t)(rand_val % available);
+        const uint16_t record_idx = (uint16_t)(start_record_idx + i);
 
         GNSS_bestxyzb_downlink_packet_t packet;
         packet.packet_type = COMMS_PACKET_TYPE_GNSS_BESTXYZB_SAMPLE;
-        packet.downlink_seq_num = g_ring->downlink_seq_num++;
-        packet.ring_position = idx;
-        memcpy(packet.bestxyzb_data, g_ring->samples[idx], GNSS_SAMPLE_SIZE);
+        packet.downlink_seq_num = g_state->downlink_seq_num;
+
+        // Flatten the (file, record) pair into the flat ring index the ground already understands.
+        // Stable across runs: a given slot always maps to the same position, and the position tells
+        // you the file (position / GNSS_RING_RECORDS_PER_FILE) if you need it back.
+        packet.ring_position = (uint16_t)(
+            ((uint16_t)chosen_file_idx * GNSS_RING_RECORDS_PER_FILE) + record_idx
+        );
+
+        const lfs_ssize_t read_len = lfs_file_read(
+            &LFS_filesystem, &file, packet.bestxyzb_data, GNSS_SAMPLE_SIZE
+        );
+        if (read_len != GNSS_SAMPLE_SIZE) {
+            LOG(
+                LOG_SEVERITY_WARNING,
+                "%s: short read (%ld) at %s record %d",
+                BLOB_NAME, (long)read_len, path, record_idx
+            );
+            fail_count += (uint16_t)(n_to_downlink - i); // The rest of the run is unreachable too.
+            break;
+        }
+
+        g_state->downlink_seq_num++;
 
         const uint8_t tx_status = AX100_downlink_bytes((uint8_t *)&packet, sizeof(packet));
         if (tx_status != 0) {
             fail_count++;
         }
+        else {
+            (*sent_count_dest)++;
+        }
     }
 
+    lfs_file_close(&LFS_filesystem, &file);
     return fail_count;
 }
 
+
+/// @brief Common tail of every failure exit that won't reschedule: turn the GNSS off (unless
+///     NO_EPS_CTRL), write "<blob> error: <ERR>. Not rescheduling. <GNSS power><cancel msg>" to
+///     the response, and hand back `err` for blob_main() to return.
+static uint8_t fail_without_rescheduling(
+    GNSS_ring_blob_error_enum_t err, bool no_eps_ctrl, const char *cancel_msg,
+    char *response_buf, unsigned short response_buf_len
+) {
+    const char *shed_msg = shed_gnss_power_before_exit(no_eps_ctrl);
+    snprintf(
+        response_buf, response_buf_len, "%s error: %s. Not rescheduling.%s%s",
+        BLOB_NAME, gnss_ring_blob_error_to_str(err), shed_msg, cancel_msg
+    );
+    return err;
+}
 
 // MARK: Main
 
@@ -814,28 +1737,36 @@ uint8_t blob_main(
     const char *args_str,
     char *response_buf, unsigned short response_buf_len
 ) {
+    // Not too useful, save a bit of space by disabling.
+#if 0
     LOG(
         LOG_SEVERITY_DEBUG,
         "Blob (%s) args_str: '%s'",
         BLOB_NAME,
         args_str
     );
+#endif
 
     const uint16_t args_str_len = strlen(args_str);
     uint16_t pos = 0;
 
     char arg0_repeat_interval_ms[20];
     char arg1_downlink_n[20];
+    char arg2_flags[64];
 
     pos = parse_token(args_str, pos, args_str_len, arg0_repeat_interval_ms, sizeof(arg0_repeat_interval_ms));
     pos = parse_token(args_str, pos, args_str_len, arg1_downlink_n, sizeof(arg1_downlink_n));
+    parse_token(args_str, pos, args_str_len, arg2_flags, sizeof(arg2_flags)); // Optional; may be "".
 
+    const bool flag_stop = has_flag(arg2_flags, "STOP");
+    const bool flag_fake = has_flag(arg2_flags, "FAKE");
+    const bool flag_track_mpi = has_flag(arg2_flags, "TRACK_MPI");
+    const bool flag_no_eps = has_flag(arg2_flags, "NO_EPS_CTRL");
+    const bool flag_good_only = has_flag(arg2_flags, "GOOD_ONLY");
+
+    // Every failure return below goes through fail_without_rescheduling(), which sheds the GNSS.
     if (arg0_repeat_interval_ms[0] == '\0' || arg1_downlink_n[0] == '\0') {
-        snprintf(
-            response_buf, response_buf_len, "%s error: missing args! (%s)",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_MISSING_ARGS)
-        );
-        return BLOB_ERR_MISSING_ARGS;
+        return fail_without_rescheduling(BLOB_ERR_MISSING_ARGS, flag_no_eps, "", response_buf, response_buf_len);
     }
 
     bool arg0_ok, arg1_ok;
@@ -843,16 +1774,12 @@ uint8_t blob_main(
     const int32_t downlink_n = parse_int(arg1_downlink_n, &arg1_ok);
 
     if (!arg0_ok || !arg1_ok) {
-        snprintf(
-            response_buf, response_buf_len, "%s error: invalid int args! (%s)",
-            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS)
-        );
-        return BLOB_ERR_INVALID_INT_ARGS;
+        return fail_without_rescheduling(BLOB_ERR_INVALID_INT_ARGS, flag_no_eps, "", response_buf, response_buf_len);
     }
 
     // Protect the minimum repeat interval, same as the extended beacon blob: too low of a value
     // would leave the satellite always transmitting, blocking uplink passes.
-    if ((repeat_interval_ms != 0) && (repeat_interval_ms < 1100)) {
+    if (repeat_interval_ms < 1100) {
         repeat_interval_ms = 1100;
     }
 
@@ -861,12 +1788,7 @@ uint8_t blob_main(
     const int16_t cancel_result = cancel_other_scheduled_reruns_of_this_blob(get_current_executing_tcmd_agenda_slot_num());
     char cancel_msg[50];
     if (cancel_result < 0) {
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d (%s)",
-            BLOB_NAME, cancel_result, gnss_ring_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED)
-        );
-        return BLOB_ERR_CANCEL_RERUNS_FAILED;
+        return fail_without_rescheduling(BLOB_ERR_CANCEL_RERUNS_FAILED, flag_no_eps, "", response_buf, response_buf_len);
     }
     else if (cancel_result > 0) {
         snprintf(cancel_msg, sizeof(cancel_msg), ", %d duplicate rerun(s) cancelled", cancel_result);
@@ -875,65 +1797,201 @@ uint8_t blob_main(
         cancel_msg[0] = '\0';
     }
 
-    // Initialize the persistent ring buffer on true cold-start (first ever run, or after a full
-    // power-cycle that cleared SRAM). Otherwise, its contents survive from the previous execution
-    // of this blob.
-    if (g_ring->magic != GNSS_RING_BUFFER_MAGIC) {
-        memset(g_ring, 0, sizeof(GNSS_ring_buffer_t));
-        g_ring->magic = GNSS_RING_BUFFER_MAGIC;
+    // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state
+    // block can be trusted, including the open file handle and the canary pointer, so reset
+    // without dereferencing either. We deliberately do NOT measure the on-disk files to recover
+    // the write cursor -- a fresh start simply begins again at r0.bin record 0.
+    //
+    // This runs before the mount check below so that the mount-failure path can safely reset a
+    // state block it knows this blob wrote.
+    if (g_state->magic != GNSS_RING_STATE_MAGIC) {
+        reset_to_fresh_state(false);
     }
 
-    // SAFETY: Check whether the GNSS EPS power channel is actually on.
-    // If the channel is off (e.g., shed by EPS safety mode due to low power), or if the EPS query
-    // itself fails (treated conservatively as "off"), this blob does NOT reschedule itself.
-    // This behaviour ensures the recurring blob doesn't  keep running (and consuming downlink
-    // budget) once GNSS has been deliberately powered down.
-    uint8_t gnss_is_on = 0;
-    const GNSS_ring_blob_error_enum_t power_check_status = is_gnss_channel_powered_on(&gnss_is_on);
-    if ((power_check_status != BLOB_ERR_OK) || (!gnss_is_on)) {
+    // The filesystem must already be mounted; this blob never mounts it. An unmounted filesystem
+    // is a serious anomaly for a blob whose whole job is storage, and remounting underneath it
+    // would both hide that and invalidate the ring file handle we hold in SRAM. Reruns were
+    // cancelled above and we return without rescheduling, so the campaign simply stops.
+    //
+    // Treated as a fresh start, same as a cold boot or a STOP: whatever happened to the
+    // filesystem, our cursor's claim about what's on disk is no longer worth anything, so the
+    // next run begins again at r0.bin record 0 rather than appending into the unknown. The close
+    // inside the reset is a no-op here -- ring_open_file_is_live() reports "not live" while the
+    // filesystem is unmounted, so nothing tries to write to it.
+    if (!LFS_is_lfs_mounted) {
+        reset_to_fresh_state(true);
+        return fail_without_rescheduling(BLOB_ERR_LFS_NOT_MOUNTED, flag_no_eps, cancel_msg, response_buf, response_buf_len);
+    }
+
+    // Now that the state block is known-good, check whether the heap restarted under us since the
+    // previous run. If it did, the lfs_file_t we persisted points at a cache buffer from a heap
+    // that no longer exists, and we can't trust the cursor to match what's on disk either -- so
+    // start the ring over, exactly as a cold start would.
+    if (detect_reboot_via_heap_canary()) {
+        reset_to_fresh_state(true);
+    }
+
+    // A handle we believe we're holding, that the currently-mounted filesystem doesn't know
+    // about, means the filesystem was unmounted/remounted or reformatted under us WITHOUT a
+    // reboot -- so the heap canary above saw nothing wrong. Our cursor no longer describes what's
+    // on disk, so start over. Note the `open_file_is_valid` guard: ring_open_file_is_live() also
+    // returns false in the perfectly normal case where we simply aren't holding a handle, and
+    // that must not trigger a reset.
+    if (g_state->open_file_is_valid && (!ring_open_file_is_live())) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: stale ring file handle; resetting",
+            BLOB_NAME
+        );
+        reset_to_fresh_state(true);
+    }
+
+    // Make sure "gnss_ring/" exists before anything tries to read or write inside it.
+    const GNSS_ring_blob_error_enum_t mkdir_status = ensure_ring_dir_exists();
+    if (mkdir_status != BLOB_ERR_OK) {
+        return fail_without_rescheduling(mkdir_status, flag_no_eps, cancel_msg, response_buf, response_buf_len);
+    }
+
+    // STOP: shed the GNSS, commit and close the ring file, wipe the cursor back to r0/0, and exit
+    // without rescheduling. Reruns were already cancelled above, so this run is the last one.
+    // There is no RESUME: the stop isn't latched, it's a reset. Running the blob again afterwards
+    // starts a brand new campaign from the beginning of the ring -- the old one is not resumable.
+    if (flag_stop) {
+        const char *shed_msg = shed_gnss_power_before_exit(flag_no_eps);
+        reset_to_fresh_state(true);
+
         snprintf(
             response_buf, response_buf_len,
-            "%s: GNSS channel is off (or EPS query failed, status=%s); NOT rescheduling, blob dying. "
-            "gnss_fetch_failures=%lu%s",
-            BLOB_NAME, gnss_ring_blob_error_to_str(power_check_status), g_ring->gnss_fetch_failure_count, cancel_msg
+            "%s: STOPped. Reruns cancelled.%s%s",
+            BLOB_NAME, shed_msg, cancel_msg
         );
-        return BLOB_ERR_GNSS_POWERED_OFF; // This is the intended safety shutdown path.
+        return BLOB_ERR_OK; // A requested stop is a success, not an error.
     }
 
-    // GNSS channel is confirmed on: proceed with normal sampling/downlink.
-    const GNSS_ring_blob_error_enum_t sample_status = sample_and_store_bestxyzb();
-    const uint16_t downlink_fail_count = downlink_random_samples((uint16_t)downlink_n);
-
-    if (repeat_interval_ms > 0) {
-        const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
-        if (reexec_result != BLOB_ERR_OK) {
-            snprintf(
-                response_buf, response_buf_len,
-                "%s error: reschedule_current_blob_tcmd() -> %s%s",
-                BLOB_NAME, gnss_ring_blob_error_to_str(reexec_result), cancel_msg
-            );
-            return reexec_result;
+    // Decide and apply the GNSS power state for this run.
+    // In FAKE mode we never touch the EPS or the GNSS at all, so the power policy is skipped.
+    uint8_t gnss_is_on = 0;
+    int16_t vbatt_mV = 0;
+    const char *power_reason = "fake_mode";
+    if (flag_fake) {
+        gnss_is_on = 1; // Pretend, so the sampling path below runs.
+    }
+    else {
+        const GNSS_power_decision_enum_t decision = decide_gnss_power(
+            flag_track_mpi, &vbatt_mV, &power_reason
+        );
+        const GNSS_ring_blob_error_enum_t power_status = apply_gnss_power_decision(
+            decision, flag_no_eps, &gnss_is_on
+        );
+        if (power_status != BLOB_ERR_OK) {
+            // Couldn't talk to the EPS. Don't sample (we don't know if the GNSS even has power),
+            // but keep the blob alive: the next run re-evaluates.
+            gnss_is_on = 0;
         }
+    }
+
+    // Sample the GNSS, if it's powered and has had time to boot.
+    GNSS_ring_blob_error_enum_t sample_status = BLOB_ERR_GNSS_POWERED_OFF;
+    bool did_time_sync = false;
+    uint8_t eps_time_push_status = TIME_PUSH_NOT_ATTEMPTED;
+    uint8_t adcs_time_push_status = TIME_PUSH_NOT_ATTEMPTED;
+    if (gnss_is_on) {
+        const uint32_t ms_since_power_on = TIME_uptime_ms() - g_state->gnss_power_on_uptime_ms;
+        if ((!flag_fake) && (ms_since_power_on < GNSS_POWER_ON_SETTLE_MS)) {
+            // The receiver was just switched on and is still booting; give it until the next run.
+            sample_status = BLOB_ERR_GNSS_WARMING_UP;
+        }
+        else {
+            sample_status = sample_and_store_bestxyzb(flag_fake, flag_good_only);
+
+            // Keep the OBC clock disciplined while we have the receiver powered anyway.
+            if (!flag_fake) {
+                did_time_sync = maybe_sync_time_from_gnss(
+                    &eps_time_push_status, &adcs_time_push_status
+                );
+            }
+        }
+    }
+
+    // Downlink a random consecutive run of stored samples, regardless of whether the GNSS is
+    // powered this run -- the history is on disk and is worth sending down either way.
+    //
+    // Exception: while the MPI is actively collecting science data, keep sampling and storing, but
+    // stay off the radio entirely, so this blob's downlink doesn't compete with the science
+    // campaign. The samples aren't lost -- they're on disk, and go down on a later run once the
+    // MPI is idle. Note this is checked unconditionally, NOT gated behind the TRACK_MPI flag:
+    // TRACK_MPI only governs whether MPI activity forces the GNSS *on*.
+    const bool skip_downlink_for_mpi = is_mpi_active();
+    uint16_t downlink_sent_count = 0;
+    uint16_t downlink_fail_count = 0;
+    if (!skip_downlink_for_mpi) {
+        downlink_fail_count = downlink_consecutive_samples(
+            (uint16_t)downlink_n, &downlink_sent_count
+        );
+    }
+
+    // Reschedule the blob for the next run.
+    const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
+    if (reexec_result != BLOB_ERR_OK) {
+        ring_close_open_file(); // No rerun is coming to close it; commit what we have.
+        return fail_without_rescheduling(reexec_result, flag_no_eps, cancel_msg, response_buf, response_buf_len);
+    }
+
+    char downlink_msg[24];
+    if (skip_downlink_for_mpi) {
+        snprintf(downlink_msg, sizeof(downlink_msg), "skipped(mpi_active)");
+    }
+    else {
+        snprintf(
+            downlink_msg, sizeof(downlink_msg), "%d/%d",
+            downlink_sent_count, downlink_sent_count + downlink_fail_count
+        );
+    }
+
+    // On a sync run, report the status of each downstream time push (0 = accepted). On every
+    // other run nothing was pushed, so this stays empty.
+    char time_push_msg[40];
+    if (did_time_sync) {
+        snprintf(
+            time_push_msg, sizeof(time_push_msg), ", eps_time=%d, adcs_time=%d",
+            eps_time_push_status, adcs_time_push_status
+        );
+    }
+    else {
+        time_push_msg[0] = '\0';
     }
 
     snprintf(
         response_buf, response_buf_len,
-        "%s: sample_status=%s, ring_count=%d/%d, downlink_n=%ld, "
-        "gnss_fetch_failures=%lu%s",
-        BLOB_NAME, gnss_ring_blob_error_to_str(sample_status), g_ring->count, GNSS_RING_BUFFER_CAPACITY,
-        downlink_n, g_ring->gnss_fetch_failure_count, cancel_msg
+        "%s: gnss=%s (%s, vbatt=%dmV), sample=%s, cursor=r%d/%d%s, stored=%lu, "
+        "bad_fixes=%lu, fetch_fails=%lu, sync=%s(%lu)%s, sent=%s%s",
+        BLOB_NAME,
+        gnss_is_on ? "ON" : "OFF", power_reason, vbatt_mV,
+        gnss_ring_blob_error_to_str(sample_status),
+        g_state->write_file_idx, g_state->write_record_idx,
+        g_state->has_wrapped ? " (wrapped)" : "",
+        (unsigned long)g_state->stored_record_count,
+        (unsigned long)g_state->bad_fix_skipped_count,
+        (unsigned long)g_state->gnss_fetch_failure_count,
+        did_time_sync ? "yes" : "no", (unsigned long)g_state->time_sync_count,
+        time_push_msg,
+        downlink_msg,
+        cancel_msg
     );
 
-    if (sample_status != BLOB_ERR_OK) {
-        return 100 + sample_status; // Non-fatal: sample wasn't stored this run, but we still ran fully.
-    }
+    // Report the most useful non-fatal condition, in priority order. All of these still mean "the
+    // blob ran fully and rescheduled itself", so none of them stop the collection campaign.
     if (downlink_fail_count > 0) {
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: downlink_random_samples() -> %d failures (%s)",
-            BLOB_NAME, downlink_fail_count, gnss_ring_blob_error_to_str(BLOB_ERR_DOWNLINK_PARTIAL_FAILURE)
+            "%s: %s (%d)",
+            BLOB_NAME, gnss_ring_blob_error_to_str(BLOB_ERR_SEND_PARTIAL_FAILURE), downlink_fail_count
         );
-        return BLOB_ERR_DOWNLINK_PARTIAL_FAILURE; // Non-fatal: some downlinks failed.
+        return BLOB_ERR_SEND_PARTIAL_FAILURE;
+    }
+
+    if (skip_downlink_for_mpi) {
+        return BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE; // Deliberate radio silence, not a failure.
     }
 
     return BLOB_ERR_OK;
