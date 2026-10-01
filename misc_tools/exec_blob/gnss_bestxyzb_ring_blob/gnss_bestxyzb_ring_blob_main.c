@@ -1961,21 +1961,33 @@ uint8_t blob_main(
         time_push_msg[0] = '\0';
     }
 
+    // MARK: Main Response
+    // TODO: Consider adding an array of all the errors accumulated through the run, and report that list here.
+    // TODO: Consider adding fancier power control strategies that try to hover the battery around 15.5 +/- 0.5V, for example.
     snprintf(
         response_buf, response_buf_len,
         "%s: gnss=%s (%s, vbatt=%dmV), sample=%s, cursor=r%d/%d%s, stored=%lu, "
         "bad_fixes=%lu, fetch_fails=%lu, sync=%s(%lu)%s, sent=%s%s",
         BLOB_NAME,
+        // gnss=
         gnss_is_on ? "ON" : "OFF", power_reason, vbatt_mV,
+        // sample=
         gnss_ring_blob_error_to_str(sample_status),
+        // cursor=
         g_state->write_file_idx, g_state->write_record_idx,
         g_state->has_wrapped ? " (wrapped)" : "",
+        // stored=
         (unsigned long)g_state->stored_record_count,
+        // bad_fixes=
         (unsigned long)g_state->bad_fix_skipped_count,
+        // fetch_fails=
         (unsigned long)g_state->gnss_fetch_failure_count,
-        did_time_sync ? "yes" : "no", (unsigned long)g_state->time_sync_count,
+        // sync=
+        did_time_sync ? "yes" : "no", (unsigned long)g_state->time_sync_count, // TODO: Simplify, rename to "syncs=<number>".
+        // sent=
         time_push_msg,
         downlink_msg,
+        // suffix
         cancel_msg
     );
 
