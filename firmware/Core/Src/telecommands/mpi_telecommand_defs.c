@@ -86,7 +86,7 @@ uint8_t TCMDEXEC_mpi_send_command_get_response_hex(
     return cmd_response;
 }
 
-/// @brief Enables systems to start receiving data actively from MPI and storing using LFS.
+/// @brief Turns on the MPI's EPS channels and starts recording data from the MPI into a file.
 /// @param args_str
 /// - Arg 0: File name as a string
 /// @param response_output_buf The buffer to write the response to
@@ -115,7 +115,7 @@ uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, char *response_out
     return 0;
 }
 
-/// @brief Sets the state to not send or receive data from MPI.
+/// @brief Stops recording data from the MPI into a file. Also turns off the MPI's EPS channels.
 /// @param args_str No args.
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
