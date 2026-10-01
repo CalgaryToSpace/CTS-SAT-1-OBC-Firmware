@@ -446,3 +446,42 @@ CTS1+exec_blob_from_fs(blobs/get_file_map_v1.blob,0,your_file.bin;minimum_null_l
 2. The CRC16 is the same algorithm as the ADCS file CRC16 (ADCS Firmware ICD `CRC_Calc()`).
 3. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON). Re-run with a larger `minimum_null_length` to fit fewer null ranges.
 
+
+## `blobs/analyze_mpi_data_v1.blob`
+
+Blob to summarize an MPI science data file on-orbit (hash, frame count, time syncs, and date range), to decide whether it's worth downlinking.
+
+### Description
+
+```c
+// Args Format: <file_path>
+```
+
+The response is tightly-packed JSON, like:
+
+```json
+{
+    "action": "analyze_mpi_data_v1",
+    "file": "mpi_data/2026-07-01_mpi.dat",
+    "sha256": "6019...b725",
+    "size": 39706,
+    "frame_count": 245,
+    "time_sync_count": 4,
+    "malformed_time_sync_count": 0,
+    "earliest": {"timestamp_ms": 1782909290000, "datetime": "2026-07-01T123450.000Z_G"},
+    "latest": {"timestamp_ms": 1782909299999, "datetime": "2026-07-01T123459.999Z_G"}
+}
+```
+
+### Example Usage
+
+```
+CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.dat)!
+```
+
+### Notes
+
+1. The frame count is the number of MPI sync words (`0x0C 0xFF 0xFF 0x0C`) in the file.
+2. A "time sync" is the `{"uptime_ms":...,"timestamp_ms":...}` JSON object the firmware writes after each MPI buffer.
+    `earliest`/`latest` are the time syncs with the smallest/largest `timestamp_ms` (not necessarily the first/last in the file), or `null` if there are none.
+3. A time sync is counted as malformed if it's over 200 bytes long, or lacks a valid `timestamp_ms`.
