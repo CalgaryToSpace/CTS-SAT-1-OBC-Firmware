@@ -5,20 +5,6 @@
 // Motivation: MPI data files are large, and downlinking them is slow. Analyzing them on-orbit
 // lets us decide which files (and which byte ranges of them) are worth downlinking.
 //
-// MPI Data File Format (written by `TASK_service_write_mpi_data()`):
-// The file starts with a `{"mpi_start":1,...}` JSON header, then is a sequence of
-// [MPI buffer][time sync JSON] pairs. Each MPI buffer contains many 152-byte MPI frames. The time
-// syncs are spliced in wherever the buffer ends (usually mid-frame). Each time sync looks like:
-// {"uptime_ms":123,"timestamp":"1719169299720+0000042000_N","datetime":"2026-07-01T123456.789Z_G","timestamp_ms":1782909296789}
-//
-// MPI Frame Layout (152 bytes, big-endian; see simple_sat_ops `utils/mpi_viewer.c`):
-//      0..3     sync word 0C FF FF 0C
-//      4..5     frame counter (starts at 0 when recording starts)
-//      11..12   inner dome target voltage
-//      13       inner dome scan index
-//      20..149  pixels: 65x uint16
-//      150..151 CCITT CRC-16 over bytes 0..149
-//
 // Strong Signal Detection (per valid frame, based on mpi_viewer's cleaning step 2):
 // 1. Skip frames that fail their CRC, background frames (the instrument sends its kept background
 //      frame un-subtracted, at ~20000 DN), and warm-up frames (before the instrument's first
@@ -37,14 +23,30 @@
 //  - warmup_frames: Frames with a frame counter below this are skipped. Default: 80.
 //
 // Response Format (JSON):
-// {"action":"analyze_mpi_data_v1","file":"<path>","sha256":"<hex>","size":1234,
-//  "frame_count":N,"valid_frame_count":N,"bad_frame_count":N,"background_frame_count":N,
-//  "warmup_frame_count":N,"frame_byte_range":[start,end],
-//  "time_sync_count":N,"mpi_start_count":N,"malformed_time_sync_count":N,
-//  "earliest":{"timestamp_ms":123,"datetime":"..."},"latest":{"timestamp_ms":123,"datetime":"..."},
-//  "strong_threshold_dn":200,"strong_frame_count":N,"strong_signal_count":N,
-//  "strong_signals":[{"bytes":[start,end],"frames":[first,last],"peak_mean_dn":N,
-//      "peak_pixel":N,"peak_pixel_dn":N},...]}
+// {
+//     "action": "analyze_mpi_data_v1",
+//     "file": "mpi_data/2026-07-21.mpi",
+//     "sha256": "5d15...1471",
+//     "size": 556728,
+//     "frame_count": 2192,
+//     "valid_frame_count": 2030,
+//     "bad_frame_count": 162,
+//     "background_frame_count": 8,
+//     "warmup_frame_count": 78,
+//     "frame_byte_range": [147, 556377],
+//     "time_sync_count": 17,
+//     "mpi_start_count": 1,
+//     "malformed_time_sync_count": 0,
+//     "earliest": {"timestamp_ms": 1784654580208, "datetime": "2026-07-21T172300.208Z_E"},
+//     "latest": {"timestamp_ms": 1784654699138, "datetime": "2026-07-21T172459.138Z_E"},
+//     "strong_threshold_dn": 200,
+//     "strong_frame_count": 8,
+//     "strong_signal_count": 2,
+//     "strong_signals": [
+//         {"bytes": [163704, 164464], "frames": [1070, 1074], "peak_mean_dn": 541, "peak_pixel": 35, "peak_pixel_dn": 985},
+//         {"bytes": [407868, 408324], "frames": [2666, 2668], "peak_mean_dn": 420, "peak_pixel": 39, "peak_pixel_dn": 742}
+//     ]
+// }
 //
 // Usage Example:
 // After uplinking the blob as "blobs/analyze_mpi_data_v1.blob", run:
@@ -64,6 +66,25 @@
 // 4. Only the first MAX_LISTED_SIGNALS strong signals are listed; "strong_signal_count" counts all.
 // 5. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
 
+
+// -----------------------------------------------------
+// ------------- Implementation Notes ------------------
+// -----------------------------------------------------
+//
+// MPI Data File Format (written by `TASK_service_write_mpi_data()`):
+// The file starts with a `{"mpi_start":1,...}` JSON header, then is a sequence of
+// [MPI buffer][time sync JSON] pairs. Each MPI buffer contains many 152-byte MPI frames. The time
+// syncs are spliced in wherever the buffer ends (usually mid-frame). Each time sync looks like:
+// {"uptime_ms":123,"timestamp":"1719169299720+0000042000_N","datetime":"2026-07-01T123456.789Z_G","timestamp_ms":1782909296789}
+//
+// MPI Frame Layout (152 bytes, big-endian; see simple_sat_ops `utils/mpi_viewer.c`):
+//      0..3     sync word 0C FF FF 0C
+//      4..5     frame counter (starts at 0 when recording starts)
+//      11..12   inner dome target voltage
+//      13       inner dome scan index
+//      20..149  pixels: 65x uint16
+//      150..151 CCITT CRC-16 over bytes 0..149
+//
 
 #include <stdint.h>
 #include <stdbool.h>
