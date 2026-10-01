@@ -1,35 +1,68 @@
 // This is a blob (executable) that analyzes an MPI science data file in LFS, and reports a summary
-// of its contents: its SHA256, size, number of MPI frames, number of time syncs, and the earliest
-// and latest time sync dates.
+// of its contents: its SHA256, size, frame counts, time syncs (and the earliest/latest dates), and
+// the "strong signals" (likely ion signals) found in the pixel data.
 //
 // Motivation: MPI data files are large, and downlinking them is slow. Analyzing them on-orbit
-// lets us decide which files are worth downlinking (and confirms that a recording worked).
+// lets us decide which files (and which byte ranges of them) are worth downlinking.
 //
 // MPI Data File Format (written by `TASK_service_write_mpi_data()`):
-// The file is a sequence of [MPI buffer][time sync JSON] pairs. Each MPI buffer contains many
-// 160-byte MPI frames, each starting with the sync word 0x0C 0xFF 0xFF 0x0C. Each time sync is an
-// ASCII JSON object written after the buffer, like:
+// The file starts with a `{"mpi_start":1,...}` JSON header, then is a sequence of
+// [MPI buffer][time sync JSON] pairs. Each MPI buffer contains many 152-byte MPI frames. The time
+// syncs are spliced in wherever the buffer ends (usually mid-frame). Each time sync looks like:
 // {"uptime_ms":123,"timestamp":"1719169299720+0000042000_N","datetime":"2026-07-01T123456.789Z_G","timestamp_ms":1782909296789}
 //
-// Args Format: <file_path>
+// MPI Frame Layout (152 bytes, big-endian; see simple_sat_ops `utils/mpi_viewer.c`):
+//      0..3     sync word 0C FF FF 0C
+//      4..5     frame counter (starts at 0 when recording starts)
+//      11..12   inner dome target voltage
+//      13       inner dome scan index
+//      20..149  pixels: 65x uint16
+//      150..151 CCITT CRC-16 over bytes 0..149
+//
+// Strong Signal Detection (per valid frame, based on mpi_viewer's cleaning step 2):
+// 1. Skip frames that fail their CRC, background frames (the instrument sends its kept background
+//      frame un-subtracted, at ~20000 DN), and warm-up frames (before the instrument's first
+//      background estimate, ~frame 73, frames aren't background-subtracted and read 1000s of DN high).
+// 2. Fit a straight line by least squares through the edge pixels (0, 1, 63, 64), and subtract it
+//      from every pixel. This removes the frame's level and tilt.
+// 3. The frame's signal is the mean residual over the interior pixels (2..62). If it's at least
+//      `strong_threshold_dn`, the frame is "strong". (On the 2026 samples, quiet frames never
+//      exceed ~120 DN, and ion events reach 400-550 DN.)
+// 4. Strong frames whose frame counters are within MAX_SIGNAL_FRAME_GAP of each other are grouped
+//      into one "strong signal" (an event usually spans several consecutive frames of a sweep).
+//
+// Args Format: <file_path>  or  <file_path>;kwarg1=val;kwarg2=val
+// Supported kwargs:
+//  - strong_threshold_dn: Minimum mean residual (DN) for a frame to be "strong". Default: 200.
+//  - warmup_frames: Frames with a frame counter below this are skipped. Default: 80.
 //
 // Response Format (JSON):
 // {"action":"analyze_mpi_data_v1","file":"<path>","sha256":"<hex>","size":1234,
-//  "frame_count":N,"time_sync_count":N,"malformed_time_sync_count":N,
-//  "earliest":{"timestamp_ms":123,"datetime":"..."},"latest":{"timestamp_ms":123,"datetime":"..."}}
-//
-// The "earliest" and "latest" fields are the time syncs with the smallest and largest
-// "timestamp_ms" (not necessarily the first and last in the file). They are `null` if there are
-// no valid time syncs.
+//  "frame_count":N,"valid_frame_count":N,"bad_frame_count":N,"background_frame_count":N,
+//  "warmup_frame_count":N,"frame_byte_range":[start,end],
+//  "time_sync_count":N,"mpi_start_count":N,"malformed_time_sync_count":N,
+//  "earliest":{"timestamp_ms":123,"datetime":"..."},"latest":{"timestamp_ms":123,"datetime":"..."},
+//  "strong_threshold_dn":200,"strong_frame_count":N,"strong_signal_count":N,
+//  "strong_signals":[{"bytes":[start,end],"frames":[first,last],"peak_mean_dn":N,
+//      "peak_pixel":N,"peak_pixel_dn":N},...]}
 //
 // Usage Example:
 // After uplinking the blob as "blobs/analyze_mpi_data_v1.blob", run:
-// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.bin)!
+// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi)!
+// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=150;warmup_frames=80)!
 //
 // Notes:
-// 1. The frame count is the number of sync words (0x0C 0xFF 0xFF 0x0C) in the file.
-// 2. A time sync is "malformed" if it starts with `{"uptime_ms":` but is too long, or is missing
-//     a valid "timestamp_ms" field.
+// 1. "frame_count" is the number of sync words. Each starts a frame, which is either valid (CRC
+//     passes) or bad (CRC fails, e.g., a time sync was spliced into it, or it was cut short by the
+//     next sync word). "frame_byte_range" is [start, end) of the valid frames.
+// 2. "time_sync_count" includes the `mpi_start` header. "earliest"/"latest" are the time syncs with
+//     the smallest/largest "timestamp_ms" (not necessarily the first/last in the file), or `null`.
+//     A time sync is "malformed" if it's cut off, too long, or lacks a valid "timestamp_ms".
+// 3. Ranges are [start, end) with an exclusive end, like a Python slice. "frames" is the
+//     [first, last] frame counter (inclusive). "peak_mean_dn" is the largest frame mean residual in
+//     the signal, and "peak_pixel"/"peak_pixel_dn" are the pixel with the largest residual.
+// 4. Only the first MAX_LISTED_SIGNALS strong signals are listed; "strong_signal_count" counts all.
+// 5. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
 
 
 #include <stdint.h>
@@ -57,15 +90,39 @@ static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 #endif
 
 static const char ARG_DELIM = ';';
+static const char KWARG_DELIM = '=';
 static const char *BLOB_NAME = "analyze_mpi_data_v1";
+
+static const uint32_t DEFAULT_STRONG_THRESHOLD_DN = 200;
+static const uint32_t DEFAULT_WARMUP_FRAMES = 80;
 
 /// @brief The 4 sync bytes at the start of each MPI frame (0x0C 0xFF 0xFF 0x0C), as a big-endian
 ///     uint32 to compare against a rolling window of the last 4 bytes read.
 static const uint32_t MPI_FRAME_SYNC_WORD = 0x0CFFFF0C;
 
-/// @brief Start of each time sync JSON object written between MPI buffers.
+#define MPI_FRAME_LEN 152
+#define MPI_FRAME_COUNTER_OFFSET 4
+#define MPI_FRAME_PIXELS_OFFSET 20
+#define MPI_FRAME_PIXEL_COUNT 65
+#define MPI_FRAME_CRC_OFFSET 150
+
+/// @brief Frames whose mean pixel value is above this are the instrument's kept background frames
+///     (sent un-subtracted, at ~20000 DN, where normal frames read ~2000 DN).
+#define BACKGROUND_FRAME_MIN_MEAN_DN 8000
+
+/// @brief Strong frames with frame counters up to this far apart are grouped into one signal.
+#define MAX_SIGNAL_FRAME_GAP 2
+
+/// @brief Max number of strong signals listed in the response (to fit the response buffer).
+#define MAX_LISTED_SIGNALS 12
+
+/// @brief Starts of the JSON objects written between MPI buffers. Both are the same length, and
+///     '{' only appears as their first char.
 static const char TIME_SYNC_PREFIX[] = "{\"uptime_ms\":";
+static const char MPI_START_PREFIX[] = "{\"mpi_start\":";
 #define TIME_SYNC_PREFIX_LEN (sizeof(TIME_SYNC_PREFIX) - 1)
+#define PREFIX_IS_TIME_SYNC (1 << 0)
+#define PREFIX_IS_MPI_START (1 << 1)
 
 /// @brief Max length of a time sync JSON object (the firmware's buffer is 200 bytes).
 #define TIME_SYNC_MAX_LEN 200
@@ -122,6 +179,51 @@ static uint16_t parse_token(
     return i;
 }
 
+/// @brief Parse a string of decimal digits into an integer.
+/// @param s String to parse. Decimal digits only (no sign, no "0x" prefix).
+/// @param[out] ok Set to true if `s` is a valid non-empty decimal number.
+/// @returns Parsed integer, or 0 if invalid.
+static int32_t parse_int(const char *s, bool *ok) {
+    uint32_t result = 0;
+    *ok = (s[0] != '\0');
+    for (; *s != '\0'; s++) {
+        if (*s < '0' || *s > '9') {
+            *ok = false;
+            return 0;
+        }
+        result = result * 10 + (*s - '0');
+    }
+    return (int32_t)result;
+}
+
+static bool str_equal(const char *a, const char *b) {
+    while (*a != '\0' && *a == *b) {
+        a++;
+        b++;
+    }
+    return *a == *b;
+}
+
+/// @brief Parse a "key=value" token into a key and a non-negative integer value.
+/// @param token The token. Modified in place (the '=' is replaced with a null terminator).
+/// @param[out] key_out Set to point at the key within `token`.
+/// @param[out] value_out Set to the parsed value.
+/// @return true on success, false if there's no '=' or the value isn't a non-negative integer.
+static bool parse_kwarg(char *token, const char **key_out, uint32_t *value_out) {
+    uint16_t i = 0;
+    while (token[i] != '\0' && token[i] != KWARG_DELIM) i++;
+    if (token[i] != KWARG_DELIM) return false;
+
+    token[i] = '\0';
+    *key_out = token;
+
+    bool ok;
+    const int32_t value = parse_int(&token[i + 1], &ok);
+    if (!ok || value < 0) return false;
+    *value_out = (uint32_t)value;
+    return true;
+}
+
 /// @brief Find `needle` within `haystack`.
 /// @return Pointer to just past the first match in `haystack`, or NULL if not found.
 static const char *find_after(const char *haystack, const char *needle) {
@@ -131,6 +233,23 @@ static const char *find_after(const char *haystack, const char *needle) {
         if (needle[i] == '\0') return &haystack[i];
     }
     return 0;
+}
+
+static inline uint16_t read_be16(const uint8_t *buf) {
+    return ((uint16_t)buf[0] << 8) | buf[1];
+}
+
+/// @brief Check an MPI frame's CRC (CCITT CRC-16, seeded 0xFFFF, over bytes 0..149, stored
+///     big-endian in bytes 150..151).
+/// @note Matches avr-libc's `_crc_ccitt_update()`, which the MPI's own firmware uses.
+static bool mpi_frame_crc_ok(const uint8_t *frame) {
+    uint16_t crc = 0xFFFF;
+    for (uint16_t i = 0; i < MPI_FRAME_CRC_OFFSET; i++) {
+        uint8_t t = frame[i] ^ (uint8_t)(crc & 0xFF);
+        t ^= (uint8_t)(t << 4);
+        crc = (uint16_t)((crc >> 8) ^ ((uint16_t)t << 8) ^ ((uint16_t)t << 3) ^ ((uint16_t)t >> 4));
+    }
+    return crc == read_be16(&frame[MPI_FRAME_CRC_OFFSET]);
 }
 
 /// @brief A time sync's timestamp, kept as both a number (for comparing) and the original decimal
@@ -173,15 +292,46 @@ static bool parse_time_sync(const char *json, time_sync_t *out) {
     return true;
 }
 
+/// @brief A run of strong frames (a likely ion signal).
+typedef struct {
+    uint32_t start_byte;
+    uint32_t end_byte;
+    uint16_t first_frame_counter;
+    uint16_t last_frame_counter;
+    int32_t peak_mean_dn;
+    int32_t peak_pixel_dn;
+    uint8_t peak_pixel;
+} ion_signal_t;
+
+typedef struct {
+    uint32_t strong_threshold_dn;
+    uint32_t warmup_frames;
+} analysis_config_t;
+
 /// @brief Summary of an MPI data file.
 typedef struct {
     uint8_t sha256[32];
     uint32_t size;
+
     uint32_t frame_count;
+    uint32_t valid_frame_count;
+    uint32_t bad_frame_count;
+    uint32_t background_frame_count;
+    uint32_t warmup_frame_count;
+    uint32_t first_valid_frame_byte;
+    uint32_t last_valid_frame_end_byte;
+
     uint32_t time_sync_count;
+    uint32_t mpi_start_count;
     uint32_t malformed_time_sync_count;
     time_sync_t earliest;
     time_sync_t latest;
+
+    uint32_t strong_frame_count;
+    uint32_t strong_signal_count;
+    bool signal_open;
+    ion_signal_t current_signal;
+    ion_signal_t signals[MAX_LISTED_SIGNALS];
 } mpi_file_stats_t;
 
 /// @brief Appends to a response buffer, tracking the position.
@@ -217,8 +367,26 @@ static void append_time_sync(response_writer_t *w, const time_sync_t *time_sync)
     );
 }
 
+/// @brief Appends the strong_signals JSON list.
+static void append_signals(response_writer_t *w, const mpi_file_stats_t *stats) {
+    response_append(w, "[");
+    for (uint32_t i = 0; i < stats->strong_signal_count && i < MAX_LISTED_SIGNALS; i++) {
+        const ion_signal_t *s = &stats->signals[i];
+        response_append(
+            w,
+            "%s{\"bytes\":[%lu,%lu],\"frames\":[%u,%u],\"peak_mean_dn\":%ld,"
+            "\"peak_pixel\":%u,\"peak_pixel_dn\":%ld}",
+            (i == 0) ? "" : ",",
+            s->start_byte, s->end_byte,
+            s->first_frame_counter, s->last_frame_counter,
+            s->peak_mean_dn, s->peak_pixel, s->peak_pixel_dn
+        );
+    }
+    response_append(w, "]");
+}
+
 /// @brief Handle a complete time sync JSON object found in the file.
-static void process_time_sync(const char *json, mpi_file_stats_t *stats) {
+static void process_time_sync(const char *json, bool is_mpi_start, mpi_file_stats_t *stats) {
     time_sync_t time_sync;
     if (!parse_time_sync(json, &time_sync)) {
         stats->malformed_time_sync_count++;
@@ -232,23 +400,152 @@ static void process_time_sync(const char *json, mpi_file_stats_t *stats) {
         stats->latest = time_sync;
     }
     stats->time_sync_count++;
+    if (is_mpi_start) stats->mpi_start_count++;
 }
 
-/// @brief Read the file once, computing the SHA256, counting frames, and parsing time syncs.
+static inline int32_t round_to_int(float x) {
+    return (int32_t)(x + ((x >= 0.0f) ? 0.5f : -0.5f));
+}
+
+/// @brief Close the open strong signal (if any), adding it to the list.
+static void close_signal(mpi_file_stats_t *stats) {
+    if (!stats->signal_open) return;
+    if (stats->strong_signal_count < MAX_LISTED_SIGNALS) {
+        stats->signals[stats->strong_signal_count] = stats->current_signal;
+    }
+    stats->strong_signal_count++;
+    stats->signal_open = false;
+}
+
+/// @brief Analyze a complete 152-byte MPI frame (CRC check, background/warm-up filtering, line
+///     fit detrend, and strong signal grouping).
+/// @param frame The frame, starting with the sync word.
+/// @param frame_start_byte Offset of the frame within the file.
+static void process_frame(
+    const uint8_t *frame, uint32_t frame_start_byte,
+    const analysis_config_t *config, mpi_file_stats_t *stats
+) {
+    if (!mpi_frame_crc_ok(frame)) {
+        stats->bad_frame_count++;
+        return;
+    }
+
+    if (stats->valid_frame_count == 0) stats->first_valid_frame_byte = frame_start_byte;
+    stats->last_valid_frame_end_byte = frame_start_byte + MPI_FRAME_LEN;
+    stats->valid_frame_count++;
+
+    float pixels[MPI_FRAME_PIXEL_COUNT];
+    float pixel_sum = 0.0f;
+    for (uint8_t j = 0; j < MPI_FRAME_PIXEL_COUNT; j++) {
+        pixels[j] = (float)read_be16(&frame[MPI_FRAME_PIXELS_OFFSET + 2 * j]);
+        pixel_sum += pixels[j];
+    }
+
+    if (pixel_sum / MPI_FRAME_PIXEL_COUNT > BACKGROUND_FRAME_MIN_MEAN_DN) {
+        stats->background_frame_count++;
+        return;
+    }
+
+    const uint16_t frame_counter = read_be16(&frame[MPI_FRAME_COUNTER_OFFSET]);
+    if (frame_counter < config->warmup_frames) {
+        stats->warmup_frame_count++;
+        return;
+    }
+
+    // Least-squares line through the edge pixels (0, 1, 63, 64), which carry no ion signal.
+    // x is centered on the middle pixel (32), so the edge x's sum to zero.
+    const int8_t edge_dx[4] = { -32, -31, 31, 32 };
+    const uint8_t edge_idx[4] = { 0, 1, MPI_FRAME_PIXEL_COUNT - 2, MPI_FRAME_PIXEL_COUNT - 1 };
+    float edge_mean = 0.0f;
+    float slope_num = 0.0f;
+    float slope_den = 0.0f;
+    for (uint8_t i = 0; i < 4; i++) {
+        edge_mean += pixels[edge_idx[i]];
+        slope_num += edge_dx[i] * pixels[edge_idx[i]];
+        slope_den += edge_dx[i] * edge_dx[i];
+    }
+    edge_mean /= 4.0f;
+    const float slope = slope_num / slope_den;
+
+    // Residuals above the line. The mean is over the interior pixels only.
+    float interior_sum = 0.0f;
+    float peak_residual = 0.0f;
+    uint8_t peak_pixel = 0;
+    for (uint8_t j = 0; j < MPI_FRAME_PIXEL_COUNT; j++) {
+        const float residual = pixels[j] - (edge_mean + slope * ((float)j - 32.0f));
+        if (j >= 2 && j <= MPI_FRAME_PIXEL_COUNT - 3) interior_sum += residual;
+        if (j == 0 || residual > peak_residual) {
+            peak_residual = residual;
+            peak_pixel = j;
+        }
+    }
+    const float mean_residual = interior_sum / (MPI_FRAME_PIXEL_COUNT - 4);
+
+    if (mean_residual < (float)config->strong_threshold_dn) return;
+    stats->strong_frame_count++;
+
+    const int32_t mean_dn = round_to_int(mean_residual);
+    const int32_t peak_dn = round_to_int(peak_residual);
+    ion_signal_t *s = &stats->current_signal;
+
+    const uint16_t gap = frame_counter - s->last_frame_counter; // Wraps (uint16).
+    if (stats->signal_open && gap <= MAX_SIGNAL_FRAME_GAP) {
+        // Extend the open signal.
+        s->last_frame_counter = frame_counter;
+        s->end_byte = frame_start_byte + MPI_FRAME_LEN;
+        if (mean_dn > s->peak_mean_dn) s->peak_mean_dn = mean_dn;
+        if (peak_dn > s->peak_pixel_dn) {
+            s->peak_pixel_dn = peak_dn;
+            s->peak_pixel = peak_pixel;
+        }
+        return;
+    }
+
+    close_signal(stats);
+    s->start_byte = frame_start_byte;
+    s->end_byte = frame_start_byte + MPI_FRAME_LEN;
+    s->first_frame_counter = frame_counter;
+    s->last_frame_counter = frame_counter;
+    s->peak_mean_dn = mean_dn;
+    s->peak_pixel_dn = peak_dn;
+    s->peak_pixel = peak_pixel;
+    stats->signal_open = true;
+}
+
+/// @brief Read the file once, computing the SHA256, finding and analyzing frames, and parsing
+///     time syncs.
 /// @param file_path Path of the file to read.
 /// @param[in,out] stats `size` must be set before calling. All other fields are filled in.
 /// @return 0 on success, negative LFS error code on read error, 1 if the file size changed.
-static int32_t scan_file(const char *file_path, mpi_file_stats_t *stats) {
+static int32_t scan_file(
+    const char *file_path, const analysis_config_t *config, mpi_file_stats_t *stats
+) {
     uint8_t read_buffer[READ_BUFFER_SIZE];
+
+    // Frame currently being captured (only valid while `frame_len > 0`).
+    uint8_t frame_buf[MPI_FRAME_LEN];
+    uint16_t frame_len = 0;
+    uint32_t frame_start_byte = 0;
+    uint32_t sync_window = 0; // Last 4 bytes read, big-endian.
 
     // Time sync currently being captured (only valid while `time_sync_len > 0`).
     char time_sync_buf[TIME_SYNC_MAX_LEN + 1];
     uint16_t time_sync_len = 0;
-    uint8_t prefix_match_len = 0; // Number of bytes of TIME_SYNC_PREFIX matched so far.
+    uint8_t prefix_matches = 0; // Which prefixes (PREFIX_IS_*) the capture still matches.
 
     stats->frame_count = 0;
+    stats->valid_frame_count = 0;
+    stats->bad_frame_count = 0;
+    stats->background_frame_count = 0;
+    stats->warmup_frame_count = 0;
+    stats->first_valid_frame_byte = 0;
+    stats->last_valid_frame_end_byte = 0;
     stats->time_sync_count = 0;
+    stats->mpi_start_count = 0;
     stats->malformed_time_sync_count = 0;
+    stats->strong_frame_count = 0;
+    stats->strong_signal_count = 0;
+    stats->signal_open = false;
 
     lfs_file_t file;
     const int32_t open_result = lfs_file_open(&LFS_filesystem, &file, file_path, LFS_O_RDONLY);
@@ -259,8 +556,7 @@ static int32_t scan_file(const char *file_path, mpi_file_stats_t *stats) {
     SHA256_CTX sha256_ctx;
     sha256_init(&sha256_ctx);
 
-    uint32_t file_pos = 0;
-    uint32_t sync_window = 0; // Last 4 bytes read, big-endian.
+    uint32_t file_pos = 0; // Offset of the start of `read_buffer` within the file.
 
     while (1) {
         const int32_t bytes_read = lfs_file_read(&LFS_filesystem, &file, read_buffer, READ_BUFFER_SIZE);
@@ -271,56 +567,74 @@ static int32_t scan_file(const char *file_path, mpi_file_stats_t *stats) {
         if (bytes_read == 0) break; // EOF.
 
         sha256_update(&sha256_ctx, read_buffer, bytes_read);
-        file_pos += bytes_read;
 
         for (int32_t i = 0; i < bytes_read; i++) {
             const uint8_t byte = read_buffer[i];
 
-            // Count frames by their sync word.
+            // Frames: capture the 152 bytes following each sync word.
+            if (frame_len > 0) {
+                frame_buf[frame_len++] = byte;
+                if (frame_len == MPI_FRAME_LEN) {
+                    process_frame(frame_buf, frame_start_byte, config, stats);
+                    frame_len = 0;
+                }
+            }
             sync_window = (sync_window << 8) | byte;
             if (sync_window == MPI_FRAME_SYNC_WORD) {
                 stats->frame_count++;
+                if (frame_len > 0) stats->bad_frame_count++; // Cut short by this sync word.
+                frame_buf[0] = 0x0C;
+                frame_buf[1] = 0xFF;
+                frame_buf[2] = 0xFF;
+                frame_buf[3] = 0x0C;
+                frame_len = 4;
+                frame_start_byte = file_pos + i - 3;
             }
 
-            // Capture the rest of a time sync, after its prefix has been matched.
-            if (time_sync_len > 0) {
-                if (time_sync_len >= TIME_SYNC_MAX_LEN) {
-                    // Too long; probably binary data that happened to match the prefix.
+            // Time syncs: match a prefix, then capture until '}'.
+            if (time_sync_len >= TIME_SYNC_PREFIX_LEN) {
+                const bool is_bad_char = (byte < 0x20 || byte > 0x7E || byte == '{');
+                if (is_bad_char || time_sync_len >= TIME_SYNC_MAX_LEN) {
+                    // Cut off (e.g., by missing data) or too long.
                     stats->malformed_time_sync_count++;
                     time_sync_len = 0;
+                    // Fall through, in case this byte starts a new time sync.
+                }
+                else {
+                    time_sync_buf[time_sync_len++] = byte;
+                    if (byte == '}') {
+                        time_sync_buf[time_sync_len] = '\0';
+                        process_time_sync(
+                            time_sync_buf, (prefix_matches == PREFIX_IS_MPI_START), stats
+                        );
+                        time_sync_len = 0;
+                    }
                     continue;
                 }
-                time_sync_buf[time_sync_len++] = byte;
-                if (byte == '}') {
-                    time_sync_buf[time_sync_len] = '\0';
-                    process_time_sync(time_sync_buf, stats);
-                    time_sync_len = 0;
+            }
+            if (time_sync_len > 0) {
+                if (byte != (uint8_t)TIME_SYNC_PREFIX[time_sync_len]) prefix_matches &= ~PREFIX_IS_TIME_SYNC;
+                if (byte != (uint8_t)MPI_START_PREFIX[time_sync_len]) prefix_matches &= ~PREFIX_IS_MPI_START;
+                if (prefix_matches != 0) {
+                    time_sync_buf[time_sync_len++] = byte;
+                    continue;
                 }
-                continue;
+                time_sync_len = 0; // Not a time sync. This byte may start a new one, though.
             }
-
-            // Look for the start of a time sync. The prefix's first char ('{') appears only once
-            // in it, so on a mismatch, the match can only restart at this byte.
-            if (byte == (uint8_t)TIME_SYNC_PREFIX[prefix_match_len]) {
-                prefix_match_len++;
-            }
-            else {
-                prefix_match_len = (byte == (uint8_t)TIME_SYNC_PREFIX[0]) ? 1 : 0;
-            }
-            if (prefix_match_len == TIME_SYNC_PREFIX_LEN) {
-                for (uint8_t j = 0; j < TIME_SYNC_PREFIX_LEN; j++) {
-                    time_sync_buf[j] = TIME_SYNC_PREFIX[j];
-                }
-                time_sync_len = TIME_SYNC_PREFIX_LEN;
-                prefix_match_len = 0;
+            if (byte == '{') {
+                time_sync_buf[0] = '{';
+                time_sync_len = 1;
+                prefix_matches = PREFIX_IS_TIME_SYNC | PREFIX_IS_MPI_START;
             }
         }
+
+        file_pos += bytes_read;
     }
 
-    // A time sync cut off by the end of the file.
-    if (time_sync_len > 0) {
-        stats->malformed_time_sync_count++;
-    }
+    // A frame or time sync cut off by the end of the file.
+    if (frame_len > 0) stats->bad_frame_count++;
+    if (time_sync_len >= TIME_SYNC_PREFIX_LEN) stats->malformed_time_sync_count++;
+    close_signal(stats);
 
     const int32_t close_result = lfs_file_close(&LFS_filesystem, &file);
     if (close_result < 0) {
@@ -339,10 +653,10 @@ static int32_t scan_file(const char *file_path, mpi_file_stats_t *stats) {
 /// @brief Main operation in this blob. Fills the response buffer with the analysis JSON.
 /// @return 0 on success, non-zero error code on failure (with an error message in the response).
 static uint8_t analyze_mpi_data(
-    const char *file_path,
+    const char *file_path, const analysis_config_t *config,
     char *response_buf, uint16_t response_buf_len
 ) {
-    // Stored on the stack (not a global). ~200 bytes.
+    // Stored on the stack (not a global). ~650 bytes.
     mpi_file_stats_t stats;
 
     const lfs_ssize_t file_size = LFS_file_size(file_path, 1);
@@ -356,7 +670,7 @@ static uint8_t analyze_mpi_data(
     }
     stats.size = (uint32_t)file_size;
 
-    const int32_t scan_result = scan_file(file_path, &stats);
+    const int32_t scan_result = scan_file(file_path, config, &stats);
     if (scan_result != 0) {
         snprintf(
             response_buf, response_buf_len,
@@ -369,12 +683,29 @@ static uint8_t analyze_mpi_data(
     response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0 };
     response_append(&w, "{\"action\":\"%s\",\"file\":\"%s\",\"sha256\":\"", BLOB_NAME, file_path);
     append_hex(&w, stats.sha256, sizeof(stats.sha256));
+    response_append(&w, "\",\"size\":%lu", stats.size);
+
     response_append(
         &w,
-        "\",\"size\":%lu,\"frame_count\":%lu,\"time_sync_count\":%lu,\"malformed_time_sync_count\":%lu",
-        stats.size, stats.frame_count, stats.time_sync_count, stats.malformed_time_sync_count
+        ",\"frame_count\":%lu,\"valid_frame_count\":%lu,\"bad_frame_count\":%lu"
+        ",\"background_frame_count\":%lu,\"warmup_frame_count\":%lu",
+        stats.frame_count, stats.valid_frame_count, stats.bad_frame_count,
+        stats.background_frame_count, stats.warmup_frame_count
     );
+    if (stats.valid_frame_count == 0) {
+        response_append(&w, ",\"frame_byte_range\":null");
+    }
+    else {
+        response_append(
+            &w, ",\"frame_byte_range\":[%lu,%lu]",
+            stats.first_valid_frame_byte, stats.last_valid_frame_end_byte
+        );
+    }
 
+    response_append(
+        &w, ",\"time_sync_count\":%lu,\"mpi_start_count\":%lu,\"malformed_time_sync_count\":%lu",
+        stats.time_sync_count, stats.mpi_start_count, stats.malformed_time_sync_count
+    );
     if (stats.time_sync_count == 0) {
         response_append(&w, ",\"earliest\":null,\"latest\":null");
     }
@@ -384,6 +715,13 @@ static uint8_t analyze_mpi_data(
         response_append(&w, ",\"latest\":");
         append_time_sync(&w, &stats.latest);
     }
+
+    response_append(
+        &w, ",\"strong_threshold_dn\":%lu,\"strong_frame_count\":%lu,\"strong_signal_count\":%lu"
+        ",\"strong_signals\":",
+        config->strong_threshold_dn, stats.strong_frame_count, stats.strong_signal_count
+    );
+    append_signals(&w, &stats);
     response_append(&w, "}");
 
     return 0;
@@ -420,14 +758,51 @@ uint8_t blob_main(
         return 135;
     }
 
-    if (pos < args_str_len) {
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: unexpected args after file path: '%s'",
-            BLOB_NAME, &args_str[pos]
-        );
-        return 136;
+    analysis_config_t config = {
+        .strong_threshold_dn = DEFAULT_STRONG_THRESHOLD_DN,
+        .warmup_frames = DEFAULT_WARMUP_FRAMES,
+    };
+
+    // Parse kwargs.
+    while (pos < args_str_len) {
+        char kwarg_token[48];
+        pos = parse_token(args_str, pos, args_str_len, kwarg_token, sizeof(kwarg_token));
+        if (kwarg_token[0] == '\0') continue; // Tolerate empty tokens (e.g., trailing ';').
+
+        const char *key;
+        uint32_t value;
+        if (!parse_kwarg(kwarg_token, &key, &value)) {
+            snprintf(
+                response_buf, response_buf_len,
+                "%s error: invalid kwarg '%s' (need key=non_negative_int)",
+                BLOB_NAME, kwarg_token
+            );
+            return 136;
+        }
+
+        if (str_equal(key, "strong_threshold_dn")) {
+            if (value == 0) {
+                snprintf(
+                    response_buf, response_buf_len,
+                    "%s error: strong_threshold_dn must be positive",
+                    BLOB_NAME
+                );
+                return 138;
+            }
+            config.strong_threshold_dn = value;
+        }
+        else if (str_equal(key, "warmup_frames")) {
+            config.warmup_frames = value;
+        }
+        else {
+            snprintf(
+                response_buf, response_buf_len,
+                "%s error: unknown kwarg '%s'",
+                BLOB_NAME, key
+            );
+            return 137;
+        }
     }
 
-    return analyze_mpi_data(arg0_file_path, response_buf, response_buf_len);
+    return analyze_mpi_data(arg0_file_path, &config, response_buf, response_buf_len);
 }

@@ -449,39 +449,60 @@ CTS1+exec_blob_from_fs(blobs/get_file_map_v1.blob,0,your_file.bin;minimum_null_l
 
 ## `blobs/analyze_mpi_data_v1.blob`
 
-Blob to summarize an MPI science data file on-orbit (hash, frame count, time syncs, and date range), to decide whether it's worth downlinking.
+Blob to summarize an MPI science data file on-orbit (hash, frame counts, time syncs, date range, and likely ion signals), to decide whether it's worth downlinking, and which byte ranges of it.
 
 ### Description
 
 ```c
-// Args Format: <file_path>
+// Args Format: <file_path>  or  <file_path>;kwarg1=val;kwarg2=val
+// Supported kwargs:
+//  - strong_threshold_dn: Minimum mean residual (DN) for a frame to be "strong". Default: 200.
+//  - warmup_frames: Frames with a frame counter below this are skipped. Default: 80.
 ```
 
-The response is tightly-packed JSON, like:
+Each valid frame (CRC passes, not a background frame, past the warm-up) gets a least-squares line fit through its edge pixels (0, 1, 63, 64), the same fit as cleaning step 2 in simple_sat_ops' `mpi_viewer`. The frame's signal is the mean residual above that line over the interior pixels (2..62). Frames at or above `strong_threshold_dn` are "strong", and runs of strong frames (frame counters at most 2 apart) are grouped into "strong signals".
+
+The response is tightly-packed JSON, like (from the 2026-07-21 recording):
 
 ```json
 {
     "action": "analyze_mpi_data_v1",
-    "file": "mpi_data/2026-07-01_mpi.dat",
-    "sha256": "6019...b725",
-    "size": 39706,
-    "frame_count": 245,
-    "time_sync_count": 4,
+    "file": "mpi_data/2026-07-21.mpi",
+    "sha256": "5d15...1471",
+    "size": 556728,
+    "frame_count": 2192,
+    "valid_frame_count": 2030,
+    "bad_frame_count": 162,
+    "background_frame_count": 8,
+    "warmup_frame_count": 78,
+    "frame_byte_range": [147, 556377],
+    "time_sync_count": 17,
+    "mpi_start_count": 1,
     "malformed_time_sync_count": 0,
-    "earliest": {"timestamp_ms": 1782909290000, "datetime": "2026-07-01T123450.000Z_G"},
-    "latest": {"timestamp_ms": 1782909299999, "datetime": "2026-07-01T123459.999Z_G"}
+    "earliest": {"timestamp_ms": 1784654580208, "datetime": "2026-07-21T172300.208Z_E"},
+    "latest": {"timestamp_ms": 1784654699138, "datetime": "2026-07-21T172459.138Z_E"},
+    "strong_threshold_dn": 200,
+    "strong_frame_count": 8,
+    "strong_signal_count": 2,
+    "strong_signals": [
+        {"bytes": [163704, 164464], "frames": [1070, 1074], "peak_mean_dn": 541, "peak_pixel": 35, "peak_pixel_dn": 985},
+        {"bytes": [407868, 408324], "frames": [2666, 2668], "peak_mean_dn": 420, "peak_pixel": 39, "peak_pixel_dn": 742}
+    ]
 }
 ```
 
 ### Example Usage
 
 ```
-CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.dat)!
+CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi)!
+CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=150;warmup_frames=80)!
 ```
 
 ### Notes
 
-1. The frame count is the number of MPI sync words (`0x0C 0xFF 0xFF 0x0C`) in the file.
-2. A "time sync" is the `{"uptime_ms":...,"timestamp_ms":...}` JSON object the firmware writes after each MPI buffer.
-    `earliest`/`latest` are the time syncs with the smallest/largest `timestamp_ms` (not necessarily the first/last in the file), or `null` if there are none.
-3. A time sync is counted as malformed if it's over 200 bytes long, or lacks a valid `timestamp_ms`.
+1. Frames are 152 bytes, starting with the sync word `0x0C 0xFF 0xFF 0x0C` and ending with a CCITT CRC-16. `frame_count` is the number of sync words, and equals `valid_frame_count + bad_frame_count`. A frame is bad if its CRC fails (usually because a time sync was spliced into it).
+2. Background frames (the instrument's kept background, sent un-subtracted at ~20000 DN) and warm-up frames (before the instrument's first background estimate around frame 73, which read 1000s of DN high) are not searched for signals.
+3. On the 2026 sample recordings, quiet frames' mean residual never exceeded ~120 DN, and the two ion events in the 2026-07-21 recording reached 420-541 DN.
+4. All byte ranges are `[start, end)` with an exclusive end, like a Python slice. `frames` is the inclusive `[first, last]` frame counter range. `peak_pixel_dn` is the largest single-pixel residual above the fitted line.
+5. `time_sync_count` includes the `{"mpi_start":1,...}` header. `earliest`/`latest` are the time syncs with the smallest/largest `timestamp_ms` (not necessarily the first/last in the file), or `null` if there are none.
+6. Only the first 12 strong signals are listed; `strong_signal_count` counts all of them.
