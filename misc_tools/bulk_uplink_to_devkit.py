@@ -191,6 +191,8 @@ def send_file_over_uart(
         # Set the system time for ease of use later.
         _send_simple_slow_command(ser, f"CTS1+set_system_time({int(time.time() * 1000)})!")
 
+    logger.info(f"File name in LittleFS: {output_file}")
+
 
 def main():
     parser = argparse.ArgumentParser(
