@@ -110,3 +110,44 @@ uint8_t TCMDEXEC_freertos_demo_stack_usage(
     
     return 0;
 }
+
+/// @brief Telecommand that returns FreeRTOS heap statistics as JSON.
+/// @param args_str No arguments.
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0 if successful, >0 if an error occurred
+/// @note Added after CTS-SAT-1 launch. Not available on FrontierSat.
+uint8_t TCMDEXEC_freertos_heap_stats_json(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    HeapStats_t heap_stats;
+    vPortGetHeapStats(&heap_stats);
+
+    const UBaseType_t outstanding_allocations =
+        heap_stats.xNumberOfSuccessfulAllocations - heap_stats.xNumberOfSuccessfulFrees;
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "{"
+            "\"available_heap_bytes\":%u,"
+            "\"largest_free_block_bytes\":%u,"
+            "\"smallest_free_block_bytes\":%u,"
+            "\"num_free_blocks\":%u,"
+            "\"min_ever_free_bytes\":%u,"
+            "\"num_successful_allocs\":%u,"
+            "\"num_successful_frees\":%u,"
+            "\"outstanding_allocations\":%lu"
+        "}",
+        heap_stats.xAvailableHeapSpaceInBytes,
+        heap_stats.xSizeOfLargestFreeBlockInBytes,
+        heap_stats.xSizeOfSmallestFreeBlockInBytes,
+        heap_stats.xNumberOfFreeBlocks,
+        heap_stats.xMinimumEverFreeBytesRemaining,
+        heap_stats.xNumberOfSuccessfulAllocations,
+        heap_stats.xNumberOfSuccessfulFrees,
+        (uint32_t)outstanding_allocations
+    );
+
+    return 0;
+}
