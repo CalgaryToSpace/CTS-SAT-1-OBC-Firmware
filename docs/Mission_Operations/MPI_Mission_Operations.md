@@ -21,8 +21,9 @@ The MPI can be reconfigured with 1 or more configuration commands prior to data 
 ### Procedure
 
 1. Power on the EPS channels for the MPI (`mpi_5v` and `mpi_12v`).
-2. Use the `mpi_send_command_get_response` telecommand to set the configuration.
-    * E.g., `mpi_send_command_get_response(54 43 15 00 02)`
+2. Use the `mpi_send_command_get_response_hex` telecommand to set the configuration.
+    * E.g., `mpi_send_command_get_response_hex(54 43 15 00 02)`
+    * You may want to use `@resp_fname=` to store and validate the confirmation.
 3. Begin recording with the `mpi_enable_active_mode(<filename>)` telecommand.
 
 
@@ -30,7 +31,7 @@ The MPI can be reconfigured with 1 or more configuration commands prior to data 
 
 The MPI can be reconfigured with 1 or more configuration commands prior to data recording.
 
-This approach uses the `uart_send_hex` telecommand instead of the `mpi_send_command_get_response` telecommand. It requires an extra step to set the transceiver correctly.
+This approach uses the `uart_send_hex` telecommand instead of the `mpi_send_command_get_response_hex` telecommand. It requires an extra step to set the transceiver correctly.
 
 ### Procedure
 
