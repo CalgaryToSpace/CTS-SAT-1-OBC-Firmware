@@ -506,3 +506,87 @@ CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi;s
 4. All byte ranges are `[start, end)` with an exclusive end, like a Python slice. `frames` is the inclusive `[first, last]` frame counter range. `peak_pixel_dn` is the largest single-pixel residual above the fitted line.
 5. `time_sync_count` includes the `{"mpi_start":1,...}` header. `earliest`/`latest` are the time syncs with the smallest/largest `timestamp_ms` (not necessarily the first/last in the file), or `null` if there are none.
 6. Only the first 12 strong signals are listed; `strong_signal_count` counts all of them.
+
+
+## `blobs/adcs_tweak_config_v1.blob`
+
+This is a blob (executable) that changes a single field inside an ADCS configuration frame.
+
+Motivation: Some ADCS configuration frames (e.g., the CubeSense config) have no dedicated
+set/get telecommand in the main firmware, and the whole frame is too long to set by a single
+telecommand. This blob does a read-modify-write of just one field, leaving every other byte as
+the ADCS had it.
+
+### Args Format
+
+```
+<command_id_set>;<command_id_get>;<parameters_length_bytes>;<field_to_update_offset_bits>;<field_to_update_length_bits>;<field_to_update_new_value_encoding>;<field_to_update_new_value>
+```
+
+- `command_id_set`: ADCS telecommand ID to write the config frame (e.g., 25 = Set CubeSense Config).
+- `command_id_get`: ADCS telemetry ID to read the config frame (e.g., 203 = Get CubeSense Config).
+- `parameters_length_bytes`: Length of the full config frame, in bytes (1 to 512).
+- `field_to_update_offset_bits`: Offset of the field within the frame. Must be a multiple of 8.
+- `field_to_update_length_bits`: Length of the field. Must be a multiple of 8.
+- `field_to_update_new_value_encoding`: One of:
+    - `"int"`: Decimal integer. Can be negative.
+    - `"float"`: Decimal floating-point number (e.g., `"-1.25e-3"`). Field length must be 32 bits
+        (float) or 64 bits (double).
+    - `"hex"`: Raw bytes of hex, in the order they appear in the frame (i.e., little-endian for
+        ADCS integers). Spaces/underscores are ignored. No `"0x"` prefix.
+- `field_to_update_new_value`: The new value, in the given encoding.
+
+### Description of Blob
+
+1. Reads the full existing config frame from the ADCS (using `command_id_get` arg).
+2. Logs the full existing config frame as hex (for recovery, if needed).
+3. Overwrites only the bytes of the target field with the new value.
+4. Writes the full modified config frame to the ADCS (using `command_id_set` arg).
+5. Reads the full config frame again, and confirms the target field holds the new value.
+6. Sends a telecommand response with the old, new, and read-back values of the field.
+
+### Notes
+
+1. This blob does NOT save the config to the ADCS's flash (`ADCS_COMMAND_SAVE_CONFIG`). The change
+    is lost on an ADCS reset unless the config is saved separately.
+2. The largest configuration message is ADCS Configuration (Set/Get ID: 20/206), which is
+    504 bytes of parameters. Reconfiguring via that is supported.
+3. `other_bytes_changed` counts bytes outside the target field which read back differently from
+    what was written. It's not an error by itself, but when non-zero, the read-back frame is logged as hex.
+4. If the `result` is `VERIFY_MISMATCH` (return code 33), the set command was accepted, but the
+    field didn't read back as the new value.
+
+### Example Usage
+
+After uplinking the blob as `blobs/adcs_tweak_config_v1.blob`, run the following to set the
+CubeSense Cam1 exposure time to value 23:
+
+```
+CTS1+exec_blob_from_fs(blobs/adcs_tweak_config_v1.blob,0,25;203;112;64;16;int;23)!
+```
+
+The same thing, using the `"hex"` encoding (23 = 0x0017, which is `"1700"` little-endian):
+
+```
+CTS1+exec_blob_from_fs(blobs/adcs_tweak_config_v1.blob,0,25;203;112;64;16;hex;1700)!
+```
+
+### Response
+
+The response is tightly-packed JSON, like:
+
+```json
+{
+    "action": "adcs_tweak_config_v1",
+    "result": "OK",
+    "set_id": 25,
+    "get_id": 203,
+    "len": 112,
+    "field_offset_bytes": 8,
+    "field_length_bytes": 2,
+    "old": "0a00",
+    "new": "1700",
+    "readback": "1700",
+    "other_bytes_changed": 0
+}
+```
