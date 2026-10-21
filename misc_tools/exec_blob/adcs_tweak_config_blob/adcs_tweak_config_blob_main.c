@@ -18,8 +18,8 @@
 //      - "int": Decimal integer. Can be negative.
 //      - "float": Decimal floating-point number (e.g., "-1.25e-3"). Field length must be 32 bits
 //          (float) or 64 bits (double).
-//      - "hex": Raw bytes, exactly 2 hex characters per byte of the field, in the order they appear
-//          in the frame (i.e., little-endian for ADCS integers). Underscores are ignored. No "0x".
+//      - "hex": Raw bytes of hex, in the order they appear in the frame (i.e., little-endian for
+//          ADCS integers). Spaces/underscores are ignored. No "0x" prefix.
 //  - field_to_update_new_value: The new value, in the given encoding.
 //
 // Description of Blob:
@@ -288,7 +288,7 @@ static ADCS_tweak_config_blob_error_enum_t encode_float(
 }
 
 /// @brief Encode a "hex" value into `out`, as raw bytes in the order given.
-/// @param value_str Exactly 2*len hex characters (underscores ignored), like "1700".
+/// @param value_str Exactly 2*len hex characters (spaces/underscores ignored), like "1700" or "17 00".
 static ADCS_tweak_config_blob_error_enum_t encode_hex(
     const char *value_str, uint16_t len, uint8_t *out
 ) {
@@ -298,7 +298,7 @@ static ADCS_tweak_config_blob_error_enum_t encode_hex(
 
     uint16_t nibble_count = 0;
     for (uint16_t i = 0; value_str[i] != '\0'; i++) {
-        if (value_str[i] == '_') continue;
+        if (value_str[i] == '_' || value_str[i] == ' ') continue;
 
         const int8_t d = hex_to_int(value_str[i]);
         if (d < 0 || nibble_count >= 2 * len) {
@@ -370,7 +370,7 @@ uint8_t blob_main(
     char arg3_field_offset_bits[20];
     char arg4_field_length_bits[20];
     char arg5_encoding[20];
-    char arg6_value[2 * MAX_FIELD_LENGTH_BYTES + 40]; // Room for hex with underscores.
+    char arg6_value[3 * MAX_FIELD_LENGTH_BYTES + 8]; // Room for hex with a delimiter between each byte.
 
     pos = parse_token(args_str, pos, args_str_len, arg0_command_id_set,          sizeof(arg0_command_id_set));
     pos = parse_token(args_str, pos, args_str_len, arg1_command_id_get,          sizeof(arg1_command_id_get));
