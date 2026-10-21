@@ -33,6 +33,8 @@
 // Notes:
 //  1. This blob does NOT save the config to the ADCS's flash (ADCS_COMMAND_SAVE_CONFIG). The change
 //      is lost on an ADCS reset unless the config is saved separately.
+//  2. The largest configuration message is ADCS Configuration (Set/Get ID: 20/206), which is
+//      504 bytes of parameters. Reconfiguring via that is supported.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/adcs_tweak_config_v1.blob", run the following to set the
