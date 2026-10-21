@@ -104,6 +104,7 @@ static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
 // Functions defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int strlen (const char *s);
+extern int strcmp(const char *s1, const char *s2);
 extern double atof(const char *s);
 
 extern void LOG_message(
@@ -199,11 +200,6 @@ static int8_t hex_to_int(char c) {
     if (c >= 'a' && c <= 'f') return c - 'a' + 10;
     if (c >= 'A' && c <= 'F') return c - 'A' + 10;
     return -1; // Error.
-}
-
-static bool str_equals(const char *a, const char *b) {
-    while (*a && *a == *b) { a++; b++; }
-    return *a == *b;
 }
 
 /// @brief Parse a string into an unsigned integer, up to 0xFFFFFFFF.
@@ -481,13 +477,13 @@ uint8_t blob_main(
 
     uint8_t new_field_bytes[MAX_FIELD_LENGTH_BYTES];
     ADCS_tweak_config_blob_error_enum_t encode_err;
-    if (str_equals(arg5_encoding, "int")) {
+    if (strcmp(arg5_encoding, "int") == 0) {
         encode_err = encode_int(arg6_value, field_length_bytes, new_field_bytes);
     }
-    else if (str_equals(arg5_encoding, "float")) {
+    else if (strcmp(arg5_encoding, "float") == 0) {
         encode_err = encode_float(arg6_value, field_length_bytes, new_field_bytes);
     }
-    else if (str_equals(arg5_encoding, "hex")) {
+    else if (strcmp(arg5_encoding, "hex") == 0) {
         encode_err = encode_hex(arg6_value, field_length_bytes, new_field_bytes);
     }
     else {
