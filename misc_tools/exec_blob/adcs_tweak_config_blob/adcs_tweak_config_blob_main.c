@@ -15,7 +15,7 @@
 //  - field_to_update_offset_bits: Offset of the field within the frame. Must be a multiple of 8.
 //  - field_to_update_length_bits: Length of the field. Must be a multiple of 8.
 //  - field_to_update_new_value_encoding: One of:
-//      - "int": Decimal or 0x-prefixed integer. Can be negative.
+//      - "int": Decimal integer. Can be negative.
 //      - "float": Decimal floating-point number (e.g., "-1.25e-3"). Field length must be 32 bits
 //          (float) or 64 bits (double).
 //      - "hex": Raw bytes, exactly 2 hex characters per byte of the field, in the order they appear
@@ -184,36 +184,22 @@ static bool str_equals(const char *a, const char *b) {
 }
 
 /// @brief Parse a string into an unsigned integer, up to 0xFFFFFFFF.
-/// @param s String to parse. Valid formats: "0x<digits>" or "<digits>". Underscores are ignored.
+/// @param s String to parse. Decimal digits only. Underscores are ignored.
 /// @param ok Set to true on success, false if invalid or larger than 0xFFFFFFFF.
 /// @returns Parsed integer, or 0 if invalid.
 static uint32_t parse_uint(const char *s, bool *ok) {
     uint64_t result = 0;
-    bool hex = false;
     uint8_t i = 0;
 
     *ok = false;
     if (!s || s[0] == '\0') return 0;
 
-    // Detect 0x prefix
-    if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) {
-        hex = true;
-        i = 2;
-        if (s[i] == '\0') return 0; // bare "0x" is invalid
-    }
-
     bool has_digits = false;
     while (s[i] != '\0') {
         if (s[i] == '_') { i++; continue; } // skip delimiter
 
-        if (hex) {
-            int8_t d = hex_to_int(s[i]);
-            if (d < 0) return 0; // invalid char
-            result = (result << 4) | (uint8_t)d;
-        } else {
-            if (s[i] < '0' || s[i] > '9') return 0; // invalid char
-            result = result * 10 + (s[i] - '0');
-        }
+        if (s[i] < '0' || s[i] > '9') return 0; // invalid char
+        result = result * 10 + (s[i] - '0');
         if (result > 0xFFFFFFFFULL) return 0; // overflow
         has_digits = true;
         i++;
@@ -227,7 +213,7 @@ static uint32_t parse_uint(const char *s, bool *ok) {
 // MARK: Value Encoders
 
 /// @brief Encode an "int" value into `out` as `len` little-endian bytes.
-/// @param value_str Decimal or 0x-prefixed integer, optionally with a leading '-'.
+/// @param value_str Decimal integer, optionally with a leading '-'.
 /// @param len Field length in bytes (1 to 4).
 /// @details Accepts any value that fits in the field as either a signed or an unsigned integer
 ///     (e.g., -128 to 255 for a 1-byte field), since the ADCS uses both.
