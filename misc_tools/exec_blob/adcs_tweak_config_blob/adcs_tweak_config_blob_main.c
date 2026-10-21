@@ -35,6 +35,10 @@
 //      is lost on an ADCS reset unless the config is saved separately.
 //  2. The largest configuration message is ADCS Configuration (Set/Get ID: 20/206), which is
 //      504 bytes of parameters. Reconfiguring via that is supported.
+// 3. `other_bytes_changed` counts bytes outside the target field which read back differently from
+//      what was written. It's not an error by itself, but when non-zero, the read-back frame is logged as hex.
+// 4. If the `result` is `VERIFY_MISMATCH` (return code 33), the set command was accepted, but the
+//      field didn't read back as the new value.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/adcs_tweak_config_v1.blob", run the following to set the
@@ -43,6 +47,23 @@
 //
 // The same thing, using the "hex" encoding (23 = 0x0017, which is "1700" little-endian):
 // CTS1+exec_blob_from_fs(blobs/adcs_tweak_config_v1.blob,0,25;203;112;64;16;hex;1700)!
+//
+// The response is tightly-packed JSON, like:
+// ```json
+// {
+//     "action": "adcs_tweak_config_v1",
+//     "result": "OK",
+//     "set_id": 25,
+//     "get_id": 203,
+//     "len": 112,
+//     "field_offset_bytes": 8,
+//     "field_length_bytes": 2,
+//     "old": "0a00",
+//     "new": "1700",
+//     "readback": "1700",
+//     "other_bytes_changed": 0
+// }
+// ```
 
 #include <stdint.h>
 #include <stdbool.h>
