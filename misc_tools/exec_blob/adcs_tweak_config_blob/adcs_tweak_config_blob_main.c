@@ -105,6 +105,8 @@ static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int strlen (const char *s);
 extern int strcmp(const char *s1, const char *s2);
+extern int memcmp(const void *a, const void *b, unsigned int n);
+extern void *memcpy(void *dst, const void *src, unsigned int n);
 extern double atof(const char *s);
 
 extern void LOG_message(
@@ -292,14 +294,12 @@ static ADCS_tweak_config_blob_error_enum_t encode_float(
 
     // The STM32L4 is little-endian, so the in-memory bytes are already in ADCS order.
     if (len == 4) {
-        union { float f; uint8_t b[4]; } u;
-        u.f = (float)value;
-        for (uint16_t i = 0; i < 4; i++) out[i] = u.b[i];
+        // Convert from double (8 bytes) to float (4 bytes).
+        const float f = (float)value;
+        memcpy(out, &f, 4);
     }
     else {
-        union { double d; uint8_t b[8]; } u;
-        u.d = value;
-        for (uint16_t i = 0; i < 8; i++) out[i] = u.b[i];
+        memcpy(out, &value, 8);
     }
     return BLOB_ERR_OK;
 }
@@ -522,10 +522,8 @@ uint8_t blob_main(
     // MARK: Step 3: Apply Change
 
     uint8_t old_field_bytes[MAX_FIELD_LENGTH_BYTES];
-    for (uint16_t i = 0; i < field_length_bytes; i++) {
-        old_field_bytes[i] = config[field_offset_bytes + i];
-        config[field_offset_bytes + i] = new_field_bytes[i];
-    }
+    memcpy(old_field_bytes, &config[field_offset_bytes], field_length_bytes);
+    memcpy(&config[field_offset_bytes], new_field_bytes, field_length_bytes);
 
     // MARK: Step 4: Set Modified Config
 
@@ -560,12 +558,7 @@ uint8_t blob_main(
         return BLOB_ERR_ADCS_VERIFY_GET_FAILED;
     }
 
-    bool field_matches = true;
-    for (uint16_t i = 0; i < field_length_bytes; i++) {
-        if (readback[field_offset_bytes + i] != new_field_bytes[i]) {
-            field_matches = false;
-        }
-    }
+    const bool field_matches = (memcmp(&readback[field_offset_bytes], new_field_bytes, field_length_bytes) == 0);
 
     // Bytes outside the target field which differ from what we wrote. Not an error by itself
     // (the ADCS may adjust some fields), but worth knowing about.
