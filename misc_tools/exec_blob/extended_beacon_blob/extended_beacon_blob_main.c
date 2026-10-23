@@ -100,6 +100,7 @@
 
 // Beacon v5 contents (includes).
 #include "crypto/random_number_generator.h"
+#include "comms_drivers/ax100_hw.h"
 
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
@@ -109,7 +110,9 @@ typedef enum {
     LOG_SEVERITY_CRITICAL = 1 << 4,
 } LOG_severity_enum_t;
 
+static const uint32_t LOG_SYSTEM_UHF_RADIO = 1 << 1;
 static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
+static const uint32_t LOG_SINK_UHF_RADIO = 1 << 0;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
@@ -147,6 +150,16 @@ extern uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor
 extern volatile uint32_t MPI_buffer_one_last_filled_uptime_ms;
 extern volatile uint32_t MPI_buffer_two_last_filled_uptime_ms;
 
+// Beacon v5 contents (externs for the vendored AX100 downlink chain).
+// hi2c1 is really an I2C_HandleTypeDef; only its address is used (via AX100_I2C_HANDLE), so it's
+// declared opaquely to avoid pulling in the HAL headers. Likewise, HAL_StatusTypeDef is returned as
+// a plain int (same ABI, as it's an enum).
+extern uint8_t hi2c1[];
+extern int HAL_I2C_Master_Transmit(void *hi2c, uint16_t DevAddress, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+extern void DEBUG_uart_print_str(const char *str);
+extern void DEBUG_uart_print_mixed_array(const uint8_t *array, uint16_t array_len, const char *prefix);
+extern uint32_t LOG_all_sinks_except(uint32_t exceptions);
+
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int strlen(const char *s);
 extern int strcmp(const char *s1, const char *s2);
@@ -181,7 +194,7 @@ typedef enum {
     BLOB_ERR_LFS_WRITE_FAILED = 5, // Writing the beacon record to LittleFS failed (beacon still sent).
     BLOB_ERR_LFS_MKDIR_FAILED = 6, // Couldn't create/confirm the BEACON_RING_DIR directory.
     BLOB_ERR_LFS_NOT_MOUNTED = 7, // Filesystem not mounted; skipped storage and history downlink.
-    BLOB_ERR_DOWNLINK_FAILED = 60, // AX100_downlink_bytes() failed to send the beacon packet.
+    BLOB_ERR_DOWNLINK_FAILED = 60, // AX100_downlink_bytes_NEW() failed to send the beacon packet.
     BLOB_ERR_HISTORY_SEND_PARTIAL_FAILURE = 61, // At least one historical beacon failed to send.
     BLOB_ERR_PERIPHERAL_COMMS_FAILURES = 117, // Beacon was sent, but >=1 peripheral query failed.
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
@@ -685,6 +698,107 @@ static BLOB_ext_beacon_error_enum_t reschedule_current_blob_tcmd(uint32_t time_i
 
     return BLOB_ERR_OK;
 }
+
+// MARK: Vendored AX100 TX
+
+// VENDORING NOTE: The AX100_downlink_bytes() chain (comms_drivers/ax100_tx.c) is vendored here
+// with a _NEW suffix, because the core FW version truncates every packet to
+// AX100_DOWNLINK_MAX_BYTES (200), and this beacon is longer than that. Changes vs. the original:
+//  1. AX100_downlink_bytes_NEW() has no length limit (no AX100_DOWNLINK_MAX_BYTES check/truncation).
+//  2. The packet buffer is on the stack and sized to fit, instead of a static buffer (a blob can't
+//     have .bss) of AX100_DOWNLINK_MAX_BYTES + AX100_CSP_HEADER_LENGTH_BYTES.
+// Otherwise identical (same CSP header, same antenna-deployment inhibit, same logging).
+
+static const uint32_t csp_priority = 3u << 30; // priority
+
+static const uint32_t own_csp_addr = 1u << 25 ; // src address
+static const uint32_t ground_station_csp_addr = 10u << 20; // dst address
+
+static const uint32_t ground_station_csp_port = 10u << 14; // dst port
+static const uint32_t own_csp_port = 10u << 8; // src port
+
+static const uint32_t use_hmac = 0 << 3; // hmac
+static const uint32_t use_xtea = 0 << 2; // xtea
+static const uint32_t use_rdp = 0 << 1; // rdp
+static const uint32_t use_crc = 0; // crc
+
+static const uint32_t AX100_i2c_tx_timeout_ms = 100;
+
+/// @brief Write the csp header (4 bytes) to the beginning of the packet, then copy the rest of `data` into `destination`.
+/// @param destination where the assembled packet will be stored
+/// @param data data to place in the packet
+/// @param data_len length of data
+static void prepend_csp_header_NEW(uint8_t *destination, uint8_t *data, uint32_t data_len) {
+    const uint32_t csp_header = (
+        csp_priority | own_csp_addr | ground_station_csp_addr |
+        ground_station_csp_port | own_csp_port | use_hmac | use_xtea | use_rdp | use_crc
+    );
+
+    destination[0] = (csp_header >> 24) & 0xFF;
+    destination[1] = (csp_header >> 16) & 0xFF;
+    destination[2] = (csp_header >> 8) & 0xFF;
+    destination[3] = csp_header & 0xFF;
+
+    // Copy data into packet.
+    memcpy(&destination[AX100_CSP_HEADER_LENGTH_BYTES], data, data_len);
+}
+
+/// @brief Send a csp packet over i2c to the AX100 for downlink.
+static uint8_t send_bytes_to_ax100_NEW(uint8_t *packet, uint16_t packet_size) {
+    if (CTS1_operation_state != CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX) {
+        // Recall: Do not transmit on the AX100 until the antenna is deployed.
+        // The Bootup Operation FSM task will set the operation mode to NOMINAL_WITH_RADIO_TX
+        // when the antenna is deployed.
+        if (AX100_enable_downlink_inhibited_uart_logs) {
+            DEBUG_uart_print_str("AX100 downlink inhibited because antenna not deployed.\n");
+        }
+
+        // Return success to avoid lots of errors. It's not really an error case, as this is expected during early ops.
+        return 0;
+    }
+
+    const int status = HAL_I2C_Master_Transmit(
+        AX100_I2C_HANDLE,
+        AX100_I2C_ADDR << 1,
+        packet,
+        packet_size,
+        AX100_i2c_tx_timeout_ms
+    );
+
+    if (status != 0) { // HAL_OK
+        LOG_message(
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+            "HAL I2C transmit error: %d", status
+        );
+        return status;
+    }
+
+    return 0;
+}
+
+/// @brief Send data to the ax100 for downlink. Same as AX100_downlink_bytes(), but without the
+///     AX100_DOWNLINK_MAX_BYTES limit.
+/// @param data pointer to the data to downlink
+/// @param data_len length of the data
+/// @return 0 on success, >0 on error/failure
+static uint8_t AX100_downlink_bytes_NEW(uint8_t *data, uint16_t data_len) {
+    uint8_t packet_buffer_including_csp_header[data_len + AX100_CSP_HEADER_LENGTH_BYTES];
+
+    prepend_csp_header_NEW(packet_buffer_including_csp_header, data, data_len);
+
+    // Any network layer (CSP) things should be done here (e.g., XTEA, CRC, etc.)
+
+    // Debugging write to UART.
+    if (AX100_enable_downlink_uart_logs) {
+        DEBUG_uart_print_mixed_array(
+            packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
+            ((COMMS_active_rf_switch_antenna == 1) ? "AX100 Down [ANT1]" : "AX100 Down [ANT2]")
+        );
+    }
+
+    return send_bytes_to_ax100_NEW(packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES);
+}
+
 
 // MARK: Fill Packet
 
@@ -1277,7 +1391,7 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
         // Stored as generated; mark it as a ring-stored (historical) beacon only now.
         memcpy(packet.end_message, " S5", 4);
 
-        const uint8_t tx_status = AX100_downlink_bytes((uint8_t *)&packet, sizeof(packet));
+        const uint8_t tx_status = AX100_downlink_bytes_NEW((uint8_t *)&packet, sizeof(packet));
         if (tx_status != 0) {
             fail_count++;
         }
@@ -1415,7 +1529,7 @@ uint8_t blob_main(
     }
 
     // Downlink the beacon packet.
-    const uint8_t tx_status = AX100_downlink_bytes(
+    const uint8_t tx_status = AX100_downlink_bytes_NEW(
         (uint8_t *)(&beacon_packet), 
         sizeof(COMMS_beacon_extended_packet_t)
     );
@@ -1423,7 +1537,7 @@ uint8_t blob_main(
         ring_close_open_file(); // Not rescheduling; commit what we have.
         snprintf(
             response_buf, response_buf_len,
-            "%s error: downlink failed (AX100_downlink_bytes() -> %d) (%s)%s",
+            "%s error: downlink failed (AX100_downlink_bytes_NEW() -> %d) (%s)%s",
             BLOB_NAME,
             tx_status,
             ext_beacon_blob_error_to_str(BLOB_ERR_DOWNLINK_FAILED),

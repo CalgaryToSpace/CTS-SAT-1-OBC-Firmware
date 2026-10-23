@@ -151,8 +151,8 @@ Running this blob triggers the extended beacon.
 ### Storage (v5+)
 
 Beacons are stored in LittleFS under `beacon_ring/`, as a ring of 20 files (`beacon_ring/r0.bin`
-.. `beacon_ring/r19.bin`), each holding 180 fixed-size 198-byte records (one raw
-`COMMS_beacon_extended_packet_t` each). That's 3600 beacons (~9 hours at 9s intervals, ~713 KB).
+.. `beacon_ring/r19.bin`), each holding 180 fixed-size 209-byte records (one raw
+`COMMS_beacon_extended_packet_t` each). That's 3600 beacons (~9 hours at 9s intervals, ~752 KB).
 When the current file fills, the blob advances to the next file; after the last one it wraps
 back to `r0.bin` and truncates it, evicting the oldest data.
 
