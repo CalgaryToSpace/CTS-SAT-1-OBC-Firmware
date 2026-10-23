@@ -14,9 +14,7 @@
 //   specified interval (clamped to a minimum of 2500ms).
 // - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
 //   run, after the live beacon. Fewer are sent if the randomly-chosen start lands near the end of
-//   the chosen ring file. Historical beacons are sent with packet type
-//   COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY (0x21), and are otherwise byte-identical to the
-//   stored beacon.
+//   the chosen ring file.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
@@ -42,6 +40,8 @@
 //      historical beacons are downlinked that run.
 //  8. Nothing historical is downlinked until the first ring file fills (BEACON_RING_RECORDS_PER_FILE
 //      beacons), because the file being written is never downlinked.
+//  9. Historical beacons are sent with the same packet type, but with version string " S5\0"
+//      (instead of " X5\0").
 //
 // ------ Implementation Notes ----------------
 //
@@ -275,6 +275,7 @@ typedef struct {
     // " X3\0" on extended packets (v3).
     // " X4\0" on extended packets (v4).
     // " X5\0" on extended packets (v5).
+    // " S5\0" on ring-stored extended packets (v5), when downlinked as history.
     char end_message[4];
 
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
@@ -1195,8 +1196,9 @@ static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_exte
 ///     the cursor without erasing the disk) are excluded by counting only the files behind the
 ///     cursor until the ring has wrapped.
 ///
-///     Each record is sent as-is, except that its packet_type byte is replaced with
-///     COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY, so the ground can tell it apart from a live beacon.
+///     Records are stored exactly as generated (" X5\0"). Each is sent as-is, except that its
+///     end_message is replaced with " S5\0" after reading it back, so the ground can tell it apart
+///     from a live beacon.
 /// @param history_count Number of records to send (0 = none).
 /// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
 /// @return Number of downlink failures (0 = all succeeded).
@@ -1256,7 +1258,8 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
             break;
         }
 
-        packet.packet_type = COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY;
+        // Stored as generated; mark it as a ring-stored (historical) beacon only now.
+        memcpy(packet.end_message, " S5", 4);
 
         const uint8_t tx_status = AX100_downlink_bytes((uint8_t *)&packet, sizeof(packet));
         if (tx_status != 0) {
