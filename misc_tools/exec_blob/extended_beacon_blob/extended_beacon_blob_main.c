@@ -216,7 +216,10 @@ static const char *ext_beacon_blob_error_to_str(BLOB_ext_beacon_error_enum_t err
 #pragma pack(push, 1)
 
 typedef struct {
-    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_BEACON_EXTENDED for this packet.
+    // COMMS_packet_type_enum_t
+    // COMMS_PACKET_TYPE_BEACON_EXTENDED for this packet (on v2, v3, and v4).
+    // COMMS_PACKET_TYPE_BEACON_EXTENDED_V5PLUS for this packet (v5+).
+    uint8_t packet_type;
 
     char satellite_name[4]; // 4 bytes: "CTS1" :)
 
@@ -369,13 +372,26 @@ typedef struct {
     int16_t adcs_estimated_pitch_angle_cdeg;
     int16_t adcs_estimated_yaw_angle_cdeg;
 
-    // TODO: If adding more fields, then add "distinct_telecommands_pending" which counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue. Useful to confirm that all uplinks were successful.
+    // Following fields are v5+.
+    // Counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue.
+    // Useful to confirm that all uplinks were successful.
+    uint8_t distinct_tcmds_pending;
+
+    // Duration since time sync (clamped to 2^16 seconds = 18 hours)
+    uint16_t duration_since_last_time_sync_sec;
+
+    uint16_t adcs_fastest_wheel_speed_rpm;
+
+    uint16_t adcs_pointing_error_cdeg;
+    uint16_t adcs_innovation_vector_magnitude;
+
+    uint8_t gnss_power_consumed_cW;
+    uint8_t adcs_total_power_consumed_cW;
+
 } COMMS_beacon_extended_packet_t;
 
-// Packet size limit:
-_Static_assert(sizeof(COMMS_beacon_extended_packet_t) <= 200, "ext. beacon packet too large");
 // Packet size (currently):
-_Static_assert(sizeof(COMMS_beacon_extended_packet_t) == 198, "ext. beacon packet size documented wrong here");
+_Static_assert(sizeof(COMMS_beacon_extended_packet_t) == 209, "extended beacon packet size documented wrong here");
 
 #pragma pack(pop)
 
@@ -684,7 +700,7 @@ static void COMMS_fill_beacon_extended_packet(
     uint8_t peripheral_comms_error_count = 0;
 
     // Fill the packet with the current system state.
-    beacon_packet->packet_type = COMMS_PACKET_TYPE_BEACON_EXTENDED; // COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20 = 32
+    beacon_packet->packet_type = COMMS_PACKET_TYPE_BEACON_EXTENDED_V5PLUS; // 0x21 = 33
     memcpy(beacon_packet->satellite_name, "CTS1", 4);
     beacon_packet->active_rf_switch_antenna = COMMS_active_rf_switch_antenna; // 1 or 2
     beacon_packet->active_rf_switch_control_mode = COMMS_rf_switch_control_mode; // Enum
