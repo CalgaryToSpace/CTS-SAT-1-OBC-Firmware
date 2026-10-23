@@ -195,6 +195,8 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000)!
       consecutive run of `history_count` stored beacons per run (see Storage section). History
       downlink is skipped while the MPI is in sensing mode.
     * New optional second arg: `history_count`. Fully backwards-compatible with v4's args.
+    * Change: `mpi_last_temperature_C` is only reported as a valid value if the most recent MPI data
+      was received within the last 30 minutes. Otherwise, it's reported as `-97` (stale).
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 

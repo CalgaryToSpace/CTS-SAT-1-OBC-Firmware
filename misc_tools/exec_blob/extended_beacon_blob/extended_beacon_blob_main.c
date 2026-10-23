@@ -306,7 +306,9 @@ typedef struct {
 
     // Average temperature of the MPI, when active, at the most recent time it was active.
     // Clamped to -90C to +125C.
-    // -99 = MPI inactive. -98 and -97 are error codes.
+    // -99 = MPI inactive.
+    // -98 = error calculating temperature.
+    // -97 = stale (v5+): most recent MPI data was received more than 30 minutes ago.
     int8_t mpi_last_temperature_C;
 
     // Instantaneous solar panel power measurements (not averaged).
@@ -570,12 +572,26 @@ static int32_t read_avg_temperature_cC_from_mpi_data_buffer_NEW(
 }
 
 
+// MPI temperature readings older than this are reported as stale (-97), not as a valid value.
+#define MPI_TEMPERATURE_MAX_AGE_MS (30u * 60u * 1000u) // 30 minutes.
+
 /// @brief Dig the current MPI temperature from the data buffer.
 /// @note Based heavily on the inline logic in `rtos_mpi_tasks.c`.
-/// @return Temperature in C, or -99 if MPI never active, or -98 if error calculating temperature.
+/// @return Temperature in C, or -99 if MPI never active, or -98 if error calculating temperature,
+///     or -97 if the most recent MPI data was received more than MPI_TEMPERATURE_MAX_AGE_MS ago.
 /// @note Clamps at -90 if colder than -90C, or 125 if hotter than 125C.
 static int8_t get_last_mpi_temperature_C() {
     int32_t last_mpi_temperature_cC = -99999;
+
+    // Only report a valid value if the most recent MPI data is fresh.
+    const uint32_t last_filled_uptime_ms = (
+        (MPI_buffer_one_last_filled_uptime_ms > MPI_buffer_two_last_filled_uptime_ms)
+        ? MPI_buffer_one_last_filled_uptime_ms
+        : MPI_buffer_two_last_filled_uptime_ms
+    );
+    if ((last_filled_uptime_ms != 0) && ((TIME_uptime_ms() - last_filled_uptime_ms) > MPI_TEMPERATURE_MAX_AGE_MS)) {
+        return -97; // Stale: last received too long ago.
+    }
 
     // Pick the buffer with the most recent data.
     if (MPI_buffer_one_last_filled_uptime_ms > MPI_buffer_two_last_filled_uptime_ms) {
