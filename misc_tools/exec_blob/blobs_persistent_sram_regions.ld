@@ -33,6 +33,6 @@ GNSS_RING (xrw) : ORIGIN = 0x2008F000, LENGTH = 0x100
    (0x200 bytes, 4x its current usage) is kept free after it. */
 
 /* extended_beacon_blob (v5+): BEACON_ring_state_t. */
-BEACON_RING (xrw) : ORIGIN = 0x2008F280, LENGTH = 0x40
+BEACON_RING (xrw) : ORIGIN = 0x2008F280, LENGTH = 0x100
 
-/* Next free address: 0x2008F2C0 */
+/* Next free address: 0x2008F380 */

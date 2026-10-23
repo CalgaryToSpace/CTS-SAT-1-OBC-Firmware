@@ -4,13 +4,23 @@
 // and per-channel EPS data especially).
 // This blob is a new feature that allows for sending additional data in the beacon packets.
 //
-// Args Format: repeat_interval_ms
-// The repeat_interval_ms can be 0 to run only once, or any positive number to run repeatedly at
-// that specified interval.
+// Since v5, every beacon is also stored into a ring of files in LittleFS, and each run downlinks
+// a randomly-selected consecutive run of stored (historical) beacons.
+// This lets the ground slowly reconstruct the full beacon history (including the parts
+// of the orbit with no ground station coverage) over many random SatNOGS passes.
+//
+// Args Format: <repeat_interval_ms>[;<history_count>]
+// - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
+//   specified interval (clamped to a minimum of 2500ms).
+// - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
+//   run, after the live beacon. Fewer are sent if the randomly-chosen start lands near the end of
+//   the chosen ring file. Historical beacons are sent with packet type
+//   COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY (0x21), and are otherwise byte-identical to the
+//   stored beacon.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v4.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
+// After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
 //
 // Notes:
 //  1. Always use "0" as the second argument (i.e., always run with malloc).
@@ -24,8 +34,40 @@
 //      a command to run this blob on every uplink pass, whether or not it's already running.
 //  5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
 //      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-//      `CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,0)!` (which will run one last time,
+//      `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (which will run one last time,
 //      then cancel itself).
+//  6. The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
+//      not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
+//  7. While the MPI is in active (sensing) mode, the live beacon is still sent and stored, but no
+//      historical beacons are downlinked that run.
+//  8. Nothing historical is downlinked until the first ring file fills (BEACON_RING_RECORDS_PER_FILE
+//      beacons), because the file being written is never downlinked.
+//
+// ------ Implementation Notes ----------------
+//
+// Storage: Beacons live in LittleFS under "beacon_ring/", as a ring of BEACON_RING_FILE_COUNT
+// files ("beacon_ring/r0.bin" .. "beacon_ring/r19.bin"), each holding BEACON_RING_RECORDS_PER_FILE
+// fixed-size records (one raw COMMS_beacon_extended_packet_t each). When the current file fills,
+// we advance to the next; after the last one we wrap back to r0 and truncate it, evicting the
+// oldest data.
+//
+// Persistent RAM: Same approach as the GNSS ring blob. The write cursor lives in a small state
+// block at a fixed SRAM address (see `BEACON_RING` in ../blobs_persistent_sram_regions.ld; separate
+// from the GNSS ring blob's region, so both blobs can run at the same time). A magic number detects cold start,
+// in which case the cursor restarts at r0/record 0.
+//
+// Open file handle: Same as the GNSS ring blob, the ring file we're currently appending to is left
+// OPEN between executions (its lfs_file_t lives in the persistent state block), so storing a
+// record is just an lfs_file_write(). Closes (which commit metadata to flash) are kept rare, to
+// limit flash wear: the file is only closed when it fills up, or when the blob exits without
+// rescheduling itself. The handle is only trusted after confirming it's still linked into the
+// mounted filesystem's open-file list (see ring_open_file_is_live()).
+//
+// If the handle turns out to be stale (reboot, or filesystem unmount/remount), the uncommitted
+// records in the current file are lost, and that file is restarted from record 0 (truncated).
+// Unlike the GNSS ring blob, the rest of the ring is kept: every file behind the cursor was closed
+// (committed) when it filled, so it's still valid on disk. On (re)opening a file, we seek to the
+// cursor's exact offset (record_idx * record_size), so the file layout always matches the cursor.
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -56,6 +98,9 @@
 #include "adcs_drivers/adcs_types.h"
 #include "mpi/mpi_types.h"
 
+// Beacon v5 contents (includes).
+#include "crypto/random_number_generator.h"
+
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
     LOG_SEVERITY_NORMAL = 1 << 1,
@@ -68,7 +113,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char BLOB_NAME[] = "extended_beacon_blob_v4";
+static const char BLOB_NAME[] = "extended_beacon_blob_v5";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -133,7 +178,11 @@ extern void LOG_message(
 // `blob_main()` itself returns to the telecommand executor (0 = success).
 typedef enum {
     BLOB_ERR_OK = 0,
+    BLOB_ERR_LFS_WRITE_FAILED = 5, // Writing the beacon record to LittleFS failed (beacon still sent).
+    BLOB_ERR_LFS_MKDIR_FAILED = 6, // Couldn't create/confirm the BEACON_RING_DIR directory.
+    BLOB_ERR_LFS_NOT_MOUNTED = 7, // Filesystem not mounted; skipped storage and history downlink.
     BLOB_ERR_DOWNLINK_FAILED = 60, // AX100_downlink_bytes() failed to send the beacon packet.
+    BLOB_ERR_HISTORY_SEND_PARTIAL_FAILURE = 61, // At least one historical beacon failed to send.
     BLOB_ERR_PERIPHERAL_COMMS_FAILURES = 117, // Beacon was sent, but >=1 peripheral query failed.
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
@@ -148,7 +197,11 @@ typedef enum {
 static const char *ext_beacon_blob_error_to_str(BLOB_ext_beacon_error_enum_t err) {
     switch (err) {
         case BLOB_ERR_OK: return "OK";
+        case BLOB_ERR_LFS_WRITE_FAILED: return "LFS_WRITE_FAILED";
+        case BLOB_ERR_LFS_MKDIR_FAILED: return "LFS_MKDIR_FAILED";
+        case BLOB_ERR_LFS_NOT_MOUNTED: return "LFS_NOT_MOUNTED";
         case BLOB_ERR_DOWNLINK_FAILED: return "DOWNLINK_FAILED";
+        case BLOB_ERR_HISTORY_SEND_PARTIAL_FAILURE: return "HISTORY_SEND_PARTIAL_FAILURE";
         case BLOB_ERR_PERIPHERAL_COMMS_FAILURES: return "PERIPHERAL_COMMS_FAILURES";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
@@ -221,6 +274,7 @@ typedef struct {
     // " X2\0" on extended packets (v2).
     // " X3\0" on extended packets (v3).
     // " X4\0" on extended packets (v4).
+    // " X5\0" on extended packets (v5).
     char end_message[4];
 
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
@@ -323,6 +377,54 @@ _Static_assert(sizeof(COMMS_beacon_extended_packet_t) <= 200, "ext. beacon packe
 _Static_assert(sizeof(COMMS_beacon_extended_packet_t) == 198, "ext. beacon packet size documented wrong here");
 
 #pragma pack(pop)
+
+
+// MARK: Ring Storage Layout
+
+#define BEACON_RING_DIR "beacon_ring"
+#define BEACON_RING_FILE_COUNT 20 // Number of files in the ring, before wrapping back to r0.bin.
+#define BEACON_RING_RECORDS_PER_FILE 180 // Records per file. 20*180 = 3600 beacons = 9 hours at 9s.
+#define BEACON_RING_RECORD_SIZE (sizeof(COMMS_beacon_extended_packet_t))
+#define BEACON_RING_PATH_MAX_LEN 32 // Enough for "beacon_ring/r<n>.bin".
+
+
+// MARK: Persistent State
+
+// Defined by blob.ld: a NOLOAD symbol anchored at the start of the fixed `BEACON_RING` region.
+extern uint8_t beacon_ring_state_base[];
+
+#define BEACON_RING_STATE_REGION_LEN 0x100u // Must match BEACON_RING's LENGTH in ../blobs_persistent_sram_regions.ld.
+#define BEACON_RING_STATE_MAGIC 0xBEAC0005u
+
+// NOT packed, deliberately: it holds a live lfs_file_t that littlefs accesses through an ordinary
+// (alignment-assuming) pointer. Same as GNSS_ring_state_t.
+typedef struct {
+    uint32_t magic; // BEACON_RING_STATE_MAGIC once initialized; anything else means cold/garbage SRAM.
+
+    uint8_t write_file_idx; // Ring file currently being appended to, 0..(BEACON_RING_FILE_COUNT-1).
+    uint8_t write_record_idx; // Records already in that file, 0..BEACON_RING_RECORDS_PER_FILE.
+    uint8_t has_wrapped; // 1 once we've cycled past the last file at least once (all files have data).
+
+    uint32_t stored_record_count; // Total records written to LittleFS, since cold-init.
+    uint32_t store_failure_count; // Failed attempts to store a record, since cold-init.
+
+    // The ring file we're appending to, held open across executions. See ring_open_write_file().
+    uint8_t open_file_is_valid; // 1 if we left `open_file` open; still verify it's live before use.
+    uint8_t open_file_idx; // Ring file index that `open_file` refers to, when valid.
+    lfs_file_t open_file; // Live littlefs handle; linked into LFS_filesystem.mlist while open.
+} BEACON_ring_state_t;
+
+_Static_assert(
+    sizeof(BEACON_ring_state_t) <= BEACON_RING_STATE_REGION_LEN,
+    "BEACON_ring_state_t must fit within the BEACON_RING memory region reserved in blobs_persistent_sram_regions.ld"
+);
+
+_Static_assert(
+    BEACON_RING_RECORDS_PER_FILE <= 255,
+    "write_record_idx is a uint8_t"
+);
+
+#define g_state ((BEACON_ring_state_t *)beacon_ring_state_base)
 
 
 static uint16_t parse_token(
@@ -635,7 +737,7 @@ static void COMMS_fill_beacon_extended_packet(
         COMMS_beacon_friendly_message_str,
         strlen(COMMS_beacon_friendly_message_str)
     );
-    memcpy(beacon_packet->end_message, " X4", 4); // Extended beacon packet version.
+    memcpy(beacon_packet->end_message, " X5", 4); // Extended beacon packet version.
 
     // Set the extended beacon packet fields.
 
@@ -943,6 +1045,232 @@ static void COMMS_fill_beacon_extended_packet(
 }
 
 
+// MARK: LittleFS Ring Storage
+
+/// @brief Build the LittleFS path of ring file `file_idx` (e.g. "beacon_ring/r3.bin").
+static void make_ring_file_path(uint8_t file_idx, char *path_dest, uint16_t path_dest_size) {
+    snprintf(path_dest, path_dest_size, "%s/r%d.bin", BEACON_RING_DIR, (int)file_idx);
+}
+
+/// @brief Is the persisted `open_file` handle still a live handle on the mounted filesystem?
+/// @details Same as in the GNSS ring blob: littlefs links every open file into
+///     `LFS_filesystem.mlist`, so walking that list is a cheap and authoritative check that the
+///     currently-mounted filesystem still knows about our handle (it won't after a reboot or a
+///     remount).
+/// @return true only if the handle is safe to write to.
+static bool ring_open_file_is_live() {
+    if ((!g_state->open_file_is_valid) || (!LFS_is_lfs_mounted)) {
+        return false;
+    }
+
+    for (struct lfs_mlist *entry = LFS_filesystem.mlist; entry != NULL; entry = entry->next) {
+        if ((void *)entry == (void *)&g_state->open_file) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/// @brief Close the persisted write handle, committing its pending records, and mark it invalid.
+/// @details Safe to call at any time: does nothing if no live handle is currently held.
+static void ring_close_open_file() {
+    if (ring_open_file_is_live()) {
+        const int close_result = lfs_file_close(&LFS_filesystem, &g_state->open_file);
+        if (close_result < 0) {
+            LOG(
+                LOG_SEVERITY_ERROR,
+                "%s: lfs_file_close(r%d) -> %d",
+                BLOB_NAME, g_state->open_file_idx, close_result
+            );
+        }
+    }
+
+    g_state->open_file_is_valid = 0;
+}
+
+/// @brief Make sure `g_state->open_file` is open on ring file `write_file_idx`, positioned at the
+///     cursor, ready to write.
+/// @details Reuses the handle left open by a previous execution whenever it's still live, which is
+///     the common case: the open happens once per ring file, not once per record.
+/// @return BLOB_ERR_OK if a live handle is ready, or the reason it isn't.
+static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
+    if (ring_open_file_is_live()) {
+        if (g_state->open_file_idx == g_state->write_file_idx) {
+            return BLOB_ERR_OK; // Already open on the right file: nothing to do.
+        }
+        ring_close_open_file(); // Shouldn't happen (closed when full), but commit it if so.
+    }
+    g_state->open_file_is_valid = 0;
+
+    const int mkdir_result = lfs_mkdir(&LFS_filesystem, BEACON_RING_DIR);
+    if ((mkdir_result != 0) && (mkdir_result != LFS_ERR_EXIST)) {
+        LOG(LOG_SEVERITY_ERROR, "%s: lfs_mkdir(%s) -> %d", BLOB_NAME, BEACON_RING_DIR, mkdir_result);
+        return BLOB_ERR_LFS_MKDIR_FAILED;
+    }
+
+    char path[BEACON_RING_PATH_MAX_LEN];
+    make_ring_file_path(g_state->write_file_idx, path, sizeof(path));
+
+    // Starting a file at record 0 means creating it, or TRUNCATE-ing an old file we've now wrapped
+    // around to -- that's how the ring evicts its oldest data.
+    const int open_flags = LFS_O_WRONLY | LFS_O_CREAT | (
+        (g_state->write_record_idx == 0) ? LFS_O_TRUNC : 0
+    );
+
+    const int open_result = lfs_file_open(&LFS_filesystem, &g_state->open_file, path, open_flags);
+    if (open_result < 0) {
+        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        return BLOB_ERR_LFS_WRITE_FAILED;
+    }
+    g_state->open_file_idx = g_state->write_file_idx;
+    g_state->open_file_is_valid = 1;
+
+    // Resuming a partly-full file (e.g., after a run-once exit closed it): seek to the cursor's
+    // exact slot (littlefs zero-fills any gap), so the file layout always matches the cursor.
+    const lfs_soff_t seek_result = lfs_file_seek(
+        &LFS_filesystem, &g_state->open_file,
+        (lfs_soff_t)g_state->write_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET
+    );
+    if (seek_result < 0) {
+        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_seek(%s) -> %ld", BLOB_NAME, path, (long)seek_result);
+        ring_close_open_file();
+        return BLOB_ERR_LFS_WRITE_FAILED;
+    }
+
+    return BLOB_ERR_OK;
+}
+
+/// @brief Append one beacon record to the ring, advancing (and wrapping/truncating) as needed.
+/// @details Writes straight through the persistent handle with lfs_file_write(). The file stays
+///     open afterwards, and is only closed -- which is what commits its records -- once it fills
+///     up (or when the blob exits without rescheduling).
+/// @return BLOB_ERR_OK on success, or the reason the record wasn't stored.
+static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_extended_packet_t *beacon_packet) {
+    const BLOB_ext_beacon_error_enum_t open_status = ring_open_write_file();
+    if (open_status != BLOB_ERR_OK) {
+        return open_status;
+    }
+
+    const lfs_ssize_t write_result = lfs_file_write(
+        &LFS_filesystem, &g_state->open_file, beacon_packet, BEACON_RING_RECORD_SIZE
+    );
+    if (write_result != (lfs_ssize_t)BEACON_RING_RECORD_SIZE) {
+        LOG(
+            LOG_SEVERITY_ERROR,
+            "%s: lfs_file_write(r%d, record %d) -> %ld",
+            BLOB_NAME, g_state->write_file_idx, g_state->write_record_idx, (long)write_result
+        );
+        // The handle's write position is now unknown; drop it so the next run reopens (and
+        // re-seeks) cleanly.
+        ring_close_open_file();
+        return BLOB_ERR_LFS_WRITE_FAILED;
+    }
+
+    g_state->stored_record_count++;
+    g_state->write_record_idx++;
+
+    if (g_state->write_record_idx >= BEACON_RING_RECORDS_PER_FILE) {
+        // This file is full: advance the cursor and close the file (which commits its records).
+        // The next record truncates/creates the next file.
+        g_state->write_record_idx = 0;
+        g_state->write_file_idx++;
+        if (g_state->write_file_idx >= BEACON_RING_FILE_COUNT) {
+            g_state->write_file_idx = 0;
+            g_state->has_wrapped = 1;
+        }
+        ring_close_open_file();
+    }
+
+    return BLOB_ERR_OK;
+}
+
+
+// MARK: History Downlink
+
+/// @brief Downlink a randomly-chosen run of consecutive stored beacons: pick a random full ring
+///     file, pick a random record index within it, and send up to `history_count` consecutive
+///     records from there (stopping at the end of the file).
+/// @details Same selection logic as the GNSS ring blob. The file the write cursor is on is never
+///     picked (it's partly full). Files left over from a previous campaign (a cold start zeroes
+///     the cursor without erasing the disk) are excluded by counting only the files behind the
+///     cursor until the ring has wrapped.
+///
+///     Each record is sent as-is, except that its packet_type byte is replaced with
+///     COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY, so the ground can tell it apart from a live beacon.
+/// @param history_count Number of records to send (0 = none).
+/// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
+/// @return Number of downlink failures (0 = all succeeded).
+static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_count_dest) {
+    *sent_count_dest = 0;
+
+    // Every file behind the cursor holds exactly BEACON_RING_RECORDS_PER_FILE records.
+    const uint8_t full_file_count = g_state->has_wrapped
+        ? (BEACON_RING_FILE_COUNT - 1) // Everything except the file the cursor is on.
+        : g_state->write_file_idx;     // Only what we've filled since the last cold start.
+
+    if ((history_count == 0) || (full_file_count == 0)) {
+        return 0;
+    }
+
+    // 1 step back = the most recently filled file; full_file_count steps back = the oldest one.
+    const uint32_t file_rand = CRYPTO_generate_random_uint32(TIME_uptime_ms());
+    const uint8_t steps_back = (uint8_t)(1u + (file_rand % full_file_count));
+    const uint8_t chosen_file_idx = (uint8_t)(
+        (g_state->write_file_idx + BEACON_RING_FILE_COUNT - steps_back) % BEACON_RING_FILE_COUNT
+    );
+
+    const uint32_t record_rand = CRYPTO_generate_random_uint32(TIME_uptime_ms() + 1);
+    const uint16_t start_record_idx = (uint16_t)(record_rand % BEACON_RING_RECORDS_PER_FILE);
+
+    const uint16_t available_count = (uint16_t)(BEACON_RING_RECORDS_PER_FILE - start_record_idx);
+    const uint16_t n_to_downlink = (history_count < available_count) ? history_count : available_count;
+
+    char path[BEACON_RING_PATH_MAX_LEN];
+    make_ring_file_path(chosen_file_idx, path, sizeof(path));
+
+    lfs_file_t file;
+    const int open_result = lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY);
+    if (open_result < 0) {
+        // Same format string as in store_beacon_to_ring(), so it's stored once.
+        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        return n_to_downlink;
+    }
+
+    if (lfs_file_seek(&LFS_filesystem, &file, (lfs_soff_t)start_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET) < 0) {
+        LOG(LOG_SEVERITY_WARNING, "%s: lfs_file_seek(%s) failed", BLOB_NAME, path);
+        lfs_file_close(&LFS_filesystem, &file);
+        return n_to_downlink;
+    }
+
+    uint16_t fail_count = 0;
+    for (uint16_t i = 0; i < n_to_downlink; i++) {
+        COMMS_beacon_extended_packet_t packet;
+        const lfs_ssize_t read_len = lfs_file_read(&LFS_filesystem, &file, &packet, BEACON_RING_RECORD_SIZE);
+        if (read_len != (lfs_ssize_t)BEACON_RING_RECORD_SIZE) {
+            LOG(
+                LOG_SEVERITY_WARNING,
+                "%s: short read (%ld) at %s record %d",
+                BLOB_NAME, (long)read_len, path, start_record_idx + i
+            );
+            fail_count += (uint16_t)(n_to_downlink - i); // The rest of the run is unreachable too.
+            break;
+        }
+
+        packet.packet_type = COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY;
+
+        const uint8_t tx_status = AX100_downlink_bytes((uint8_t *)&packet, sizeof(packet));
+        if (tx_status != 0) {
+            fail_count++;
+        }
+        else {
+            (*sent_count_dest)++;
+        }
+    }
+
+    lfs_file_close(&LFS_filesystem, &file);
+    return fail_count;
+}
+
 
 
 __attribute__((used, section(".text.entry")))
@@ -962,9 +1290,11 @@ uint8_t blob_main(
     uint16_t pos = 0;
 
     char arg0_beacon_interval_ms[20];
+    char arg1_history_count[20];
 
     pos = parse_token(args_str, pos, args_str_len, arg0_beacon_interval_ms, sizeof(arg0_beacon_interval_ms));
-    
+    parse_token(args_str, pos, args_str_len, arg1_history_count, sizeof(arg1_history_count)); // Optional; may be "".
+
     if (arg0_beacon_interval_ms[0] == '\0') {
         // Missing args error.
         snprintf(
@@ -979,7 +1309,13 @@ uint8_t blob_main(
     bool arg0_beacon_interval_ms_ok;
     int32_t beacon_interval_ms = parse_int(arg0_beacon_interval_ms, &arg0_beacon_interval_ms_ok);
 
-    if (!arg0_beacon_interval_ms_ok) {
+    bool arg1_history_count_ok = true;
+    int32_t history_count = 0;
+    if (arg1_history_count[0] != '\0') {
+        history_count = parse_int(arg1_history_count, &arg1_history_count_ok);
+    }
+
+    if (!arg0_beacon_interval_ms_ok || !arg1_history_count_ok) {
         snprintf(
             response_buf, response_buf_len,
             "%s error: invalid int args! (%s)",
@@ -994,13 +1330,36 @@ uint8_t blob_main(
     if ((beacon_interval_ms != 0) && (beacon_interval_ms < 2500)) {
         beacon_interval_ms = 2500;
     }
-    
+
+    // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state
+    // block can be trusted (including the open file handle), so restart the ring at r0.bin
+    // record 0 (old files are excluded from downlink, and truncated as they're reached).
+    if (g_state->magic != BEACON_RING_STATE_MAGIC) {
+        memset(g_state, 0, sizeof(BEACON_ring_state_t));
+        g_state->magic = BEACON_RING_STATE_MAGIC;
+    }
+
+    // A handle we believe we're holding, that the mounted filesystem doesn't know about, means a
+    // reboot or an unmount/remount happened since the last run. The current file's uncommitted
+    // records are lost, so restart that file from record 0. Files behind the cursor were committed
+    // when they filled, so the rest of the ring is kept.
+    if (g_state->open_file_is_valid && (!ring_open_file_is_live())) {
+        LOG(
+            LOG_SEVERITY_WARNING,
+            "%s: stale ring file handle (r%d/%d); restarting that file",
+            BLOB_NAME, g_state->open_file_idx, g_state->write_record_idx
+        );
+        g_state->open_file_is_valid = 0;
+        g_state->write_record_idx = 0;
+    }
+
     // Cancel any other pending agenda entries that would re-run this same blob (e.g., a repeat
     // telecommand scheduled by a previous run of this blob), so re-uplinking this blob on every
     // pass doesn't stack up duplicate scheduled reruns.
     const int16_t cancel_result = cancel_other_scheduled_reruns_of_this_blob(get_current_executing_tcmd_agenda_slot_num());
     char cancel_msg[50];
     if (cancel_result < 0) {
+        ring_close_open_file(); // Not rescheduling; commit what we have.
         snprintf(
             response_buf, response_buf_len,
             "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d (%s)",
@@ -1027,12 +1386,22 @@ uint8_t blob_main(
     uint8_t peripheral_comms_error_count = 0;
     COMMS_fill_beacon_extended_packet(&beacon_packet, &peripheral_comms_error_count);
 
+    // Store the beacon into the ring. Never mounts the filesystem itself; just skips if unmounted.
+    BLOB_ext_beacon_error_enum_t store_status = BLOB_ERR_LFS_NOT_MOUNTED;
+    if (LFS_is_lfs_mounted) {
+        store_status = store_beacon_to_ring(&beacon_packet);
+    }
+    if (store_status != BLOB_ERR_OK) {
+        g_state->store_failure_count++;
+    }
+
     // Downlink the beacon packet.
     const uint8_t tx_status = AX100_downlink_bytes(
         (uint8_t *)(&beacon_packet), 
         sizeof(COMMS_beacon_extended_packet_t)
     );
     if (tx_status != 0) {
+        ring_close_open_file(); // Not rescheduling; commit what we have.
         snprintf(
             response_buf, response_buf_len,
             "%s error: downlink failed (AX100_downlink_bytes() -> %d) (%s)%s",
@@ -1044,29 +1413,58 @@ uint8_t blob_main(
         return BLOB_ERR_DOWNLINK_FAILED;
     }
 
+    // Downlink a random consecutive run of historical beacons, unless the MPI is actively
+    // collecting science data (stay off the radio as much as possible then).
+    const bool skip_history_for_mpi = (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE);
+    uint16_t history_sent_count = 0;
+    uint16_t history_fail_count = 0;
+    if (LFS_is_lfs_mounted && !skip_history_for_mpi) {
+        history_fail_count = downlink_history_beacons((uint16_t)history_count, &history_sent_count);
+    }
+
+    // Ring summary, appended to every response below.
+    char ring_msg[110];
+    snprintf(
+        ring_msg, sizeof(ring_msg),
+        ", store=%s, cursor=r%d/%d%s, stored=%lu, store_fails=%lu, history_sent=%d/%d%s",
+        ext_beacon_blob_error_to_str(store_status),
+        g_state->write_file_idx, g_state->write_record_idx,
+        g_state->has_wrapped ? " (wrapped)" : "",
+        (unsigned long)g_state->stored_record_count,
+        (unsigned long)g_state->store_failure_count,
+        history_sent_count, history_sent_count + history_fail_count,
+        skip_history_for_mpi ? " (mpi_active)" : ""
+    );
+
     if (beacon_interval_ms > 0) {
         const BLOB_ext_beacon_error_enum_t reexec_result = reschedule_current_blob_tcmd(
             (uint32_t)beacon_interval_ms
         );
         if (reexec_result != BLOB_ERR_OK) {
+            ring_close_open_file(); // No rerun is coming to close it; commit what we have.
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reschedule_current_blob_tcmd() -> %s%s",
+                "%s error: reschedule_current_blob_tcmd() -> %s%s%s",
                 BLOB_NAME,
                 ext_beacon_blob_error_to_str(reexec_result),
+                ring_msg,
                 cancel_msg
             );
             return reexec_result;
         }
     }
+    else {
+        ring_close_open_file(); // Run-once mode: no rerun is coming to close it.
+    }
 
     if (peripheral_comms_error_count > 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: peripheral comms error count: %d (%s)%s",
+            "%s error: peripheral comms error count: %d (%s)%s%s",
             BLOB_NAME,
             peripheral_comms_error_count,
             ext_beacon_blob_error_to_str(BLOB_ERR_PERIPHERAL_COMMS_FAILURES),
+            ring_msg,
             cancel_msg
         );
         return BLOB_ERR_PERIPHERAL_COMMS_FAILURES;
@@ -1074,10 +1472,20 @@ uint8_t blob_main(
 
     snprintf(
         response_buf, response_buf_len,
-        "%s success%s",
+        "%s success%s%s",
         BLOB_NAME,
+        ring_msg,
         cancel_msg
     );
+
+    // Storage/history problems are non-fatal (the beacon was sent and the blob rescheduled), but
+    // are still reported via the return code.
+    if (store_status != BLOB_ERR_OK) {
+        return store_status;
+    }
+    if (history_fail_count > 0) {
+        return BLOB_ERR_HISTORY_SEND_PARTIAL_FAILURE;
+    }
 
     return BLOB_ERR_OK;
 }

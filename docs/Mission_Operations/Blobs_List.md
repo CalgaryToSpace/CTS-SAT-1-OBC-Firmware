@@ -91,7 +91,7 @@ CTS1+comms_bulk_file_downlink_start(adcs_data/your_file.run,0,0)@tsexec=123456@t
 CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,adcs_data/your_file.run;0;0)@tsexec=123456@tssent=789!
 ```
 
-## `blobs/extended_beacon_v{2,3,4}.blob`
+## `blobs/extended_beacon_v{2,3,4,5}.blob`
 
 ### Description
 
@@ -104,13 +104,23 @@ Running this blob triggers the extended beacon.
 // and per-channel EPS data especially).
 // This blob is a new feature that allows for sending additional data in the beacon packets.
 //
-// Args Format: repeat_interval_ms
-// The repeat_interval_ms can be 0 to run only once, or any positive number to run repeatedly at
-// that specified interval.
+// Since v5, every beacon is also stored into a ring of files in LittleFS, and each run downlinks
+// a randomly-selected consecutive run of stored (historical) beacons, in the style of the GNSS
+// ring blob. This lets the ground slowly reconstruct the full beacon history (including the parts
+// of the orbit with no ground station coverage) over many random SatNOGS passes.
+//
+// Args Format: <repeat_interval_ms>[;<history_count>]
+// - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
+//   specified interval (clamped to a minimum of 2500ms).
+// - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
+//   run, after the live beacon. Fewer are sent if the randomly-chosen start lands near the end of
+//   the chosen ring file. Historical beacons are sent with packet type
+//   COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY (0x21), and are otherwise byte-identical to the
+//   stored beacon.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v4.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
+// After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;1)!
 ```
 
 ### Notes
@@ -126,15 +136,52 @@ Running this blob triggers the extended beacon.
     a command to run this blob on every uplink pass, whether or not it's already running.
 5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
     use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,0)!` (which will run one last time,
+    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (which will run one last time,
     then cancel itself).
+6. (v5+) The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
+    not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
+7. (v5+) While the MPI is in active (sensing) mode, the live beacon is still sent and stored, but
+    no historical beacons are downlinked that run.
+8. (v5+) Nothing historical is downlinked until the first ring file fills (180 beacons, ~27 min at
+    9s intervals), because the file being written is never downlinked.
+9. (v5+) Return codes `LFS_WRITE_FAILED` (5), `LFS_MKDIR_FAILED` (6), `LFS_NOT_MOUNTED` (7), and
+    `HISTORY_SEND_PARTIAL_FAILURE` (61) are non-zero, but the live beacon was still sent and the
+    blob still rescheduled itself.
+
+### Storage (v5+)
+
+Beacons are stored in LittleFS under `beacon_ring/`, as a ring of 20 files (`beacon_ring/r0.bin`
+.. `beacon_ring/r19.bin`), each holding 180 fixed-size 198-byte records (one raw
+`COMMS_beacon_extended_packet_t` each). That's 3600 beacons (~9 hours at 9s intervals, ~713 KB).
+When the current file fills, the blob advances to the next file; after the last one it wraps
+back to `r0.bin` and truncates it, evicting the oldest data.
+
+The write cursor lives in a small persistent SRAM block (at `0x2008F280`, separate from the GNSS
+ring blob's, with growth room for the GNSS block in between, so both can run at once). Like the GNSS ring blob, the file being written is held open between
+runs (its handle lives in that SRAM block), and is only closed when it fills up or when the blob
+exits without rescheduling, to keep flash wear low. A reboot or filesystem remount loses the
+uncommitted records in the current file (at most 180 beacons), and that file restarts from
+record 0; unlike the GNSS ring blob, the rest of the ring is kept. A full power cycle (SRAM
+cleared) restarts the ring from `r0.bin`; leftover files from before are excluded from downlink
+until they're overwritten.
+
+Historical beacons are downlinked with the first byte (`packet_type`) changed to
+`COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY = 0x21`. The rest of the packet is byte-identical to the
+original live beacon (use `uptime_ms`/`unix_epoch_time_ms`/`total_beacon_count_since_boot` to
+place and deduplicate them).
 
 ### Example Usage
 
-To start the extended beacon, repeating every 9 seconds, run:
+To start the extended beacon, repeating every 9 seconds, also sending 1 historical beacon per run, run:
 
 ```
-CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;1)!
+```
+
+To only store history (no history downlink), omit the second arg (same command as v4):
+
+```
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000)!
 ```
 
 ### Versions
@@ -156,6 +203,13 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
     * Change 1 (fix): MPI temperature fetching now supports negative Celsius temperatures.
     * Change 2: Prevent bouncing in the `pending_queued_tcmd_count` field between extended and basic beacons.
     * Improvement: Use error enum for error reporting.
+* v5
+    * Has version string ` X5\0`
+    * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20` (live beacons, same format as v4).
+    * New: Stores every beacon into a LittleFS ring (`beacon_ring/`), and downlinks a random
+      consecutive run of `history_count` stored beacons per run, with packet ID
+      `COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY = 0x21` (see Storage section).
+    * New optional second arg: `history_count`. Fully backwards-compatible with v4's args.
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 
