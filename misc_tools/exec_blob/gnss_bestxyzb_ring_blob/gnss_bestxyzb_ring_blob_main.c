@@ -116,7 +116,7 @@
 // -- see FATAL check), because each execution is freshly loaded into a transient malloc'd/MPI
 // buffer and jumped into, so ordinary globals would reset every run. Instead, a small state block
 // (the LittleFS write cursor, the open ring file handle, and counters -- NOT the sample data) lives
-// at a fixed physical SRAM address (see `RING` in blob.ld) that is NOT used by the currently-
+// at a fixed physical SRAM address (see `GNSS_RING` in ../blobs_persistent_sram_regions.ld) that is NOT used by the currently-
 // running rc3 firmware image's .data/.bss, so its contents physically survive between this blob's
 // separate executions. A magic number at the start of that memory detects true cold-start (e.g.,
 // first ever run, or after a full power-cycle that clears SRAM) vs. already-initialized state.
@@ -329,10 +329,10 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
 
 // See blob.ld for the memory reservation rationale.
 
-// Defined by blob.ld: a NOLOAD symbol anchored at the start of the fixed `RING` memory region.
+// Defined by blob.ld: a NOLOAD symbol anchored at the start of the fixed `GNSS_RING` memory region.
 extern uint8_t gnss_ring_state_base[];
 
-#define GNSS_RING_STATE_REGION_LEN 0x100u // Must match blob.ld's MEMORY.RING.LENGTH.
+#define GNSS_RING_STATE_REGION_LEN 0x100u // Must match GNSS_RING's LENGTH in ../blobs_persistent_sram_regions.ld.
 #define GNSS_RING_STATE_MAGIC 0xB35779C1u // Deliberately != v1's magic, so v1 state is treated as cold.
 
 // NOT packed, deliberately: it holds a live lfs_file_t that littlefs accesses through an ordinary
@@ -366,7 +366,7 @@ typedef struct {
 
 _Static_assert(
     sizeof(GNSS_ring_state_t) <= GNSS_RING_STATE_REGION_LEN,
-    "GNSS_ring_state_t must fit within the RING memory region reserved in blob.ld"
+    "GNSS_ring_state_t must fit within the GNSS_RING memory region reserved in blobs_persistent_sram_regions.ld"
 );
 
 #define g_state ((GNSS_ring_state_t *)gnss_ring_state_base)
