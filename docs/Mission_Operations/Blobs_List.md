@@ -105,8 +105,8 @@ Running this blob triggers the extended beacon.
 // This blob is a new feature that allows for sending additional data in the beacon packets.
 //
 // Since v5, every beacon is also stored into a ring of files in LittleFS, and each run downlinks
-// a randomly-selected consecutive run of stored (historical) beacons, in the style of the GNSS
-// ring blob. This lets the ground slowly reconstruct the full beacon history (including the parts
+// a randomly-selected consecutive run of stored (historical) beacons.
+// This lets the ground slowly reconstruct the full beacon history (including the parts
 // of the orbit with no ground station coverage) over many random SatNOGS passes.
 //
 // Args Format: <repeat_interval_ms>[;<history_count>]
@@ -148,28 +148,6 @@ Running this blob triggers the extended beacon.
     `HISTORY_SEND_PARTIAL_FAILURE` (61) are non-zero, but the live beacon was still sent and the
     blob still rescheduled itself.
 
-### Storage (v5+)
-
-Beacons are stored in LittleFS under `beacon_ring/`, as a ring of 20 files (`beacon_ring/r0.bin`
-.. `beacon_ring/r19.bin`), each holding 180 fixed-size 209-byte records (one raw
-`COMMS_beacon_extended_packet_t` each). That's 3600 beacons (~9 hours at 9s intervals, ~752 KB).
-When the current file fills, the blob advances to the next file; after the last one it wraps
-back to `r0.bin` and truncates it, evicting the oldest data.
-
-The write cursor lives in a small persistent SRAM block (at `0x2008F280`, separate from the GNSS
-ring blob's, with growth room for the GNSS block in between, so both can run at once). Like the GNSS ring blob, the file being written is held open between
-runs (its handle lives in that SRAM block), and is only closed when it fills up or when the blob
-exits without rescheduling, to keep flash wear low. A reboot or filesystem remount loses the
-uncommitted records in the current file (at most 180 beacons), and that file restarts from
-record 0; unlike the GNSS ring blob, the rest of the ring is kept. A full power cycle (SRAM
-cleared) restarts the ring from `r0.bin`; leftover files from before are excluded from downlink
-until they're overwritten.
-
-Historical beacons are downlinked with the first byte (`packet_type`) changed to
-`COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY = 0x21`. The rest of the packet is byte-identical to the
-original live beacon (use `uptime_ms`/`unix_epoch_time_ms`/`total_beacon_count_since_boot` to
-place and deduplicate them).
-
 ### Example Usage
 
 To start the extended beacon, repeating every 9 seconds, also sending 1 historical beacon per run, run:
@@ -204,11 +182,18 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000)!
     * Change 2: Prevent bouncing in the `pending_queued_tcmd_count` field between extended and basic beacons.
     * Improvement: Use error enum for error reporting.
 * v5
-    * Has version string ` X5\0`
-    * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED = 0x20` (live beacons, same format as v4).
+    * Significant upgrade from v4. New fields added, and new ring buffer storage added.
+    * Has version string ` X5\0` (live beacons), and ` S5\0` (ring-stored beacons, when downlinked as history).
+    * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED_V5PLUS = 0x21` (both live and historical beacons).
+    * Format change: Packet grew from 198 to 209 bytes. New fields appended after the v4 fields:
+      `distinct_tcmds_pending`, `duration_since_last_time_sync_sec`, `adcs_fastest_wheel_speed_rpm`,
+      `adcs_pointing_error_cdeg`, `adcs_innovation_vector_magnitude`, `gnss_power_consumed_cW`,
+      `adcs_total_power_consumed_cW`.
+    * Change: Since the packet exceeds the core FW's 200-byte `AX100_DOWNLINK_MAX_BYTES`, the AX100
+      downlink chain is vendored (`AX100_downlink_bytes_NEW()`) without that limit.
     * New: Stores every beacon into a LittleFS ring (`beacon_ring/`), and downlinks a random
-      consecutive run of `history_count` stored beacons per run, with packet ID
-      `COMMS_PACKET_TYPE_BEACON_EXTENDED_HISTORY = 0x21` (see Storage section).
+      consecutive run of `history_count` stored beacons per run (see Storage section). History
+      downlink is skipped while the MPI is in sensing mode.
     * New optional second arg: `history_count`. Fully backwards-compatible with v4's args.
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
