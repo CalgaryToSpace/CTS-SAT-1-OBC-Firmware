@@ -185,7 +185,7 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000)!
     * Significant upgrade from v4. New fields added, and new ring buffer storage added.
     * Has version string ` X5\0` (live beacons), and ` S5\0` (ring-stored beacons, when downlinked as history).
     * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED_V5PLUS = 0x21` (both live and historical beacons).
-    * Format change: Packet grew from 198 to 209 bytes. New fields appended after the v4 fields:
+    * Format change: Packet grew from 198 to 210 bytes. New fields appended after the v4 fields:
       `distinct_tcmds_pending`, `duration_since_last_time_sync_sec`, `adcs_fastest_wheel_speed_rpm`,
       `adcs_pointing_error_cdeg`, `adcs_innovation_vector_magnitude`, `gnss_power_consumed_cW`,
       `adcs_total_power_consumed_cW`.

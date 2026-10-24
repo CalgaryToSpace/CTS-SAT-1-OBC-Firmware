@@ -387,26 +387,39 @@ typedef struct {
     int16_t adcs_estimated_pitch_angle_cdeg;
     int16_t adcs_estimated_yaw_angle_cdeg;
 
-    // Following fields are v5+.
-    // Counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue.
+    // The following fields are v5+.
+
+    // Counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue, plus the
+    // currently-executing tcmd (same as pending_queued_tcmd_count's +1). Equal to
+    // pending_queued_tcmd_count when nothing is duplicated.
     // Useful to confirm that all uplinks were successful.
     uint8_t distinct_tcmds_pending;
 
-    // Duration since time sync (clamped to 2^16 seconds = 18 hours)
+    // Duration since time sync (clamped to max of 2^16 seconds = 18 hours)
     uint16_t duration_since_last_time_sync_sec;
 
+    // Absolute speed of the fastest of the 3 reaction wheels.
     uint16_t adcs_fastest_wheel_speed_rpm;
 
+    // Rotation angle of the quaternion error vector (commanded vs. estimated attitude,
+    // Telemetry ID 163), 0 to 18000. Only meaningful in control modes with a commanded attitude.
     uint16_t adcs_pointing_error_cdeg;
+
+    // Magnitude of the estimation innovation vector (Telemetry ID 162), in units of 0.0001.
     uint16_t adcs_innovation_vector_magnitude;
 
+    // GNSS EPS channel (CH8) power, from the PDU running average.
     uint8_t gnss_power_consumed_cW;
-    uint8_t adcs_total_power_consumed_cW;
+
+    // Sum of ADCS current telemetry (IDs 172, 173, 198) times assumed rail voltages. See
+    // calculate_adcs_total_power_cW() and the ADCS_*_SUPPLY_MV assumptions.
+    // uint16, since peaks (~4.5 W per the CubeADCS ICD) exceed a uint8's 2.55 W.
+    uint16_t adcs_total_power_consumed_cW;
 
 } COMMS_beacon_extended_packet_t;
 
 // Packet size (currently):
-_Static_assert(sizeof(COMMS_beacon_extended_packet_t) == 209, "extended beacon packet size documented wrong here");
+_Static_assert(sizeof(COMMS_beacon_extended_packet_t) == 210, "extended beacon packet size documented wrong here");
 
 #pragma pack(pop)
 
@@ -623,6 +636,69 @@ static int8_t get_last_mpi_temperature_C() {
     }
     
     return last_mpi_temperature_C;
+}
+
+
+// MARK: v5 Field Helpers
+
+
+/// @brief Clamp a power reading into a uint8 cW beacon field (0 to 255).
+static uint8_t clamp_power_cW_to_u8(int32_t power_cW) {
+    if (power_cW < 0) {
+        return 0;
+    }
+    if (power_cW > UINT8_MAX) {
+        return UINT8_MAX;
+    }
+    return (uint8_t)power_cW;
+}
+
+
+
+/// @brief Is this agenda slot counted by count_distinct_pending_tcmds()? Pending entries, plus the
+///     currently-executing one (i.e., this blob's own exec_blob_from_fs).
+static bool is_agenda_slot_counted(uint16_t slot_num) {
+    return (
+        (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING)
+        || (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_EXECUTING)
+    );
+}
+
+/// @brief Count the distinct (tcmd_idx, args) pairs among the pending agenda entries, plus the
+///     currently-executing one.
+/// @details Includes the executing entry so that, when nothing is duplicated, this equals
+///     pending_queued_tcmd_count (which is pending entries + 1 for the executing entry).
+///     The executing entry can't duplicate a pending one, as
+///     cancel_other_scheduled_reruns_of_this_blob() has already removed this blob's other reruns.
+/// @return The count, capped at 255.
+static uint8_t count_distinct_pending_tcmds() {
+    uint16_t distinct_count = 0;
+    for (uint16_t i = 0; i < TCMD_AGENDA_SIZE; i++) {
+        if (!is_agenda_slot_counted(i)) {
+            continue;
+        }
+
+        // Only count the first occurrence of each pair.
+        bool seen_before = false;
+        for (uint16_t j = 0; j < i; j++) {
+            if (
+                is_agenda_slot_counted(j)
+                && (TCMD_agenda[j].tcmd_idx == TCMD_agenda[i].tcmd_idx)
+                && (strcmp(TCMD_agenda[j].args_str_no_parens, TCMD_agenda[i].args_str_no_parens) == 0)
+            ) {
+                seen_before = true;
+                break;
+            }
+        }
+
+        if (!seen_before) {
+            distinct_count++;
+            if (distinct_count >= UINT8_MAX) {
+                return UINT8_MAX;
+            }
+        }
+    }
+    return (uint8_t)distinct_count;
 }
 
 
@@ -985,6 +1061,11 @@ static void COMMS_fill_beacon_extended_packet(
             beacon_packet->eps_total_avg_power_distributed_cW = (
                 eps_pdu_data.vip_total_input.power_cW
             );
+
+            // Beacon v5 fields:
+            beacon_packet->gnss_power_consumed_cW = clamp_power_cW_to_u8(
+                eps_pdu_data.vip_each_channel[EPS_CHANNEL_3V3_GNSS].power_cW
+            );
         }
         else {
             peripheral_comms_error_count++;
@@ -1187,6 +1268,45 @@ static void COMMS_fill_beacon_extended_packet(
             peripheral_comms_error_count++;
         }
     }
+
+    // Everything below is for the v5+ beacon.
+
+    beacon_packet->distinct_tcmds_pending = count_distinct_pending_tcmds();
+
+    {
+        const uint32_t sec_since_sync = (TIME_uptime_ms() - TIME_system_uptime_at_last_time_resync_ms) / 1000;
+        beacon_packet->duration_since_last_time_sync_sec = (
+            (sec_since_sync > UINT16_MAX) ? UINT16_MAX : (uint16_t)sec_since_sync
+        );
+    }
+
+    // ADCS wheel speeds: report the fastest wheel's absolute speed.
+    {
+        uint8_t data_received[6];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            156, // ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            uint16_t fastest_rpm = 0;
+            for (uint8_t i = 0; i < 3; i++) {
+                const int16_t rpm = (int16_t)(data_received[(2 * i) + 1] << 8 | data_received[2 * i]); // TODO: There's a function for this.
+                const uint16_t abs_rpm = (rpm < 0) ? (uint16_t)(-(int32_t)rpm) : (uint16_t)rpm;
+                if (abs_rpm > fastest_rpm) {
+                    fastest_rpm = abs_rpm;
+                }
+            }
+            beacon_packet->adcs_fastest_wheel_speed_rpm = fastest_rpm;
+        }
+        else {
+            peripheral_comms_error_count++;
+        }
+    }
+
 
     *peripheral_comms_error_count_dst = peripheral_comms_error_count;
 }
