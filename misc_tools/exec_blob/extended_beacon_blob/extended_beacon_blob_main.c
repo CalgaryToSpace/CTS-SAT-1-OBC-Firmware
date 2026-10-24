@@ -411,9 +411,9 @@ typedef struct {
     // GNSS EPS channel (CH8) power, from the PDU running average.
     uint8_t gnss_power_consumed_cW;
 
-    // Sum of ADCS current telemetry (IDs 172, 173, 198) times assumed rail voltages. See
-    // calculate_adcs_total_power_cW() and the ADCS_*_SUPPLY_MV assumptions.
-    // uint16, since peaks (~4.5 W per the CubeADCS ICD) exceed a uint8's 2.55 W.
+    // Sum of the ADCS's current telemetry (Telemetry ID 195) times rail voltages: CubeSense 1 and 2,
+    // CubeControl (3V3, 5V, Vbat), CubeWheels, and CubeStar. Excludes CubeComputer (not measured).
+    // See calculate_adcs_total_power_cW().
     uint16_t adcs_total_power_consumed_cW;
 
 } COMMS_beacon_extended_packet_t;
@@ -651,6 +651,81 @@ static uint8_t clamp_power_cW_to_u8(int32_t power_cW) {
         return UINT8_MAX;
     }
     return (uint8_t)power_cW;
+}
+
+
+
+// ADCS rail voltages used to convert the ADCS current telemetry (TLM 195) into power.
+// Sources: CubeADCS ICD v7.5 and Firmware Reference Manual v7.4 (TLM 195, Table 154).
+//  - CubeSense 1/2: 3.3 V supply (ICD Table 6).
+//  - CubeControl: separate 3V3, 5V, and Vbat currents. Vbat is used e.g. for magnetometer
+//    deployment (Commissioning Manual, sec. on deployment).
+//  - CubeWheels: battery bus (ICD sec. 5.2.1: "The battery bus (pins H2-45 and H2-46) supplies power
+//    to the CubeWheels."), so their currents use the measured battery voltage.
+//  - CubeStar: 3.3 V (ICD CubeStar specifications).
+// Deliberately NOT summed:
+//  - Magnetorquer current: CubeControl drives the magnetorquers from its own supply (ICD 7.4), so
+//    that current is already in the CubeControl rail currents. It's also reported in DN, not mA
+//    (Health Check v7.18, sec. 6: mA = DN * k, with k = 0.51 for a CubeCoil, 1 for small CubeRods).
+//  - CubeSense Cam SRAM currents: likely a sub-branch of the same 3.3 V supply (unconfirmed);
+//    at most ~5.5 mA each (Health Check v7.18), so ~18 mW (tiny) each either way.
+// Not measured by any telemetry, so not included: CubeComputer itself (~120 mW average, ICD).
+#define ADCS_3V3_RAIL_MV 3300
+#define ADCS_5V_RAIL_MV 5000
+#define ADCS_NOMINAL_BATTERY_MV 14700 // Used if the battery voltage measurement fails.
+
+// Byte offsets of the uint16 (little-endian) current channels in TLM 195 (Power and Temperature
+// Measurements, 38 bytes). Firmware Reference Manual v7.4, Table 154.
+#define ADCS_TLM195_LEN 38
+#define ADCS_TLM195_CUBESENSE1_3V3_OFFSET 0 // mA = raw * 0.1
+#define ADCS_TLM195_CUBESENSE2_3V3_OFFSET 4 // mA = raw * 0.1
+#define ADCS_TLM195_CUBECONTROL_3V3_OFFSET 8 // mA = raw * 0.48828125
+#define ADCS_TLM195_CUBECONTROL_5V_OFFSET 10 // mA = raw * 0.48828125
+#define ADCS_TLM195_CUBECONTROL_VBAT_OFFSET 12 // mA = raw * 0.48828125
+#define ADCS_TLM195_WHEEL1_OFFSET 14 // mA = raw * 0.01 (Wheel 2 and 3 follow, at +2 and +4).
+#define ADCS_TLM195_CUBESTAR_OFFSET 20 // mA = raw * 0.01
+
+/// @brief Read a little-endian int16 out of a byte buffer.
+static int16_t read_le_int16(const uint8_t *buf) {
+    return (int16_t)((uint16_t)buf[0] | ((uint16_t)buf[1] << 8));
+}
+
+/// @brief Read a little-endian uint16 out of a byte buffer.
+static uint16_t read_le_uint16(const uint8_t *buf) {
+    return (uint16_t)((uint16_t)buf[0] | ((uint16_t)buf[1] << 8));
+}
+
+
+/// @brief Compute the ADCS's total power draw from its current telemetry. See the notes on
+///     ADCS_3V3_RAIL_MV for what's included and excluded.
+/// @param tlm195_raw TLM 195 (Power and Temperature Measurements) raw frame.
+/// @param battery_mV Battery voltage, for the CubeControl Vbat rail and the CubeWheels.
+///     If the measurement failed (OBC_read_vbat_with_adc_mV() returns -9999, or any non-positive
+///     value), ADCS_NOMINAL_BATTERY_MV is assumed instead.
+/// @return Total power in cW, clamped to 0..65535.
+static uint16_t calculate_adcs_total_power_cW(const uint8_t tlm195_raw[ADCS_TLM195_LEN], int16_t battery_mV) {
+    const float vbatt_mV = (battery_mV > 0) ? (float)battery_mV : (float)ADCS_NOMINAL_BATTERY_MV;
+
+    // Sum of (current in mA) * (voltage in mV) = power in uW.
+    float power_uW = 0.0f;
+    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESENSE1_3V3_OFFSET]) * 0.1f) * (float)ADCS_3V3_RAIL_MV;
+    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESENSE2_3V3_OFFSET]) * 0.1f) * (float)ADCS_3V3_RAIL_MV;
+    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_3V3_OFFSET]) * 0.48828125f) * (float)ADCS_3V3_RAIL_MV;
+    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_5V_OFFSET]) * 0.48828125f) * (float)ADCS_5V_RAIL_MV;
+    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_VBAT_OFFSET]) * 0.48828125f) * vbatt_mV;
+    for (uint8_t i = 0; i < 3; i++) {
+        power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_WHEEL1_OFFSET + (2 * i)]) * 0.01f) * vbatt_mV;
+    }
+    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESTAR_OFFSET]) * 0.01f) * (float)ADCS_3V3_RAIL_MV;
+
+    const float power_cW = (power_uW / 10000.0f) + 0.5f; // uW -> cW, rounded.
+    if (power_cW >= (float)UINT16_MAX) {
+        return UINT16_MAX;
+    }
+    else if (power_cW <= 0) {
+        return 0; // Should be unreachable, but valuable safety nonetheless.
+    }
+    return (uint16_t)power_cW;
 }
 
 
@@ -1365,6 +1440,28 @@ static void COMMS_fill_beacon_extended_packet(
         }
     }
 
+
+    // ADCS total power, from the ADCS's own current measurements (TLM 195), each times its rail
+    // voltage. See calculate_adcs_total_power_cW().
+    {
+        uint8_t data_received[ADCS_TLM195_LEN];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            195, // ADCS_TELEMETRY_CUBEACP_POWER_AND_TEMPERATURE_MEASUREMENTS
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            beacon_packet->adcs_total_power_consumed_cW = calculate_adcs_total_power_cW(
+                data_received, beacon_packet->obc_adc_battery_voltage_mV
+            );
+        }
+        else {
+            peripheral_comms_error_count++;
+        }
+    }
 
     *peripheral_comms_error_count_dst = peripheral_comms_error_count;
 }
