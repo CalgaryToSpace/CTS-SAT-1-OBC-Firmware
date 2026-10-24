@@ -664,34 +664,92 @@ static bool is_agenda_slot_counted(uint16_t slot_num) {
     );
 }
 
+// Hash set used by count_distinct_pending_tcmds().
+#define TCMD_HASH_SET_BUCKET_COUNT 1024 // Power of 2. 750 entries -> at most ~73% full.
+#define TCMD_HASH_SET_EMPTY_SLOT_NUM 0xFFFF // slot_num value marking an unused bucket.
+
+#pragma pack(push, 1)
+typedef struct {
+    uint16_t slot_num; // Agenda slot number of the entry in this bucket, or TCMD_HASH_SET_EMPTY_SLOT_NUM.
+    uint16_t hash_check; // Upper 16 bits of the entry's hash, to skip most strcmp()s on unrelated entries.
+} tcmd_hash_set_bucket_struct_t;
+#pragma pack(pop)
+
+_Static_assert(
+    sizeof(tcmd_hash_set_bucket_struct_t) == 4,
+    "tcmd_hash_set_bucket_struct_t should be tightly packed"
+);
+_Static_assert(
+    TCMD_AGENDA_SIZE < TCMD_HASH_SET_BUCKET_COUNT,
+    "Hash set must have more buckets than agenda slots, so it never fills up"
+);
+_Static_assert(
+    TCMD_AGENDA_SIZE <= TCMD_HASH_SET_EMPTY_SLOT_NUM,
+    "Agenda slot numbers must never equal TCMD_HASH_SET_EMPTY_SLOT_NUM"
+);
+
+/// @brief 32-bit FNV-1a hash of (tcmd_idx, args), so different telecommands with the same args
+///     hash differently.
+static uint32_t hash_agenda_entry(uint16_t slot_num) {
+    uint32_t hash = 2166136261u; // FNV offset basis.
+    hash = (hash ^ TCMD_agenda[slot_num].tcmd_idx) * 16777619u; // FNV prime.
+
+    const char *args = TCMD_agenda[slot_num].args_str_no_parens;
+    for (uint16_t i = 0; (i < TCMD_ARGS_STR_NO_PARENS_SIZE) && (args[i] != '\0'); i++) {
+        hash = (hash ^ (uint8_t)args[i]) * 16777619u;
+    }
+    return hash;
+}
+
 /// @brief Count the distinct (tcmd_idx, args) pairs among the pending agenda entries, plus the
 ///     currently-executing one.
 /// @details Includes the executing entry so that, when nothing is duplicated, this equals
 ///     pending_queued_tcmd_count (which is pending entries + 1 for the executing entry).
 ///     The executing entry can't duplicate a pending one, as
 ///     cancel_other_scheduled_reruns_of_this_blob() has already removed this blob's other reruns.
+///
+///     Uses an open-addressing hash set (linear probing) on the stack, so it's O(n) expected
+///     (n = agenda slots), instead of O(n^2) string compares. Still exact: every hash match is
+///     confirmed with tcmd_idx and strcmp() before it's treated as a duplicate.
+/// @note noinline, so the 4 KB table is only on the stack while this function runs, instead of
+///     being folded into blob_main()'s frame (which is live during the deep EPS/LittleFS calls).
 /// @return The count, capped at 255.
+__attribute__((noinline))
 static uint8_t count_distinct_pending_tcmds() {
+    tcmd_hash_set_bucket_struct_t buckets[TCMD_HASH_SET_BUCKET_COUNT];
+    for (uint16_t b = 0; b < TCMD_HASH_SET_BUCKET_COUNT; b++) {
+        buckets[b].slot_num = TCMD_HASH_SET_EMPTY_SLOT_NUM;
+        buckets[b].hash_check = 0;
+    }
+
     uint16_t distinct_count = 0;
     for (uint16_t i = 0; i < TCMD_AGENDA_SIZE; i++) {
         if (!is_agenda_slot_counted(i)) {
             continue;
         }
 
-        // Only count the first occurrence of each pair.
+        const uint32_t hash = hash_agenda_entry(i);
+        const uint16_t hash_check = (uint16_t)(hash >> 16);
+        uint16_t bucket_idx = (uint16_t)(hash & (TCMD_HASH_SET_BUCKET_COUNT - 1));
+
+        // Only count the first occurrence of each pair. Probe until we find it, or an empty bucket.
         bool seen_before = false;
-        for (uint16_t j = 0; j < i; j++) {
+        while (buckets[bucket_idx].slot_num != TCMD_HASH_SET_EMPTY_SLOT_NUM) {
+            const tcmd_hash_set_bucket_struct_t *bucket = &buckets[bucket_idx];
             if (
-                is_agenda_slot_counted(j)
-                && (TCMD_agenda[j].tcmd_idx == TCMD_agenda[i].tcmd_idx)
-                && (strcmp(TCMD_agenda[j].args_str_no_parens, TCMD_agenda[i].args_str_no_parens) == 0)
+                (bucket->hash_check == hash_check)
+                && (TCMD_agenda[bucket->slot_num].tcmd_idx == TCMD_agenda[i].tcmd_idx)
+                && (strcmp(TCMD_agenda[bucket->slot_num].args_str_no_parens, TCMD_agenda[i].args_str_no_parens) == 0)
             ) {
                 seen_before = true;
                 break;
             }
+            bucket_idx = (uint16_t)((bucket_idx + 1) & (TCMD_HASH_SET_BUCKET_COUNT - 1));
         }
 
         if (!seen_before) {
+            buckets[bucket_idx].slot_num = i;
+            buckets[bucket_idx].hash_check = hash_check;
             distinct_count++;
             if (distinct_count >= UINT8_MAX) {
                 return UINT8_MAX;
