@@ -266,6 +266,31 @@ static int32_t compute_checksums(
     return 0;
 }
 
+/// @brief Writes a byte array to a hex string (no spaces between bytes).
+/// @param byte_array Input byte array.
+/// @param byte_array_len Length of input `byte_array`.
+/// @param dest_str The destination to write a C-string to.
+/// @param dest_str_size The size of the `dest_str` array, allocated before calling. Must be at least
+///     `byte_array_len * 3 + 1` to fit the entire string.
+void GEN_byte_array_to_lower_hex_str(
+    const uint8_t *byte_array, uint32_t byte_array_len, char *dest_str, uint32_t dest_str_size
+) {
+    if (dest_str_size == 0) return; // no space at all
+    char *ptr = dest_str;
+    uint32_t remaining = dest_str_size;
+
+    for (uint32_t i = 0; i < byte_array_len; ++i) {
+        if (remaining < 3) break;  // not enough space for 2 chars + null terminator
+        int written = snprintf(ptr, remaining, "%02x", byte_array[i]);
+        if (written != 2) break;   // safety check (should always write 2 characters)
+        ptr += 2;
+        remaining -= 2;
+    }
+
+    *ptr = '\0'; // null-terminate even if truncated
+}
+
+
 /// @brief Fill the response output buffer with info about the file (very helpful for decoding).
 /// @note This is a totally new feature, independent from the original bulk downlink telecommand.
 ///     It is observed as a helpful feature for re-assembling the downlinked files during mission ops.
@@ -318,9 +343,7 @@ static int32_t fill_response_output_buffer(
 
     // Convert the SHA256 hash to an uppercase hex string.
     char hex_hash_str[100]; // Should be 64 chars.
-    GEN_byte_array_to_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
-
-    // TODO: Switch to GEN_byte_array_to_lower_hex_str implementation.
+    GEN_byte_array_to_lower_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
 
     // Format like JSON.
     snprintf(
