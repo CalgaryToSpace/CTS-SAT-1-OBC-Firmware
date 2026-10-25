@@ -447,7 +447,7 @@ CTS1+exec_blob_from_fs(blobs/get_file_map_v1.blob,0,your_file.bin;minimum_null_l
 3. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON). Re-run with a larger `minimum_null_length` to fit fewer null ranges.
 
 
-## `blobs/analyze_mpi_data_v1.blob`
+## `blobs/analyze_mpi_data_v{1,2}.blob`
 
 Blob to summarize an MPI science data file on-orbit (SHA256 and CRC16, frame counts, time syncs, date range, and likely ion signals), to decide whether it's worth downlinking, and which byte ranges of it.
 
@@ -471,14 +471,15 @@ The response is tightly-packed JSON, like (from the 2026-07-21 recording):
 
 ```json
 {
-    "action": "analyze_mpi_data_v1",
+    "action": "analyze_mpi_data_v2",
     "file": "mpi_data/2026-07-21.mpi",
     "sha256": "5d15...1471",
     "crc16": "0xf821",
     "size": 556728,
     "frame_count": 2192,
-    "valid_frame_count": 2030,
-    "bad_frame_count": 162,
+    "valid_frame_count": 2044,
+    "bad_frame_count": 148,
+    "restitched_frame_count": 14,
     "background_frame_count": 8,
     "warmup_frame_count": 78,
     "frame_byte_range": [147, 556377],
@@ -500,13 +501,14 @@ The response is tightly-packed JSON, like (from the 2026-07-21 recording):
 ### Example Usage
 
 ```
-CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi)!
-CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=150;warmup_frames=80)!
+CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi)!
+CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=100)!
+CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=150;warmup_frames=80)!
 ```
 
 ### Notes
 
-1. Frames are 152 bytes, starting with the sync word `0x0C 0xFF 0xFF 0x0C` and ending with a CCITT CRC-16. `frame_count` is the number of sync words, and equals `valid_frame_count + bad_frame_count`. A frame is bad if its CRC fails (usually because a time sync was spliced into it).
+1. Frames are 152 bytes, starting with the sync word `0x0C 0xFF 0xFF 0x0C` and ending with a CCITT CRC-16. `frame_count` is the number of sync words, and equals `valid_frame_count + bad_frame_count`. A frame is bad if its CRC fails (e.g., corrupted bytes from the MPI) or it's cut short by the next sync word. The firmware writes a time sync after each MPI buffer, usually mid-frame; the blob removes these before the CRC check, and `restitched_frame_count` counts the valid frames that had one removed. A restitched frame's byte range includes the time sync.
 2. Background frames (the instrument's kept background, sent un-subtracted at ~20000 DN) and warm-up frames (before the instrument's first background estimate around frame 73, which read 1000s of DN high) are not searched for signals.
 3. On the 2026 sample recordings, quiet frames' mean residual never exceeded ~120 DN, and the two ion events in the 2026-07-21 recording reached 420-541 DN. The noise floor is σ ≈ 30 DN (per-pixel noise of ~55 DN × √(1/61 + 1/4)), so the default 200 DN is ~6-7σ.
 4. All byte ranges are `[start, end)` with an exclusive end, like a Python slice. `frames` is the inclusive `[first, last]` frame counter range. `peak_pixel_dn` is the largest single-pixel residual above the fitted line.
@@ -514,6 +516,19 @@ CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi;s
 6. Only the first 12 strong signals are listed; `strong_signal_count` counts all of them.
 7. `sha256` and `crc16` cover the whole file. The CRC16 is the same algorithm as the ADCS file CRC16 (ADCS Firmware ICD `CRC_Calc()`), and the same as in `get_file_map_v1` and `bulk_downlink_start_v3`.
 8. For files over 1.1 MB (1,100,000 bytes), `sha256` is `null` (skipped, as it's about half the runtime). `crc16` is always computed.
+
+### Versions
+
+* v1
+    * Generally worked well.
+    * Post-release bug: Crashes on large files (e.g., >2 MB).
+    * Post-release bug: Frames with a time sync spliced into them failed their CRC and were counted as bad.
+* v2
+    * Frames with a time sync spliced into them are pieced back together before the CRC check, and counted in the new `restitched_frame_count` field. `valid_frame_count`/`bad_frame_count` are higher/lower than v1's for the same file.
+    * Added the `crc16` field.
+    * `sha256` is `null` for files over 1.1 MB, to avoid a watchdog reset on very large files.
+    * Reads 2048 bytes at a time (was 512).
+    * `action` is now `analyze_mpi_data_v2` (version bump).
 
 
 ## `blobs/adcs_tweak_config_v1.blob`
