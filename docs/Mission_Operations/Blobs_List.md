@@ -460,7 +460,12 @@ Blob to summarize an MPI science data file on-orbit (hash, frame counts, time sy
 //  - warmup_frames: Frames with a frame counter below this are skipped. Default: 80.
 ```
 
+**What does the threshold mean?** The `strong_threshold_dn` argument is compared against an intermediate "minimum mean residual" value, which is intended to measure above the noise floor.
+The noise floor is estimated as `mean(edge pixels)`.
+
 Each valid frame (CRC passes, not a background frame, past the warm-up) gets a least-squares line fit through its edge pixels (0, 1, 63, 64), the same fit as cleaning step 2 in simple_sat_ops' `mpi_viewer`. The frame's signal is the mean residual above that line over the interior pixels (2..62). Frames at or above `strong_threshold_dn` are "strong", and runs of strong frames (frame counters at most 2 apart) are grouped into "strong signals".
+
+Raw pixels sit on a ~1800-2000 DN pedestal, but the edges sit on it too, so it cancels: the signal evaluated against the threshold is effectively `mean(interior pixels) - mean(edge pixels)`. For example, in the 2026-07-21 recording, quiet frame 1000 has an interior mean of 1985 and an edge mean of 1920, giving 65 DN. Ion event frame 1072 has 2834 and 2293, giving 541 DN, with its middle pixels at ~3200. So the 200 DN threshold means "the interior averages 200 DN above the line through the edges". Edge pixels also rise during strong events, so this understates the true event amplitude.
 
 The response is tightly-packed JSON, like (from the 2026-07-21 recording):
 
@@ -502,7 +507,7 @@ CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi;s
 
 1. Frames are 152 bytes, starting with the sync word `0x0C 0xFF 0xFF 0x0C` and ending with a CCITT CRC-16. `frame_count` is the number of sync words, and equals `valid_frame_count + bad_frame_count`. A frame is bad if its CRC fails (usually because a time sync was spliced into it).
 2. Background frames (the instrument's kept background, sent un-subtracted at ~20000 DN) and warm-up frames (before the instrument's first background estimate around frame 73, which read 1000s of DN high) are not searched for signals.
-3. On the 2026 sample recordings, quiet frames' mean residual never exceeded ~120 DN, and the two ion events in the 2026-07-21 recording reached 420-541 DN.
+3. On the 2026 sample recordings, quiet frames' mean residual never exceeded ~120 DN, and the two ion events in the 2026-07-21 recording reached 420-541 DN. The noise floor is σ ≈ 30 DN (per-pixel noise of ~55 DN × √(1/61 + 1/4)), so the default 200 DN is ~6-7σ.
 4. All byte ranges are `[start, end)` with an exclusive end, like a Python slice. `frames` is the inclusive `[first, last]` frame counter range. `peak_pixel_dn` is the largest single-pixel residual above the fitted line.
 5. `time_sync_count` includes the `{"mpi_start":1,...}` header. `earliest`/`latest` are the time syncs with the smallest/largest `timestamp_ms` (not necessarily the first/last in the file), or `null` if there are none.
 6. Only the first 12 strong signals are listed; `strong_signal_count` counts all of them.
