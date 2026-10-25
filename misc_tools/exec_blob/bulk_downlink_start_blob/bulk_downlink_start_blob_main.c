@@ -88,6 +88,41 @@ static inline uint32_t TIME_uptime_ms() {
     return TIME_uptime_ms_from_tim6;
 }
 
+// MARK: Error Enum
+
+// All named status/error codes returned by this blob's functions, including the values
+// `blob_main()` itself returns to the telecommand executor (0 = success).
+// For LFS and COMMS failures, the raw error code is included in the response string.
+typedef enum {
+    BLOB_ERR_OK = 0,
+    BLOB_ERR_FILE_SIZE_FAILED = 11, // LFS_file_size() failed (e.g., the file doesn't exist).
+    BLOB_ERR_OFFSET_PAST_END_OF_FILE = 12, // start_offset is at or past the end of the file.
+    BLOB_ERR_CHECKSUM_READ_FAILED = 13, // An LFS open/seek/read/close failed while checksumming.
+    BLOB_ERR_FILE_SHRANK = 14, // The file ended before `length` bytes were checksummed.
+    BLOB_ERR_BULK_DOWNLINK_START_FAILED = 20, // COMMS_bulk_file_downlink_start() failed.
+    BLOB_ERR_MISSING_ARGS = 135, // Fewer than 3 args were given.
+    BLOB_ERR_INVALID_INT_ARG = 136, // start_offset or byte_count isn't a valid integer.
+} COMMS_bulk_downlink_start_blob_error_enum_t;
+
+/// @brief Convert a COMMS_bulk_downlink_start_blob_error_enum_t into a short human-readable name,
+///     for use in log messages and output strings.
+/// @return Static string; never NULL. "UNKNOWN_ERROR" for values not in the enum.
+static const char *bulk_downlink_start_blob_error_to_str(COMMS_bulk_downlink_start_blob_error_enum_t err) {
+    switch (err) {
+        case BLOB_ERR_OK: return "OK";
+        case BLOB_ERR_FILE_SIZE_FAILED: return "FILE_SIZE_FAILED";
+        case BLOB_ERR_OFFSET_PAST_END_OF_FILE: return "OFFSET_PAST_END_OF_FILE";
+        case BLOB_ERR_CHECKSUM_READ_FAILED: return "CHECKSUM_READ_FAILED";
+        case BLOB_ERR_FILE_SHRANK: return "FILE_SHRANK";
+        case BLOB_ERR_BULK_DOWNLINK_START_FAILED: return "BULK_DOWNLINK_START_FAILED";
+        case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
+        case BLOB_ERR_INVALID_INT_ARG: return "INVALID_INT_ARG";
+    }
+    return "UNKNOWN_ERROR";
+}
+
+// MARK: Parsing Helpers
+
 static uint16_t parse_token(
     const char *src, uint16_t src_offset, uint16_t src_len,
     char *dst, uint16_t dst_size
@@ -159,7 +194,8 @@ static int32_t parse_int(const char *s, bool *ok) {
 /// @param src_file_path 
 /// @param start_offset 
 /// @param byte_count 
-/// @return  
+/// @param[out] comms_err Set to the raw COMMS_bulk_file_downlink_start() result.
+/// @return BLOB_ERR_OK, or BLOB_ERR_BULK_DOWNLINK_START_FAILED.
 /// @details Implementation is like this:
 /// The goal here is not to re-implement `COMMS_bulk_file_downlink_start()`, but rather to
 /// set the state to trick that function into first closing the open file (if applicable), and
@@ -167,11 +203,11 @@ static int32_t parse_int(const char *s, bool *ok) {
 /// 
 /// We are fixing a bug in the "end of bulk downlink" logic by a hack at the start of the next
 /// downlink, basically.
-static int8_t bulk_downlink_start_fixed(
+static COMMS_bulk_downlink_start_blob_error_enum_t bulk_downlink_start_fixed(
     const char *src_file_path,
-    uint32_t start_offset, uint32_t byte_count
+    uint32_t start_offset, uint32_t byte_count,
+    int32_t *comms_err
 ) {
-
     // If we've bulk downlinked before (i.e., the filename is set), and the current state is idle,
     // then we will set the COMMS_bulk_file_downlink_state to PAUSED, which will cause the
     // immediately-upcoming run of COMMS_bulk_file_downlink_start() to first close the file.
@@ -183,20 +219,20 @@ static int8_t bulk_downlink_start_fixed(
     }
 
     // Now, regardless, we will call COMMS_bulk_file_downlink_start() to start a new downlink.
-    const int32_t result = COMMS_bulk_file_downlink_start(
+    *comms_err = COMMS_bulk_file_downlink_start(
         (char*)src_file_path, // Cast away const.
         start_offset, byte_count
     );
-    if (result != 0) {
+    if (*comms_err != 0) {
         LOG(
             LOG_SEVERITY_ERROR,
             "During bulk_downlink_start_fixed(), COMMS_bulk_file_downlink_start() -> %ld",
-            result
+            *comms_err
         );
-        return result;
+        return BLOB_ERR_BULK_DOWNLINK_START_FAILED;
     };
 
-    return 0; // Success.
+    return BLOB_ERR_OK;
 }
 
 
@@ -213,23 +249,27 @@ static inline uint16_t crc16_update(uint16_t crc, uint8_t byte) {
 }
 
 /// @brief Read `length` bytes of the file from `start_offset` once, computing the SHA256 and CRC16.
-/// @return 0 on success, negative LFS error code on error, 1 if the file ended early.
-static int32_t compute_checksums(
+/// @param[out] lfs_err Set to the raw LFS error code on BLOB_ERR_CHECKSUM_READ_FAILED (else 0).
+/// @return BLOB_ERR_OK, BLOB_ERR_CHECKSUM_READ_FAILED, or BLOB_ERR_FILE_SHRANK.
+static COMMS_bulk_downlink_start_blob_error_enum_t compute_checksums(
     const char *file_path, uint32_t start_offset, uint32_t length,
-    uint8_t sha256_dest[32], uint16_t *crc16_dest
+    uint8_t sha256_dest[32], uint16_t *crc16_dest, int32_t *lfs_err
 ) {
     uint8_t read_buffer[READ_BUFFER_SIZE];
+    *lfs_err = 0;
 
     lfs_file_t file;
     const int32_t open_result = lfs_file_open(&LFS_filesystem, &file, file_path, LFS_O_RDONLY);
     if (open_result < 0) {
-        return open_result;
+        *lfs_err = open_result;
+        return BLOB_ERR_CHECKSUM_READ_FAILED;
     }
 
     const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, start_offset, LFS_SEEK_SET);
     if (seek_result < 0) {
         lfs_file_close(&LFS_filesystem, &file);
-        return seek_result;
+        *lfs_err = seek_result;
+        return BLOB_ERR_CHECKSUM_READ_FAILED;
     }
 
     SHA256_CTX sha256_ctx;
@@ -242,11 +282,12 @@ static int32_t compute_checksums(
         const int32_t bytes_read = lfs_file_read(&LFS_filesystem, &file, read_buffer, bytes_to_read);
         if (bytes_read < 0) {
             lfs_file_close(&LFS_filesystem, &file);
-            return bytes_read;
+            *lfs_err = bytes_read;
+            return BLOB_ERR_CHECKSUM_READ_FAILED;
         }
         if (bytes_read == 0) {
             lfs_file_close(&LFS_filesystem, &file);
-            return 1; // File shrank since its size was checked.
+            return BLOB_ERR_FILE_SHRANK; // File shrank since its size was checked.
         }
 
         sha256_update(&sha256_ctx, read_buffer, bytes_read);
@@ -258,12 +299,13 @@ static int32_t compute_checksums(
 
     const int32_t close_result = lfs_file_close(&LFS_filesystem, &file);
     if (close_result < 0) {
-        return close_result;
+        *lfs_err = close_result;
+        return BLOB_ERR_CHECKSUM_READ_FAILED;
     }
 
     sha256_final(&sha256_ctx, sha256_dest);
     *crc16_dest = crc;
-    return 0;
+    return BLOB_ERR_OK;
 }
 
 /// @brief Writes a byte array to a hex string (no spaces between bytes).
@@ -299,11 +341,11 @@ void GEN_byte_array_to_lower_hex_str(
 /// @param byte_count Requested downlink length, or 0 for the rest of the file (up to 1 MB).
 /// @param response_output_buf
 /// @param response_output_buf_len
-/// @return 0 on success, non-zero on error.
+/// @return BLOB_ERR_OK on success, or an error (with an error message in the response).
 /// @details The checksums cover exactly the bytes that will be downlinked (same length rules as
 ///     `COMMS_bulk_file_downlink_start()`). If that's the whole file, the checksum fields are named
 ///     "file_sha256"/"file_crc16"; otherwise, "chunk_sha256"/"chunk_crc16".
-static int32_t fill_response_output_buffer(
+static COMMS_bulk_downlink_start_blob_error_enum_t fill_response_output_buffer(
     const char *src_file_path,
     uint32_t start_offset, uint32_t byte_count,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -311,15 +353,22 @@ static int32_t fill_response_output_buffer(
     // Fetch the full file size.
     const int32_t file_size_bytes = LFS_file_size(src_file_path, 1);
     if (file_size_bytes < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Error getting file size: Err=%ld", file_size_bytes);
-        return file_size_bytes;
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "%s error: LFS_file_size('%s') -> %ld (%s).",
+            BLOB_NAME, src_file_path, file_size_bytes,
+            bulk_downlink_start_blob_error_to_str(BLOB_ERR_FILE_SIZE_FAILED)
+        );
+        return BLOB_ERR_FILE_SIZE_FAILED;
     }
     if (start_offset >= (uint32_t)file_size_bytes) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Error: start_offset %lu >= file size %ld", start_offset, file_size_bytes
+            "%s error: start_offset %lu >= file size %ld of '%s' (%s).",
+            BLOB_NAME, start_offset, file_size_bytes, src_file_path,
+            bulk_downlink_start_blob_error_to_str(BLOB_ERR_OFFSET_PAST_END_OF_FILE)
         );
-        return 1;
+        return BLOB_ERR_OFFSET_PAST_END_OF_FILE;
     }
 
     // Same length rules as COMMS_bulk_file_downlink_start(): 0 or >1 MB means 1 MB, then limited
@@ -333,15 +382,21 @@ static int32_t fill_response_output_buffer(
 
     uint8_t sha256_dest[32] = {0};
     uint16_t crc16 = 0;
-    const int32_t checksum_result = compute_checksums(
-        src_file_path, start_offset, length, sha256_dest, &crc16
+    int32_t lfs_err = 0;
+    const COMMS_bulk_downlink_start_blob_error_enum_t checksum_err = compute_checksums(
+        src_file_path, start_offset, length, sha256_dest, &crc16, &lfs_err
     );
-    if (checksum_result != 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Error calculating checksums: Err=%ld", checksum_result);
-        return checksum_result;
+    if (checksum_err != BLOB_ERR_OK) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "%s error: checksumming '%s' (offset=%lu, length=%lu) failed, LFS err=%ld (%s).",
+            BLOB_NAME, src_file_path, start_offset, length, lfs_err,
+            bulk_downlink_start_blob_error_to_str(checksum_err)
+        );
+        return checksum_err;
     }
 
-    // Convert the SHA256 hash to an uppercase hex string.
+    // Convert the SHA256 hash to a lowercase hex string.
     char hex_hash_str[100]; // Should be 64 chars.
     GEN_byte_array_to_lower_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
 
@@ -357,7 +412,7 @@ static int32_t fill_response_output_buffer(
         checksum_prefix, hex_hash_str,
         checksum_prefix, crc16
     );
-    return 0;
+    return BLOB_ERR_OK;
 }
 
 
@@ -389,13 +444,12 @@ uint8_t blob_main(
         || arg1_start_offset[0] == '\0'
         || arg2_byte_count[0] == '\0'
     ) {
-        // Missing args error.
         snprintf(
             response_buf, response_buf_len,
-            "%s error: missing args!",
-            BLOB_NAME
+            "%s error: missing args! Need 3 args. (%s)",
+            BLOB_NAME, bulk_downlink_start_blob_error_to_str(BLOB_ERR_MISSING_ARGS)
         );
-        return 135;
+        return BLOB_ERR_MISSING_ARGS;
     }
 
     bool arg1_start_offset_ok, arg2_byte_count_ok;
@@ -405,40 +459,35 @@ uint8_t blob_main(
     if (!arg1_start_offset_ok || !arg2_byte_count_ok) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: invalid int args!",
-            BLOB_NAME
+            "%s error: invalid int args! (%s)",
+            BLOB_NAME, bulk_downlink_start_blob_error_to_str(BLOB_ERR_INVALID_INT_ARG)
         );
-        return 136;
+        return BLOB_ERR_INVALID_INT_ARG;
     }
 
-    const int32_t resp_err = fill_response_output_buffer(
+    // Fills the response with its own error message on failure.
+    const COMMS_bulk_downlink_start_blob_error_enum_t resp_err = fill_response_output_buffer(
         arg0_file_path, start_offset, byte_count,
         response_buf, response_buf_len
     );
-    if (resp_err != 0) {
-        snprintf(
-            response_buf, response_buf_len,
-            "Running %s: '%s;%ld;%ld' failed in checking file size/hash. Error: %ld.",
-            BLOB_NAME,
-            arg0_file_path, start_offset, byte_count,
-            resp_err
-        );
-        return 10;
+    if (resp_err != BLOB_ERR_OK) {
+        return resp_err;
     }
     
-    const int8_t start_bulk_err = bulk_downlink_start_fixed(
-        arg0_file_path, start_offset, byte_count
+    int32_t comms_err = 0;
+    const COMMS_bulk_downlink_start_blob_error_enum_t start_bulk_err = bulk_downlink_start_fixed(
+        arg0_file_path, start_offset, byte_count, &comms_err
     );
-    if (start_bulk_err != 0) {
+    if (start_bulk_err != BLOB_ERR_OK) {
         snprintf(
             response_buf, response_buf_len,
-            "Running %s: '%s;%d;%d' failed in bulk_downlink_start_fixed(). Error: %d.",
+            "%s error: '%s;%ld;%ld' failed in bulk_downlink_start_fixed() -> %ld (%s).",
             BLOB_NAME,
             arg0_file_path, start_offset, byte_count,
-            start_bulk_err
+            comms_err, bulk_downlink_start_blob_error_to_str(start_bulk_err)
         );
-        return 20;
+        return start_bulk_err;
     }
 
-    return 0;
+    return BLOB_ERR_OK;
 }

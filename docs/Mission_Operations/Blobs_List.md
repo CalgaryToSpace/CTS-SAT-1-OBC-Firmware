@@ -119,6 +119,7 @@ The checksums cover exactly the downlinked bytes (`offset` to `offset + length`)
     * Checksums cover exactly the downlinked bytes, as `file_sha256`/`file_crc16` or `chunk_sha256`/`chunk_crc16`.
     * Added the CRC16 field.
     * `action` is now `bulk_downlink_start_v3` (was `bulk_downlink_start_blob`).
+    * Feature: Better error codes/names via an error enum.
 
 ## `blobs/extended_beacon_v{2,3,4}.blob`
 
