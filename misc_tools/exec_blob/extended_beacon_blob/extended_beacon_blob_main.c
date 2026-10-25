@@ -43,9 +43,10 @@
 //      beacons), because the file being written is never downlinked.
 //  9. Historical beacons are sent with the same packet type, but with version string " S5\0"
 //      (instead of " X5\0").
-// 10. Return codes LFS_WRITE_FAILED (5), LFS_MKDIR_FAILED (6), LFS_NOT_MOUNTED (7), and
-//      HISTORY_SEND_PARTIAL_FAILURE (61) are non-zero, but the live beacon was still sent and the
-//      blob still rescheduled itself.
+// 10. (v5+) Beacons are stored in LittleFS under `beacon_ring/`, as a ring of `BEACON_RING_FILE_COUNT` = 20 files
+//     (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
+//     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
+//     the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
 //
 // ------ Implementation Notes ----------------
 //

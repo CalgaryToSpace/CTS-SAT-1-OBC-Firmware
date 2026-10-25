@@ -145,23 +145,10 @@ Running this blob triggers the extended beacon.
     (`BEACON_RING_RECORDS_PER_FILE` = 180 beacons), because the file being written is never downlinked.
 9. (v5+) Historical beacons are sent with the same packet type, but with version string ` S5\0`
     (instead of ` X5\0`).
-10. (v5+) Return codes `LFS_WRITE_FAILED` (5), `LFS_MKDIR_FAILED` (6), `LFS_NOT_MOUNTED` (7), and
-    `HISTORY_SEND_PARTIAL_FAILURE` (61) are non-zero, but the live beacon was still sent and the
-    blob still rescheduled itself.
-
-### Storage (v5+)
-
-* Beacons are stored in LittleFS under `beacon_ring/`, as a ring of `BEACON_RING_FILE_COUNT` = 20 files
-  (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
-  fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
-  the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
-* The write cursor lives in a small state block at a fixed SRAM address (`BEACON_RING` in
-  `misc_tools/exec_blob/blobs_persistent_sram_regions.ld`), separate from the GNSS ring blob's, so both
-  blobs can run at the same time. A cold start (e.g., power cycle) restarts the cursor at `r0`, record 0.
-* The file being written is held open between runs, and is only closed (committing it to flash) when it
-  fills, or when the blob exits without rescheduling, to limit flash wear.
-* After a reboot or filesystem remount, the uncommitted records in the current file are lost and that
-  file restarts from record 0. The rest of the ring is kept.
+10. (v5+) Beacons are stored in LittleFS under `beacon_ring/`, as a ring of `BEACON_RING_FILE_COUNT` = 20 files
+    (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
+    fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
+    the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
 
 ### Example Usage
 
@@ -202,8 +189,7 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
       `adcs_estimated_gyro_bias_{x,y,z}_mdeg_per_sec`, `gnss_power_consumed_cW`,
       `adcs_total_power_consumed_cW`, `reserved_v5[16]`.
     * New: Stores every beacon into a LittleFS ring (`beacon_ring/`), and downlinks a random
-      consecutive run of `history_count` stored beacons per run (see Storage section). History
-      downlink is skipped while the MPI is in sensing mode.
+      consecutive run of `history_count` stored beacons per run.
     * New optional second arg: `history_count`. Fully backwards-compatible with v4's args.
     * Change: `mpi_last_temperature_C` is only reported as a valid value if the most recent MPI data
       was received within the last 30 minutes. Otherwise, it's reported as `-97` (stale).
