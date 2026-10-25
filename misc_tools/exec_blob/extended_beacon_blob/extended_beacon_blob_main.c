@@ -47,7 +47,7 @@
 //
 // Storage: Beacons live in LittleFS under "beacon_ring/", as a ring of BEACON_RING_FILE_COUNT
 // files ("beacon_ring/r0.bin" .. "beacon_ring/r19.bin"), each holding BEACON_RING_RECORDS_PER_FILE
-// fixed-size records (one raw COMMS_beacon_extended_packet_t each). When the current file fills,
+// fixed-size records (one raw COMMS_beacon_extended_packet_v5plus_t each). When the current file fills,
 // we advance to the next; after the last one we wrap back to r0 and truncate it, evicting the
 // oldest data.
 //
@@ -72,6 +72,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <stddef.h>
 
 #include "../lfs.h"
 
@@ -129,7 +130,6 @@ extern uint32_t COMMS_total_beacon_count_since_boot;
 extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
 extern MPI_reason_for_stopping_active_mode_enum_t MPI_last_reason_for_stopping_active_mode;
 extern volatile uint8_t UART_gnss_uart_interrupt_enabled; // Flag to enable or disable the UART GNSS ISR
-extern char COMMS_beacon_friendly_message_str[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
 
 // Beacon v2 contents (extern variables).
 extern uint32_t SystemCoreClock;
@@ -283,8 +283,56 @@ typedef struct {
 
     uint8_t gnss_rx_mode_enum; // Enum: GNSS_rx_mode_enum_t
 
-    // End with a null-terminated configurable friendly message.
-    char friendly_message[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
+    // On BEACON_BASIC and BEACON_EXTENDED (v2, v3, v4), null-terminated configurable friendly message.
+    // char friendly_message[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE]; // COMMS_BEACON_FRIENDLY_MESSAGE_SIZE = 42
+
+    // On BEACON_EXTENDED_B (v5+), we replace the friendly message with more data.
+
+    // The following fields are v5+.
+
+    // Counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue, plus the
+    // currently-executing tcmd (same as pending_queued_tcmd_count's +1). Equal to
+    // pending_queued_tcmd_count when nothing is duplicated.
+    // Useful to confirm that all uplinks were successful.
+    uint8_t distinct_tcmds_pending;
+
+    // Duration since time sync (clamped to max of 2^16 seconds = 18 hours)
+    uint16_t duration_since_last_time_sync_sec;
+
+    // Measured speed of each of the 3 reaction wheels (Telemetry ID 156), in RPM (signed).
+    int16_t adcs_wheel_speed_x_rpm;
+    int16_t adcs_wheel_speed_y_rpm;
+    int16_t adcs_wheel_speed_z_rpm;
+
+    // Rotation angle of the quaternion error vector (commanded vs. estimated attitude,
+    // Telemetry ID 163), 0 to 18000. Only meaningful in control modes with a commanded attitude.
+    uint16_t adcs_pointing_error_cdeg;
+
+    // ADCS estimation innovation vector (Telemetry ID 162), in units of 0.0001.
+    // Only meaningful in EKF estimation modes.
+    int16_t adcs_innovation_vector_x_en4;
+    int16_t adcs_innovation_vector_y_en4;
+    int16_t adcs_innovation_vector_z_en4;
+
+    // ADCS EKF estimated rate sensor (gyro) bias (Telemetry ID 161), in units of 0.001 deg/s.
+    // Only meaningful in EKF estimation modes.
+    int16_t adcs_estimated_gyro_bias_x_mdeg_per_sec;
+    int16_t adcs_estimated_gyro_bias_y_mdeg_per_sec;
+    int16_t adcs_estimated_gyro_bias_z_mdeg_per_sec;
+
+    // GNSS EPS channel (CH8) power, from the PDU running average.
+    uint8_t gnss_power_consumed_cW;
+
+    // Sum of the ADCS's current telemetry (Telemetry ID 195) times rail voltages: CubeSense 1 and 2,
+    // CubeControl (3V3, 5V, Vbat), CubeWheels, and CubeStar. Excludes CubeComputer (not measured).
+    // See calculate_adcs_total_power_cW().
+    uint16_t adcs_total_power_consumed_cW;
+
+    // Unused (always 0). Pads the v5+ fields to exactly the size of the friendly message they
+    // replace, so end_message and all the fields after it keep their v2-v4 offsets.
+    uint8_t reserved_v5[16];
+
+    // End v5+ fields.
 
     // "END\0" on basic packets.
     // " X2\0" on extended packets (v2).
@@ -387,39 +435,28 @@ typedef struct {
     int16_t adcs_estimated_pitch_angle_cdeg;
     int16_t adcs_estimated_yaw_angle_cdeg;
 
-    // The following fields are v5+.
+} COMMS_beacon_extended_packet_v5plus_t;
 
-    // Counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue, plus the
-    // currently-executing tcmd (same as pending_queued_tcmd_count's +1). Equal to
-    // pending_queued_tcmd_count when nothing is duplicated.
-    // Useful to confirm that all uplinks were successful.
-    uint8_t distinct_tcmds_pending;
+// Packet size (currently): Same as v2-v4, as the v5+ fields exactly replace the friendly message.
+_Static_assert(sizeof(COMMS_beacon_extended_packet_v5plus_t) == 198, "extended beacon packet size documented wrong here");
 
-    // Duration since time sync (clamped to max of 2^16 seconds = 18 hours)
-    uint16_t duration_since_last_time_sync_sec;
-
-    // Absolute speed of the fastest of the 3 reaction wheels.
-    uint16_t adcs_fastest_wheel_speed_rpm;
-
-    // Rotation angle of the quaternion error vector (commanded vs. estimated attitude,
-    // Telemetry ID 163), 0 to 18000. Only meaningful in control modes with a commanded attitude.
-    uint16_t adcs_pointing_error_cdeg;
-
-    // Magnitude of the estimation innovation vector (Telemetry ID 162), in units of 0.0001.
-    uint16_t adcs_innovation_vector_magnitude;
-
-    // GNSS EPS channel (CH8) power, from the PDU running average.
-    uint8_t gnss_power_consumed_cW;
-
-    // Sum of the ADCS's current telemetry (Telemetry ID 195) times rail voltages: CubeSense 1 and 2,
-    // CubeControl (3V3, 5V, Vbat), CubeWheels, and CubeStar. Excludes CubeComputer (not measured).
-    // See calculate_adcs_total_power_cW().
-    uint16_t adcs_total_power_consumed_cW;
-
-} COMMS_beacon_extended_packet_t;
-
-// Packet size (currently):
-_Static_assert(sizeof(COMMS_beacon_extended_packet_t) == 210, "extended beacon packet size documented wrong here");
+// The v5+ fields must exactly fill the old friendly message slot (see reserved_v5), so that
+// end_message and everything after it stay at their v2-v4 offsets. In v2-v4, end_message is
+// at offset 126 (= offsetof(gnss_rx_mode_enum) + 1 + COMMS_BEACON_FRIENDLY_MESSAGE_SIZE).
+_Static_assert(
+    offsetof(COMMS_beacon_extended_packet_v5plus_t, end_message)
+        == offsetof(COMMS_beacon_extended_packet_v5plus_t, gnss_rx_mode_enum) + 1 + COMMS_BEACON_FRIENDLY_MESSAGE_SIZE,
+    "v5+ fields must exactly fill the old friendly message slot"
+);
+_Static_assert(
+    offsetof(COMMS_beacon_extended_packet_v5plus_t, end_message) == 126,
+    "end_message must stay at its v2-v4 offset"
+);
+_Static_assert(
+    offsetof(COMMS_beacon_extended_packet_v5plus_t, end_message)
+        == offsetof(COMMS_beacon_basic_packet_t, end_message),
+    "end_message must be at the same offset as in the basic beacon (comms_tx.h)"
+);
 
 #pragma pack(pop)
 
@@ -429,7 +466,7 @@ _Static_assert(sizeof(COMMS_beacon_extended_packet_t) == 210, "extended beacon p
 #define BEACON_RING_DIR "beacon_ring"
 #define BEACON_RING_FILE_COUNT 20 // Number of files in the ring, before wrapping back to r0.bin.
 #define BEACON_RING_RECORDS_PER_FILE 180 // Records per file. 20*180 = 3600 beacons = 9 hours at 9s.
-#define BEACON_RING_RECORD_SIZE (sizeof(COMMS_beacon_extended_packet_t))
+#define BEACON_RING_RECORD_SIZE (sizeof(COMMS_beacon_extended_packet_v5plus_t))
 #define BEACON_RING_PATH_MAX_LEN 32 // Enough for "beacon_ring/r<n>.bin".
 
 
@@ -729,6 +766,37 @@ static uint16_t calculate_adcs_total_power_cW(const uint8_t tlm195_raw[ADCS_TLM1
 }
 
 
+/// @brief Magnitude of a 3-vector of little-endian int16 values (6 raw bytes), in the same units.
+static uint16_t vector3_i16_norm(const uint8_t raw[6]) {
+    uint32_t sum_sq = 0;
+    for (uint8_t i = 0; i < 3; i++) {
+        const int32_t v = read_le_int16(&raw[2 * i]);
+        sum_sq += (uint32_t)(v * v); // Max 3 * 32768^2, which fits in uint32.
+    }
+    return integer_sqrt_u32(sum_sq);
+}
+
+/// @brief Convert the magnitude of a quaternion error vector (in units of 0.0001) to the
+///     rotation angle it represents (2 * asin(|q_vec|)), in centidegrees (0 to 18000).
+/// @note asin() approximation from Abramowitz & Stegun, Handbook of Mathematical Functions,
+///     eq. 4.4.45 (|error| <= 5e-5 rad), since the firmware ELF has no libm to link against.
+static uint16_t quaternion_error_vector_to_angle_cdeg(uint16_t q_vec_norm_e4) {
+    if (q_vec_norm_e4 > 10000) {
+        q_vec_norm_e4 = 10000; // Not a unit quaternion; clamp to 180 degrees.
+    }
+
+    const float x = (float)q_vec_norm_e4 / 10000.0f;
+    const float sqrt_1_minus_x = (float)integer_sqrt_u32((uint32_t)(10000 - q_vec_norm_e4) * 10000u) / 10000.0f;
+    const float asin_x_rad = 1.5707963f - sqrt_1_minus_x * (
+        1.5707288f + x * (-0.2121144f + x * (0.0742610f + x * -0.0187293f))
+    );
+
+    const float angle_cdeg = 2.0f * asin_x_rad * (18000.0f / 3.14159265f);
+    if (angle_cdeg <= 0.0f) {
+        return 0;
+    }
+    return (uint16_t)(angle_cdeg + 0.5f);
+}
 
 /// @brief Is this agenda slot counted by count_distinct_pending_tcmds()? Pending entries, plus the
 ///     currently-executing one (i.e., this blob's own exec_blob_from_fs).
@@ -1031,10 +1099,10 @@ static uint8_t AX100_downlink_bytes_NEW(uint8_t *data, uint16_t data_len) {
 /// @param beacon_packet 
 /// @note Based on the `COMMS_fill_beacon_basic_packet` function in the main firmware.
 static void COMMS_fill_beacon_extended_packet(
-    COMMS_beacon_extended_packet_t *beacon_packet, uint8_t *peripheral_comms_error_count_dst
+    COMMS_beacon_extended_packet_v5plus_t *beacon_packet, uint8_t *peripheral_comms_error_count_dst
 ) {
     // Safety: Reset the packet to zero.
-    memset(beacon_packet, 0, sizeof(COMMS_beacon_extended_packet_t));
+    memset(beacon_packet, 0, sizeof(COMMS_beacon_extended_packet_v5plus_t));
 
     uint8_t peripheral_comms_error_count = 0;
 
@@ -1087,12 +1155,7 @@ static void COMMS_fill_beacon_extended_packet(
     beacon_packet->gnss_uart_interrupt_enabled = UART_gnss_uart_interrupt_enabled;
     beacon_packet->gnss_rx_mode_enum = GNSS_current_rx_mode;
 
-    // The destination is already zero-filled, so we only copy in the friendly message.
-    memcpy(
-        beacon_packet->friendly_message,
-        COMMS_beacon_friendly_message_str,
-        strlen(COMMS_beacon_friendly_message_str)
-    );
+    // Note: v5+ has no friendly message (its slot holds the v5+ fields instead).
     memcpy(beacon_packet->end_message, " X5", 4); // Extended beacon packet version.
 
     // Set the extended beacon packet fields.
@@ -1413,7 +1476,7 @@ static void COMMS_fill_beacon_extended_packet(
         );
     }
 
-    // ADCS wheel speeds: report the fastest wheel's absolute speed.
+    // ADCS measured wheel speeds, in RPM.
     {
         uint8_t data_received[6];
 
@@ -1425,21 +1488,78 @@ static void COMMS_fill_beacon_extended_packet(
         );
 
         if (tlm_status == 0) {
-            uint16_t fastest_rpm = 0;
-            for (uint8_t i = 0; i < 3; i++) {
-                const int16_t rpm = (int16_t)(data_received[(2 * i) + 1] << 8 | data_received[2 * i]); // TODO: There's a function for this.
-                const uint16_t abs_rpm = (rpm < 0) ? (uint16_t)(-(int32_t)rpm) : (uint16_t)rpm;
-                if (abs_rpm > fastest_rpm) {
-                    fastest_rpm = abs_rpm;
-                }
-            }
-            beacon_packet->adcs_fastest_wheel_speed_rpm = fastest_rpm;
+            memcpy(&beacon_packet->adcs_wheel_speed_x_rpm, &data_received[0], 2);
+            memcpy(&beacon_packet->adcs_wheel_speed_y_rpm, &data_received[2], 2);
+            memcpy(&beacon_packet->adcs_wheel_speed_z_rpm, &data_received[4], 2);
         }
         else {
             peripheral_comms_error_count++;
         }
     }
 
+    // ADCS pointing error: the rotation angle of the quaternion error vector (commanded vs.
+    // estimated attitude). Only meaningful in control modes with a commanded attitude.
+    {
+        uint8_t data_received[6];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            163, // ADCS_TELEMETRY_CUBEACP_QUATERNION_ERROR_VECTOR
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            beacon_packet->adcs_pointing_error_cdeg = quaternion_error_vector_to_angle_cdeg(
+                vector3_i16_norm(data_received)
+            );
+        }
+        else {
+            peripheral_comms_error_count++;
+        }
+    }
+
+    // ADCS estimation innovation vector, in the raw units of 0.0001.
+    {
+        uint8_t data_received[6];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            162, // ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            memcpy(&beacon_packet->adcs_innovation_vector_x_en4, &data_received[0], 2);
+            memcpy(&beacon_packet->adcs_innovation_vector_y_en4, &data_received[2], 2);
+            memcpy(&beacon_packet->adcs_innovation_vector_z_en4, &data_received[4], 2);
+        }
+        else {
+            peripheral_comms_error_count++;
+        }
+    }
+
+    // ADCS EKF estimated gyro bias, in the raw units of 0.001 deg/s.
+    {
+        uint8_t data_received[6];
+
+        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
+            161, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS
+            data_received,
+            sizeof(data_received),
+            1 // ADCS_INCLUDE_CHECKSUM
+        );
+
+        if (tlm_status == 0) {
+            memcpy(&beacon_packet->adcs_estimated_gyro_bias_x_mdeg_per_sec, &data_received[0], 2);
+            memcpy(&beacon_packet->adcs_estimated_gyro_bias_y_mdeg_per_sec, &data_received[2], 2);
+            memcpy(&beacon_packet->adcs_estimated_gyro_bias_z_mdeg_per_sec, &data_received[4], 2);
+        }
+        else {
+            peripheral_comms_error_count++;
+        }
+    }
 
     // ADCS total power, from the ADCS's own current measurements (TLM 195), each times its rail
     // voltage. See calculate_adcs_total_power_cW().
@@ -1567,7 +1687,7 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
 ///     open afterwards, and is only closed -- which is what commits its records -- once it fills
 ///     up (or when the blob exits without rescheduling).
 /// @return BLOB_ERR_OK on success, or the reason the record wasn't stored.
-static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_extended_packet_t *beacon_packet) {
+static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_extended_packet_v5plus_t *beacon_packet) {
     const BLOB_ext_beacon_error_enum_t open_status = ring_open_write_file();
     if (open_status != BLOB_ERR_OK) {
         return open_status;
@@ -1667,7 +1787,7 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
 
     uint16_t fail_count = 0;
     for (uint16_t i = 0; i < n_to_downlink; i++) {
-        COMMS_beacon_extended_packet_t packet;
+        COMMS_beacon_extended_packet_v5plus_t packet;
         const lfs_ssize_t read_len = lfs_file_read(&LFS_filesystem, &file, &packet, BEACON_RING_RECORD_SIZE);
         if (read_len != (lfs_ssize_t)BEACON_RING_RECORD_SIZE) {
             LOG(
@@ -1806,7 +1926,7 @@ uint8_t blob_main(
     }
 
     // Fill the beacon packet.
-    COMMS_beacon_extended_packet_t beacon_packet;
+    COMMS_beacon_extended_packet_v5plus_t beacon_packet;
     uint8_t peripheral_comms_error_count = 0;
     COMMS_fill_beacon_extended_packet(&beacon_packet, &peripheral_comms_error_count);
 
@@ -1822,7 +1942,7 @@ uint8_t blob_main(
     // Downlink the beacon packet.
     const uint8_t tx_status = AX100_downlink_bytes_NEW(
         (uint8_t *)(&beacon_packet), 
-        sizeof(COMMS_beacon_extended_packet_t)
+        sizeof(COMMS_beacon_extended_packet_v5plus_t)
     );
     if (tx_status != 0) {
         ring_close_open_file(); // Not rescheduling; commit what we have.
