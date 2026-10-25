@@ -21,7 +21,8 @@ CFLAGS  = \
     -nostdlib \
     -Os \
     -Wall \
-    -Wextra
+    -Wextra \
+    -I../../../firmware/Core/Inc/
 
 CFLAGS += \
     -ffreestanding \
