@@ -449,7 +449,7 @@ CTS1+exec_blob_from_fs(blobs/get_file_map_v1.blob,0,your_file.bin;minimum_null_l
 
 ## `blobs/analyze_mpi_data_v1.blob`
 
-Blob to summarize an MPI science data file on-orbit (hash, frame counts, time syncs, date range, and likely ion signals), to decide whether it's worth downlinking, and which byte ranges of it.
+Blob to summarize an MPI science data file on-orbit (SHA256 and CRC16, frame counts, time syncs, date range, and likely ion signals), to decide whether it's worth downlinking, and which byte ranges of it.
 
 ### Description
 
@@ -474,6 +474,7 @@ The response is tightly-packed JSON, like (from the 2026-07-21 recording):
     "action": "analyze_mpi_data_v1",
     "file": "mpi_data/2026-07-21.mpi",
     "sha256": "5d15...1471",
+    "crc16": "0xf821",
     "size": 556728,
     "frame_count": 2192,
     "valid_frame_count": 2030,
@@ -511,6 +512,8 @@ CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi;s
 4. All byte ranges are `[start, end)` with an exclusive end, like a Python slice. `frames` is the inclusive `[first, last]` frame counter range. `peak_pixel_dn` is the largest single-pixel residual above the fitted line.
 5. `time_sync_count` includes the `{"mpi_start":1,...}` header. `earliest`/`latest` are the time syncs with the smallest/largest `timestamp_ms` (not necessarily the first/last in the file), or `null` if there are none.
 6. Only the first 12 strong signals are listed; `strong_signal_count` counts all of them.
+7. `sha256` and `crc16` cover the whole file. The CRC16 is the same algorithm as the ADCS file CRC16 (ADCS Firmware ICD `CRC_Calc()`), and the same as in `get_file_map_v1` and `bulk_downlink_start_v3`.
+8. For files over 1.1 MB (1,100,000 bytes), `sha256` is `null` (skipped, as it's about half the runtime). `crc16` is always computed.
 
 
 ## `blobs/adcs_tweak_config_v1.blob`

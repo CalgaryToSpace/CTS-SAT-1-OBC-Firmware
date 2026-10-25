@@ -1,5 +1,5 @@
 // This is a blob (executable) that analyzes an MPI science data file in LFS, and reports a summary
-// of its contents: its SHA256, size, frame counts, time syncs (and the earliest/latest dates), and
+// of its contents: its SHA256, CRC16, size, frame counts, time syncs (and the earliest/latest dates), and
 // the "strong signals" (likely ion signals) found in the pixel data.
 //
 // Motivation: MPI data files are large, and downlinking them is slow. Analyzing them on-orbit
@@ -27,6 +27,7 @@
 //     "action": "analyze_mpi_data_v1",
 //     "file": "mpi_data/2026-07-21.mpi",
 //     "sha256": "5d15...1471",
+//     "crc16": "0xf821",
 //     "size": 556728,
 //     "frame_count": 2192,
 //     "valid_frame_count": 2030,
@@ -64,7 +65,11 @@
 //     [first, last] frame counter (inclusive). "peak_mean_dn" is the largest frame mean residual in
 //     the signal, and "peak_pixel"/"peak_pixel_dn" are the pixel with the largest residual.
 // 4. Only the first MAX_LISTED_SIGNALS strong signals are listed; "strong_signal_count" counts all.
-// 5. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
+// 5. "sha256" is `null` for files over SHA256_MAX_FILE_SIZE (1.1 MB), since hashing is about half
+//     the runtime. "crc16" is always computed.
+// 6. "crc16" is the whole file's CRC16, the same algorithm as the ADCS file CRC16 (ADCS Firmware
+//     ICD `CRC_Calc()`), and the same as in `get_file_map_v1` and `bulk_downlink_start_v3`.
+// 7. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
 
 
 // -----------------------------------------------------
@@ -154,7 +159,10 @@ static const char MPI_START_PREFIX[] = "{\"mpi_start\":";
 /// @brief Max length of a uint64 in decimal (20 digits), plus a null terminator.
 #define UINT64_STR_MAX_LEN 21
 
-#define READ_BUFFER_SIZE 512
+/// @brief Files larger than this skip the SHA256 (about half the runtime), and report it as null.
+#define SHA256_MAX_FILE_SIZE 1100000
+
+#define READ_BUFFER_SIZE 2048 // Matches the LFS cache size, so reads skip the cache.
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -273,6 +281,18 @@ static bool mpi_frame_crc_ok(const uint8_t *frame) {
     return crc == read_be16(&frame[MPI_FRAME_CRC_OFFSET]);
 }
 
+/// @brief Update a CRC16 with one byte.
+/// @note The per-byte update rule matches `CRC_Calc()` from the ADCS Firmware ICD (Section 6.4.1).
+///     Same as in the get_file_map and bulk_downlink_start blobs.
+static inline uint16_t crc16_update(uint16_t crc, uint8_t byte) {
+    crc = (crc >> 8) | (crc << 8);      // byte-swap the CRC
+    crc ^= byte;                         // XOR in the next byte
+    crc ^= (crc & 0xff) >> 4;            // mix low nibble down
+    crc ^= crc << 12;                    // mix up by 12 bits
+    crc ^= (crc & 0xff) << 5;            // mix low byte up by 5 bits
+    return crc;
+}
+
 /// @brief A time sync's timestamp, kept as both a number (for comparing) and the original decimal
 ///     string (for printing, since the firmware's snprintf can't print uint64).
 typedef struct {
@@ -331,7 +351,9 @@ typedef struct {
 
 /// @brief Summary of an MPI data file.
 typedef struct {
+    bool sha256_computed; // False if the file is over SHA256_MAX_FILE_SIZE.
     uint8_t sha256[32];
+    uint16_t crc16;
     uint32_t size;
 
     uint32_t frame_count;
@@ -533,7 +555,7 @@ static void process_frame(
     stats->signal_open = true;
 }
 
-/// @brief Read the file once, computing the SHA256, finding and analyzing frames, and parsing
+/// @brief Read the file once, computing the SHA256 (if not too big) and CRC16, finding and analyzing frames, and parsing
 ///     time syncs.
 /// @param file_path Path of the file to read.
 /// @param[in,out] stats `size` must be set before calling. All other fields are filled in.
@@ -574,8 +596,10 @@ static int32_t scan_file(
         return open_result;
     }
 
+    stats->sha256_computed = (stats->size <= SHA256_MAX_FILE_SIZE);
     SHA256_CTX sha256_ctx;
     sha256_init(&sha256_ctx);
+    uint16_t crc16 = 0;
 
     uint32_t file_pos = 0; // Offset of the start of `read_buffer` within the file.
 
@@ -587,10 +611,11 @@ static int32_t scan_file(
         }
         if (bytes_read == 0) break; // EOF.
 
-        sha256_update(&sha256_ctx, read_buffer, bytes_read);
+        if (stats->sha256_computed) sha256_update(&sha256_ctx, read_buffer, bytes_read);
 
         for (int32_t i = 0; i < bytes_read; i++) {
             const uint8_t byte = read_buffer[i];
+            crc16 = crc16_update(crc16, byte);
 
             // Frames: capture the 152 bytes following each sync word.
             if (frame_len > 0) {
@@ -666,7 +691,8 @@ static int32_t scan_file(
         return 1; // File changed size while reading.
     }
 
-    sha256_final(&sha256_ctx, stats->sha256);
+    if (stats->sha256_computed) sha256_final(&sha256_ctx, stats->sha256);
+    stats->crc16 = crc16;
     return 0;
 }
 
@@ -702,9 +728,16 @@ static uint8_t analyze_mpi_data(
     }
 
     response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0 };
-    response_append(&w, "{\"action\":\"%s\",\"file\":\"%s\",\"sha256\":\"", BLOB_NAME, file_path);
-    append_hex(&w, stats.sha256, sizeof(stats.sha256));
-    response_append(&w, "\",\"size\":%lu", stats.size);
+    response_append(&w, "{\"action\":\"%s\",\"file\":\"%s\",\"sha256\":", BLOB_NAME, file_path);
+    if (stats.sha256_computed) {
+        response_append(&w, "\"");
+        append_hex(&w, stats.sha256, sizeof(stats.sha256));
+        response_append(&w, "\"");
+    }
+    else {
+        response_append(&w, "null");
+    }
+    response_append(&w, ",\"crc16\":\"0x%04x\",\"size\":%lu", stats.crc16, stats.size);
 
     response_append(
         &w,
