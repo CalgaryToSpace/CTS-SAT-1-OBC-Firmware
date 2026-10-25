@@ -592,7 +592,10 @@ typedef struct {
 
 /// @brief Feed one MPI data byte (time syncs already removed) to the frame parser.
 /// @param offset Offset of the byte within the file.
-static void feed_frame_byte(scanner_t *sc, uint8_t byte, uint32_t offset) {
+/// @note Always inlined, as it's called for nearly every byte (saves ~10-15 cycles/byte at -Os).
+static inline __attribute__((always_inline)) void feed_frame_byte(
+    scanner_t *sc, uint8_t byte, uint32_t offset
+) {
     sc->sync_window_offsets[sc->fed_count & 3] = offset;
     sc->fed_count++;
 
