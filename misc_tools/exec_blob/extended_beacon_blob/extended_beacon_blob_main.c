@@ -19,6 +19,7 @@
 // Usage Example:
 // After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
 // CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+// With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 //
 // Notes:
 //  1. Always use "0" as the second argument (i.e., always run with malloc).

@@ -119,6 +119,7 @@ Running this blob triggers the extended beacon.
 // Usage Example:
 // After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
 // CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+// With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 ```
 
 ### Notes
@@ -164,16 +165,11 @@ Running this blob triggers the extended beacon.
 
 ### Example Usage
 
-To start the extended beacon, repeating every 9 seconds, also sending 5 historical beacons per run, run:
+To start the extended beacon, repeating every 9 seconds, also sending 5 historical beacons per run
+(with a 9 second interval, ~8h of beacons are kept in the ring buffer), run:
 
 ```
 CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
-```
-
-To only store history (no history downlink), omit the second arg (same command as v4):
-
-```
-CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000)!
 ```
 
 ### Versions
