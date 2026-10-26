@@ -50,9 +50,11 @@ Take note of the blob arguments being separated by semicolons (`;`) instead of c
 CTS1+exec_blob_from_fs(blobs/copy_file_v1.blob,0,mpi_data/2026-07-01_mpi.dat;mpi_data/2026-07-01_mpi_smaller_output.dat;100;150)!
 ```
 
-## `blobs/bulk_downlink_start_v2.blob`
+## `blobs/bulk_downlink_start_v{2,3}.blob`
 
 Blob to replace the [buggy](https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/653) `CTS1+comms_bulk_file_downlink_start(<filename>,<start>,<length>)!` command ("v1").
+
+The blob also calculates checksums and downlinks the filename, aiding in file reassembly.
 
 ### Description
 
@@ -71,13 +73,19 @@ This blob is nearly a drop-in replacement for the `bulk_file_downlink_start` tel
 // The start_offset and byte_count can both be zero to downlink up to 1 MB.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/bulk_downlink_start_v2.blob", run:
-// CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,your_file.run;0;0)!
+// After uplinking the blob as "blobs/bulk_downlink_start_v3.blob", run:
+// CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v3.blob,0,your_file.run;0;0)!
 ```
 
 This blob contains the following benefits above the existing `comms_bulk_file_downlink_start` telecommand:
-1. This blob's telecommand response string now includes the filename, file size, and file hash, making it simpler to correlate bulk downlink data with the file it came from, especially when scheduled.
+1. This blob's telecommand response string now includes the filename, file size, and checksums of the downlinked bytes, making it simpler to correlate bulk downlink data with the file it came from, especially when scheduled.
 2. Bug is fixed - downlink as many files as many times as you want!
+
+### Notes
+
+1. The checksums cover exactly the bytes being downlinked: `length` is `byte_count` (or 1 MB if `byte_count` is 0 or over 1 MB), limited to the rest of the file after `offset`.
+2. The prefix tells you what the checksums cover: `file_` means the downlink is the whole file; `chunk_` means it's only part of the file (bytes `offset` to `offset + length`).
+3. The CRC16 is the same algorithm as the ADCS file CRC16 (ADCS Firmware ICD `CRC_Calc()`), and the same as in `get_file_map_v1`.
 
 ### Example Usage
 
@@ -88,8 +96,30 @@ Assume there exists a file `adcs_data/your_file.run` which you want to bulk down
 CTS1+comms_bulk_file_downlink_start(adcs_data/your_file.run,0,0)@tsexec=123456@tssent=789!
 
 # Instead though, now you'll run:
-CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,adcs_data/your_file.run;0;0)@tsexec=123456@tssent=789!
+CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v3.blob,0,adcs_data/your_file.run;0;0)@tsexec=123456@tssent=789!
 ```
+
+### Response Format (v3+)
+
+```json
+{"action":"bulk_downlink_start_v3","file":"<path>","file_size":1234,"offset":0,"length":1234,
+  "file_sha256":"<hex>","file_crc16":"0xabcd"}
+```
+
+The checksums cover exactly the downlinked bytes (`offset` to `offset + length`). The fields are
+"file_sha256"/"file_crc16" when that's the whole file, or "chunk_sha256"/"chunk_crc16" otherwise
+(non-zero offset, a smaller byte_count, or a file over 1 MB). `file_size` is always the full size.
+
+### Versions
+
+* v2
+    * Response had a single `sha256` field. With `byte_count=0`, it hashed the whole file even though the downlink is limited to 1 MB, so the hash didn't match the downlinked data for files over 1 MB, and large files could trigger a watchdog reset.
+    * The reported `length` was wrong when `start_offset` was non-zero.
+* v3
+    * Checksums cover exactly the downlinked bytes, as `file_sha256`/`file_crc16` or `chunk_sha256`/`chunk_crc16`.
+    * Added the CRC16 field.
+    * `action` is now `bulk_downlink_start_v3` (was `bulk_downlink_start_blob`).
+    * Feature: Better error codes/names via an error enum.
 
 ## `blobs/extended_beacon_v{2,3,4}.blob`
 
