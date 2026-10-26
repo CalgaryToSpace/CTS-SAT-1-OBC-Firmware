@@ -41,6 +41,7 @@
 //     "malformed_time_sync_count": 0,
 //     "earliest": {"timestamp_ms": 1784654580208, "datetime": "2026-07-21T172300.208Z_E"},
 //     "latest": {"timestamp_ms": 1784654699138, "datetime": "2026-07-21T172459.138Z_E"},
+//     "footer": {"uart_lost_bytes": 0, "reason_for_stopping": "TELECOMMAND"},
 //     "strong_threshold_dn": 200,
 //     "strong_frame_count": 8,
 //     "strong_signal_count": 2,
@@ -64,15 +65,19 @@
 // 2. "time_sync_count" includes the `mpi_start` header. "earliest"/"latest" are the time syncs with
 //     the smallest/largest "timestamp_ms" (not necessarily the first/last in the file), or `null`.
 //     A time sync is "malformed" if it's cut off, too long, or lacks a valid "timestamp_ms".
-// 3. Ranges are [start, end) with an exclusive end, like a Python slice. "frames" is the
+// 3. "footer" is from the end-of-recording footer: "uart_lost_bytes" is its "data_lost_bytes" (MPI
+//     data dropped because both UART buffers were awaiting a write to flash), and
+//     "reason_for_stopping" is copied as-is. It's `null` if the file has no (valid) footer, e.g.,
+//     if the recording didn't stop cleanly.
+// 4. Ranges are [start, end) with an exclusive end, like a Python slice. "frames" is the
 //     [first, last] frame counter (inclusive). "peak_mean_dn" is the largest frame mean residual in
 //     the signal, and "peak_pixel"/"peak_pixel_dn" are the pixel with the largest residual.
-// 4. Only the first MAX_LISTED_SIGNALS strong signals are listed; "strong_signal_count" counts all.
-// 5. "sha256" is `null` for files over SHA256_MAX_FILE_SIZE (1.1 MB), since hashing is about half
+// 5. Only the first MAX_LISTED_SIGNALS strong signals are listed; "strong_signal_count" counts all.
+// 6. "sha256" is `null` for files over SHA256_MAX_FILE_SIZE (1.1 MB), since hashing is about half
 //     the runtime. "crc16" is always computed.
-// 6. "crc16" is the whole file's CRC16, the same algorithm as the ADCS file CRC16 (ADCS Firmware
+// 7. "crc16" is the whole file's CRC16, the same algorithm as the ADCS file CRC16 (ADCS Firmware
 //     ICD `CRC_Calc()`), and the same as in `get_file_map_v1` and `bulk_downlink_start_v3`.
-// 7. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
+// 8. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
 
 
 // -----------------------------------------------------
@@ -84,6 +89,8 @@
 // [MPI buffer][time sync JSON] pairs. Each MPI buffer contains many 152-byte MPI frames. The time
 // syncs are spliced in wherever the buffer ends (usually mid-frame). Each time sync looks like:
 // {"uptime_ms":123,"timestamp":"1719169299720+0000042000_N","datetime":"2026-07-01T123456.789Z_G","timestamp_ms":1782909296789}
+// When recording stops, `MPI_write_file_footer()` writes a footer at the end, like:
+// {"data_lost_bytes": 0, "time_taken_ms": 115005, "reason_for_stopping": "TELECOMMAND" }
 //
 // MPI Frame Layout (152 bytes, big-endian; see simple_sat_ops `utils/mpi_viewer.c`):
 //      0..3     sync word 0C FF FF 0C
@@ -143,21 +150,26 @@ static const uint32_t MPI_FRAME_SYNC_WORD = 0x0CFFFF0C;
 #define MAX_SIGNAL_FRAME_GAP 2
 
 /// @brief Max number of strong signals listed in the response (to fit the response buffer).
-#define MAX_LISTED_SIGNALS 12
+#define MAX_LISTED_SIGNALS 10
 
-/// @brief Starts of the JSON objects written between MPI buffers. Both are the same length, and
+/// @brief Starts of the JSON objects written between MPI buffers. All are the same length, and
 ///     '{' only appears as their first char.
 static const char TIME_SYNC_PREFIX[] = "{\"uptime_ms\":";
 static const char MPI_START_PREFIX[] = "{\"mpi_start\":";
+static const char FOOTER_PREFIX[] = "{\"data_lost_b"; // Cut to the same length as the others.
 #define TIME_SYNC_PREFIX_LEN (sizeof(TIME_SYNC_PREFIX) - 1)
 #define PREFIX_IS_TIME_SYNC (1 << 0)
 #define PREFIX_IS_MPI_START (1 << 1)
+#define PREFIX_IS_FOOTER (1 << 2)
 
 /// @brief Max length of a time sync JSON object (the firmware's buffer is 200 bytes).
 #define TIME_SYNC_MAX_LEN 200
 
 /// @brief Max length of a "datetime" string kept from a time sync (e.g., "2026-07-01T123456.789Z_G").
 #define DATETIME_STR_MAX_LEN 40
+
+/// @brief Max length of the footer's "reason_for_stopping" string (e.g., "TEMPERATURE_EXCEEDED").
+#define REASON_FOR_STOPPING_STR_MAX_LEN 32
 
 /// @brief Max length of a uint64 in decimal (20 digits), plus a null terminator.
 #define UINT64_STR_MAX_LEN 21
@@ -374,6 +386,10 @@ typedef struct {
     time_sync_t earliest;
     time_sync_t latest;
 
+    bool footer_found;
+    uint32_t uart_lost_bytes;
+    char reason_for_stopping[REASON_FOR_STOPPING_STR_MAX_LEN];
+
     uint32_t strong_frame_count;
     uint32_t strong_signal_count;
     bool signal_open;
@@ -448,6 +464,34 @@ static void process_time_sync(const char *json, bool is_mpi_start, mpi_file_stat
     }
     stats->time_sync_count++;
     if (is_mpi_start) stats->mpi_start_count++;
+}
+
+/// @brief Handle the end-of-recording footer found in the file (see `MPI_write_file_footer()`).
+/// @note Leaves `footer_found` false if the footer lacks either field.
+static void process_footer(const char *json, mpi_file_stats_t *stats) {
+    const char *lost = find_after(json, "\"data_lost_bytes\":");
+    const char *reason = find_after(json, "\"reason_for_stopping\":");
+    if (lost == 0 || reason == 0) return;
+
+    while (*lost == ' ') lost++;
+    uint32_t uart_lost_bytes = 0;
+    if (*lost < '0' || *lost > '9') return;
+    for (; *lost >= '0' && *lost <= '9'; lost++) {
+        uart_lost_bytes = uart_lost_bytes * 10 + (*lost - '0');
+    }
+
+    while (*reason == ' ') reason++;
+    if (*reason != '"') return;
+    reason++;
+    uint8_t i = 0;
+    while (reason[i] != '\0' && reason[i] != '"' && i < REASON_FOR_STOPPING_STR_MAX_LEN - 1) {
+        stats->reason_for_stopping[i] = reason[i];
+        i++;
+    }
+    stats->reason_for_stopping[i] = '\0';
+
+    stats->uart_lost_bytes = uart_lost_bytes;
+    stats->footer_found = true;
 }
 
 static inline int32_t round_to_int(float x) {
@@ -583,7 +627,7 @@ typedef struct {
     uint32_t sync_window_offsets[4]; // File offsets of those bytes (ring, indexed by `fed_count`).
     uint8_t fed_count; // Bytes fed to the frame parser (wraps; only the low 2 bits are used).
 
-    // Time sync currently being captured (only valid while `time_sync_len > 0`).
+    // Time sync (or header/footer) currently being captured (only valid while `time_sync_len > 0`).
     char time_sync_buf[TIME_SYNC_MAX_LEN + 1];
     uint16_t time_sync_len;
     uint32_t time_sync_start_byte;
@@ -637,7 +681,7 @@ static void feed_byte(scanner_t *sc, uint8_t byte, uint32_t offset) {
         const bool is_bad_char = (byte < 0x20 || byte > 0x7E || byte == '{');
         if (is_bad_char || sc->time_sync_len >= TIME_SYNC_MAX_LEN) {
             // Cut off (e.g., by missing data) or too long. Drop it (it's not MPI data either).
-            sc->stats->malformed_time_sync_count++;
+            if (sc->prefix_matches != PREFIX_IS_FOOTER) sc->stats->malformed_time_sync_count++;
             sc->time_sync_len = 0;
             // Fall through, as this byte may be MPI data or start a new time sync.
         }
@@ -645,9 +689,14 @@ static void feed_byte(scanner_t *sc, uint8_t byte, uint32_t offset) {
             sc->time_sync_buf[sc->time_sync_len++] = byte;
             if (byte == '}') {
                 sc->time_sync_buf[sc->time_sync_len] = '\0';
-                process_time_sync(
-                    sc->time_sync_buf, (sc->prefix_matches == PREFIX_IS_MPI_START), sc->stats
-                );
+                if (sc->prefix_matches == PREFIX_IS_FOOTER) {
+                    process_footer(sc->time_sync_buf, sc->stats);
+                }
+                else {
+                    process_time_sync(
+                        sc->time_sync_buf, (sc->prefix_matches == PREFIX_IS_MPI_START), sc->stats
+                    );
+                }
                 sc->time_sync_len = 0;
             }
             return;
@@ -658,6 +707,7 @@ static void feed_byte(scanner_t *sc, uint8_t byte, uint32_t offset) {
     if (sc->time_sync_len > 0) {
         if (byte != (uint8_t)TIME_SYNC_PREFIX[sc->time_sync_len]) sc->prefix_matches &= ~PREFIX_IS_TIME_SYNC;
         if (byte != (uint8_t)MPI_START_PREFIX[sc->time_sync_len]) sc->prefix_matches &= ~PREFIX_IS_MPI_START;
+        if (byte != (uint8_t)FOOTER_PREFIX[sc->time_sync_len]) sc->prefix_matches &= ~PREFIX_IS_FOOTER;
         if (sc->prefix_matches != 0) {
             sc->time_sync_buf[sc->time_sync_len++] = byte;
             return;
@@ -671,7 +721,7 @@ static void feed_byte(scanner_t *sc, uint8_t byte, uint32_t offset) {
         sc->time_sync_buf[0] = '{';
         sc->time_sync_len = 1;
         sc->time_sync_start_byte = offset;
-        sc->prefix_matches = PREFIX_IS_TIME_SYNC | PREFIX_IS_MPI_START;
+        sc->prefix_matches = PREFIX_IS_TIME_SYNC | PREFIX_IS_MPI_START | PREFIX_IS_FOOTER;
         return;
     }
 
@@ -710,6 +760,7 @@ static int32_t scan_file(
     stats->time_sync_count = 0;
     stats->mpi_start_count = 0;
     stats->malformed_time_sync_count = 0;
+    stats->footer_found = false;
     stats->strong_frame_count = 0;
     stats->strong_signal_count = 0;
     stats->signal_open = false;
@@ -745,9 +796,14 @@ static int32_t scan_file(
         file_pos += bytes_read;
     }
 
-    // A time sync cut off by the end of the file, or held-back bytes that turned out to be MPI data.
-    if (sc.time_sync_len >= TIME_SYNC_PREFIX_LEN) stats->malformed_time_sync_count++;
-    else release_time_sync_candidate(&sc);
+    // A time sync (or footer) cut off by the end of the file, or held-back bytes that turned out to be
+    // MPI data.
+    if (sc.time_sync_len >= TIME_SYNC_PREFIX_LEN) {
+        if (sc.prefix_matches != PREFIX_IS_FOOTER) stats->malformed_time_sync_count++;
+    }
+    else {
+        release_time_sync_candidate(&sc);
+    }
     // A frame cut off by the end of the file.
     if (sc.frame_len > 0) stats->bad_frame_count++;
     close_signal(stats);
@@ -838,6 +894,16 @@ static uint8_t analyze_mpi_data(
         append_time_sync(&w, &stats.earliest);
         response_append(&w, ",\"latest\":");
         append_time_sync(&w, &stats.latest);
+    }
+
+    if (!stats.footer_found) {
+        response_append(&w, ",\"footer\":null");
+    }
+    else {
+        response_append(
+            &w, ",\"footer\":{\"uart_lost_bytes\":%lu,\"reason_for_stopping\":\"%s\"}",
+            stats.uart_lost_bytes, stats.reason_for_stopping
+        );
     }
 
     response_append(
