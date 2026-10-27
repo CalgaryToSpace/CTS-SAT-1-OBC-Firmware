@@ -13,8 +13,8 @@
 // - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
 //   specified interval (clamped to a minimum of 2500ms).
 // - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
-//   run, after the live beacon. Fewer are sent if the randomly-chosen start lands near the end of
-//   the chosen ring file.
+//   run, after the live beacon (clamped to a maximum of 100). Fewer are sent if the randomly-chosen
+//   start lands near the end of the chosen ring file.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
@@ -467,6 +467,7 @@ _Static_assert(
 #define BEACON_RING_RECORDS_PER_FILE 180 // Records per file. 20*180 = 3600 beacons = 9 hours at 9s.
 #define BEACON_RING_RECORD_SIZE (sizeof(COMMS_beacon_extended_packet_v5plus_t))
 #define BEACON_RING_PATH_MAX_LEN 32 // Enough for "beacon_ring/r<n>.bin".
+#define BEACON_HISTORY_COUNT_MAX 100 // Max historical beacons downlinked per run (history_count arg is clamped).
 
 
 // MARK: Persistent State
@@ -1802,6 +1803,11 @@ uint8_t blob_main(
     // the satellite because it'd always be transmitting, which would be super non-ideal.
     if ((beacon_interval_ms != 0) && (beacon_interval_ms < 2500)) {
         beacon_interval_ms = 2500;
+    }
+
+    // Likewise, cap the history burst, so one run can't flood the AX100 / hog the radio.
+    if (history_count > BEACON_HISTORY_COUNT_MAX) {
+        history_count = BEACON_HISTORY_COUNT_MAX;
     }
 
     // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state

@@ -113,8 +113,8 @@ Running this blob triggers the extended beacon.
 // - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
 //   specified interval (clamped to a minimum of 2500ms).
 // - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
-//   run, after the live beacon. Fewer are sent if the randomly-chosen start lands near the end of
-//   the chosen ring file.
+//   run, after the live beacon (clamped to a maximum of 100). Fewer are sent if the randomly-chosen
+//   start lands near the end of the chosen ring file.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
