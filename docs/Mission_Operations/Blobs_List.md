@@ -476,6 +476,8 @@ The response is tightly-packed JSON, like (from the 2026-07-21 recording):
     "sha256": "5d15...1471",
     "crc16": "0xf821",
     "size": 556728,
+    "scanned_bytes": 556728,
+    "timed_out": false,
     "frame_count": 2192,
     "valid_frame_count": 2044,
     "bad_frame_count": 148,
@@ -516,7 +518,8 @@ CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;s
 5. `time_sync_count` includes the `{"mpi_start":1,...}` header. `earliest`/`latest` are the time syncs with the smallest/largest `timestamp_ms` (not necessarily the first/last in the file), or `null` if there are none.
 6. Only the first 10 strong signals are listed, to fit the 2048-byte response buffer; `strong_signal_count` counts all of them.
 7. `sha256` and `crc16` cover the whole file. The CRC16 is the same algorithm as the ADCS file CRC16 (ADCS Firmware ICD `CRC_Calc()`), and the same as in `get_file_map_v1` and `bulk_downlink_start_v3`.
-8. For files over 1.1 MB (1,100,000 bytes), `sha256` is `null` (skipped, as it's about half the runtime). `crc16` is always computed.
+8. For files over 1.1 MB (1,100,000 bytes), `sha256` is `null` (skipped, to leave time for the analysis).
+9. The blob has a hard run time limit of 11 seconds. If it's exceeded, the scan stops early and `timed_out` is `true`: `sha256` and `crc16` are then `null`, and every other field only covers the first `scanned_bytes` bytes of the file (`footer` is usually `null`, as it's at the end of the file). The limit is checked once per 2048-byte read, so it overshoots by at most a few tens of ms.
 
 ### Versions
 
@@ -530,6 +533,8 @@ CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;s
     * Added the `footer` field (`uart_lost_bytes`, `reason_for_stopping`).
     * `sha256` is `null` for files over 1.1 MB, to avoid a watchdog reset on very large files.
     * Reads 2048 bytes at a time (was 512).
+    * Stops early after 11 seconds, with the new `timed_out` and `scanned_bytes` fields (`sha256`/`crc16` are `null` on a timeout).
+    * Uses the faster embedded SHA256 (`blob_libs/sha256_fast.h`; ~1.75x fewer instructions than the firmware's).
     * `action` is now `analyze_mpi_data_v2` (version bump).
 
 

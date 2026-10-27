@@ -29,6 +29,8 @@
 //     "sha256": "5d15...1471",
 //     "crc16": "0xf821",
 //     "size": 556728,
+//     "scanned_bytes": 556728,
+//     "timed_out": false,
 //     "frame_count": 2192,
 //     "valid_frame_count": 2044,
 //     "bad_frame_count": 148,
@@ -73,11 +75,14 @@
 //     [first, last] frame counter (inclusive). "peak_mean_dn" is the largest frame mean residual in
 //     the signal, and "peak_pixel"/"peak_pixel_dn" are the pixel with the largest residual.
 // 5. Only the first MAX_LISTED_SIGNALS strong signals are listed; "strong_signal_count" counts all.
-// 6. "sha256" is `null` for files over SHA256_MAX_FILE_SIZE (1.1 MB), since hashing is about half
-//     the runtime. "crc16" is always computed.
+// 6. "sha256" is `null` for files over SHA256_MAX_FILE_SIZE (1.1 MB), to leave time for the
+//     analysis. "crc16" is always computed (unless the scan times out; see note 9).
 // 7. "crc16" is the whole file's CRC16, the same algorithm as the ADCS file CRC16 (ADCS Firmware
 //     ICD `CRC_Calc()`), and the same as in `get_file_map_v1` and `bulk_downlink_start_v3`.
 // 8. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
+// 9. If the blob has run for over MAX_RUN_TIME_MS (11 s), the scan stops early and "timed_out" is
+//     true. "sha256" and "crc16" are then `null`, and every other field only covers the first
+//     "scanned_bytes" bytes of the file ("footer" is usually `null`, as it's at the end).
 
 
 // -----------------------------------------------------
@@ -106,7 +111,7 @@
 #include <stdarg.h>
 
 #include "../lfs.h"
-#include "crypto/sha256.h"
+#include "../blob_libs/sha256_fast.h"
 
 #define LFS_MAX_PATH_LENGTH 200
 #define BLOB_ENABLE_LOGS 0
@@ -174,8 +179,11 @@ static const char FOOTER_PREFIX[] = "{\"data_lost_b"; // Cut to the same length 
 /// @brief Max length of a uint64 in decimal (20 digits), plus a null terminator.
 #define UINT64_STR_MAX_LEN 21
 
-/// @brief Files larger than this skip the SHA256 (about half the runtime), and report it as null.
+/// @brief Files larger than this skip the SHA256, and report it as null.
 #define SHA256_MAX_FILE_SIZE 1100000
+
+/// @brief Hard limit on the blob's run time. The file scan stops early once it's exceeded.
+#define MAX_RUN_TIME_MS 11000
 
 #define READ_BUFFER_SIZE 2048 // Matches the LFS cache size, so reads skip the cache.
 
@@ -185,6 +193,7 @@ extern lfs_t LFS_filesystem;
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int vsnprintf(char *buf, unsigned int size, const char *fmt, va_list args);
 extern int strlen (const char *s);
+extern uint32_t HAL_GetTick(void);
 
 #if BLOB_ENABLE_LOGS
 extern void LOG_message(
@@ -195,7 +204,6 @@ extern void LOG_message(
 
 lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages);
 
-// sha256_init/update/final are declared in crypto/sha256.h.
 // lfs_file_open/size/seek/read/write/close are already declared in lfs.h;
 // their definitions are resolved against the firmware ELF at link time.
 
@@ -362,14 +370,17 @@ typedef struct {
 typedef struct {
     uint32_t strong_threshold_dn;
     uint32_t warmup_frames;
+    uint32_t start_tick_ms; // `HAL_GetTick()` when the blob started, for the run time limit.
 } analysis_config_t;
 
 /// @brief Summary of an MPI data file.
 typedef struct {
-    bool sha256_computed; // False if the file is over SHA256_MAX_FILE_SIZE.
+    bool sha256_computed; // False if the file is over SHA256_MAX_FILE_SIZE, or the scan timed out.
     uint8_t sha256[32];
     uint16_t crc16;
     uint32_t size;
+    uint32_t scanned_bytes;
+    bool timed_out; // True if the scan stopped early at MAX_RUN_TIME_MS.
 
     uint32_t frame_count;
     uint32_t valid_frame_count;
@@ -733,7 +744,8 @@ static void feed_byte(scanner_t *sc, uint8_t byte, uint32_t offset) {
 ///     time syncs.
 /// @param file_path Path of the file to read.
 /// @param[in,out] stats `size` must be set before calling. All other fields are filled in.
-/// @return 0 on success, negative LFS error code on read error, 1 if the file size changed.
+/// @return 0 on success (including a timeout; see `stats->timed_out`), negative LFS error code
+///     on read error, 1 if the file size changed.
 static int32_t scan_file(
     const char *file_path, const analysis_config_t *config, mpi_file_stats_t *stats
 ) {
@@ -772,13 +784,20 @@ static int32_t scan_file(
     }
 
     stats->sha256_computed = (stats->size <= SHA256_MAX_FILE_SIZE);
-    SHA256_CTX sha256_ctx;
-    sha256_init(&sha256_ctx);
+    stats->timed_out = false;
+    sha256_fast_ctx_t sha256_ctx;
+    sha256_fast_init(&sha256_ctx);
     uint16_t crc16 = 0;
 
     uint32_t file_pos = 0; // Offset of the start of `read_buffer` within the file.
 
     while (1) {
+        // Checked once per read, so it overshoots by at most one read's worth of work.
+        if (HAL_GetTick() - config->start_tick_ms > MAX_RUN_TIME_MS) {
+            stats->timed_out = true;
+            break;
+        }
+
         const int32_t bytes_read = lfs_file_read(&LFS_filesystem, &file, read_buffer, READ_BUFFER_SIZE);
         if (bytes_read < 0) {
             lfs_file_close(&LFS_filesystem, &file);
@@ -786,7 +805,7 @@ static int32_t scan_file(
         }
         if (bytes_read == 0) break; // EOF.
 
-        if (stats->sha256_computed) sha256_update(&sha256_ctx, read_buffer, bytes_read);
+        if (stats->sha256_computed) sha256_fast_update(&sha256_ctx, read_buffer, bytes_read);
 
         for (int32_t i = 0; i < bytes_read; i++) {
             crc16 = crc16_update(crc16, read_buffer[i]);
@@ -795,17 +814,22 @@ static int32_t scan_file(
 
         file_pos += bytes_read;
     }
+    stats->scanned_bytes = file_pos;
 
-    // A time sync (or footer) cut off by the end of the file, or held-back bytes that turned out to be
-    // MPI data.
-    if (sc.time_sync_len >= TIME_SYNC_PREFIX_LEN) {
-        if (sc.prefix_matches != PREFIX_IS_FOOTER) stats->malformed_time_sync_count++;
+    // On a timeout, a partial time sync or frame was cut off by the timeout (not the end of the
+    // file), so isn't counted as malformed/bad.
+    if (!stats->timed_out) {
+        // A time sync (or footer) cut off by the end of the file, or held-back bytes that turned
+        // out to be MPI data.
+        if (sc.time_sync_len >= TIME_SYNC_PREFIX_LEN) {
+            if (sc.prefix_matches != PREFIX_IS_FOOTER) stats->malformed_time_sync_count++;
+        }
+        else {
+            release_time_sync_candidate(&sc);
+        }
+        // A frame cut off by the end of the file.
+        if (sc.frame_len > 0) stats->bad_frame_count++;
     }
-    else {
-        release_time_sync_candidate(&sc);
-    }
-    // A frame cut off by the end of the file.
-    if (sc.frame_len > 0) stats->bad_frame_count++;
     close_signal(stats);
 
     const int32_t close_result = lfs_file_close(&LFS_filesystem, &file);
@@ -813,11 +837,16 @@ static int32_t scan_file(
         return close_result;
     }
 
+    if (stats->timed_out) {
+        stats->sha256_computed = false;
+        return 0;
+    }
+
     if (file_pos != stats->size) {
         return 1; // File changed size while reading.
     }
 
-    if (stats->sha256_computed) sha256_final(&sha256_ctx, stats->sha256);
+    if (stats->sha256_computed) sha256_fast_final(&sha256_ctx, stats->sha256);
     stats->crc16 = crc16;
     return 0;
 }
@@ -863,7 +892,16 @@ static uint8_t analyze_mpi_data(
     else {
         response_append(&w, "null");
     }
-    response_append(&w, ",\"crc16\":\"0x%04x\",\"size\":%lu", stats.crc16, stats.size);
+    if (stats.timed_out) {
+        response_append(&w, ",\"crc16\":null");
+    }
+    else {
+        response_append(&w, ",\"crc16\":\"0x%04x\"", stats.crc16);
+    }
+    response_append(
+        &w, ",\"size\":%lu,\"scanned_bytes\":%lu,\"timed_out\":%s",
+        stats.size, stats.scanned_bytes, stats.timed_out ? "true" : "false"
+    );
 
     response_append(
         &w,
@@ -923,6 +961,8 @@ uint8_t blob_main(
     const char *args_str,
     char *response_buf, unsigned short response_buf_len
 ) {
+    const uint32_t start_tick_ms = HAL_GetTick();
+
     // Log that the blob is starting (important for tracing crashes).
     #if BLOB_ENABLE_LOGS
     LOG(
@@ -951,6 +991,7 @@ uint8_t blob_main(
     analysis_config_t config = {
         .strong_threshold_dn = DEFAULT_STRONG_THRESHOLD_DN,
         .warmup_frames = DEFAULT_WARMUP_FRAMES,
+        .start_tick_ms = start_tick_ms,
     };
 
     // Parse kwargs.
