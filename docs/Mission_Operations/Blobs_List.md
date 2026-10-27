@@ -456,7 +456,7 @@ Blob to summarize an MPI science data file on-orbit (SHA256 and CRC16, frame cou
 ```c
 // Args Format: <file_path>  or  <file_path>;kwarg1=val;kwarg2=val
 // Supported kwargs:
-//  - strong_threshold_dn: Minimum mean residual (DN) for a frame to be "strong". Default: 200.
+//  - strong_threshold_dn: Minimum mean residual (DN) for a frame to be "strong". Default: 100.
 //  - warmup_frames: Frames with a frame counter below this are skipped. Default: 80.
 ```
 

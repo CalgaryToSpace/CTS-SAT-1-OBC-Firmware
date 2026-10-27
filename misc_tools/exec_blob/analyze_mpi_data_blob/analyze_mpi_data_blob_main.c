@@ -19,7 +19,7 @@
 //
 // Args Format: <file_path>  or  <file_path>;kwarg1=val;kwarg2=val
 // Supported kwargs:
-//  - strong_threshold_dn: Minimum mean residual (DN) for a frame to be "strong". Default: 200.
+//  - strong_threshold_dn: Minimum mean residual (DN) for a frame to be "strong". Default: 100.
 //  - warmup_frames: Frames with a frame counter below this are skipped. Default: 80.
 //
 // Response Format (JSON):
@@ -54,7 +54,7 @@
 // Usage Example:
 // After uplinking the blob as "blobs/analyze_mpi_data_v2.blob", run:
 // CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi)!
-// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=100)!
+// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=50)!
 // CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=150;warmup_frames=80)!
 //
 // Notes:
@@ -129,7 +129,7 @@ static const char ARG_DELIM = ';';
 static const char KWARG_DELIM = '=';
 static const char *BLOB_NAME = "analyze_mpi_data_v2";
 
-static const uint32_t DEFAULT_STRONG_THRESHOLD_DN = 200;
+static const uint32_t DEFAULT_STRONG_THRESHOLD_DN = 100;
 static const uint32_t DEFAULT_WARMUP_FRAMES = 80;
 
 /// @brief The 4 sync bytes at the start of each MPI frame (0x0C 0xFF 0xFF 0x0C), as a big-endian
