@@ -1,5 +1,5 @@
 // This is a blob (executable) that analyzes an MPI science data file in LFS, and reports a summary
-// of its contents: its SHA256, size, frame counts, time syncs (and the earliest/latest dates), and
+// of its contents: its SHA256, CRC16, size, frame counts, time syncs (and the earliest/latest dates), and
 // the "strong signals" (likely ion signals) found in the pixel data.
 //
 // Motivation: MPI data files are large, and downlinking them is slow. Analyzing them on-orbit
@@ -19,18 +19,22 @@
 //
 // Args Format: <file_path>  or  <file_path>;kwarg1=val;kwarg2=val
 // Supported kwargs:
-//  - strong_threshold_dn: Minimum mean residual (DN) for a frame to be "strong". Default: 200.
+//  - strong_threshold_dn: Minimum mean residual (DN) for a frame to be "strong". Default: 100.
 //  - warmup_frames: Frames with a frame counter below this are skipped. Default: 80.
 //
 // Response Format (JSON):
 // {
-//     "action": "analyze_mpi_data_v1",
+//     "action": "analyze_mpi_data_v2",
 //     "file": "mpi_data/2026-07-21.mpi",
 //     "sha256": "5d15...1471",
+//     "crc16": "0xf821",
 //     "size": 556728,
+//     "scanned_bytes": 556728,
+//     "timed_out": false,
 //     "frame_count": 2192,
-//     "valid_frame_count": 2030,
-//     "bad_frame_count": 162,
+//     "valid_frame_count": 2044,
+//     "bad_frame_count": 148,
+//     "restitched_frame_count": 14,
 //     "background_frame_count": 8,
 //     "warmup_frame_count": 78,
 //     "frame_byte_range": [147, 556377],
@@ -39,6 +43,7 @@
 //     "malformed_time_sync_count": 0,
 //     "earliest": {"timestamp_ms": 1784654580208, "datetime": "2026-07-21T172300.208Z_E"},
 //     "latest": {"timestamp_ms": 1784654699138, "datetime": "2026-07-21T172459.138Z_E"},
+//     "footer": {"uart_lost_bytes": 0, "reason_for_stopping": "TELECOMMAND"},
 //     "strong_threshold_dn": 200,
 //     "strong_frame_count": 8,
 //     "strong_signal_count": 2,
@@ -49,22 +54,35 @@
 // }
 //
 // Usage Example:
-// After uplinking the blob as "blobs/analyze_mpi_data_v1.blob", run:
-// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi)!
-// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v1.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=150;warmup_frames=80)!
+// After uplinking the blob as "blobs/analyze_mpi_data_v2.blob", run:
+// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi)!
+// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=50)!
+// CTS1+exec_blob_from_fs(blobs/analyze_mpi_data_v2.blob,0,mpi_data/your_file.mpi;strong_threshold_dn=150;warmup_frames=80)!
 //
 // Notes:
 // 1. "frame_count" is the number of sync words. Each starts a frame, which is either valid (CRC
-//     passes) or bad (CRC fails, e.g., a time sync was spliced into it, or it was cut short by the
-//     next sync word). "frame_byte_range" is [start, end) of the valid frames.
+//     passes) or bad (CRC fails, or it was cut short by the next sync word). Time syncs spliced
+//     into a frame are removed before its CRC check, and "restitched_frame_count" counts the valid
+//     frames that had one removed. "frame_byte_range" is [start, end) of the valid frames.
 // 2. "time_sync_count" includes the `mpi_start` header. "earliest"/"latest" are the time syncs with
 //     the smallest/largest "timestamp_ms" (not necessarily the first/last in the file), or `null`.
 //     A time sync is "malformed" if it's cut off, too long, or lacks a valid "timestamp_ms".
-// 3. Ranges are [start, end) with an exclusive end, like a Python slice. "frames" is the
+// 3. "footer" is from the end-of-recording footer: "uart_lost_bytes" is its "data_lost_bytes" (MPI
+//     data dropped because both UART buffers were awaiting a write to flash), and
+//     "reason_for_stopping" is copied as-is. It's `null` if the file has no (valid) footer, e.g.,
+//     if the recording didn't stop cleanly.
+// 4. Ranges are [start, end) with an exclusive end, like a Python slice. "frames" is the
 //     [first, last] frame counter (inclusive). "peak_mean_dn" is the largest frame mean residual in
 //     the signal, and "peak_pixel"/"peak_pixel_dn" are the pixel with the largest residual.
-// 4. Only the first MAX_LISTED_SIGNALS strong signals are listed; "strong_signal_count" counts all.
-// 5. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
+// 5. Only the first MAX_LISTED_SIGNALS strong signals are listed; "strong_signal_count" counts all.
+// 6. "sha256" is `null` for files over SHA256_MAX_FILE_SIZE (1.1 MB), to leave time for the
+//     analysis. "crc16" is always computed (unless the scan times out; see note 9).
+// 7. "crc16" is the whole file's CRC16, the same algorithm as the ADCS file CRC16 (ADCS Firmware
+//     ICD `CRC_Calc()`), and the same as in `get_file_map_v1` and `bulk_downlink_start_v3`.
+// 8. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON).
+// 9. If the blob has run for over MAX_RUN_TIME_MS (11 s), the scan stops early and "timed_out" is
+//     true. "sha256" and "crc16" are then `null`, and every other field only covers the first
+//     "scanned_bytes" bytes of the file ("footer" is usually `null`, as it's at the end).
 
 
 // -----------------------------------------------------
@@ -76,6 +94,8 @@
 // [MPI buffer][time sync JSON] pairs. Each MPI buffer contains many 152-byte MPI frames. The time
 // syncs are spliced in wherever the buffer ends (usually mid-frame). Each time sync looks like:
 // {"uptime_ms":123,"timestamp":"1719169299720+0000042000_N","datetime":"2026-07-01T123456.789Z_G","timestamp_ms":1782909296789}
+// When recording stops, `MPI_write_file_footer()` writes a footer at the end, like:
+// {"data_lost_bytes": 0, "time_taken_ms": 115005, "reason_for_stopping": "TELECOMMAND" }
 //
 // MPI Frame Layout (152 bytes, big-endian; see simple_sat_ops `utils/mpi_viewer.c`):
 //      0..3     sync word 0C FF FF 0C
@@ -91,7 +111,7 @@
 #include <stdarg.h>
 
 #include "../lfs.h"
-#include "crypto/sha256.h"
+#include "../blob_libs/sha256_fast.h"
 
 #define LFS_MAX_PATH_LENGTH 200
 #define BLOB_ENABLE_LOGS 0
@@ -112,9 +132,9 @@ static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
 static const char KWARG_DELIM = '=';
-static const char *BLOB_NAME = "analyze_mpi_data_v1";
+static const char *BLOB_NAME = "analyze_mpi_data_v2";
 
-static const uint32_t DEFAULT_STRONG_THRESHOLD_DN = 200;
+static const uint32_t DEFAULT_STRONG_THRESHOLD_DN = 100;
 static const uint32_t DEFAULT_WARMUP_FRAMES = 80;
 
 /// @brief The 4 sync bytes at the start of each MPI frame (0x0C 0xFF 0xFF 0x0C), as a big-endian
@@ -135,15 +155,17 @@ static const uint32_t MPI_FRAME_SYNC_WORD = 0x0CFFFF0C;
 #define MAX_SIGNAL_FRAME_GAP 2
 
 /// @brief Max number of strong signals listed in the response (to fit the response buffer).
-#define MAX_LISTED_SIGNALS 12
+#define MAX_LISTED_SIGNALS 10
 
-/// @brief Starts of the JSON objects written between MPI buffers. Both are the same length, and
+/// @brief Starts of the JSON objects written between MPI buffers. All are the same length, and
 ///     '{' only appears as their first char.
 static const char TIME_SYNC_PREFIX[] = "{\"uptime_ms\":";
 static const char MPI_START_PREFIX[] = "{\"mpi_start\":";
+static const char FOOTER_PREFIX[] = "{\"data_lost_b"; // Cut to the same length as the others.
 #define TIME_SYNC_PREFIX_LEN (sizeof(TIME_SYNC_PREFIX) - 1)
 #define PREFIX_IS_TIME_SYNC (1 << 0)
 #define PREFIX_IS_MPI_START (1 << 1)
+#define PREFIX_IS_FOOTER (1 << 2)
 
 /// @brief Max length of a time sync JSON object (the firmware's buffer is 200 bytes).
 #define TIME_SYNC_MAX_LEN 200
@@ -151,10 +173,19 @@ static const char MPI_START_PREFIX[] = "{\"mpi_start\":";
 /// @brief Max length of a "datetime" string kept from a time sync (e.g., "2026-07-01T123456.789Z_G").
 #define DATETIME_STR_MAX_LEN 40
 
+/// @brief Max length of the footer's "reason_for_stopping" string (e.g., "TEMPERATURE_EXCEEDED").
+#define REASON_FOR_STOPPING_STR_MAX_LEN 32
+
 /// @brief Max length of a uint64 in decimal (20 digits), plus a null terminator.
 #define UINT64_STR_MAX_LEN 21
 
-#define READ_BUFFER_SIZE 512
+/// @brief Files larger than this skip the SHA256, and report it as null.
+#define SHA256_MAX_FILE_SIZE 1100000
+
+/// @brief Hard limit on the blob's run time. The file scan stops early once it's exceeded.
+#define MAX_RUN_TIME_MS 11000
+
+#define READ_BUFFER_SIZE 2048 // Matches the LFS cache size, so reads skip the cache.
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -162,6 +193,7 @@ extern lfs_t LFS_filesystem;
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int vsnprintf(char *buf, unsigned int size, const char *fmt, va_list args);
 extern int strlen (const char *s);
+extern uint32_t HAL_GetTick(void);
 
 #if BLOB_ENABLE_LOGS
 extern void LOG_message(
@@ -172,7 +204,6 @@ extern void LOG_message(
 
 lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages);
 
-// sha256_init/update/final are declared in crypto/sha256.h.
 // lfs_file_open/size/seek/read/write/close are already declared in lfs.h;
 // their definitions are resolved against the firmware ELF at link time.
 
@@ -273,6 +304,18 @@ static bool mpi_frame_crc_ok(const uint8_t *frame) {
     return crc == read_be16(&frame[MPI_FRAME_CRC_OFFSET]);
 }
 
+/// @brief Update a CRC16 with one byte.
+/// @note The per-byte update rule matches `CRC_Calc()` from the ADCS Firmware ICD (Section 6.4.1).
+///     Same as in the get_file_map and bulk_downlink_start blobs.
+static inline uint16_t crc16_update(uint16_t crc, uint8_t byte) {
+    crc = (crc >> 8) | (crc << 8);      // byte-swap the CRC
+    crc ^= byte;                         // XOR in the next byte
+    crc ^= (crc & 0xff) >> 4;            // mix low nibble down
+    crc ^= crc << 12;                    // mix up by 12 bits
+    crc ^= (crc & 0xff) << 5;            // mix low byte up by 5 bits
+    return crc;
+}
+
 /// @brief A time sync's timestamp, kept as both a number (for comparing) and the original decimal
 ///     string (for printing, since the firmware's snprintf can't print uint64).
 typedef struct {
@@ -327,16 +370,22 @@ typedef struct {
 typedef struct {
     uint32_t strong_threshold_dn;
     uint32_t warmup_frames;
+    uint32_t start_tick_ms; // `HAL_GetTick()` when the blob started, for the run time limit.
 } analysis_config_t;
 
 /// @brief Summary of an MPI data file.
 typedef struct {
+    bool sha256_computed; // False if the file is over SHA256_MAX_FILE_SIZE, or the scan timed out.
     uint8_t sha256[32];
+    uint16_t crc16;
     uint32_t size;
+    uint32_t scanned_bytes;
+    bool timed_out; // True if the scan stopped early at MAX_RUN_TIME_MS.
 
     uint32_t frame_count;
     uint32_t valid_frame_count;
     uint32_t bad_frame_count;
+    uint32_t restitched_frame_count;
     uint32_t background_frame_count;
     uint32_t warmup_frame_count;
     uint32_t first_valid_frame_byte;
@@ -347,6 +396,10 @@ typedef struct {
     uint32_t malformed_time_sync_count;
     time_sync_t earliest;
     time_sync_t latest;
+
+    bool footer_found;
+    uint32_t uart_lost_bytes;
+    char reason_for_stopping[REASON_FOR_STOPPING_STR_MAX_LEN];
 
     uint32_t strong_frame_count;
     uint32_t strong_signal_count;
@@ -424,6 +477,34 @@ static void process_time_sync(const char *json, bool is_mpi_start, mpi_file_stat
     if (is_mpi_start) stats->mpi_start_count++;
 }
 
+/// @brief Handle the end-of-recording footer found in the file (see `MPI_write_file_footer()`).
+/// @note Leaves `footer_found` false if the footer lacks either field.
+static void process_footer(const char *json, mpi_file_stats_t *stats) {
+    const char *lost = find_after(json, "\"data_lost_bytes\":");
+    const char *reason = find_after(json, "\"reason_for_stopping\":");
+    if (lost == 0 || reason == 0) return;
+
+    while (*lost == ' ') lost++;
+    uint32_t uart_lost_bytes = 0;
+    if (*lost < '0' || *lost > '9') return;
+    for (; *lost >= '0' && *lost <= '9'; lost++) {
+        uart_lost_bytes = uart_lost_bytes * 10 + (*lost - '0');
+    }
+
+    while (*reason == ' ') reason++;
+    if (*reason != '"') return;
+    reason++;
+    uint8_t i = 0;
+    while (reason[i] != '\0' && reason[i] != '"' && i < REASON_FOR_STOPPING_STR_MAX_LEN - 1) {
+        stats->reason_for_stopping[i] = reason[i];
+        i++;
+    }
+    stats->reason_for_stopping[i] = '\0';
+
+    stats->uart_lost_bytes = uart_lost_bytes;
+    stats->footer_found = true;
+}
+
 static inline int32_t round_to_int(float x) {
     return (int32_t)(x + ((x >= 0.0f) ? 0.5f : -0.5f));
 }
@@ -440,10 +521,12 @@ static void close_signal(mpi_file_stats_t *stats) {
 
 /// @brief Analyze a complete 152-byte MPI frame (CRC check, background/warm-up filtering, line
 ///     fit detrend, and strong signal grouping).
-/// @param frame The frame, starting with the sync word.
-/// @param frame_start_byte Offset of the frame within the file.
+/// @param frame The frame, starting with the sync word, with any spliced-in time sync removed.
+/// @param frame_start_byte Offset of the frame's first byte within the file.
+/// @param frame_end_byte Offset just past the frame's last byte within the file. This is more
+///     than `frame_start_byte + MPI_FRAME_LEN` if a time sync was spliced into the frame.
 static void process_frame(
-    const uint8_t *frame, uint32_t frame_start_byte,
+    const uint8_t *frame, uint32_t frame_start_byte, uint32_t frame_end_byte,
     const analysis_config_t *config, mpi_file_stats_t *stats
 ) {
     if (!mpi_frame_crc_ok(frame)) {
@@ -452,8 +535,9 @@ static void process_frame(
     }
 
     if (stats->valid_frame_count == 0) stats->first_valid_frame_byte = frame_start_byte;
-    stats->last_valid_frame_end_byte = frame_start_byte + MPI_FRAME_LEN;
+    stats->last_valid_frame_end_byte = frame_end_byte;
     stats->valid_frame_count++;
+    if (frame_end_byte - frame_start_byte != MPI_FRAME_LEN) stats->restitched_frame_count++;
 
     float pixels[MPI_FRAME_PIXEL_COUNT];
     float pixel_sum = 0.0f;
@@ -513,7 +597,7 @@ static void process_frame(
     if (stats->signal_open && gap <= MAX_SIGNAL_FRAME_GAP) {
         // Extend the open signal.
         s->last_frame_counter = frame_counter;
-        s->end_byte = frame_start_byte + MPI_FRAME_LEN;
+        s->end_byte = frame_end_byte;
         if (mean_dn > s->peak_mean_dn) s->peak_mean_dn = mean_dn;
         if (peak_dn > s->peak_pixel_dn) {
             s->peak_pixel_dn = peak_dn;
@@ -524,7 +608,7 @@ static void process_frame(
 
     close_signal(stats);
     s->start_byte = frame_start_byte;
-    s->end_byte = frame_start_byte + MPI_FRAME_LEN;
+    s->end_byte = frame_end_byte;
     s->first_frame_counter = frame_counter;
     s->last_frame_counter = frame_counter;
     s->peak_mean_dn = mean_dn;
@@ -533,30 +617,154 @@ static void process_frame(
     stats->signal_open = true;
 }
 
-/// @brief Read the file once, computing the SHA256, finding and analyzing frames, and parsing
+/// @brief Byte-by-byte parser state for a file scan.
+/// @details Bytes pass through two stages:
+///     1. Time sync detection, on the raw file bytes. The firmware splices time syncs into the
+///        file wherever an MPI buffer ends (usually mid-frame). A byte that could start a time
+///        sync is held back until the prefix either matches (the time sync's bytes are then
+///        dropped) or doesn't (the held bytes are released to stage 2).
+///     2. Frame parsing, on the file's bytes with the time syncs removed, so that frames with a
+///        time sync spliced into them are pieced back together.
+///     Each byte keeps its file offset, so frames' byte ranges still refer to the file.
+typedef struct {
+    const analysis_config_t *config;
+    mpi_file_stats_t *stats;
+
+    // Frame currently being captured (only valid while `frame_len > 0`).
+    uint8_t frame_buf[MPI_FRAME_LEN];
+    uint16_t frame_len;
+    uint32_t frame_start_byte;
+    uint32_t sync_window; // Last 4 bytes fed to the frame parser, big-endian.
+    uint32_t sync_window_offsets[4]; // File offsets of those bytes (ring, indexed by `fed_count`).
+    uint8_t fed_count; // Bytes fed to the frame parser (wraps; only the low 2 bits are used).
+
+    // Time sync (or header/footer) currently being captured (only valid while `time_sync_len > 0`).
+    char time_sync_buf[TIME_SYNC_MAX_LEN + 1];
+    uint16_t time_sync_len;
+    uint32_t time_sync_start_byte;
+    uint8_t prefix_matches; // Which prefixes (PREFIX_IS_*) the capture still matches.
+} scanner_t;
+
+/// @brief Feed one MPI data byte (time syncs already removed) to the frame parser.
+/// @param offset Offset of the byte within the file.
+/// @note Always inlined, as it's called for nearly every byte (saves ~10-15 cycles/byte at -Os).
+static inline __attribute__((always_inline)) void feed_frame_byte(
+    scanner_t *sc, uint8_t byte, uint32_t offset
+) {
+    sc->sync_window_offsets[sc->fed_count & 3] = offset;
+    sc->fed_count++;
+
+    // Frames: capture the 152 bytes following each sync word.
+    if (sc->frame_len > 0) {
+        sc->frame_buf[sc->frame_len++] = byte;
+        if (sc->frame_len == MPI_FRAME_LEN) {
+            process_frame(sc->frame_buf, sc->frame_start_byte, offset + 1, sc->config, sc->stats);
+            sc->frame_len = 0;
+        }
+    }
+    sc->sync_window = (sc->sync_window << 8) | byte;
+    if (sc->sync_window == MPI_FRAME_SYNC_WORD) {
+        sc->stats->frame_count++;
+        if (sc->frame_len > 0) sc->stats->bad_frame_count++; // Cut short by this sync word.
+        sc->frame_buf[0] = 0x0C;
+        sc->frame_buf[1] = 0xFF;
+        sc->frame_buf[2] = 0xFF;
+        sc->frame_buf[3] = 0x0C;
+        sc->frame_len = 4;
+        // Oldest of the last 4 offsets (not always `offset - 3`, if a time sync split the sync word).
+        sc->frame_start_byte = sc->sync_window_offsets[sc->fed_count & 3];
+    }
+}
+
+/// @brief Release the held-back bytes of a failed time sync prefix match to the frame parser.
+static void release_time_sync_candidate(scanner_t *sc) {
+    for (uint16_t i = 0; i < sc->time_sync_len; i++) {
+        feed_frame_byte(sc, (uint8_t)sc->time_sync_buf[i], sc->time_sync_start_byte + i);
+    }
+    sc->time_sync_len = 0;
+}
+
+/// @brief Feed one raw file byte to the scanner.
+/// @param offset Offset of the byte within the file.
+static void feed_byte(scanner_t *sc, uint8_t byte, uint32_t offset) {
+    // Capturing a time sync's body (prefix matched): capture until '}'.
+    if (sc->time_sync_len >= TIME_SYNC_PREFIX_LEN) {
+        const bool is_bad_char = (byte < 0x20 || byte > 0x7E || byte == '{');
+        if (is_bad_char || sc->time_sync_len >= TIME_SYNC_MAX_LEN) {
+            // Cut off (e.g., by missing data) or too long. Drop it (it's not MPI data either).
+            if (sc->prefix_matches != PREFIX_IS_FOOTER) sc->stats->malformed_time_sync_count++;
+            sc->time_sync_len = 0;
+            // Fall through, as this byte may be MPI data or start a new time sync.
+        }
+        else {
+            sc->time_sync_buf[sc->time_sync_len++] = byte;
+            if (byte == '}') {
+                sc->time_sync_buf[sc->time_sync_len] = '\0';
+                if (sc->prefix_matches == PREFIX_IS_FOOTER) {
+                    process_footer(sc->time_sync_buf, sc->stats);
+                }
+                else {
+                    process_time_sync(
+                        sc->time_sync_buf, (sc->prefix_matches == PREFIX_IS_MPI_START), sc->stats
+                    );
+                }
+                sc->time_sync_len = 0;
+            }
+            return;
+        }
+    }
+
+    // Matching a time sync prefix: hold the bytes back until it matches or doesn't.
+    if (sc->time_sync_len > 0) {
+        if (byte != (uint8_t)TIME_SYNC_PREFIX[sc->time_sync_len]) sc->prefix_matches &= ~PREFIX_IS_TIME_SYNC;
+        if (byte != (uint8_t)MPI_START_PREFIX[sc->time_sync_len]) sc->prefix_matches &= ~PREFIX_IS_MPI_START;
+        if (byte != (uint8_t)FOOTER_PREFIX[sc->time_sync_len]) sc->prefix_matches &= ~PREFIX_IS_FOOTER;
+        if (sc->prefix_matches != 0) {
+            sc->time_sync_buf[sc->time_sync_len++] = byte;
+            return;
+        }
+        // Not a time sync, so the held bytes are MPI data. They can't contain the start of another
+        // time sync, as '{' is only the first char of the prefixes.
+        release_time_sync_candidate(sc);
+    }
+
+    if (byte == '{') {
+        sc->time_sync_buf[0] = '{';
+        sc->time_sync_len = 1;
+        sc->time_sync_start_byte = offset;
+        sc->prefix_matches = PREFIX_IS_TIME_SYNC | PREFIX_IS_MPI_START | PREFIX_IS_FOOTER;
+        return;
+    }
+
+    feed_frame_byte(sc, byte, offset);
+}
+
+/// @brief Read the file once, computing the SHA256 (if not too big) and CRC16, finding and
+///     analyzing frames (piecing back together frames with time syncs spliced in), and parsing
 ///     time syncs.
 /// @param file_path Path of the file to read.
 /// @param[in,out] stats `size` must be set before calling. All other fields are filled in.
-/// @return 0 on success, negative LFS error code on read error, 1 if the file size changed.
+/// @return 0 on success (including a timeout; see `stats->timed_out`), negative LFS error code
+///     on read error, 1 if the file size changed.
 static int32_t scan_file(
     const char *file_path, const analysis_config_t *config, mpi_file_stats_t *stats
 ) {
     uint8_t read_buffer[READ_BUFFER_SIZE];
 
-    // Frame currently being captured (only valid while `frame_len > 0`).
-    uint8_t frame_buf[MPI_FRAME_LEN];
-    uint16_t frame_len = 0;
-    uint32_t frame_start_byte = 0;
-    uint32_t sync_window = 0; // Last 4 bytes read, big-endian.
-
-    // Time sync currently being captured (only valid while `time_sync_len > 0`).
-    char time_sync_buf[TIME_SYNC_MAX_LEN + 1];
-    uint16_t time_sync_len = 0;
-    uint8_t prefix_matches = 0; // Which prefixes (PREFIX_IS_*) the capture still matches.
+    scanner_t sc;
+    sc.config = config;
+    sc.stats = stats;
+    sc.frame_len = 0;
+    sc.frame_start_byte = 0;
+    sc.sync_window = 0;
+    sc.fed_count = 0;
+    sc.time_sync_len = 0;
+    sc.prefix_matches = 0;
 
     stats->frame_count = 0;
     stats->valid_frame_count = 0;
     stats->bad_frame_count = 0;
+    stats->restitched_frame_count = 0;
     stats->background_frame_count = 0;
     stats->warmup_frame_count = 0;
     stats->first_valid_frame_byte = 0;
@@ -564,6 +772,7 @@ static int32_t scan_file(
     stats->time_sync_count = 0;
     stats->mpi_start_count = 0;
     stats->malformed_time_sync_count = 0;
+    stats->footer_found = false;
     stats->strong_frame_count = 0;
     stats->strong_signal_count = 0;
     stats->signal_open = false;
@@ -574,12 +783,21 @@ static int32_t scan_file(
         return open_result;
     }
 
-    SHA256_CTX sha256_ctx;
-    sha256_init(&sha256_ctx);
+    stats->sha256_computed = (stats->size <= SHA256_MAX_FILE_SIZE);
+    stats->timed_out = false;
+    sha256_fast_ctx_t sha256_ctx;
+    sha256_fast_init(&sha256_ctx);
+    uint16_t crc16 = 0;
 
     uint32_t file_pos = 0; // Offset of the start of `read_buffer` within the file.
 
     while (1) {
+        // Checked once per read, so it overshoots by at most one read's worth of work.
+        if (HAL_GetTick() - config->start_tick_ms > MAX_RUN_TIME_MS) {
+            stats->timed_out = true;
+            break;
+        }
+
         const int32_t bytes_read = lfs_file_read(&LFS_filesystem, &file, read_buffer, READ_BUFFER_SIZE);
         if (bytes_read < 0) {
             lfs_file_close(&LFS_filesystem, &file);
@@ -587,74 +805,31 @@ static int32_t scan_file(
         }
         if (bytes_read == 0) break; // EOF.
 
-        sha256_update(&sha256_ctx, read_buffer, bytes_read);
+        if (stats->sha256_computed) sha256_fast_update(&sha256_ctx, read_buffer, bytes_read);
 
         for (int32_t i = 0; i < bytes_read; i++) {
-            const uint8_t byte = read_buffer[i];
-
-            // Frames: capture the 152 bytes following each sync word.
-            if (frame_len > 0) {
-                frame_buf[frame_len++] = byte;
-                if (frame_len == MPI_FRAME_LEN) {
-                    process_frame(frame_buf, frame_start_byte, config, stats);
-                    frame_len = 0;
-                }
-            }
-            sync_window = (sync_window << 8) | byte;
-            if (sync_window == MPI_FRAME_SYNC_WORD) {
-                stats->frame_count++;
-                if (frame_len > 0) stats->bad_frame_count++; // Cut short by this sync word.
-                frame_buf[0] = 0x0C;
-                frame_buf[1] = 0xFF;
-                frame_buf[2] = 0xFF;
-                frame_buf[3] = 0x0C;
-                frame_len = 4;
-                frame_start_byte = file_pos + i - 3;
-            }
-
-            // Time syncs: match a prefix, then capture until '}'.
-            if (time_sync_len >= TIME_SYNC_PREFIX_LEN) {
-                const bool is_bad_char = (byte < 0x20 || byte > 0x7E || byte == '{');
-                if (is_bad_char || time_sync_len >= TIME_SYNC_MAX_LEN) {
-                    // Cut off (e.g., by missing data) or too long.
-                    stats->malformed_time_sync_count++;
-                    time_sync_len = 0;
-                    // Fall through, in case this byte starts a new time sync.
-                }
-                else {
-                    time_sync_buf[time_sync_len++] = byte;
-                    if (byte == '}') {
-                        time_sync_buf[time_sync_len] = '\0';
-                        process_time_sync(
-                            time_sync_buf, (prefix_matches == PREFIX_IS_MPI_START), stats
-                        );
-                        time_sync_len = 0;
-                    }
-                    continue;
-                }
-            }
-            if (time_sync_len > 0) {
-                if (byte != (uint8_t)TIME_SYNC_PREFIX[time_sync_len]) prefix_matches &= ~PREFIX_IS_TIME_SYNC;
-                if (byte != (uint8_t)MPI_START_PREFIX[time_sync_len]) prefix_matches &= ~PREFIX_IS_MPI_START;
-                if (prefix_matches != 0) {
-                    time_sync_buf[time_sync_len++] = byte;
-                    continue;
-                }
-                time_sync_len = 0; // Not a time sync. This byte may start a new one, though.
-            }
-            if (byte == '{') {
-                time_sync_buf[0] = '{';
-                time_sync_len = 1;
-                prefix_matches = PREFIX_IS_TIME_SYNC | PREFIX_IS_MPI_START;
-            }
+            crc16 = crc16_update(crc16, read_buffer[i]);
+            feed_byte(&sc, read_buffer[i], file_pos + i);
         }
 
         file_pos += bytes_read;
     }
+    stats->scanned_bytes = file_pos;
 
-    // A frame or time sync cut off by the end of the file.
-    if (frame_len > 0) stats->bad_frame_count++;
-    if (time_sync_len >= TIME_SYNC_PREFIX_LEN) stats->malformed_time_sync_count++;
+    // On a timeout, a partial time sync or frame was cut off by the timeout (not the end of the
+    // file), so isn't counted as malformed/bad.
+    if (!stats->timed_out) {
+        // A time sync (or footer) cut off by the end of the file, or held-back bytes that turned
+        // out to be MPI data.
+        if (sc.time_sync_len >= TIME_SYNC_PREFIX_LEN) {
+            if (sc.prefix_matches != PREFIX_IS_FOOTER) stats->malformed_time_sync_count++;
+        }
+        else {
+            release_time_sync_candidate(&sc);
+        }
+        // A frame cut off by the end of the file.
+        if (sc.frame_len > 0) stats->bad_frame_count++;
+    }
     close_signal(stats);
 
     const int32_t close_result = lfs_file_close(&LFS_filesystem, &file);
@@ -662,11 +837,17 @@ static int32_t scan_file(
         return close_result;
     }
 
+    if (stats->timed_out) {
+        stats->sha256_computed = false;
+        return 0;
+    }
+
     if (file_pos != stats->size) {
         return 1; // File changed size while reading.
     }
 
-    sha256_final(&sha256_ctx, stats->sha256);
+    if (stats->sha256_computed) sha256_fast_final(&sha256_ctx, stats->sha256);
+    stats->crc16 = crc16;
     return 0;
 }
 
@@ -702,15 +883,31 @@ static uint8_t analyze_mpi_data(
     }
 
     response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0 };
-    response_append(&w, "{\"action\":\"%s\",\"file\":\"%s\",\"sha256\":\"", BLOB_NAME, file_path);
-    append_hex(&w, stats.sha256, sizeof(stats.sha256));
-    response_append(&w, "\",\"size\":%lu", stats.size);
+    response_append(&w, "{\"action\":\"%s\",\"file\":\"%s\",\"sha256\":", BLOB_NAME, file_path);
+    if (stats.sha256_computed) {
+        response_append(&w, "\"");
+        append_hex(&w, stats.sha256, sizeof(stats.sha256));
+        response_append(&w, "\"");
+    }
+    else {
+        response_append(&w, "null");
+    }
+    if (stats.timed_out) {
+        response_append(&w, ",\"crc16\":null");
+    }
+    else {
+        response_append(&w, ",\"crc16\":\"0x%04x\"", stats.crc16);
+    }
+    response_append(
+        &w, ",\"size\":%lu,\"scanned_bytes\":%lu,\"timed_out\":%s",
+        stats.size, stats.scanned_bytes, stats.timed_out ? "true" : "false"
+    );
 
     response_append(
         &w,
         ",\"frame_count\":%lu,\"valid_frame_count\":%lu,\"bad_frame_count\":%lu"
-        ",\"background_frame_count\":%lu,\"warmup_frame_count\":%lu",
-        stats.frame_count, stats.valid_frame_count, stats.bad_frame_count,
+        ",\"restitched_frame_count\":%lu,\"background_frame_count\":%lu,\"warmup_frame_count\":%lu",
+        stats.frame_count, stats.valid_frame_count, stats.bad_frame_count, stats.restitched_frame_count,
         stats.background_frame_count, stats.warmup_frame_count
     );
     if (stats.valid_frame_count == 0) {
@@ -737,6 +934,16 @@ static uint8_t analyze_mpi_data(
         append_time_sync(&w, &stats.latest);
     }
 
+    if (!stats.footer_found) {
+        response_append(&w, ",\"footer\":null");
+    }
+    else {
+        response_append(
+            &w, ",\"footer\":{\"uart_lost_bytes\":%lu,\"reason_for_stopping\":\"%s\"}",
+            stats.uart_lost_bytes, stats.reason_for_stopping
+        );
+    }
+
     response_append(
         &w, ",\"strong_threshold_dn\":%lu,\"strong_frame_count\":%lu,\"strong_signal_count\":%lu"
         ",\"strong_signals\":",
@@ -754,6 +961,8 @@ uint8_t blob_main(
     const char *args_str,
     char *response_buf, unsigned short response_buf_len
 ) {
+    const uint32_t start_tick_ms = HAL_GetTick();
+
     // Log that the blob is starting (important for tracing crashes).
     #if BLOB_ENABLE_LOGS
     LOG(
@@ -782,6 +991,7 @@ uint8_t blob_main(
     analysis_config_t config = {
         .strong_threshold_dn = DEFAULT_STRONG_THRESHOLD_DN,
         .warmup_frames = DEFAULT_WARMUP_FRAMES,
+        .start_tick_ms = start_tick_ms,
     };
 
     // Parse kwargs.

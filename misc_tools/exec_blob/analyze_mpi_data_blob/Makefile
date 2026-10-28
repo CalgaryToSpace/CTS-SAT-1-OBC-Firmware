@@ -37,7 +37,7 @@ LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 TARGET = analyze_mpi_data_blob
 
 # Name the blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
-BLOB_NAME = analyze_mpi_data_v1
+BLOB_NAME = analyze_mpi_data_v2
 
 ELF = $(BUILD_DIR)/$(TARGET).elf
 BIN = $(BUILD_DIR)/$(TARGET).bin
@@ -50,7 +50,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Build, link, and print the size info.
-$(ELF): analyze_mpi_data_blob_main.c $(FW_ELF) | $(BUILD_DIR)
+$(ELF): analyze_mpi_data_blob_main.c ../blob_libs/sha256_fast.h $(FW_ELF) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -T blob.ld $< -o $@ $(LDFLAGS)
 	@echo "--- Section sizes ---"
 	$(SIZE) -A $@

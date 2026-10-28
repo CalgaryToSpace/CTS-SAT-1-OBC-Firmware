@@ -25,6 +25,8 @@ Basic demo blobs work reliably and safely, so this feature will be included in t
 
 ## Other Notes
 
+* `blob_libs/` has header-only helpers shared by blobs (e.g., `sha256_fast.h`, a faster SHA256 than the firmware's). Include them with `#include "../blob_libs/<name>.h"`, and add the header to the Makefile's `$(ELF)` prerequisites.
+
 * When using `where_to_load_arg_1=1` or `2`, MPI data collection may not work well while using this feature (though will return to normal after the completion of `exec_blob_from_fs`), as we use the giant MPI buffer to store the blob/program.
     * Using `where_to_load_arg_1=0` allows MPI operations to work as normal.
 * This feature is "secure" because uplinks are validated/authenticated by HMAC in the AX100 transceiver.
