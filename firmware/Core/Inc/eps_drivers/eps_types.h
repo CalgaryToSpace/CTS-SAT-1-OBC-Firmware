@@ -186,7 +186,7 @@ typedef struct {
     uint16_t vd1_voltage_mV;
     uint16_t vd2_voltage_mV;
 
-    // Note: elements below this line are not in byte order they are received in
+    // FIXME: (post-FrontierSat launch) Elements below this line are not in byte order they are received in. They must be re-ordered to match the received order to report data correctly.
 
     EPS_vpid_eng_t vip_each_channel[32];
     EPS_conditioning_channel_short_datatype_eng_t conditioning_channel_info_each_channel[5];
