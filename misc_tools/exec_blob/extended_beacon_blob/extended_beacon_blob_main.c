@@ -119,6 +119,7 @@
 
 // Beacon v5 contents (includes).
 #include "crypto/random_number_generator.h"
+#include "../blob_libs/eps_piu_fixed.h"
 
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
@@ -335,9 +336,15 @@ typedef struct {
     // See calculate_adcs_total_power_cW().
     uint16_t adcs_total_power_consumed_cW;
 
+    // Instantaneous solar panel power measurements for the 5th conditioning chain (CC5), which
+    // only the PIU housekeeping reports. Continues eps_pcu_ch0..ch3 above (same units/exclusions).
+    int16_t eps_pcu_ch4_volt_in_mppt_mV;
+    int16_t eps_pcu_ch4_curr_in_mppt_mA;
+    int16_t eps_pcu_ch4_curr_ou_mppt_mA;
+
     // Unused (always 0). Pads the v5+ fields to exactly the size of the friendly message they
     // replace, so end_message and all the fields after it keep their v2-v4 offsets.
-    uint8_t reserved_v5[16];
+    uint8_t reserved_v5[10];
 
     // End v5+ fields.
 
@@ -380,6 +387,7 @@ typedef struct {
     int16_t eps_pcu_ch3_volt_in_mppt_mV;
     int16_t eps_pcu_ch3_curr_in_mppt_mA;
     int16_t eps_pcu_ch3_curr_ou_mppt_mA;
+    // Note: (v5+) ch4 is included above, a little ways away in the struct.
 
     // Battery pack status (EPS FW ICD Table 3-18).
     // Bits 0 (LSB) to 3 are per-cell under voltage flags. 4 to 7 are over voltage flags.
@@ -1427,6 +1435,9 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
     beacon_packet->eps_pcu_ch3_volt_in_mppt_mV = -9999;
     beacon_packet->eps_pcu_ch3_curr_in_mppt_mA = -9999;
     beacon_packet->eps_pcu_ch3_curr_ou_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch4_volt_in_mppt_mV = -9999;
+    beacon_packet->eps_pcu_ch4_curr_in_mppt_mA = -9999;
+    beacon_packet->eps_pcu_ch4_curr_ou_mppt_mA = -9999;
 
     beacon_packet->eps_battery_pack_status_bitfield = 0xFFFF;
 
@@ -1527,20 +1538,42 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
             beacon_packet->eps_total_pcu_power_output_cW = (
                 EPS_calculate_total_pcu_power_output_cW(&eps_pcu_data)
             );
+        }
+        else {
+            peripheral_comms_error_count++;
+        }
+    }
+
+    // Try to fetch the EPS PIU data (INSTANTANEOUS), and store the solar panel (conditioning
+    // chain) values in the beacon packet if successful.
+    // Uses the repaired PIU reader, as the firmware's misplaces the conditioning chains.
+    {
+        EPS_struct_piu_housekeeping_data_eng_FIXED_t eps_piu_data;
+        if (EPS_CMD_get_piu_housekeeping_data_eng_FIXED(&eps_piu_data) == 0) {
+            const EPS_conditioning_channel_short_datatype_eng_t *cc0 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 0);
+            const EPS_conditioning_channel_short_datatype_eng_t *cc1 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 1);
+            const EPS_conditioning_channel_short_datatype_eng_t *cc2 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 2);
+            const EPS_conditioning_channel_short_datatype_eng_t *cc3 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 3);
+            const EPS_conditioning_channel_short_datatype_eng_t *cc4 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 4);
 
             // Beacon v2 fields:
-            beacon_packet->eps_pcu_ch0_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[0].volt_in_mppt_mV;
-            beacon_packet->eps_pcu_ch0_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[0].curr_in_mppt_mA;
-            beacon_packet->eps_pcu_ch0_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[0].curr_ou_mppt_mA;
-            beacon_packet->eps_pcu_ch1_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[1].volt_in_mppt_mV;
-            beacon_packet->eps_pcu_ch1_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[1].curr_in_mppt_mA;
-            beacon_packet->eps_pcu_ch1_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[1].curr_ou_mppt_mA;
-            beacon_packet->eps_pcu_ch2_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[2].volt_in_mppt_mV;
-            beacon_packet->eps_pcu_ch2_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[2].curr_in_mppt_mA;
-            beacon_packet->eps_pcu_ch2_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[2].curr_ou_mppt_mA;
-            beacon_packet->eps_pcu_ch3_volt_in_mppt_mV = eps_pcu_data.conditioning_channel_info_each_channel[3].volt_in_mppt_mV;
-            beacon_packet->eps_pcu_ch3_curr_in_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[3].curr_in_mppt_mA;
-            beacon_packet->eps_pcu_ch3_curr_ou_mppt_mA = eps_pcu_data.conditioning_channel_info_each_channel[3].curr_ou_mppt_mA;
+            beacon_packet->eps_pcu_ch0_volt_in_mppt_mV = cc0->volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch0_curr_in_mppt_mA = cc0->curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch0_curr_ou_mppt_mA = cc0->curr_ou_mppt_mA;
+            beacon_packet->eps_pcu_ch1_volt_in_mppt_mV = cc1->volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch1_curr_in_mppt_mA = cc1->curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch1_curr_ou_mppt_mA = cc1->curr_ou_mppt_mA;
+            beacon_packet->eps_pcu_ch2_volt_in_mppt_mV = cc2->volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch2_curr_in_mppt_mA = cc2->curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch2_curr_ou_mppt_mA = cc2->curr_ou_mppt_mA;
+            beacon_packet->eps_pcu_ch3_volt_in_mppt_mV = cc3->volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch3_curr_in_mppt_mA = cc3->curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch3_curr_ou_mppt_mA = cc3->curr_ou_mppt_mA;
+
+            // Beacon v5+ fields:
+            beacon_packet->eps_pcu_ch4_volt_in_mppt_mV = cc4->volt_in_mppt_mV;
+            beacon_packet->eps_pcu_ch4_curr_in_mppt_mA = cc4->curr_in_mppt_mA;
+            beacon_packet->eps_pcu_ch4_curr_ou_mppt_mA = cc4->curr_ou_mppt_mA;
         }
         else {
             peripheral_comms_error_count++;

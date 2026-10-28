@@ -50,7 +50,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Build, link, and print the size info.
-$(ELF): extended_beacon_blob_main.c $(FW_ELF) | $(BUILD_DIR)
+$(ELF): extended_beacon_blob_main.c ../blob_libs/eps_piu_fixed.h $(FW_ELF) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -T blob.ld $< -o $@ $(LDFLAGS)
 	@echo "--- Section sizes ---"
 	$(SIZE) -A $@
