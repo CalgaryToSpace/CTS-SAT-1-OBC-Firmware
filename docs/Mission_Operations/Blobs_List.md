@@ -197,6 +197,9 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
     * New optional second arg: `history_count`. Fully backwards-compatible with v4's args.
     * Change: `mpi_last_temperature_C` is only reported as a valid value if the most recent MPI data
       was received within the last 30 minutes. Otherwise, it's reported as `-97` (stale).
+    * Change: The summed solar panel power fields (`eps_total_pcu_power_*`, `eps_total_avg_pcu_power_*`)
+      are summed over all 5 conditioning chains from the PIU housekeeping (0xA2/0xA4), instead of only
+      CC1-CC4 from the PCU housekeeping (0x72/0x74).
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 

@@ -1528,28 +1528,22 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
         }
     }
 
-    // Try to fetch the EPS PCU data (INSTANTANEOUS), and store it in the beacon packet if successful.
-    {
-        EPS_struct_pcu_housekeeping_data_eng_t eps_pcu_data;
-        if (EPS_CMD_get_pcu_housekeeping_data_eng(&eps_pcu_data) == 0) {
-            beacon_packet->eps_total_pcu_power_input_cW = (
-                EPS_calculate_total_pcu_power_input_cW(&eps_pcu_data)
-            );
-            beacon_packet->eps_total_pcu_power_output_cW = (
-                EPS_calculate_total_pcu_power_output_cW(&eps_pcu_data)
-            );
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
     // Try to fetch the EPS PIU data (INSTANTANEOUS), and store the solar panel (conditioning
     // chain) values in the beacon packet if successful.
     // Uses the repaired PIU reader, as the firmware's misplaces the conditioning chains.
+    // The PIU is used instead of the PCU (0x72), as the PCU reply only has CC1-CC4 (of 5).
     {
         EPS_struct_piu_housekeeping_data_eng_FIXED_t eps_piu_data;
         if (EPS_CMD_get_piu_housekeeping_data_eng_FIXED(&eps_piu_data) == 0) {
+            // Beacon v1 fields (v5+: includes CC5 now):
+            beacon_packet->eps_total_pcu_power_input_cW = (
+                EPS_calculate_total_pcu_power_input_cW_FIXED(&eps_piu_data)
+            );
+            beacon_packet->eps_total_pcu_power_output_cW = (
+                EPS_calculate_total_pcu_power_output_cW_FIXED(&eps_piu_data)
+            );
+
+
             const EPS_conditioning_channel_short_datatype_eng_t *cc0 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 0);
             const EPS_conditioning_channel_short_datatype_eng_t *cc1 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 1);
             const EPS_conditioning_channel_short_datatype_eng_t *cc2 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 2);
@@ -1580,15 +1574,17 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
         }
     }
 
-    // Try to fetch the EPS PCU data (RUNNING AVERAGE), and store it in the beacon packet if successful.
+    // Try to fetch the EPS PIU data (RUNNING AVERAGE), and store it in the beacon packet if successful.
+    // The PIU is used instead of the PCU (0x74), as the PCU reply only has CC1-CC4 (of 5).
     {
-        EPS_struct_pcu_housekeeping_data_eng_t eps_pcu_data;
-        if (EPS_CMD_get_pcu_housekeeping_data_run_avg(&eps_pcu_data) == 0) {
+        EPS_struct_piu_housekeeping_data_eng_FIXED_t eps_piu_data;
+        if (EPS_CMD_get_piu_housekeeping_data_run_avg_FIXED(&eps_piu_data) == 0) {
+            // Beacon v1 fields (v5+: includes CC5):
             beacon_packet->eps_total_avg_pcu_power_input_cW = (
-                EPS_calculate_total_pcu_power_input_cW(&eps_pcu_data)
+                EPS_calculate_total_pcu_power_input_cW_FIXED(&eps_piu_data)
             );
             beacon_packet->eps_total_avg_pcu_power_output_cW = (
-                EPS_calculate_total_pcu_power_output_cW(&eps_pcu_data)
+                EPS_calculate_total_pcu_power_output_cW_FIXED(&eps_piu_data)
             );
         }
         else {

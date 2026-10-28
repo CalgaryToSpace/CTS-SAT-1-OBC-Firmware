@@ -43,7 +43,7 @@ int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t
 int32_t EPS_calculate_total_pcu_power_input_cW(EPS_struct_pcu_housekeeping_data_eng_t *pcu_data) {
     int32_t total_cW = 0;
 
-    for (uint8_t ch_num = 0; ch_num < EPS_TOTAL_PCU_CHANNEL_COUNT; ch_num++) {
+    for (uint8_t ch_num = 0; ch_num < EPS_TOTAL_PCU_CHANNEL_COUNT; ch_num++) { // FIXME: (post-FrontierSat launch) Should be 5 PCU channels, and all places that read should ready from EPS's PIU packet that contains all 5 fields.
         const EPS_conditioning_channel_datatype_eng_t *pcu_channel_data = (
             &pcu_data->conditioning_channel_info_each_channel[ch_num]
         );
@@ -64,7 +64,7 @@ int32_t EPS_calculate_total_pcu_power_input_cW(EPS_struct_pcu_housekeeping_data_
 int32_t EPS_calculate_total_pcu_power_output_cW(EPS_struct_pcu_housekeeping_data_eng_t *pcu_data) {
     int32_t total_cW = 0;
 
-    for (uint8_t ch_num = 0; ch_num < EPS_TOTAL_PCU_CHANNEL_COUNT; ch_num++) {
+    for (uint8_t ch_num = 0; ch_num < EPS_TOTAL_PCU_CHANNEL_COUNT; ch_num++) {  // FIXME: (post-FrontierSat launch) Should be 5 PCU channels, and all places that read should ready from EPS's PIU packet that contains all 5 fields.
         const EPS_conditioning_channel_datatype_eng_t *pcu_channel_data = (
             &pcu_data->conditioning_channel_info_each_channel[ch_num]
         );

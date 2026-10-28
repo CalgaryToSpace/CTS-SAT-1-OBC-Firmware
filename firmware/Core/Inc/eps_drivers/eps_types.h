@@ -13,6 +13,7 @@ static const uint8_t EPS_MAX_ACTIVE_CHANNEL_NUMBER = 16;
 /// @brief The number of EPS channels, including those not really present on our model.
 static const uint8_t EPS_TOTAL_CHANNEL_COUNT = 32;
 
+// FIXME: (post-FrontierSat launch) These values should be updated to 5, and all places that read should ready from EPS's PIU packet that contains all 5 fields.
 #define EPS_TOTAL_PCU_CHANNEL_COUNT_MACRO 4
 static const uint8_t EPS_TOTAL_PCU_CHANNEL_COUNT = 4;
 

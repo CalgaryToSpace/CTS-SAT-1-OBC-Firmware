@@ -149,6 +149,46 @@ static inline const EPS_conditioning_channel_short_datatype_eng_t *EPS_piu_get_c
 }
 
 
+/// @brief Sum the total solar panel input power (MPPT input V x I) of all 5 conditioning chains.
+/// @return Total input of all conditioning chains in cW.
+/// @note Unlike the firmware's EPS_calculate_total_pcu_power_input_cW(), which takes the PCU
+///     housekeeping (only CC1-CC4), this includes CC5. Integer math (no float/double).
+static inline int32_t EPS_calculate_total_pcu_power_input_cW_FIXED(
+    const EPS_struct_piu_housekeeping_data_eng_FIXED_t *piu_data
+) {
+    int32_t total_cW = 0;
+
+    for (uint8_t cc_idx = 0; cc_idx < 5; cc_idx++) {
+        const EPS_conditioning_channel_short_datatype_eng_t *cc = EPS_piu_get_conditioning_channel_FIXED(piu_data, cc_idx);
+
+        // Convert to cW. Fits in int32 (max 32767 x 32767).
+        // Example: 5000 mV x 1000 mA = 5,000,000 ==> 5,000,000 / 10^4 = 500 cW = 5 W
+        total_cW += ((int32_t)cc->volt_in_mppt_mV * (int32_t)cc->curr_in_mppt_mA) / 10000;
+    }
+
+    return total_cW;
+}
+
+/// @brief Sum the total solar panel output power (MPPT output V x I) of all 5 conditioning chains.
+/// @return Total output of all conditioning chains in cW.
+/// @note Unlike the firmware's EPS_calculate_total_pcu_power_output_cW(), which takes the PCU
+///     housekeeping (only CC1-CC4), this includes CC5. Integer math (no float/double).
+static inline int32_t EPS_calculate_total_pcu_power_output_cW_FIXED(
+    const EPS_struct_piu_housekeeping_data_eng_FIXED_t *piu_data
+) {
+    int32_t total_cW = 0;
+
+    for (uint8_t cc_idx = 0; cc_idx < 5; cc_idx++) {
+        const EPS_conditioning_channel_short_datatype_eng_t *cc = EPS_piu_get_conditioning_channel_FIXED(piu_data, cc_idx);
+
+        // Convert to cW. Fits in int32 (max 32767 x 32767).
+        total_cW += ((int32_t)cc->volt_ou_mppt_mV * (int32_t)cc->curr_ou_mppt_mA) / 10000;
+    }
+
+    return total_cW;
+}
+
+
 static inline void EPS_pack_eps_result_piu_housekeeping_data_eng_FIXED(
     const uint8_t rx_buf[], EPS_struct_piu_housekeeping_data_eng_FIXED_t *result_dest
 ) {
