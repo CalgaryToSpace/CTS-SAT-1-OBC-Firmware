@@ -1459,79 +1459,11 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
         }
     }
 
-    // Try to fetch the EPS battery data (INSTANTANEOUS), and store it in the beacon packet if successful.
-    {
-        EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
-        if (EPS_CMD_get_pbu_housekeeping_data_eng(&eps_pbu_data) == 0) {
-            beacon_packet->eps_battery_voltage_mV = (
-                eps_pbu_data.battery_pack_info_each_pack[0].vip_bp_input.voltage_mV
-            );
-            beacon_packet->eps_battery_percent = (
-                // Badly cast float to uint8. Adequate for the beacon.
-                (uint8_t)EPS_convert_battery_voltage_to_percent(eps_pbu_data.battery_pack_info_each_pack[0])
-            );
-            beacon_packet->eps_battery_temperature_0_cC = (
-                // Note: Original beacon in core FW has this value always pegged at "32767 cC".
-                // Fixed in this blob though.
-                eps_pbu_data.battery_pack_info_each_pack[0].battery_temperature_each_sensor_cC[2]
-            );
-            beacon_packet->eps_battery_temperature_1_cC = (
-                eps_pbu_data.battery_pack_info_each_pack[0].battery_temperature_each_sensor_cC[1]
-            );
-
-            // Beacon v2 fields:
-            beacon_packet->eps_battery_pack_status_bitfield = (
-                eps_pbu_data.battery_pack_info_each_pack[0].bp_status_bitfield
-            );
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // Try to fetch the EPS battery data (AVERAGE), and store it in the beacon packet if successful.
-    {
-        EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
-        if (EPS_CMD_get_pbu_housekeeping_data_run_avg(&eps_pbu_data) == 0) {
-            // Beacon v2 fields:
-            beacon_packet->eps_total_avg_net_battery_power_cW = (
-                eps_pbu_data.battery_pack_info_each_pack[0].vip_bp_input.power_cW
-            );
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // Try to fetch the EPS PDU data (AVERAGE), and store it in the beacon packet if successful.
-    {
-        EPS_struct_pdu_housekeeping_data_eng_t eps_pdu_data;
-        if (EPS_CMD_get_pdu_housekeeping_data_run_avg(&eps_pdu_data) == 0) {
-            // Note: v1 beacon got this field from the instantaneous data; should be the exact same
-            // value though, so we'll fetch it from the running average data in this v2 beacon.
-            beacon_packet->eps_enabled_channels_bitfield = (
-                (eps_pdu_data.stat_ch_ext_on_bitfield << 16) | eps_pdu_data.stat_ch_on_bitfield
-            );
-
-            // Beacon v2 fields:
-            beacon_packet->eps_total_avg_power_distributed_cW = (
-                eps_pdu_data.vip_total_input.power_cW
-            );
-
-            // Beacon v5 fields:
-            beacon_packet->gnss_power_consumed_cW = clamp_power_cW_to_u8(
-                eps_pdu_data.vip_each_channel[EPS_CHANNEL_3V3_GNSS].power_cW
-            );
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
     // Try to fetch the EPS PIU data (INSTANTANEOUS), and store the solar panel (conditioning
     // chain) values in the beacon packet if successful.
     // Uses the repaired PIU reader, as the firmware's misplaces the conditioning chains.
     // The PIU is used instead of the PCU (0x72), as the PCU reply only has CC1-CC4 (of 5).
+    // Also provides the battery fields, instead of the PBU (0x62), to save an EPS transaction.
     {
         EPS_struct_piu_housekeeping_data_eng_FIXED_t eps_piu_data;
         if (EPS_CMD_get_piu_housekeeping_data_eng_FIXED(&eps_piu_data) == 0) {
@@ -1543,6 +1475,17 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
                 EPS_calculate_total_pcu_power_output_cW_FIXED(&eps_piu_data)
             );
 
+            // Battery fields. Same scale as EPS_convert_battery_voltage_to_percent() (12.4 V = 0%,
+            // 16.0 V = 100%), but in integer math. Clamped at 0%, but not at 100%, same as before.
+            const int32_t battery_voltage_mV = eps_piu_data.vip_batt_input.voltage_mV;
+            const int32_t battery_percent = ((battery_voltage_mV - 12400) * 100) / (16000 - 12400);
+            beacon_packet->eps_battery_voltage_mV = (uint16_t)battery_voltage_mV;
+            beacon_packet->eps_battery_percent = (battery_percent < 0) ? 0 : (uint8_t)battery_percent;
+            beacon_packet->eps_battery_temperature_0_cC = eps_piu_data.battery_temp3_cC;
+            beacon_packet->eps_battery_temperature_1_cC = eps_piu_data.battery_temp2_cC;
+
+            // Beacon v2 fields:
+            beacon_packet->eps_battery_pack_status_bitfield = eps_piu_data.battery_status_bitfield;
 
             const EPS_conditioning_channel_short_datatype_eng_t *cc0 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 0);
             const EPS_conditioning_channel_short_datatype_eng_t *cc1 = EPS_piu_get_conditioning_channel_FIXED(&eps_piu_data, 1);
@@ -1585,6 +1528,19 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
             );
             beacon_packet->eps_total_avg_pcu_power_output_cW = (
                 EPS_calculate_total_pcu_power_output_cW_FIXED(&eps_piu_data)
+            );
+
+            beacon_packet->eps_enabled_channels_bitfield = (
+                ((uint32_t)eps_piu_data.stat_ch_ext_on_bitfield << 16) | eps_piu_data.stat_ch_on_bitfield
+            );
+
+            // Beacon v2 fields:
+            beacon_packet->eps_total_avg_net_battery_power_cW = eps_piu_data.vip_batt_input.power_cW;
+            beacon_packet->eps_total_avg_power_distributed_cW = eps_piu_data.vip_dist_input.power_cW;
+
+            // Beacon v5 fields:
+            beacon_packet->gnss_power_consumed_cW = clamp_power_cW_to_u8(
+                EPS_piu_get_channel_vip_FIXED(&eps_piu_data, EPS_CHANNEL_3V3_GNSS)->power_cW
             );
         }
         else {

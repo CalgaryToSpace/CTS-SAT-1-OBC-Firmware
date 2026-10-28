@@ -200,6 +200,10 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
     * Change: The summed solar panel power fields (`eps_total_pcu_power_*`, `eps_total_avg_pcu_power_*`)
       are summed over all 5 conditioning chains from the PIU housekeeping (0xA2/0xA4), instead of only
       CC1-CC4 from the PCU housekeeping (0x72/0x74).
+    * Change: The battery fields (voltage, percent, temperatures, pack status, avg net power) and the
+      PDU fields (enabled channels, avg power distributed, GNSS power) also come from the PIU
+      housekeeping (0xA2/0xA4), instead of the PBU (0x62/0x64) and PDU (0x54) housekeeping.
+      Fewer EPS transactions.
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 
