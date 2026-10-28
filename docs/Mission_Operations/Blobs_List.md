@@ -149,6 +149,9 @@ Running this blob triggers the extended beacon.
     (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
     the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
+11. (v5+) Any reboot (software reboot, watchdog reset, or power cycle), an unmounted filesystem,
+    or a filesystem remount/reformat resets the ring and starts with fresh/empty history.
+    Software reboots are detected with a heap canary.
 
 ### Example Usage
 

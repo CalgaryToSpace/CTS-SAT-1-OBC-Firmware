@@ -47,6 +47,9 @@
 //     (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
 //     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
 //     the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
+// 11. (v5+) Any reboot (software reboot, watchdog reset, or power cycle), an unmounted filesystem,
+//     or a filesystem remount/reformat resets the ring and starts with fresh/empty history.
+//     Software reboots are detected with a heap canary.
 //
 // ------ Implementation Notes ----------------
 //
@@ -68,10 +71,20 @@
 // rescheduling itself. The handle is only trusted after confirming it's still linked into the
 // mounted filesystem's open-file list (see ring_open_file_is_live()).
 //
-// If the handle turns out to be stale (reboot, or filesystem unmount/remount), the uncommitted
-// records in the current file are lost, and that file is restarted from record 0 (truncated).
-// Unlike the GNSS ring blob, the rest of the ring is kept: every file behind the cursor was closed
-// (committed) when it filled, so it's still valid on disk. On (re)opening a file, we seek to the
+// Reboots: Same as the GNSS ring blob, a reboot that leaves the SRAM state block intact is
+// detected with a heap canary (see detect_reboot_via_heap_canary()), independently of the
+// open-file list check.
+//
+// Four things mean "start over", and all four take the same path (reset_to_fresh_state()), same
+// as the GNSS ring blob: cold/garbage SRAM, a reboot caught by the heap canary, an unmounted
+// filesystem, and a ring file handle the mounted filesystem doesn't recognise (remount/reformat
+// without a reboot). Each resets the write cursor to r0.bin record 0 and zeroes the counters, so
+// the ring refills from scratch, and the old files are excluded from downlink. In none of the
+// four is the handle trusted, so it's dropped without being closed, and its uncommitted records
+// are simply lost. Unlike the GNSS ring blob, an unmounted filesystem doesn't stop this blob: the
+// live beacon is still sent, and the blob still reschedules itself.
+//
+// On (re)opening a part-full file (e.g., after a run-once exit closed it), we seek to the
 // cursor's exact offset (record_idx * record_size), so the file layout always matches the cursor.
 
 #include <stdint.h>
@@ -164,6 +177,7 @@ extern void LOG_message(
     const char *fmt, ...
 );
 
+extern void *pvPortMalloc(size_t xWantedSize);
 
 // lfs_file_open/size/seek/read/write/close are already declared in lfs.h;
 // their definitions are resolved against the firmware ELF at link time.
@@ -476,7 +490,8 @@ _Static_assert(
 extern uint8_t beacon_ring_state_base[];
 
 #define BEACON_RING_STATE_REGION_LEN 0x100u // Must match BEACON_RING's LENGTH in ../blobs_persistent_sram_regions.ld.
-#define BEACON_RING_STATE_MAGIC 0xBEAC0005u
+// Bumped when the reboot canary was added (the layout changed), so earlier v5 state is treated as cold.
+#define BEACON_RING_STATE_MAGIC 0xBEAC0105u
 
 // NOT packed, deliberately: it holds a live lfs_file_t that littlefs accesses through an ordinary
 // (alignment-assuming) pointer. Same as GNSS_ring_state_t.
@@ -489,6 +504,10 @@ typedef struct {
 
     uint32_t stored_record_count; // Total records written to LittleFS, since cold-init.
     uint32_t store_failure_count; // Failed attempts to store a record, since cold-init.
+
+    // Heap allocation holding BEACON_REBOOT_CANARY_MAGIC, used to spot reboots that left this SRAM
+    // block intact. NULL until the first allocation. See detect_reboot_via_heap_canary().
+    uint32_t *reboot_canary;
 
     // The ring file we're appending to, held open across executions. See ring_open_write_file().
     uint8_t open_file_is_valid; // 1 if we left `open_file` open; still verify it's live before use.
@@ -507,6 +526,73 @@ _Static_assert(
 );
 
 #define g_state ((BEACON_ring_state_t *)beacon_ring_state_base)
+
+
+// MARK: Soft-Reboot Detection
+
+// Value written into the heap canary allocation. Anything else means the heap no longer holds what
+// we left there.
+#define BEACON_REBOOT_CANARY_MAGIC 0x5C0FFEE5u
+
+/// @brief Detect a reboot that left this blob's fixed SRAM state block intact but reset the heap.
+/// @details Same as in the GNSS ring blob. `magic` in the state block can't tell "previous run of
+///     this blob" apart from "previous run, then a reboot": that block sits at a fixed SRAM
+///     address specifically so it survives a software reset. The heap can tell them apart.
+///     FreeRTOS allocates out of `ucHeap`, a static array that is re-initialised from scratch on
+///     every boot, so an allocation we made before a reboot is no longer ours afterwards and its
+///     contents aren't preserved. We keep one 4-byte allocation holding a magic value; if it no
+///     longer reads back as our magic, something restarted underneath us.
+///
+///     Dereferencing the old pointer after a reboot is safe: it points into `ucHeap`, which is a
+///     fixed static array, so the address is always mapped and readable whatever the heap has
+///     since done with it. We deliberately never vPortFree() the old allocation -- the heap that
+///     owned it no longer exists, and freeing it would corrupt the new heap's free list.
+/// @return true if a reboot was detected this run. False on the very first allocation (there was
+///     no previous boot to have left anything behind) and on every nominal run after it.
+static bool detect_reboot_via_heap_canary() {
+    uint32_t *canary = g_state->reboot_canary;
+    const bool rebooted = (canary != NULL) && (*canary != BEACON_REBOOT_CANARY_MAGIC);
+
+    // First run, or the old allocation belongs to a dead heap: abandon it (see @details) and
+    // take a fresh one. A failed allocation leaves NULL, so the next run simply retries.
+    if ((canary == NULL) || rebooted) {
+        canary = (uint32_t *)pvPortMalloc(sizeof(uint32_t));
+        if (canary != NULL) {
+            *canary = BEACON_REBOOT_CANARY_MAGIC; // The only write: from here on we only read it.
+        }
+        g_state->reboot_canary = canary;
+    }
+
+    // One log line covers both notable events: a detected reboot, and/or a failed allocation.
+    // Nominal runs (same boot, canary intact) stay silent.
+    if (rebooted || (canary == NULL)) {
+        LOG(
+            LOG_SEVERITY_WARNING, "%s: heap canary: reboot=%d, alloc_ok=%d",
+            BLOB_NAME, rebooted, (canary != NULL)
+        );
+    }
+    return rebooted;
+}
+
+/// @brief Reset the ring to its "nothing stored yet" state: the write cursor goes back to r0.bin
+///     record 0, every counter goes to zero, and the ring refills from scratch (each file is
+///     truncated as it's first written to).
+/// @details This is the single path used by all four things that mean "start over" (see the
+///     file header). Keeping them identical means there's only one "fresh start" behaviour to
+///     reason about on the ground.
+///
+///     Wipes the open file handle WITHOUT closing it: in every caller it's untrusted (dead heap,
+///     unmounted or remounted filesystem, or garbage SRAM), so its uncommitted records are lost.
+/// @param may_keep_canary true when g_state holds values this blob actually wrote, so the heap
+///     canary pointer is worth keeping (saving a re-allocation and another log line on the next
+///     run). False for cold/garbage SRAM, where it can't be trusted and must not be dereferenced.
+static void reset_to_fresh_state(bool may_keep_canary) {
+    uint32_t *canary_to_keep = may_keep_canary ? g_state->reboot_canary : NULL;
+
+    memset(g_state, 0, sizeof(BEACON_ring_state_t));
+    g_state->magic = BEACON_RING_STATE_MAGIC;
+    g_state->reboot_canary = canary_to_keep;
+}
 
 
 static uint16_t parse_token(
@@ -1801,25 +1887,43 @@ uint8_t blob_main(
     }
 
     // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state
-    // block can be trusted (including the open file handle), so restart the ring at r0.bin
-    // record 0 (old files are excluded from downlink, and truncated as they're reached).
+    // block can be trusted, including the open file handle and the canary pointer, so reset
+    // without dereferencing either. We deliberately do NOT measure the on-disk files to recover
+    // the write cursor -- a fresh start simply begins again at r0.bin record 0.
     if (g_state->magic != BEACON_RING_STATE_MAGIC) {
-        memset(g_state, 0, sizeof(BEACON_ring_state_t));
-        g_state->magic = BEACON_RING_STATE_MAGIC;
+        reset_to_fresh_state(false);
     }
 
-    // A handle we believe we're holding, that the mounted filesystem doesn't know about, means a
-    // reboot or an unmount/remount happened since the last run. The current file's uncommitted
-    // records are lost, so restart that file from record 0. Files behind the cursor were committed
-    // when they filled, so the rest of the ring is kept.
+    // Now that the state block is known-good, check whether the heap restarted under us since the
+    // previous run. If it did, the lfs_file_t we persisted points at a cache buffer from a heap
+    // that no longer exists, and we can't trust the cursor to match what's on disk either -- so
+    // start the ring over, exactly as a cold start would.
+    if (detect_reboot_via_heap_canary()) {
+        reset_to_fresh_state(true);
+    }
+
+    // This blob never mounts the filesystem itself. While it's unmounted, our cursor's claim about
+    // what's on disk is no longer worth anything, so start over (on every such run), rather than
+    // appending into the unknown once it's remounted. Unlike the GNSS ring blob, we keep going:
+    // the live beacon is still sent and the blob still reschedules; storage and history are just
+    // skipped below.
+    if (!LFS_is_lfs_mounted) {
+        reset_to_fresh_state(true);
+    }
+
+    // A handle we believe we're holding, that the currently-mounted filesystem doesn't know
+    // about, means the filesystem was unmounted/remounted or reformatted under us WITHOUT a
+    // reboot -- so the heap canary above saw nothing wrong. Our cursor no longer describes what's
+    // on disk, so start over. Note the `open_file_is_valid` guard: ring_open_file_is_live() also
+    // returns false in the perfectly normal case where we simply aren't holding a handle, and
+    // that must not trigger a reset.
     if (g_state->open_file_is_valid && (!ring_open_file_is_live())) {
         LOG(
             LOG_SEVERITY_WARNING,
-            "%s: stale ring file handle (r%d/%d); restarting that file",
-            BLOB_NAME, g_state->open_file_idx, g_state->write_record_idx
+            "%s: stale ring file handle; resetting",
+            BLOB_NAME
         );
-        g_state->open_file_is_valid = 0;
-        g_state->write_record_idx = 0;
+        reset_to_fresh_state(true);
     }
 
     // Cancel any other pending agenda entries that would re-run this same blob (e.g., a repeat
