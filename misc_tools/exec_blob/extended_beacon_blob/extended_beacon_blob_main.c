@@ -1097,18 +1097,8 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
         );
 
         if (tlm_status == 0) {
-            int16_t x_cdeg_per_sec;
-            int16_t y_cdeg_per_sec;
-            int16_t z_cdeg_per_sec;
-            memcpy(&x_cdeg_per_sec, &data_received[0], 2);
-            memcpy(&y_cdeg_per_sec, &data_received[2], 2);
-            memcpy(&z_cdeg_per_sec, &data_received[4], 2);
-
-            beacon_packet->adcs_angular_rate_norm_cdeg_per_sec = integer_sqrt_u32(
-                ((int32_t)x_cdeg_per_sec * (int32_t)x_cdeg_per_sec)
-                + ((int32_t)y_cdeg_per_sec * (int32_t)y_cdeg_per_sec)
-                + ((int32_t)z_cdeg_per_sec * (int32_t)z_cdeg_per_sec)
-            );
+            // Note: data_received is 3x i16 (x, y, z), each in cdeg/s.
+            beacon_packet->adcs_angular_rate_norm_cdeg_per_sec = vector3_i16_norm(data_received);
         }
         else {
             peripheral_comms_error_count++;
