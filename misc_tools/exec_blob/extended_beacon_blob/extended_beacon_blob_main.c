@@ -328,7 +328,7 @@ typedef struct {
     int16_t adcs_estimated_gyro_bias_y_mdeg_per_sec;
     int16_t adcs_estimated_gyro_bias_z_mdeg_per_sec;
 
-    // GNSS EPS channel (CH8) power, from the PDU running average.
+    // GNSS EPS channel (CH8) power, from the PIU running average.
     uint8_t gnss_power_consumed_cW;
 
     // Sum of the ADCS's current telemetry (Telemetry ID 195) times rail voltages: CubeSense 1 and 2,
