@@ -191,7 +191,7 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
       `adcs_pointing_error_cdeg`, `adcs_innovation_vector_{x,y,z}_en4`,
       `adcs_estimated_gyro_bias_{x,y,z}_mdeg_per_sec`, `gnss_power_consumed_cW`,
       `adcs_total_power_consumed_cW`, `eps_pcu_ch4_{volt_in,curr_in,curr_ou}_mppt_{units}`,
-      `reserved_v5[10]`.
+      `bulk_downlink_file_path_sha256_prefix[3]`, `reserved_v5[7]`.
     * New: Stores every beacon into a LittleFS ring (`beacon_ring/`), and downlinks a random
       consecutive run of `history_count` stored beacons per run.
     * New optional second arg: `history_count`. Fully backwards-compatible with v4's args.

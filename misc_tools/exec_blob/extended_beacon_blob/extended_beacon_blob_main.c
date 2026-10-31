@@ -119,6 +119,8 @@
 
 // Beacon v5 contents (includes).
 #include "crypto/random_number_generator.h"
+#include "crypto/sha256.h"
+#include "comms_drivers/bulk_file_downlink.h"
 #include "../blob_libs/eps_piu_fixed.h"
 
 typedef enum {
@@ -342,9 +344,16 @@ typedef struct {
     int16_t eps_pcu_ch4_curr_in_mppt_mA;
     int16_t eps_pcu_ch4_curr_ou_mppt_mA;
 
+    // First 3 bytes of SHA256(file path) of the file currently being bulk downlinked (state
+    // DOWNLINKING), in digest order. All zeros otherwise (IDLE or PAUSED).
+    // The path is hashed exactly as given in the bulk downlink telecommand (no null terminator).
+    // Ground: hashlib.sha256(path.encode()).digest()[:3].
+    // Useful for attributing bulk file downlink chunks to a specific file.
+    uint8_t bulk_downlink_file_path_sha256_prefix[3];
+
     // Unused (always 0). Pads the v5+ fields to exactly the size of the friendly message they
     // replace, so end_message and all the fields after it keep their v2-v4 offsets.
-    uint8_t reserved_v5[10];
+    uint8_t reserved_v5[7];
 
     // End v5+ fields.
 
@@ -891,6 +900,30 @@ static uint16_t quaternion_error_vector_to_angle_cdeg(uint16_t q_vec_norm_e4) {
     }
     return (uint16_t)(angle_cdeg + 0.5f);
 }
+
+/// @brief Fill `hash_dest` with the first 3 bytes of the SHA256 of the path of the file currently
+///     being bulk downlinked, or with zeros if no bulk downlink is in progress.
+/// @details Only the DOWNLINKING state counts. In IDLE (never started, or finished) and PAUSED,
+///     zeros are reported, even though COMMS_bulk_file_downlink_file_path may still hold the
+///     last file's name.
+///     The path is hashed as stored, without its null terminator.
+static void get_bulk_downlink_file_path_hash(uint8_t hash_dest[3]) {
+    if ((COMMS_bulk_file_downlink_state != COMMS_BULK_FILE_DOWNLINK_STATE_DOWNLINKING)) {
+        // If not currently downlinking, set to zero and finish.
+        memset(hash_dest, 0, 3);
+        return;
+    }
+
+    // Compute hash.
+    uint8_t digest[32];
+    CRYPT_compute_sha256_hash(
+        (const uint8_t *)COMMS_bulk_file_downlink_file_path,
+        strlen(COMMS_bulk_file_downlink_file_path),
+        digest
+    );
+    memcpy(hash_dest, digest, 3);
+}
+
 
 /// @brief Is this agenda slot counted by count_distinct_pending_tcmds()? Pending entries, plus the
 ///     currently-executing one (i.e., this blob's own exec_blob_from_fs).
@@ -1570,6 +1603,8 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
             (sec_since_sync > UINT16_MAX) ? UINT16_MAX : (uint16_t)sec_since_sync
         );
     }
+
+    get_bulk_downlink_file_path_hash(beacon_packet->bulk_downlink_file_path_sha256_prefix);
 
     // ADCS fields (v2 and v5+).
     peripheral_comms_error_count += fill_beacon_adcs_fields(beacon_packet);
