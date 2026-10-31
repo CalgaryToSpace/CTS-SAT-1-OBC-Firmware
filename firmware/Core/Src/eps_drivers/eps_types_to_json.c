@@ -478,6 +478,7 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(
     char json_output_str[],
     uint16_t json_output_str_size
 ) {
+    // FIXME: (post-FrontierSat launch) The elements in EPS_struct_piu_housekeeping_data_eng_t are in the wrong order; this function would require a rewrite after fixing the issue in the struct.
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
         return 1; // Error: Invalid input
     }

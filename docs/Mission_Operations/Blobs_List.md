@@ -91,7 +91,7 @@ CTS1+comms_bulk_file_downlink_start(adcs_data/your_file.run,0,0)@tsexec=123456@t
 CTS1+exec_blob_from_fs(blobs/bulk_downlink_start_v2.blob,0,adcs_data/your_file.run;0;0)@tsexec=123456@tssent=789!
 ```
 
-## `blobs/extended_beacon_v{2,3,4}.blob`
+## `blobs/extended_beacon_v{2,3,4,5}.blob`
 
 ### Description
 
@@ -104,13 +104,22 @@ Running this blob triggers the extended beacon.
 // and per-channel EPS data especially).
 // This blob is a new feature that allows for sending additional data in the beacon packets.
 //
-// Args Format: repeat_interval_ms
-// The repeat_interval_ms can be 0 to run only once, or any positive number to run repeatedly at
-// that specified interval.
+// Since v5, every beacon is also stored into a ring of files in LittleFS, and each run downlinks
+// a randomly-selected consecutive run of stored (historical) beacons.
+// This lets the ground slowly reconstruct the full beacon history (including the parts
+// of the orbit with no ground station coverage) over many random SatNOGS passes.
+//
+// Args Format: <repeat_interval_ms>[;<history_count>]
+// - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
+//   specified interval (clamped to a minimum of 2500ms).
+// - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
+//   run, after the live beacon (clamped to a maximum of 100). Fewer are sent if the randomly-chosen
+//   start lands near the end of the chosen ring file.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v4.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
+// After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+// With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 ```
 
 ### Notes
@@ -126,15 +135,31 @@ Running this blob triggers the extended beacon.
     a command to run this blob on every uplink pass, whether or not it's already running.
 5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
     use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,0)!` (which will run one last time,
+    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (which will run one last time,
     then cancel itself).
+6. (v5+) The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
+    not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
+7. (v5+) While the MPI is in active (sensing) mode, the live beacon is still sent and stored, but
+    no historical beacons are downlinked that run.
+8. (v5+) Nothing historical is downlinked until the first ring file fills
+    (`BEACON_RING_RECORDS_PER_FILE` = 180 beacons), because the file being written is never downlinked.
+9. (v5+) Historical beacons are sent with the same packet type, but with version string ` S5\0`
+    (instead of ` X5\0`).
+10. (v5+) Beacons are stored in LittleFS under `beacon_ring/`, as a ring of `BEACON_RING_FILE_COUNT` = 20 files
+    (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
+    fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
+    the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
+11. (v5+) Any reboot (software reboot, watchdog reset, or power cycle), an unmounted filesystem,
+    or a filesystem remount/reformat resets the ring and starts with fresh/empty history.
+    Software reboots are detected with a heap canary.
 
 ### Example Usage
 
-To start the extended beacon, repeating every 9 seconds, run:
+To start the extended beacon, repeating every 9 seconds, also sending 5 historical beacons per run
+(with a 9 second interval, ~8h of beacons are kept in the ring buffer), run:
 
 ```
-CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
 ```
 
 ### Versions
@@ -156,6 +181,29 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v4.blob,0,9000)!
     * Change 1 (fix): MPI temperature fetching now supports negative Celsius temperatures.
     * Change 2: Prevent bouncing in the `pending_queued_tcmd_count` field between extended and basic beacons.
     * Improvement: Use error enum for error reporting.
+* v5
+    * Significant upgrade from v4. New fields added, and new ring buffer storage added.
+    * Has version string ` X5\0` (live beacons), and ` S5\0` (ring-stored beacons, when downlinked as history).
+    * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED_V5PLUS = 0x21` (both live and historical beacons).
+    * Format changes:
+        1. The friendly message is removed. Its 42-byte slot now holds the new v5 fields.
+        2. New fields, in order: `distinct_tcmds_pending`, `duration_since_last_time_sync_sec`, `adcs_wheel_speed_{x,y,z}_rpm`,
+      `adcs_pointing_error_cdeg`, `adcs_innovation_vector_{x,y,z}_en4`,
+      `adcs_estimated_gyro_bias_{x,y,z}_mdeg_per_sec`, `gnss_power_consumed_cW`,
+      `adcs_total_power_consumed_cW`, `eps_pcu_ch4_{volt_in,curr_in,curr_ou}_mppt_{units}`,
+      `bulk_downlink_file_path_sha256_prefix[3]`, `reserved_v5[7]`.
+    * New: Stores every beacon into a LittleFS ring (`beacon_ring/`), and downlinks a random
+      consecutive run of `history_count` stored beacons per run.
+    * New optional second arg: `history_count`. Fully backwards-compatible with v4's args.
+    * Change: `mpi_last_temperature_C` is only reported as a valid value if the most recent MPI data
+      was received within the last 30 minutes. Otherwise, it's reported as `-97` (stale).
+    * Change: The summed solar panel power fields (`eps_total_pcu_power_*`, `eps_total_avg_pcu_power_*`)
+      are summed over all 5 conditioning chains from the PIU housekeeping (0xA2/0xA4), instead of only
+      CC1-CC4 from the PCU housekeeping (0x72/0x74).
+    * Change: The battery fields (voltage, percent, temperatures, pack status, avg net power) and the
+      PDU fields (enabled channels, avg power distributed, GNSS power) also come from the PIU
+      housekeeping (0xA2/0xA4), instead of the PBU (0x62/0x64) and PDU (0x54) housekeeping.
+      Fewer EPS transactions.
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 
