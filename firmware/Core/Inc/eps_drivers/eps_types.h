@@ -13,6 +13,7 @@ static const uint8_t EPS_MAX_ACTIVE_CHANNEL_NUMBER = 16;
 /// @brief The number of EPS channels, including those not really present on our model.
 static const uint8_t EPS_TOTAL_CHANNEL_COUNT = 32;
 
+// FIXME: (post-FrontierSat launch) These values should be updated to 5, and all places that read should ready from EPS's PIU packet that contains all 5 fields.
 #define EPS_TOTAL_PCU_CHANNEL_COUNT_MACRO 4
 static const uint8_t EPS_TOTAL_PCU_CHANNEL_COUNT = 4;
 
@@ -186,7 +187,7 @@ typedef struct {
     uint16_t vd1_voltage_mV;
     uint16_t vd2_voltage_mV;
 
-    // Note: elements below this line are not in byte order they are received in
+    // FIXME: (post-FrontierSat launch) Elements below this line are not in byte order they are received in. They must be re-ordered to match the received order to report data correctly.
 
     EPS_vpid_eng_t vip_each_channel[32];
     EPS_conditioning_channel_short_datatype_eng_t conditioning_channel_info_each_channel[5];

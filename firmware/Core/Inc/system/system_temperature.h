@@ -9,7 +9,7 @@ typedef struct {
     int32_t system_OBC_temperature_cC;
     int32_t system_ANT_temperature_i2c_bus_A_cC;
     int32_t system_ANT_temperature_i2c_bus_B_cC;
-    int32_t solar_panel_power_input_cW[EPS_TOTAL_PCU_CHANNEL_COUNT_MACRO];
+    int32_t solar_panel_power_input_cW[EPS_TOTAL_PCU_CHANNEL_COUNT_MACRO]; // FIXME: (post-FrontierSat launch) Should be 5 PCU channels, and all places that read should ready from EPS's PIU packet that contains all 5 fields.
     int32_t solar_panel_power_output_total_cW;
     float system_eps_battery_percent;
     uint8_t system_eps_battery_heater_status_bit;
