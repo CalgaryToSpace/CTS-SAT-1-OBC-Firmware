@@ -19,7 +19,7 @@ CFLAGS  = \
     -ffunction-sections \
     -fdata-sections \
     -nostdlib \
-    -Os \
+    -O3 \
     -Wall \
     -Wextra \
     -I../../../firmware/Core/Inc/
@@ -50,7 +50,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Build, link, and print the size info.
-$(ELF): bulk_downlink_start_blob_main.c $(FW_ELF) | $(BUILD_DIR)
+$(ELF): bulk_downlink_start_blob_main.c ../blob_libs/sha256_fast.h $(FW_ELF) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -T blob.ld $< -o $@ $(LDFLAGS)
 	@echo "--- Section sizes ---"
 	$(SIZE) -A $@

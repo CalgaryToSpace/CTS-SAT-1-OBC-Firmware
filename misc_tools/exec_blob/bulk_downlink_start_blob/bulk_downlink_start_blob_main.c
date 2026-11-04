@@ -25,7 +25,7 @@
 #include <stdarg.h>
 
 #include "../lfs.h"
-#include "crypto/sha256.h"
+#include "../blob_libs/sha256_fast.h"
 
 #define LFS_MAX_PATH_LENGTH 200
 #define READ_BUFFER_SIZE 2048 // Matches the LFS cache size, so reads skip the cache.
@@ -272,8 +272,8 @@ static COMMS_bulk_downlink_start_blob_error_enum_t compute_checksums(
         return BLOB_ERR_CHECKSUM_READ_FAILED;
     }
 
-    SHA256_CTX sha256_ctx;
-    sha256_init(&sha256_ctx);
+    sha256_fast_ctx_t sha256_ctx;
+    sha256_fast_init(&sha256_ctx);
     uint16_t crc = 0;
 
     uint32_t bytes_remaining = length;
@@ -290,7 +290,7 @@ static COMMS_bulk_downlink_start_blob_error_enum_t compute_checksums(
             return BLOB_ERR_FILE_SHRANK; // File shrank since its size was checked.
         }
 
-        sha256_update(&sha256_ctx, read_buffer, bytes_read);
+        sha256_fast_update(&sha256_ctx, read_buffer, bytes_read);
         for (int32_t i = 0; i < bytes_read; i++) {
             crc = crc16_update(crc, read_buffer[i]);
         }
@@ -303,7 +303,7 @@ static COMMS_bulk_downlink_start_blob_error_enum_t compute_checksums(
         return BLOB_ERR_CHECKSUM_READ_FAILED;
     }
 
-    sha256_final(&sha256_ctx, sha256_dest);
+    sha256_fast_final(&sha256_ctx, sha256_dest);
     *crc16_dest = crc;
     return BLOB_ERR_OK;
 }
