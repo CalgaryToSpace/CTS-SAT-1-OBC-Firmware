@@ -19,9 +19,10 @@ CFLAGS  = \
     -ffunction-sections \
     -fdata-sections \
     -nostdlib \
-    -Os \
+    -O3 \
     -Wall \
-    -Wextra
+    -Wextra \
+    -I../../../firmware/Core/Inc/
 
 CFLAGS += \
     -ffreestanding \
@@ -35,17 +36,21 @@ LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 
 TARGET = bulk_downlink_start_blob
 
+# Name the blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
+BLOB_NAME = bulk_downlink_start_v3
+
 ELF = $(BUILD_DIR)/$(TARGET).elf
 BIN = $(BUILD_DIR)/$(TARGET).bin
+BLOB = $(BUILD_DIR)/$(BLOB_NAME).blob
 
-all: $(BIN)
+all: $(BIN) $(BLOB)
 
 # Ensure build directory exists
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Build, link, and print the size info.
-$(ELF): bulk_downlink_start_blob_main.c $(FW_ELF) | $(BUILD_DIR)
+$(ELF): bulk_downlink_start_blob_main.c ../blob_libs/sha256_fast.h $(FW_ELF) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -T blob.ld $< -o $@ $(LDFLAGS)
 	@echo "--- Section sizes ---"
 	$(SIZE) -A $@
@@ -54,6 +59,10 @@ $(ELF): bulk_downlink_start_blob_main.c $(FW_ELF) | $(BUILD_DIR)
 
 $(BIN): $(ELF)
 	$(OBJCOPY) -O binary $< $@
+
+# Same bytes as the .bin, named as it should be uplinked.
+$(BLOB): $(BIN)
+	cp $< $@
 
 clean:
 	rm -rf $(BUILD_DIR)
