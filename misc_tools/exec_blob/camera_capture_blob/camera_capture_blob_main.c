@@ -15,8 +15,9 @@
 //  4. No metadata (time, attitude) is saved alongside the image.
 //
 // This blob does the following:
-//  1. Queries the ADCS (control mode, estimation mode, estimated attitude angles, and the tracking
-//     target if in a target-tracking control mode) and the current time/time-since-sync.
+//  1. Right before the capture, queries the ADCS (control mode, estimation mode, estimated attitude
+//     angles, and the tracking target if in a target-tracking control mode), then reads the
+//     current time/time-since-sync.
 //  2. Writes that metadata as a JSON header line in the .img file: `START_CAM:{...}\n`.
 //  3. Captures the image (raw camera ASCII sentences) into the .img file, using:
 //      - a first-data timeout (trigger -> first sentence): FIRST_DATA_TIMEOUT_MS,
@@ -28,6 +29,7 @@
 //     otherwise ".jpg" is appended).
 //     If the given filename ends in ".jpg", the raw data is saved to the same name with ".img"
 //     instead, and the converted image is saved to the given ".jpg" name.
+//  5. Embeds EXIF metadata in the .jpg (see "EXIF Metadata" below).
 //
 // Args Format: <img_file_path>;<lighting_mode>
 // - lighting_mode: single char: d (daylight), m (medium), n (night), s (solar sail contrast)
@@ -41,15 +43,25 @@
 //  "capture":{"end":"idle","rx_bytes":N,"written":N,"write_errs":N,"first_data_ms":N,
 //    "duration_ms":N,"dma_restarts":N},
 //  "jpg_result":{"err":0,"bytes":N,"sentences":N,"first":N,"last":N,"total_field":N,"gaps":N,
-//    "missing":N,"bad_lines":N,"face":"<64 hex chars>"|null}}
+//    "missing":N,"bad_lines":N,"exif":true,"face":"<64 hex chars>"|null}}
 //
 // Header Format (first line of the .img file):
-// START_CAM:{"blob":"camera_capture_v2","lighting":"d","uptime_ms":N,"epoch_ms":N,"sync_src":"G",
-//  "ms_since_sync":N|null,"adcs":{"ok":true,"ctrl_mode":N,"est_mode":N,"roll_mdeg":N,
-//  "pitch_mdeg":N,"yaw_mdeg":N,"target":{"lon_deg":F,"lat_deg":F,"alt_m":F}}}
+// START_CAM:{"blob":"camera_capture_v2","lighting":"d","epoch_ms":N,"sync_src":"G",
+//  "sec_since_sync":N|null,"adcs":{"ok":true,"ctrl_mode":N,"est_mode":N,"rpy_deg":[F,F,F],
+//  "target":{"lon_deg":F,"lat_deg":F,"alt_m":F}}}
+// - "epoch_ms" and "sec_since_sync" are read right before the header is written, just
+//   before the capture trigger is sent to the camera (which is when the camera takes the picture).
 // - "target" is only present when ctrl_mode is a target-tracking mode (7 or 15).
 // - If the ADCS doesn't respond: "adcs":{"ok":false,"err":N}.
 // - If only the attitude/target query fails: "att_err":N / "target":{"err":N}.
+//
+// EXIF Metadata (APP1 segment in the .jpg, inserted right after the SOI marker):
+// - Make: "CalgaryToSpace", Model: "FrontierSat (CTS-SAT-1)", Software: "camera_capture_v2"
+// - DateTime and DateTimeOriginal: the capture time (UTC, from "epoch_ms"), with
+//   OffsetTimeOriginal "+00:00". The full-ms time is in the description's "epoch_ms".
+// - ImageDescription: the full metadata JSON (same as the .img header).
+// "exif" in the response is false if the start of the JPEG (SOI marker) wasn't found (e.g., the
+// first sentence was lost), in which case the .jpg is written without EXIF.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/camera_capture_v2.blob", run:
@@ -108,6 +120,9 @@ static const char *BLOB_NAME = "camera_capture_v2";
 
 #define HEADER_BUF_LEN 448
 
+#define EXIF_MAKE "CalgaryToSpace"
+#define EXIF_MODEL "FrontierSat (CTS-SAT-1)"
+
 // Values of `CAMERA_uart_write_state_enum_t` (uart_handler/uart_handler.h). That header can't be
 // included because it needs the STM32 HAL headers. The enum is 1 byte (short enums).
 #define CAM_STATE_IDLE 0
@@ -159,6 +174,7 @@ extern uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabl
 extern void STM32_pet_watchdog(void);
 void HAL_Delay(uint32_t Delay);
 extern char TIME_sync_source_enum_to_letter_char(TIME_sync_source_enum_t source);
+// TIME_convert_uptime_to_unix_epoch_time_ms() is declared in timekeeping/timekeeping.h.
 extern void GEN_uint64_to_str(uint64_t value, char *buffer);
 
 extern uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct);
@@ -285,9 +301,12 @@ static void append_adcs_json(response_writer_t *w) {
     }
     else {
         response_append(
-            w, ",\"roll_mdeg\":%ld,\"pitch_mdeg\":%ld,\"yaw_mdeg\":%ld",
-            att.estimated_roll_angle_mdeg, att.estimated_pitch_angle_mdeg,
-            att.estimated_yaw_angle_mdeg
+            // Divide as float (hardware FPU; double math is software-only on this MCU). Floats are
+            // automatically promoted to double when passed to printf, as %f expects.
+            w, ",\"rpy_deg\":[%.2f,%.2f,%.2f]",
+            (float)att.estimated_roll_angle_mdeg / 1000.0f,
+            (float)att.estimated_pitch_angle_mdeg / 1000.0f,
+            (float)att.estimated_yaw_angle_mdeg / 1000.0f
         );
     }
 
@@ -310,34 +329,36 @@ static void append_adcs_json(response_writer_t *w) {
 }
 
 /// @brief Build the metadata JSON object (no prefix, no newline) into `w`.
-/// @note The ADCS is queried first, so that the timestamps are as close to the trigger as possible.
-static void build_meta_json(response_writer_t *w, char lighting_mode) {
-    // ADCS goes into a scratch writer first, so the time fields can be read after it.
-    char adcs_buf[256];
-    response_writer_t adcs_w = { .buf = adcs_buf, .size = sizeof(adcs_buf), .pos = 0 };
-    adcs_buf[0] = '\0';
+/// @note The ADCS is queried first, so that the time is read as close to the trigger as possible.
+/// @param[out] epoch_ms_out The "epoch_ms" written to the JSON (for the EXIF timestamp).
+static void build_meta_json(response_writer_t *w, char lighting_mode, uint64_t *epoch_ms_out) {
+    // ADCS goes into a scratch writer first, so the time can be read after it.
+    char adcs_json[256];
+    response_writer_t adcs_w = { .buf = adcs_json, .size = sizeof(adcs_json), .pos = 0 };
+    adcs_json[0] = '\0';
     append_adcs_json(&adcs_w);
 
     const uint32_t now_uptime_ms = uptime_ms();
-    const uint64_t epoch_ms = TIME_get_current_unix_epoch_time_ms();
+    const uint64_t epoch_ms = TIME_convert_uptime_to_unix_epoch_time_ms(now_uptime_ms);
+    *epoch_ms_out = epoch_ms;
     const TIME_sync_source_enum_t sync_source = TIME_last_synchronization_source;
 
     response_append(
-        w, "{\"blob\":\"%s\",\"lighting\":\"%c\",\"uptime_ms\":%lu,\"epoch_ms\":",
-        BLOB_NAME, lighting_mode, now_uptime_ms
+        w, "{\"blob\":\"%s\",\"lighting\":\"%c\",\"epoch_ms\":",
+        BLOB_NAME, lighting_mode
     );
     append_uint64(w, epoch_ms);
     response_append(
-        w, ",\"sync_src\":\"%c\",\"ms_since_sync\":",
+        w, ",\"sync_src\":\"%c\",\"sec_since_sync\":",
         TIME_sync_source_enum_to_letter_char(sync_source)
     );
     if (sync_source == TIME_SYNC_SOURCE_NONE) {
         response_append(w, "null");
     }
     else {
-        response_append(w, "%lu", now_uptime_ms - TIME_system_uptime_at_last_time_resync_ms);
+        response_append(w, "%lu", (now_uptime_ms - TIME_system_uptime_at_last_time_resync_ms) / 1000);
     }
-    response_append(w, ",\"adcs\":%s}", adcs_buf);
+    response_append(w, ",\"adcs\":%s}", adcs_json);
 }
 
 
@@ -524,6 +545,123 @@ static void receive_image(capture_state_t *s) {
 }
 
 
+// ==================== EXIF ====================
+
+// Layout of the EXIF APP1 segment built here (TIFF offsets are relative to the TIFF header):
+//   FF E1 <len:2> "Exif\0\0" | TIFF header (8) | IFD0 (6 entries) | Exif sub-IFD (2 entries) |
+//   string data | ImageDescription (written separately, straight from the metadata JSON)
+// All multi-byte values are big-endian ("MM").
+#define EXIF_TIFF_START 10 // After the APP1 marker (2), length (2), and "Exif\0\0" (6).
+#define EXIF_TYPE_ASCII 2
+#define EXIF_TYPE_LONG 4
+#define EXIF_IFD_SIZE(entry_count) (2 + 12 * (entry_count) + 4)
+#define EXIF_IFD0_ENTRY_COUNT 6
+#define EXIF_SUB_IFD_ENTRY_COUNT 2
+#define EXIF_SUB_IFD_OFFSET (8 + EXIF_IFD_SIZE(EXIF_IFD0_ENTRY_COUNT))
+#define EXIF_DATA_OFFSET (EXIF_SUB_IFD_OFFSET + EXIF_IFD_SIZE(EXIF_SUB_IFD_ENTRY_COUNT))
+#define EXIF_PREFIX_BUF_LEN 256 // Uses ~234 bytes.
+
+typedef struct {
+    uint8_t *tiff; // Start of the TIFF header.
+    uint16_t pos; // Next write position for IFD contents (TIFF offset).
+    uint16_t data_pos; // Next free byte in the string data area (TIFF offset).
+} exif_writer_t;
+
+static void put_be(uint8_t *dst, uint32_t value, uint8_t byte_count) {
+    for (uint8_t i = 0; i < byte_count; i++) {
+        dst[i] = (uint8_t)(value >> (8 * (byte_count - 1 - i)));
+    }
+}
+
+static void exif_entry(exif_writer_t *e, uint16_t tag, uint16_t type, uint32_t count, uint32_t value) {
+    put_be(&e->tiff[e->pos], tag, 2);
+    put_be(&e->tiff[e->pos + 2], type, 2);
+    put_be(&e->tiff[e->pos + 4], count, 4);
+    put_be(&e->tiff[e->pos + 8], value, 4);
+    e->pos += 12;
+}
+
+/// @brief Add an ASCII entry, with its string stored in the data area.
+/// @note Every string here is over 4 bytes, so none fit inline in the entry's value field.
+static void exif_ascii_entry(exif_writer_t *e, uint16_t tag, const char *str) {
+    const uint16_t count = strlen(str) + 1; // Includes the null terminator.
+    exif_entry(e, tag, EXIF_TYPE_ASCII, count, e->data_pos);
+    memcpy(&e->tiff[e->data_pos], str, count);
+    e->data_pos += (count + 1) & ~1u; // Keep offsets word-aligned (TIFF spec).
+}
+
+static void exif_start_ifd(exif_writer_t *e, uint16_t entry_count) {
+    put_be(&e->tiff[e->pos], entry_count, 2);
+    e->pos += 2;
+}
+
+static void exif_end_ifd(exif_writer_t *e) {
+    put_be(&e->tiff[e->pos], 0, 4); // Offset of the next IFD: none.
+    e->pos += 4;
+}
+
+/// @brief Format a Unix time as an EXIF datetime ("YYYY:MM:DD HH:MM:SS", UTC).
+static void format_exif_datetime(uint64_t epoch_ms, char out[20]) {
+    char iso[24]; // "YYYY-MM-DDTHHMMSSZ" (18 chars).
+    TIME_format_utc_datetime_str_no_ms(iso, sizeof(iso), epoch_ms);
+    if (strlen(iso) != 18) {
+        memcpy(out, "    :  :     :  :  ", 20); // EXIF's "unknown" value.
+        return;
+    }
+    memcpy(out, iso, 10); // "YYYY-MM-DD"
+    out[4] = ':';
+    out[7] = ':';
+    out[10] = ' ';
+    out[11] = iso[11];
+    out[12] = iso[12];
+    out[13] = ':';
+    out[14] = iso[13];
+    out[15] = iso[14];
+    out[16] = ':';
+    out[17] = iso[15];
+    out[18] = iso[16];
+    out[19] = '\0';
+}
+
+/// @brief Build the EXIF APP1 segment, except for the ImageDescription string, which must be
+///     written right after the returned bytes.
+/// @param desc_len Length of the ImageDescription string, including its null terminator.
+/// @return Number of bytes written to `buf`.
+static uint16_t build_exif_prefix(uint8_t buf[EXIF_PREFIX_BUF_LEN], uint64_t epoch_ms, uint16_t desc_len) {
+    char datetime[20];
+    format_exif_datetime(epoch_ms, datetime);
+
+    exif_writer_t e = { .tiff = &buf[EXIF_TIFF_START], .pos = 8, .data_pos = EXIF_DATA_OFFSET };
+    memcpy(e.tiff, "MM\x00\x2a\x00\x00\x00\x08", 8); // Big-endian TIFF header. IFD0 at offset 8.
+
+    // IFD0. Entries must be sorted by tag.
+    exif_start_ifd(&e, EXIF_IFD0_ENTRY_COUNT);
+    const uint16_t desc_entry_pos = e.pos;
+    exif_entry(&e, 0x010E, EXIF_TYPE_ASCII, desc_len, 0); // ImageDescription. Offset filled in below.
+    exif_ascii_entry(&e, 0x010F, EXIF_MAKE);
+    exif_ascii_entry(&e, 0x0110, EXIF_MODEL);
+    exif_ascii_entry(&e, 0x0131, BLOB_NAME); // Software
+    exif_ascii_entry(&e, 0x0132, datetime); // DateTime
+    exif_entry(&e, 0x8769, EXIF_TYPE_LONG, 1, EXIF_SUB_IFD_OFFSET); // Pointer to the Exif sub-IFD.
+    exif_end_ifd(&e);
+
+    // Exif sub-IFD.
+    exif_start_ifd(&e, EXIF_SUB_IFD_ENTRY_COUNT);
+    exif_ascii_entry(&e, 0x9003, datetime); // DateTimeOriginal
+    exif_ascii_entry(&e, 0x9011, "+00:00"); // OffsetTimeOriginal (UTC)
+    exif_end_ifd(&e);
+
+    // The ImageDescription string goes after all the other strings.
+    put_be(&e.tiff[desc_entry_pos + 8], e.data_pos, 4);
+
+    buf[0] = 0xFF;
+    buf[1] = 0xE1; // APP1
+    put_be(&buf[2], 2 + 6 + e.data_pos + desc_len, 2); // Segment length (includes itself).
+    memcpy(&buf[4], "Exif\0\0", 6);
+    return EXIF_TIFF_START + e.data_pos;
+}
+
+
 // ==================== JPG Conversion ====================
 
 typedef struct {
@@ -541,6 +679,14 @@ typedef struct {
     char face_hex[CAM_LINE_LEN]; // 64 hex chars + null.
     uint8_t out_buf[CAM_SENTENCE_DATA_BYTES * CONVERT_SENTENCES_PER_WRITE];
     uint16_t out_len;
+
+    // EXIF segment, inserted into the first flush (see flush_jpg_out()).
+    const uint8_t *exif_prefix;
+    uint16_t exif_prefix_len;
+    const char *exif_desc;
+    uint16_t exif_desc_len; // Including the null terminator.
+    bool exif_checked; // True once the first flush has happened.
+    bool exif_written;
 } convert_state_t;
 
 static int8_t hex_char_value(char c) {
@@ -550,15 +696,35 @@ static int8_t hex_char_value(char c) {
     return -1;
 }
 
-static void flush_jpg_out(convert_state_t *c) {
-    if (c->out_len == 0) return;
-    const lfs_ssize_t result = lfs_file_write(&LFS_filesystem, c->jpg_file, c->out_buf, c->out_len);
+static void jpg_write(convert_state_t *c, const void *data, uint32_t len) {
+    if (len == 0) return;
+    const lfs_ssize_t result = lfs_file_write(&LFS_filesystem, c->jpg_file, data, len);
     if (result < 0) {
         if (c->err == 0) c->err = result;
     }
     else {
         c->jpg_bytes += result;
     }
+}
+
+/// @brief Write `out_buf` to the .jpg. The first flush (which holds the start of the JPEG) also
+///     inserts the EXIF segment right after the SOI marker.
+/// @note The camera's JPEGs have no JFIF APP0 segment (SOI is directly followed by DQT), so
+///     nothing else needs to come before the EXIF APP1 segment.
+static void flush_jpg_out(convert_state_t *c) {
+    uint16_t start = 0;
+    if (!c->exif_checked) {
+        c->exif_checked = true;
+        // No SOI means the first sentence was lost. Skip EXIF rather than splicing it into the data.
+        if (c->out_len >= 2 && c->out_buf[0] == 0xFF && c->out_buf[1] == 0xD8) {
+            jpg_write(c, c->out_buf, 2);
+            jpg_write(c, c->exif_prefix, c->exif_prefix_len);
+            jpg_write(c, c->exif_desc, c->exif_desc_len);
+            c->exif_written = (c->err == 0);
+            start = 2;
+        }
+    }
+    jpg_write(c, &c->out_buf[start], c->out_len - start);
     c->out_len = 0;
 }
 
@@ -701,16 +867,6 @@ static uint8_t capture_and_convert(
         return 20;
     }
 
-    // Build the header (queries the ADCS) before opening the file, so the file is never left
-    // open across slow ADCS timeouts.
-    char header_buf[HEADER_BUF_LEN];
-    response_writer_t header_w = { .buf = header_buf, .size = sizeof(header_buf), .pos = 0 };
-    response_append(&header_w, "START_CAM:");
-    const uint16_t meta_start = header_w.pos;
-    build_meta_json(&header_w, lighting_mode);
-    const uint16_t meta_end = header_w.pos;
-    response_append(&header_w, "\n");
-
     lfs_file_t img_file;
     const int32_t open_result = lfs_file_open(
         &LFS_filesystem, &img_file, img_path, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
@@ -729,6 +885,17 @@ static uint8_t capture_and_convert(
         .next_half = 1,
         .end_reason = CAPTURE_END_IDLE,
     };
+
+    // Build the header (queries the ADCS, then reads the time) right before the trigger, so the
+    // metadata is as close as possible to the moment the picture is taken.
+    char header_buf[HEADER_BUF_LEN];
+    response_writer_t header_w = { .buf = header_buf, .size = sizeof(header_buf), .pos = 0 };
+    response_append(&header_w, "START_CAM:");
+    const uint16_t meta_start = header_w.pos;
+    uint64_t epoch_ms;
+    build_meta_json(&header_w, lighting_mode, &epoch_ms);
+    const uint16_t meta_end = header_w.pos;
+    response_append(&header_w, "\n");
 
     // Write the header (also gets the slow first write out of the way before data arrives).
     write_to_img(&s, (const uint8_t *)header_buf, header_w.pos);
@@ -767,8 +934,17 @@ static uint8_t capture_and_convert(
 
     const int32_t close_result = lfs_file_close(&LFS_filesystem, &img_file);
 
-    // Convert to JPG.
-    convert_state_t c = { .first_num = -1, .last_num = -1 };
+    // Convert to JPG, with the metadata JSON (null-terminated in place) as the EXIF description.
+    header_buf[meta_end] = '\0';
+    uint8_t exif_prefix[EXIF_PREFIX_BUF_LEN];
+    convert_state_t c = {
+        .first_num = -1,
+        .last_num = -1,
+        .exif_prefix = exif_prefix,
+        .exif_desc = &header_buf[meta_start],
+        .exif_desc_len = meta_end - meta_start + 1,
+    };
+    c.exif_prefix_len = build_exif_prefix(exif_prefix, epoch_ms, c.exif_desc_len);
     int32_t convert_result = 0;
     if (close_result >= 0) {
         convert_result = convert_img_to_jpg(img_path, jpg_path, &c);
@@ -781,7 +957,6 @@ static uint8_t capture_and_convert(
         BLOB_NAME, img_path, jpg_path
     );
 
-    header_buf[meta_end] = '\0';
     response_append(&w, ",\"meta\":%s", &header_buf[meta_start]);
 
     response_append(
@@ -795,9 +970,9 @@ static uint8_t capture_and_convert(
     response_append(
         &w,
         ",\"jpg_result\":{\"err\":%ld,\"bytes\":%lu,\"sentences\":%lu,\"first\":%ld,\"last\":%ld,"
-        "\"total_field\":%u,\"gaps\":%lu,\"missing\":%lu,\"bad_lines\":%lu,\"face\":",
+        "\"total_field\":%u,\"gaps\":%lu,\"missing\":%lu,\"bad_lines\":%lu,\"exif\":%s,\"face\":",
         convert_result, c.jpg_bytes, c.sentences, c.first_num, c.last_num,
-        c.total_field, c.gaps, c.missing, c.bad_lines
+        c.total_field, c.gaps, c.missing, c.bad_lines, c.exif_written ? "true" : "false"
     );
     if (c.face_found) response_append(&w, "\"%s\"}}", c.face_hex);
     else response_append(&w, "null}}");
