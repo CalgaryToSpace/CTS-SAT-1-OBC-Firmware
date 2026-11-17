@@ -39,7 +39,7 @@
 // The final sentence starts with "@FACE" and holds camera telemetry (not JPEG data).
 //
 // Response Format (JSON):
-// {"action":"camera_capture_v2","img":"<path>","jpg":"<path>","meta":{<same as .img header>},
+// {"action":"camera_capture_v2","result":"OK","img":"<path>","jpg":"<path>","meta":{<same as .img header>},
 //  "capture":{"end":"idle","rx_bytes":N,"written":N,"write_errs":N,"first_data_ms":N,
 //    "duration_ms":N,"dma_restarts":N},
 //  "jpg_result":{"err":0,"bytes":N,"sentences":N,"first":N,"last":N,"total_field":N,"gaps":N,
@@ -62,6 +62,10 @@
 // - ImageDescription: the full metadata JSON (same as the .img header).
 // "exif" in the response is false if the start of the JPEG (SOI marker) wasn't found (e.g., the
 // first sentence was lost), in which case the .jpg is written without EXIF.
+//
+// Errors before the capture starts (e.g., bad args, LFS not mounted) respond with only
+// "camera_capture_v2 error: <ERROR_NAME>" (see CAM_capture_blob_error_enum_t). Once the capture has
+// run, the full JSON response is always sent, with the error name in "result".
 //
 // Usage Example:
 // After uplinking the blob as "blobs/camera_capture_v2.blob", run:
@@ -180,6 +184,59 @@ extern void GEN_uint64_to_str(uint64_t value, char *buffer);
 extern uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct);
 extern uint8_t ADCS_get_estimated_attitude_angles(ADCS_estimated_attitude_angles_struct_t *output_struct);
 extern uint8_t ADCS_get_tracking_controller_target_reference(ADCS_tracking_controller_target_struct_t *output_struct);
+
+
+// ==================== Error Enum ====================
+
+// All named status/error codes returned by this blob's functions, including the values
+// `blob_main()` itself returns to the telecommand executor (0 = success).
+typedef enum {
+    BLOB_ERR_OK = 0,
+    BLOB_ERR_LFS_NOT_MOUNTED = 20, // LFS_ensure_mounted() failed.
+    BLOB_ERR_IMG_OPEN_FAILED = 21, // Opening/creating the .img file failed.
+    BLOB_ERR_HEADER_WRITE_FAILED = 22, // Writing the metadata header to the .img failed.
+    BLOB_ERR_DMA_START_FAILED = 23, // Starting the camera UART RX DMA failed.
+    BLOB_ERR_TRIGGER_SEND_FAILED = 24, // Sending the lighting mode (trigger) to the camera failed.
+    BLOB_ERR_IMG_CLOSE_FAILED = 25, // Closing the .img failed (it may be incomplete).
+    BLOB_ERR_NO_DATA = 26, // The camera sent no data before the first-data timeout.
+    BLOB_ERR_JPG_CONVERT_FAILED = 27, // An LFS error during the .img to .jpg conversion.
+    BLOB_ERR_MISSING_ARGS = 135, // The img file path arg is missing.
+    BLOB_ERR_INVALID_LIGHTING_MODE = 136, // The lighting mode arg isn't one of d,m,n,s.
+    BLOB_ERR_TOO_MANY_ARGS = 137, // There are args after the lighting mode.
+} CAM_capture_blob_error_enum_t;
+
+/// @brief Convert a CAM_capture_blob_error_enum_t into a short human-readable name, for use in
+///     output strings.
+/// @return Static string; never NULL. "UNKNOWN_ERROR" for values not in the enum.
+static const char *camera_capture_blob_error_to_str(CAM_capture_blob_error_enum_t err) {
+    switch (err) {
+        case BLOB_ERR_OK: return "OK";
+        case BLOB_ERR_LFS_NOT_MOUNTED: return "LFS_NOT_MOUNTED";
+        case BLOB_ERR_IMG_OPEN_FAILED: return "IMG_OPEN_FAILED";
+        case BLOB_ERR_HEADER_WRITE_FAILED: return "HEADER_WRITE_FAILED";
+        case BLOB_ERR_DMA_START_FAILED: return "DMA_START_FAILED";
+        case BLOB_ERR_TRIGGER_SEND_FAILED: return "TRIGGER_SEND_FAILED";
+        case BLOB_ERR_IMG_CLOSE_FAILED: return "IMG_CLOSE_FAILED";
+        case BLOB_ERR_NO_DATA: return "NO_DATA";
+        case BLOB_ERR_JPG_CONVERT_FAILED: return "JPG_CONVERT_FAILED";
+        case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
+        case BLOB_ERR_INVALID_LIGHTING_MODE: return "INVALID_LIGHTING_MODE";
+        case BLOB_ERR_TOO_MANY_ARGS: return "TOO_MANY_ARGS";
+    }
+    return "UNKNOWN_ERROR";
+}
+
+/// @brief Fill the response with "<blob name> error: <error name>".
+/// @return `err`, for `return error_response(...)`.
+static CAM_capture_blob_error_enum_t error_response(
+    char *response_buf, uint16_t response_buf_len, CAM_capture_blob_error_enum_t err
+) {
+    snprintf(
+        response_buf, response_buf_len, "%s error: %s",
+        BLOB_NAME, camera_capture_blob_error_to_str(err)
+    );
+    return err;
+}
 
 
 static inline uint32_t uptime_ms(void) {
@@ -854,7 +911,11 @@ static void camera_power_off(void) {
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
 }
 
-static uint8_t capture_and_convert(
+/// @brief Capture the image, convert it to .jpg, and fill the response.
+/// @return BLOB_ERR_OK on success. On failure before the capture runs, returns the error without
+///     touching the response (blob_main() fills it in). Once the capture has run, the full JSON
+///     response is always filled (with the error name in "result").
+static CAM_capture_blob_error_enum_t capture_and_convert(
     const char *img_path, char lighting_mode,
     char *response_buf, uint16_t response_buf_len
 ) {
@@ -863,8 +924,7 @@ static uint8_t capture_and_convert(
 
     if (LFS_ensure_mounted() != 0) {
         camera_power_off();
-        snprintf(response_buf, response_buf_len, "%s error: LFS not mounted", BLOB_NAME);
-        return 20;
+        return BLOB_ERR_LFS_NOT_MOUNTED;
     }
 
     lfs_file_t img_file;
@@ -873,11 +933,7 @@ static uint8_t capture_and_convert(
     );
     if (open_result < 0) {
         camera_power_off();
-        snprintf(
-            response_buf, response_buf_len, "%s error: can't open '%s' (err=%ld)",
-            BLOB_NAME, img_path, open_result
-        );
-        return 21;
+        return BLOB_ERR_IMG_OPEN_FAILED;
     }
 
     capture_state_t s = {
@@ -902,8 +958,7 @@ static uint8_t capture_and_convert(
     if (s.write_errors > 0) {
         lfs_file_close(&LFS_filesystem, &img_file);
         camera_power_off();
-        snprintf(response_buf, response_buf_len, "%s error: failed writing header", BLOB_NAME);
-        return 22;
+        return BLOB_ERR_HEADER_WRITE_FAILED;
     }
 
     // Start the DMA *before* triggering, so no early bytes are missed.
@@ -912,8 +967,7 @@ static uint8_t capture_and_convert(
         CAMERA_set_expecting_data(0);
         lfs_file_close(&LFS_filesystem, &img_file);
         camera_power_off();
-        snprintf(response_buf, response_buf_len, "%s error: failed starting camera RX DMA", BLOB_NAME);
-        return 23;
+        return BLOB_ERR_DMA_START_FAILED;
     }
 
     const uint8_t trigger = (uint8_t)lighting_mode;
@@ -922,11 +976,7 @@ static uint8_t capture_and_convert(
         CAMERA_set_expecting_data(0);
         lfs_file_close(&LFS_filesystem, &img_file);
         camera_power_off();
-        snprintf(
-            response_buf, response_buf_len, "%s error: failed sending trigger (HAL status=%u)",
-            BLOB_NAME, tx_status
-        );
-        return 24;
+        return BLOB_ERR_TRIGGER_SEND_FAILED;
     }
 
     receive_image(&s);
@@ -950,11 +1000,22 @@ static uint8_t capture_and_convert(
         convert_result = convert_img_to_jpg(img_path, jpg_path, &c);
     }
 
-    // Response.
+    CAM_capture_blob_error_enum_t result = BLOB_ERR_OK;
+    if (close_result < 0) {
+        result = BLOB_ERR_IMG_CLOSE_FAILED;
+    }
+    else if (s.end_reason == CAPTURE_END_NO_DATA) {
+        result = BLOB_ERR_NO_DATA;
+    }
+    else if (convert_result != 0) {
+        result = BLOB_ERR_JPG_CONVERT_FAILED;
+    }
+
+    // Response (full JSON, even on failure here, as the capture details help diagnose it).
     response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0 };
     response_append(
-        &w, "{\"action\":\"%s\",\"img\":\"%s\",\"jpg\":\"%s\"",
-        BLOB_NAME, img_path, jpg_path
+        &w, "{\"action\":\"%s\",\"result\":\"%s\",\"img\":\"%s\",\"jpg\":\"%s\"",
+        BLOB_NAME, camera_capture_blob_error_to_str(result), img_path, jpg_path
     );
 
     response_append(&w, ",\"meta\":%s", &header_buf[meta_start]);
@@ -974,13 +1035,14 @@ static uint8_t capture_and_convert(
         convert_result, c.jpg_bytes, c.sentences, c.first_num, c.last_num,
         c.total_field, c.gaps, c.missing, c.bad_lines, c.exif_written ? "true" : "false"
     );
-    if (c.face_found) response_append(&w, "\"%s\"}}", c.face_hex);
-    else response_append(&w, "null}}");
+    if (c.face_found) {
+        response_append(&w, "\"%s\"}}", c.face_hex);
+    }
+    else {
+        response_append(&w, "null}}");
+    }
 
-    if (close_result < 0) return 25;
-    if (s.end_reason == CAPTURE_END_NO_DATA) return 26;
-    if (convert_result != 0) return 27;
-    return 0;
+    return result;
 }
 
 
@@ -995,8 +1057,7 @@ uint8_t blob_main(
     char arg0_img_path[LFS_MAX_PATH_LENGTH];
     pos = parse_token(args_str, pos, args_str_len, arg0_img_path, sizeof(arg0_img_path));
     if (arg0_img_path[0] == '\0') {
-        snprintf(response_buf, response_buf_len, "%s error: missing img file path arg!", BLOB_NAME);
-        return 135;
+        return error_response(response_buf, response_buf_len, BLOB_ERR_MISSING_ARGS);
     }
     jpg_arg_to_img_path(arg0_img_path);
 
@@ -1006,24 +1067,20 @@ uint8_t blob_main(
     if (arg1_lighting[1] != '\0'
         || !(lighting_mode == 'd' || lighting_mode == 'm' || lighting_mode == 'n' || lighting_mode == 's')
     ) {
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: lighting mode (arg 1) must be one of d,m,n,s (got '%s')",
-            BLOB_NAME, arg1_lighting
-        );
-        return 136;
+        return error_response(response_buf, response_buf_len, BLOB_ERR_INVALID_LIGHTING_MODE);
     }
 
     if (pos < args_str_len) {
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: unexpected extra args '%s' (need <img_file_path>;<lighting_mode>)",
-            BLOB_NAME, &args_str[pos]
-        );
-        return 137;
+        return error_response(response_buf, response_buf_len, BLOB_ERR_TOO_MANY_ARGS);
     }
 
-    return capture_and_convert(
+    response_buf[0] = '\0';
+    const CAM_capture_blob_error_enum_t err = capture_and_convert(
         arg0_img_path, lighting_mode, response_buf, response_buf_len
     );
+    // Failures before the capture runs leave the response empty (see capture_and_convert()).
+    if (err != BLOB_ERR_OK && response_buf[0] == '\0') {
+        error_response(response_buf, response_buf_len, err);
+    }
+    return err;
 }
