@@ -158,6 +158,11 @@ extern volatile uint32_t STM32_watchdog_uptime_last_pet_ms;
 extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int vsnprintf(char *buf, unsigned int size, const char *fmt, va_list args);
 extern int strlen(const char *s);
+extern int strcmp(const char *a, const char *b);
+extern unsigned int strnlen(const char *s, unsigned int max_len);
+extern int memcmp(const void *a, const void *b, unsigned int n);
+extern void *memcpy(void *dst, const void *src, unsigned int n);
+extern void *memset(void *dst, int value, unsigned int n);
 
 extern int8_t LFS_ensure_mounted(void);
 extern uint8_t CAMERA_set_expecting_data(uint8_t new_enabled);
@@ -166,6 +171,7 @@ extern uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabl
 extern void STM32_pet_watchdog(void);
 void HAL_Delay(uint32_t Delay);
 extern char TIME_sync_source_enum_to_letter_char(TIME_sync_source_enum_t source);
+extern void GEN_uint64_to_str(uint64_t value, char *buffer);
 
 extern uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct);
 extern uint8_t ADCS_get_estimated_attitude_angles(ADCS_estimated_attitude_angles_struct_t *output_struct);
@@ -207,40 +213,29 @@ static uint16_t parse_token(
     return i;
 }
 
-/// @brief Check if `path` (of length `len`) ends with "." + the 3-char extension `ext`.
-static bool has_extension(const char *path, uint16_t len, const char ext[4]) {
-    return len >= 4
-        && path[len - 4] == '.' && path[len - 3] == ext[0]
-        && path[len - 2] == ext[1] && path[len - 1] == ext[2];
+/// @brief Check if `path` (of length `len`) ends with the 4-char extension `ext` (e.g., ".img").
+static bool has_extension(const char *path, uint16_t len, const char *ext) {
+    return len >= 4 && strcmp(&path[len - 4], ext) == 0;
 }
 
 /// @brief If the user passed a ".jpg" filename, change it to ".img" (in place), so the raw camera
 ///     data goes to the .img and the converted image ends up at the requested .jpg path.
 static void jpg_arg_to_img_path(char *path) {
     const uint16_t len = strlen(path);
-    if (has_extension(path, len, "jpg")) {
-        path[len - 3] = 'i';
-        path[len - 2] = 'm';
-        path[len - 1] = 'g';
+    if (has_extension(path, len, ".jpg")) {
+        memcpy(&path[len - 4], ".img", 4);
     }
 }
 
 /// @brief Make the .jpg path: replace a trailing ".img" with ".jpg", or else append ".jpg".
 static void make_jpg_path(const char *img_path, char jpg_path[JPG_PATH_BUF_LEN]) {
-    uint16_t len = 0;
-    while (img_path[len] != '\0' && len < LFS_MAX_PATH_LENGTH) {
-        jpg_path[len] = img_path[len];
-        len++;
-    }
+    uint16_t len = strnlen(img_path, LFS_MAX_PATH_LENGTH - 1);
+    memcpy(jpg_path, img_path, len);
 
-    if (has_extension(jpg_path, len, "img")) {
+    if (has_extension(img_path, len, ".img")) {
         len -= 4;
     }
-    jpg_path[len++] = '.';
-    jpg_path[len++] = 'j';
-    jpg_path[len++] = 'p';
-    jpg_path[len++] = 'g';
-    jpg_path[len] = '\0';
+    memcpy(&jpg_path[len], ".jpg", 5); // Includes the null terminator.
 }
 
 
@@ -266,14 +261,9 @@ static void response_append(response_writer_t *w, const char *fmt, ...) {
 
 /// @brief Append a uint64 as a JSON number (the firmware's printf doesn't support %llu).
 static void append_uint64(response_writer_t *w, uint64_t value) {
-    const uint32_t high = (uint32_t)(value / 1000000000ULL);
-    const uint32_t low = (uint32_t)(value % 1000000000ULL);
-    if (high == 0) {
-        response_append(w, "%lu", low);
-    }
-    else {
-        response_append(w, "%lu%09lu", high, low);
-    }
+    char str[21]; // Max uint64 is 20 digits.
+    GEN_uint64_to_str(value, str);
+    response_append(w, "%s", str);
 }
 
 
@@ -448,18 +438,15 @@ static void write_partial_dma_half(capture_state_t *s) {
         return;
     }
 
-    uint16_t len = 0;
-    while (len < UART_camera_dma_buffer_len_half && UART_camera_dma_buffer[start + len] != 0) {
-        len++;
-    }
+    // The DMA is stopped here, so it's safe to drop `volatile`.
+    const uint16_t len = strnlen((const char *)&UART_camera_dma_buffer[start], UART_camera_dma_buffer_len_half);
     write_to_img(s, &UART_camera_dma_buffer[start], len);
 }
 
 static void reset_camera_dma_buffers(void) {
-    // Volatile-safe memset. Zeros are required for write_partial_dma_half().
-    for (uint16_t i = 0; i < UART_camera_dma_buffer_len; i++) {
-        UART_camera_dma_buffer[i] = 0;
-    }
+    // Zeros are required for write_partial_dma_half(). Only called while the DMA is stopped, so
+    // it's safe to drop `volatile`.
+    memset((uint8_t *)UART_camera_dma_buffer, 0, UART_camera_dma_buffer_len);
     CAMERA_uart_half_1_state = CAM_STATE_IDLE;
     CAMERA_uart_half_2_state = CAM_STATE_IDLE;
 }
@@ -597,11 +584,9 @@ static void process_line(convert_state_t *c, const char *line, uint8_t len) {
         return;
     }
 
-    if (line[1] == 'F' && line[2] == 'A' && line[3] == 'C' && line[4] == 'E') {
+    if (memcmp(&line[1], "FACE", 4) == 0) {
         c->face_found = true;
-        for (uint8_t i = 0; i < CAM_LINE_LEN - 1; i++) {
-            c->face_hex[i] = line[i + 1];
-        }
+        memcpy(c->face_hex, &line[1], CAM_LINE_LEN - 1);
         c->face_hex[CAM_LINE_LEN - 1] = '\0';
         return;
     }
