@@ -26,6 +26,8 @@
 //      - automatic restart of the RX DMA if a UART error aborts it.
 //  4. Converts the .img to a .jpg (if the filename ends in ".img", it's replaced with ".jpg";
 //     otherwise ".jpg" is appended).
+//     If the given filename ends in ".jpg", the raw data is saved to the same name with ".img"
+//     instead, and the converted image is saved to the given ".jpg" name.
 //
 // Args Format: <img_file_path>;<lighting_mode>  or  <img_file_path>;<lighting_mode>;kwarg1=val;...
 // - lighting_mode: single char: d (daylight), m (medium), n (night), s (solar sail contrast)
@@ -258,6 +260,24 @@ static bool parse_kwarg(char *token, const char **key_out, uint32_t *value_out) 
     return ok;
 }
 
+/// @brief Check if `path` (of length `len`) ends with "." + the 3-char extension `ext`.
+static bool has_extension(const char *path, uint16_t len, const char ext[4]) {
+    return len >= 4
+        && path[len - 4] == '.' && path[len - 3] == ext[0]
+        && path[len - 2] == ext[1] && path[len - 1] == ext[2];
+}
+
+/// @brief If the user passed a ".jpg" filename, change it to ".img" (in place), so the raw camera
+///     data goes to the .img and the converted image ends up at the requested .jpg path.
+static void jpg_arg_to_img_path(char *path) {
+    const uint16_t len = strlen(path);
+    if (has_extension(path, len, "jpg")) {
+        path[len - 3] = 'i';
+        path[len - 2] = 'm';
+        path[len - 1] = 'g';
+    }
+}
+
 /// @brief Make the .jpg path: replace a trailing ".img" with ".jpg", or else append ".jpg".
 static void make_jpg_path(const char *img_path, char jpg_path[JPG_PATH_BUF_LEN]) {
     uint16_t len = 0;
@@ -266,10 +286,7 @@ static void make_jpg_path(const char *img_path, char jpg_path[JPG_PATH_BUF_LEN])
         len++;
     }
 
-    if (len >= 4
-        && jpg_path[len - 4] == '.' && jpg_path[len - 3] == 'i'
-        && jpg_path[len - 2] == 'm' && jpg_path[len - 1] == 'g'
-    ) {
+    if (has_extension(jpg_path, len, "img")) {
         len -= 4;
     }
     jpg_path[len++] = '.';
@@ -919,6 +936,7 @@ uint8_t blob_main(
         snprintf(response_buf, response_buf_len, "%s error: missing img file path arg!", BLOB_NAME);
         return 135;
     }
+    jpg_arg_to_img_path(arg0_img_path);
 
     char arg1_lighting[4];
     pos = parse_token(args_str, pos, args_str_len, arg1_lighting, sizeof(arg1_lighting));
