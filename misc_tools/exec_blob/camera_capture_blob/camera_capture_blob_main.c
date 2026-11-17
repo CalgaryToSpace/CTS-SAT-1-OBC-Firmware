@@ -19,25 +19,18 @@
 //     target if in a target-tracking control mode) and the current time/time-since-sync.
 //  2. Writes that metadata as a JSON header line in the .img file: `START_CAM:{...}\n`.
 //  3. Captures the image (raw camera ASCII sentences) into the .img file, using:
-//      - a first-data timeout (trigger -> first sentence),
+//      - a first-data timeout (trigger -> first sentence): FIRST_DATA_TIMEOUT_MS,
 //      - a true inter-byte idle timeout (via the DMA's remaining-bytes counter), which is the nominal
-//        exit condition,
-//      - a max duration (with the watchdog petted throughout),
+//        exit condition: IDLE_TIMEOUT_MS,
+//      - a max duration (with the watchdog petted throughout): MAX_DURATION_MS,
 //      - automatic restart of the RX DMA if a UART error aborts it.
 //  4. Converts the .img to a .jpg (if the filename ends in ".img", it's replaced with ".jpg";
 //     otherwise ".jpg" is appended).
 //     If the given filename ends in ".jpg", the raw data is saved to the same name with ".img"
 //     instead, and the converted image is saved to the given ".jpg" name.
 //
-// Args Format: <img_file_path>;<lighting_mode>  or  <img_file_path>;<lighting_mode>;kwarg1=val;...
+// Args Format: <img_file_path>;<lighting_mode>
 // - lighting_mode: single char: d (daylight), m (medium), n (night), s (solar sail contrast)
-// Supported kwargs (all non-negative integers):
-//  - first_data_timeout_ms: Max time from trigger until data starts arriving. Default: 10000.
-//  - idle_timeout_ms: After data starts, end the capture after this long with no new bytes.
-//      Default: 2000.
-//  - max_duration_ms: Hard cap on the capture duration. Default: 90000. Max: 240000.
-//  - jpg: 1 to convert to .jpg after capture (default), 0 to skip.
-//  - adcs: 1 to query the ADCS for the header (default), 0 to skip.
 //
 // Camera Data Format (each "sentence" is 67 bytes):
 //   '@' + 4 hex (sentence number) + 4 hex (total sentences) + 56 hex (28 JPEG bytes) + "\r\n"
@@ -55,14 +48,13 @@
 //  "ms_since_sync":N|null,"adcs":{"ok":true,"ctrl_mode":N,"est_mode":N,"roll_mdeg":N,
 //  "pitch_mdeg":N,"yaw_mdeg":N,"target":{"lon_deg":F,"lat_deg":F,"alt_m":F}}}
 // - "target" is only present when ctrl_mode is a target-tracking mode (7 or 15).
-// - If the ADCS doesn't respond: "adcs":{"ok":false,"err":N}. If skipped: "adcs":null.
+// - If the ADCS doesn't respond: "adcs":{"ok":false,"err":N}.
 // - If only the attitude/target query fails: "att_err":N / "target":{"err":N}.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/camera_capture_v2.blob", run:
 // CTS1+camera_setup()!
 // CTS1+exec_blob_from_fs(blobs/camera_capture_v2.blob,0,images/2026-11-17_pass_over_calgary.img;d)!
-// CTS1+exec_blob_from_fs(blobs/camera_capture_v2.blob,0,images/long_name.img;d;idle_timeout_ms=3000;jpg=0)!
 //
 // Notes:
 // 1. Run `CTS1+camera_setup()!` before each capture (same as v1). This blob turns the camera's EPS
@@ -91,13 +83,11 @@
 #define JPG_PATH_BUF_LEN (LFS_MAX_PATH_LENGTH + 4) // Room to append ".jpg".
 
 static const char ARG_DELIM = ';';
-static const char KWARG_DELIM = '=';
 static const char *BLOB_NAME = "camera_capture_v2";
 
-#define DEFAULT_FIRST_DATA_TIMEOUT_MS 10000
-#define DEFAULT_IDLE_TIMEOUT_MS 2000
-#define DEFAULT_MAX_DURATION_MS 90000
-#define MAX_MAX_DURATION_MS 240000
+#define FIRST_DATA_TIMEOUT_MS 10000
+#define IDLE_TIMEOUT_MS 2000
+#define MAX_DURATION_MS 90000
 
 // Data "starts" once this many bytes have arrived (one sentence). Avoids a stray byte (e.g., noise
 // when the trigger is sent) switching from the first-data timeout to the much shorter idle timeout.
@@ -217,49 +207,6 @@ static uint16_t parse_token(
     return i;
 }
 
-/// @brief Parse a string of decimal digits into an integer.
-/// @param s String to parse. Decimal digits only (no sign, no "0x" prefix).
-/// @param[out] ok Set to true if `s` is a valid non-empty decimal number.
-/// @returns Parsed integer, or 0 if invalid.
-static uint32_t parse_uint(const char *s, bool *ok) {
-    uint32_t result = 0;
-    *ok = (s[0] != '\0');
-    for (; *s != '\0'; s++) {
-        if (*s < '0' || *s > '9') {
-            *ok = false;
-            return 0;
-        }
-        result = result * 10 + (*s - '0');
-    }
-    return result;
-}
-
-static bool str_equal(const char *a, const char *b) {
-    while (*a != '\0' && *a == *b) {
-        a++;
-        b++;
-    }
-    return *a == *b;
-}
-
-/// @brief Parse a "key=value" token into a key and a non-negative integer value.
-/// @param token The token. Modified in place (the '=' is replaced with a null terminator).
-/// @param[out] key_out Set to point at the key within `token`.
-/// @param[out] value_out Set to the parsed value.
-/// @return true on success, false if there's no '=' or the value isn't a non-negative integer.
-static bool parse_kwarg(char *token, const char **key_out, uint32_t *value_out) {
-    uint16_t i = 0;
-    while (token[i] != '\0' && token[i] != KWARG_DELIM) i++;
-    if (token[i] != KWARG_DELIM) return false;
-
-    token[i] = '\0';
-    *key_out = token;
-
-    bool ok;
-    *value_out = parse_uint(&token[i + 1], &ok);
-    return ok;
-}
-
 /// @brief Check if `path` (of length `len`) ends with "." + the 3-char extension `ext`.
 static bool has_extension(const char *path, uint16_t len, const char ext[4]) {
     return len >= 4
@@ -337,15 +284,10 @@ static bool is_target_tracking_mode(ADCS_control_mode_enum_t mode) {
         || (mode == ADCS_CONTROL_MODE_TARGET_TRACKING_YAW_ONLY_WHEEL);
 }
 
-/// @brief Append the ADCS JSON object (or null) to the header.
+/// @brief Append the ADCS JSON object to the header.
 /// @details The current state request doubles as a probe: if it fails (e.g., ADCS powered off),
 ///     the other requests are skipped, as each failing request takes ~3.5 s.
-static void append_adcs_json(response_writer_t *w, bool query_adcs) {
-    if (!query_adcs) {
-        response_append(w, "null");
-        return;
-    }
-
+static void append_adcs_json(response_writer_t *w) {
     ADCS_current_state_1_struct_t state;
     const uint8_t state_err = ADCS_get_current_state_1(&state);
     if (state_err != 0) {
@@ -391,12 +333,12 @@ static void append_adcs_json(response_writer_t *w, bool query_adcs) {
 
 /// @brief Build the metadata JSON object (no prefix, no newline) into `w`.
 /// @note The ADCS is queried first, so that the timestamps are as close to the trigger as possible.
-static void build_meta_json(response_writer_t *w, char lighting_mode, bool query_adcs) {
+static void build_meta_json(response_writer_t *w, char lighting_mode) {
     // ADCS goes into a scratch writer first, so the time fields can be read after it.
     char adcs_buf[256];
     response_writer_t adcs_w = { .buf = adcs_buf, .size = sizeof(adcs_buf), .pos = 0 };
     adcs_buf[0] = '\0';
-    append_adcs_json(&adcs_w, query_adcs);
+    append_adcs_json(&adcs_w);
 
     const uint32_t now_uptime_ms = uptime_ms();
     const uint64_t epoch_ms = TIME_get_current_unix_epoch_time_ms();
@@ -441,12 +383,6 @@ static const char *capture_end_reason_str(capture_end_reason_t reason) {
     }
     return "unknown";
 }
-
-typedef struct {
-    uint32_t first_data_timeout_ms;
-    uint32_t idle_timeout_ms;
-    uint32_t max_duration_ms;
-} capture_config_t;
 
 typedef struct {
     lfs_file_t *img_file;
@@ -529,7 +465,7 @@ static void reset_camera_dma_buffers(void) {
 }
 
 /// @brief Receive the image into `s->img_file`. The DMA must already be started.
-static void receive_image(const capture_config_t *config, capture_state_t *s) {
+static void receive_image(capture_state_t *s) {
     blob_dma_channel_t *const dma = hdma_uart4_rx.Instance;
     const uint32_t dma_len = UART_camera_dma_buffer_len;
 
@@ -581,15 +517,15 @@ static void receive_image(const capture_config_t *config, capture_state_t *s) {
             continue;
         }
 
-        if (now_ms - start_ms > config->max_duration_ms) {
+        if (now_ms - start_ms > MAX_DURATION_MS) {
             s->end_reason = CAPTURE_END_MAX_DURATION;
             break;
         }
-        if (!data_started && (now_ms - start_ms > config->first_data_timeout_ms)) {
+        if (!data_started && (now_ms - start_ms > FIRST_DATA_TIMEOUT_MS)) {
             s->end_reason = CAPTURE_END_NO_DATA;
             break;
         }
-        if (data_started && (now_ms - last_activity_ms > config->idle_timeout_ms)) {
+        if (data_started && (now_ms - last_activity_ms > IDLE_TIMEOUT_MS)) {
             s->end_reason = CAPTURE_END_IDLE; // Nominal exit.
             break;
         }
@@ -784,8 +720,7 @@ static uint16_t uart_err_delta(uint16_t after, uint16_t before) {
 }
 
 static uint8_t capture_and_convert(
-    const char *img_path, char lighting_mode, const capture_config_t *config,
-    bool convert_jpg, bool query_adcs,
+    const char *img_path, char lighting_mode,
     char *response_buf, uint16_t response_buf_len
 ) {
     char jpg_path[JPG_PATH_BUF_LEN];
@@ -803,7 +738,7 @@ static uint8_t capture_and_convert(
     response_writer_t header_w = { .buf = header_buf, .size = sizeof(header_buf), .pos = 0 };
     response_append(&header_w, "START_CAM:");
     const uint16_t meta_start = header_w.pos;
-    build_meta_json(&header_w, lighting_mode, query_adcs);
+    build_meta_json(&header_w, lighting_mode);
     const uint16_t meta_end = header_w.pos;
     response_append(&header_w, "\n");
 
@@ -860,7 +795,7 @@ static uint8_t capture_and_convert(
         return 24;
     }
 
-    receive_image(config, &s);
+    receive_image(&s);
     camera_power_off();
 
     const int32_t close_result = lfs_file_close(&LFS_filesystem, &img_file);
@@ -869,15 +804,16 @@ static uint8_t capture_and_convert(
     // Convert to JPG.
     convert_state_t c = { .first_num = -1, .last_num = -1 };
     int32_t convert_result = 0;
-    if (convert_jpg && close_result >= 0) {
+    if (close_result >= 0) {
         convert_result = convert_img_to_jpg(img_path, jpg_path, &c);
     }
 
     // Response.
     response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0 };
-    response_append(&w, "{\"action\":\"%s\",\"img\":\"%s\",\"jpg\":", BLOB_NAME, img_path);
-    if (convert_jpg) response_append(&w, "\"%s\"", jpg_path);
-    else response_append(&w, "null");
+    response_append(
+        &w, "{\"action\":\"%s\",\"img\":\"%s\",\"jpg\":\"%s\"",
+        BLOB_NAME, img_path, jpg_path
+    );
 
     header_buf[meta_end] = '\0';
     response_append(&w, ",\"meta\":%s", &header_buf[meta_start]);
@@ -900,20 +836,15 @@ static uint8_t capture_and_convert(
         uart_err_delta(errs_after.handler_buffer_full_error_count, errs_before.handler_buffer_full_error_count)
     );
 
-    if (!convert_jpg) {
-        response_append(&w, ",\"jpg_result\":null}");
-    }
-    else {
-        response_append(
-            &w,
-            ",\"jpg_result\":{\"err\":%ld,\"bytes\":%lu,\"sentences\":%lu,\"first\":%ld,\"last\":%ld,"
-            "\"total_field\":%u,\"gaps\":%lu,\"missing\":%lu,\"bad_lines\":%lu,\"face\":",
-            convert_result, c.jpg_bytes, c.sentences, c.first_num, c.last_num,
-            c.total_field, c.gaps, c.missing, c.bad_lines
-        );
-        if (c.face_found) response_append(&w, "\"%s\"}}", c.face_hex);
-        else response_append(&w, "null}}");
-    }
+    response_append(
+        &w,
+        ",\"jpg_result\":{\"err\":%ld,\"bytes\":%lu,\"sentences\":%lu,\"first\":%ld,\"last\":%ld,"
+        "\"total_field\":%u,\"gaps\":%lu,\"missing\":%lu,\"bad_lines\":%lu,\"face\":",
+        convert_result, c.jpg_bytes, c.sentences, c.first_num, c.last_num,
+        c.total_field, c.gaps, c.missing, c.bad_lines
+    );
+    if (c.face_found) response_append(&w, "\"%s\"}}", c.face_hex);
+    else response_append(&w, "null}}");
 
     if (close_result < 0) return 25;
     if (s.end_reason == CAPTURE_END_NO_DATA) return 26;
@@ -952,54 +883,16 @@ uint8_t blob_main(
         return 136;
     }
 
-    capture_config_t config = {
-        .first_data_timeout_ms = DEFAULT_FIRST_DATA_TIMEOUT_MS,
-        .idle_timeout_ms = DEFAULT_IDLE_TIMEOUT_MS,
-        .max_duration_ms = DEFAULT_MAX_DURATION_MS,
-    };
-    bool convert_jpg = true;
-    bool query_adcs = true;
-
-    // Parse kwargs.
-    while (pos < args_str_len) {
-        char kwarg_token[48];
-        pos = parse_token(args_str, pos, args_str_len, kwarg_token, sizeof(kwarg_token));
-        if (kwarg_token[0] == '\0') continue; // Tolerate empty tokens (e.g., trailing ';').
-
-        const char *key;
-        uint32_t value;
-        if (!parse_kwarg(kwarg_token, &key, &value)) {
-            snprintf(
-                response_buf, response_buf_len,
-                "%s error: invalid kwarg '%s' (need key=non_negative_int)",
-                BLOB_NAME, kwarg_token
-            );
-            return 137;
-        }
-
-        if (str_equal(key, "first_data_timeout_ms")) {
-            config.first_data_timeout_ms = value;
-        }
-        else if (str_equal(key, "idle_timeout_ms")) {
-            config.idle_timeout_ms = value;
-        }
-        else if (str_equal(key, "max_duration_ms")) {
-            config.max_duration_ms = (value > MAX_MAX_DURATION_MS) ? MAX_MAX_DURATION_MS : value;
-        }
-        else if (str_equal(key, "jpg")) {
-            convert_jpg = (value != 0);
-        }
-        else if (str_equal(key, "adcs")) {
-            query_adcs = (value != 0);
-        }
-        else {
-            snprintf(response_buf, response_buf_len, "%s error: unknown kwarg '%s'", BLOB_NAME, key);
-            return 138;
-        }
+    if (pos < args_str_len) {
+        snprintf(
+            response_buf, response_buf_len,
+            "%s error: unexpected extra args '%s' (need <img_file_path>;<lighting_mode>)",
+            BLOB_NAME, &args_str[pos]
+        );
+        return 137;
     }
 
     return capture_and_convert(
-        arg0_img_path, lighting_mode, &config, convert_jpg, query_adcs,
-        response_buf, response_buf_len
+        arg0_img_path, lighting_mode, response_buf, response_buf_len
     );
 }
