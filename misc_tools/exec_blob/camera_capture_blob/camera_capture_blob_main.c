@@ -1,47 +1,35 @@
 // This is a blob (executable) that replaces the "CTS1+camera_capture" telecommand ("v1").
 //
-// Motivation: The built-in `camera_capture` telecommand has several limitations:
-//  1. Filenames are limited to 31 chars.
-//  2. Captures of complex (large) images end early. Causes found in the v1 receive loop:
-//     a. "Idle" is measured with `UART_camera_last_write_time_ms`, which only updates once per
-//        16750-byte half-buffer, and is never reset at the start of a capture. After 6 s, a stale
-//        value from the previous capture makes the loop exit before the first half-buffer arrives.
-//     b. The 20 s total timeout is longer than the 16 s STM32 watchdog, and the watchdog isn't
-//        petted during the capture.
-//     c. A UART error (e.g., overrun) aborts the camera's RX DMA, and the firmware's error callback
-//        deliberately never restarts it, so reception silently stops.
-//     d. A half-buffer that completes right before the loop exits is never written to the file.
-//  3. No JPG output (conversion was ground-side only, via misc_tools/picam_parse_data.py).
-//  4. No metadata (time, attitude) is saved alongside the image.
+// Motivation: The built-in `camera_capture` telecommand has a small bug where certain captures
+// of complex (large) images end early. Since we're upgrading it anyway, there are a few new features.
 //
-// This blob does the following:
-//  1. Right before the capture, queries the ADCS (control mode, estimation mode, estimated attitude
-//     angles, and the tracking target if in a target-tracking control mode), then reads the
-//     current time/time-since-sync.
-//  2. Writes that metadata as a JSON header line in the .img file: `START_CAM:{...}\n`.
-//  3. Captures the image (raw camera ASCII sentences) into the .img file, using:
-//      - a first-data timeout (trigger -> first sentence): FIRST_DATA_TIMEOUT_MS,
-//      - a true inter-byte idle timeout (via the DMA's remaining-bytes counter), which is the nominal
-//        exit condition: IDLE_TIMEOUT_MS,
-//      - a max duration (with the watchdog petted throughout): MAX_DURATION_MS,
-//      - automatic restart of the RX DMA if a UART error aborts it.
-//  4. Converts the .img to a .jpg (if the filename ends in ".img", it's replaced with ".jpg";
-//     otherwise ".jpg" is appended).
-//     If the given filename ends in ".jpg", the raw data is saved to the same name with ".img"
-//     instead, and the converted image is saved to the given ".jpg" name.
-//  5. Embeds EXIF metadata in the .jpg (see "EXIF Metadata" below).
+// New Features:
+//  1. The `.img` file is converted to a `.jpg` file (saved alongside the original).
+//  2. Metadata (timestamp, ADCS attitude) is written to the `.img` file as text and to the `.jpg` file as EXIF metadata.
 //
 // Args Format: <img_file_path>;<lighting_mode>
 // - lighting_mode: single char: d (daylight), m (medium), n (night), s (solar sail contrast)
 //
-// Camera Data Format (each "sentence" is 67 bytes):
-//   '@' + 4 hex (sentence number) + 4 hex (total sentences) + 56 hex (28 JPEG bytes) + "\r\n"
-// The final sentence starts with "@FACE" and holds camera telemetry (not JPEG data).
+// Usage Example:
+// After uplinking the blob as "blobs/camera_capture_v2.blob", run:
+// CTS1+camera_setup()!
+// CTS1+exec_blob_from_fs(blobs/camera_capture_v2.blob,0,camera/2026-11/2026-11-17_023451.img;d)!
+//
+// Notes:
+// 1. Run `CTS1+camera_setup()!` before each capture (same as v1). This blob turns the camera's EPS
+//    channel off when it's done (also the same as v1).
+// 2. In the image capture example above, the `.jpg` file generated will have the filename
+//    `camera/2026-11/2026-11-17_023451.jpg`. The `.jpg` file is much smaller (about half the filesize),
+//    and is recommended for downlinking.
+//
+// #########################################
+// ##### Implementation Details ############
+// #########################################
 //
 // Response Format (JSON):
 // {"action":"camera_capture_v2","result":"OK","img":"<path>","jpg":"<path>","meta":{<same as .img header>},
-//  "capture":{"end":"idle","rx_bytes":N,"written":N,"write_errs":N,"first_data_ms":N,
-//    "duration_ms":N,"dma_restarts":N},
+//  "capture":{"end_reason":"idle","rx_bytes":N,"written":N,"write_errs":N,"close_err":N,
+//    "first_data_ms":N,"duration_ms":N,"dma_restarts":N},
 //  "jpg_result":{"err":0,"bytes":N,"sentences":N,"first":N,"last":N,"total_field":N,"gaps":N,
 //    "missing":N,"bad_lines":N,"exif":true,"face":"<64 hex chars>"|null}}
 //
@@ -62,29 +50,31 @@
 // - ImageDescription: the full metadata JSON (same as the .img header).
 // "exif" in the response is false if the start of the JPEG (SOI marker) wasn't found (e.g., the
 // first sentence was lost), in which case the .jpg is written without EXIF.
+// 
+// This blob does the following:
+//  1. Right before the capture, queries the ADCS (control mode, estimation mode, estimated attitude
+//     angles, and the tracking target if in a target-tracking control mode), then reads the
+//     current time/time-since-sync.
+//  2. Writes that metadata as a JSON header line in the .img file: `START_CAM:{...}\n`.
+//  3. Captures the image (raw camera ASCII sentences) into the .img file, using:
+//      - a first-data timeout (trigger -> first sentence): FIRST_DATA_TIMEOUT_MS,
+//      - a true inter-byte idle timeout (via the DMA's remaining-bytes counter), which is the nominal
+//        exit condition: IDLE_TIMEOUT_MS,
+//      - a max duration (with the watchdog petted throughout): MAX_DURATION_MS,
+//      - automatic restart of the RX DMA if a UART error aborts it.
+//  4. Converts the .img to a .jpg (if the filename ends in ".img", it's replaced with ".jpg";
+//     otherwise ".jpg" is appended).
+//     If the given filename ends in ".jpg", the raw data is saved to the same name with ".img"
+//     instead, and the converted image is saved to the given ".jpg" name.
+//  5. Embeds EXIF metadata in the .jpg.
+//
+// Camera Data Format (each "sentence" is 67 bytes):
+//   '@' + 4 hex (sentence number) + 4 hex (total sentences) + 56 hex (28 JPEG bytes) + "\r\n"
+// The final sentence starts with "@FACE" and holds camera telemetry (not JPEG data).
 //
 // Errors before the capture starts (e.g., bad args, LFS not mounted) respond with only
 // "camera_capture_v2 error: <ERROR_NAME>" (see CAM_capture_blob_error_enum_t). Once the capture has
 // run, the full JSON response is always sent, with the error name in "result".
-//
-// Usage Example:
-// After uplinking the blob as "blobs/camera_capture_v2.blob", run:
-// CTS1+camera_setup()!
-// CTS1+exec_blob_from_fs(blobs/camera_capture_v2.blob,0,images/2026-11-17_pass_over_calgary.img;d)!
-//
-// Notes:
-// 1. Run `CTS1+camera_setup()!` before each capture (same as v1). This blob turns the camera's EPS
-//    channel off when it's done (also the same as v1).
-// 2. "end" in the response is one of: "idle" (nominal), "max_duration", "no_data",
-//    "dma_restart_failed", "too_many_dma_restarts".
-// 3. "rx_bytes" is the number of bytes the DMA received, and "written" is the number of bytes written
-//    to the .img file (including the header). If "rx_bytes" is much larger than "written", the
-//    filesystem writes couldn't keep up, and whole half-buffers (16750 bytes) were lost.
-// 4. "complete" image indicators: "face" is non-null, and "gaps", "missing", and "bad_lines" are 0.
-// 5. Sentences are written to the .jpg in the order received, even if there are gaps (same as
-//    misc_tools/picam_parse_data.py). Malformed lines are skipped. The parser re-syncs on every '@',
-//    so dropped bytes only lose the affected sentences.
-
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -1022,7 +1012,7 @@ static CAM_capture_blob_error_enum_t capture_and_convert(
 
     response_append(
         &w,
-        ",\"capture\":{\"end\":\"%s\",\"rx_bytes\":%lu,\"written\":%lu,\"write_errs\":%lu,"
+        ",\"capture\":{\"end_reason\":\"%s\",\"rx_bytes\":%lu,\"written\":%lu,\"write_errs\":%lu,"
         "\"close_err\":%ld,\"first_data_ms\":%lu,\"duration_ms\":%lu,\"dma_restarts\":%u}",
         capture_end_reason_str(s.end_reason), s.rx_bytes, s.bytes_written, s.write_errors,
         (close_result < 0) ? close_result : 0, s.first_data_ms, s.duration_ms, s.dma_restarts

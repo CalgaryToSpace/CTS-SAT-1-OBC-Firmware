@@ -698,3 +698,41 @@ The response is tightly-packed JSON, like:
     "other_bytes_changed": 0
 }
 ```
+
+
+## `blobs/camera_capture_v2.blob`
+
+This is a blob (executable) that replaces the "CTS1+camera_capture" telecommand ("v1").
+
+Motivation: The built-in `camera_capture` telecommand has a small bug where certain captures
+of complex (large) images end early. Since we're upgrading it anyway, there are a few new features.
+
+### Description
+
+```
+ Args Format: <img_file_path>;<lighting_mode>
+ - lighting_mode: single char: d (daylight), m (medium), n (night), s (solar sail contrast)
+```
+
+### New Features
+1. The `.img` file is converted to a `.jpg` file (saved alongside the original).
+2. Metadata (timestamp, ADCS attitude) is written to the `.img` file as text and to the `.jpg` file as EXIF metadata.
+
+### Usage Example
+After uplinking the blob as "blobs/camera_capture_v2.blob", run:
+
+```
+CTS1+camera_setup()!
+CTS1+exec_blob_from_fs(blobs/camera_capture_v2.blob,0,camera/2026-11/2026-11-17_023451.img;d)!
+```
+
+This will produce the following files:
+- `camera/2026-11/2026-11-17_023451.img`
+- `camera/2026-11/2026-11-17_023451.jpg`
+
+### Notes
+ 1. Run `CTS1+camera_setup()!` before each capture (same as v1). This blob turns the camera's EPS
+    channel off when it's done (also the same as v1).
+ 2. In the image capture example above, the `.jpg` file generated will have the filename
+    `camera/2026-11/2026-11-17_023451.jpg`. The `.jpg` file is much smaller (about half the filesize),
+    and is recommended for downlinking.
