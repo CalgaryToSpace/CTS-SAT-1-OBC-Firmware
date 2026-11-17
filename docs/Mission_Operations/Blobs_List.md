@@ -736,3 +736,13 @@ This will produce the following files:
  2. In the image capture example above, the `.jpg` file generated will have the filename
     `camera/2026-11/2026-11-17_023451.jpg`. The `.jpg` file is much smaller (about half the filesize),
     and is recommended for downlinking.
+
+### Versions
+
+* v1
+    * Built-in `CTS1+camera_capture(...)` telecommand.
+    * Bug: The transfer from the camera finishes early sometimes, truncating the image contents, leaving a section of the image gray.
+* v2
+    * Fix: Early timeouts caused images to be chopped off; fixed in this version.
+    * Feature: The `.img` files have a header with a timestamp and ADCS attitude data.
+    * Feature: The `.img` file is converted to a `.jpg` file (which has a smaller file size, and has EXIF metadata).
