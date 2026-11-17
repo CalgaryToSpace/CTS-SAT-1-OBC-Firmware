@@ -174,7 +174,7 @@ extern uint8_t CAMERA_set_expecting_data(uint8_t new_enabled);
 extern int HAL_UART_Transmit(void *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
 extern uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled);
 extern void STM32_pet_watchdog(void);
-extern int osDelay(uint32_t ticks);
+void HAL_Delay(uint32_t Delay);
 extern char TIME_sync_source_enum_to_letter_char(TIME_sync_source_enum_t source);
 
 extern uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct);
@@ -594,7 +594,7 @@ static void receive_image(const capture_config_t *config, capture_state_t *s) {
             break;
         }
 
-        osDelay(1);
+        HAL_Delay(1);
     }
 
     CAMERA_set_expecting_data(0);
