@@ -39,7 +39,7 @@
 // Response Format (JSON):
 // {"action":"camera_capture_v2","img":"<path>","jpg":"<path>","meta":{<same as .img header>},
 //  "capture":{"end":"idle","rx_bytes":N,"written":N,"write_errs":N,"first_data_ms":N,
-//    "duration_ms":N,"dma_restarts":N,"uart_errs":{"pe":N,"ne":N,"fe":N,"ore":N,"dma":N,"buf_full":N}},
+//    "duration_ms":N,"dma_restarts":N},
 //  "jpg_result":{"err":0,"bytes":N,"sentences":N,"first":N,"last":N,"total_field":N,"gaps":N,
 //    "missing":N,"bad_lines":N,"face":"<64 hex chars>"|null}}
 //
@@ -62,8 +62,8 @@
 // 2. "end" in the response is one of: "idle" (nominal), "max_duration", "no_data",
 //    "dma_restart_failed", "too_many_dma_restarts".
 // 3. "rx_bytes" is the number of bytes the DMA received, and "written" is the number of bytes written
-//    to the .img file (including the header). If "uart_errs.buf_full" is non-zero, the filesystem
-//    writes couldn't keep up, and whole half-buffers (16750 bytes) were lost.
+//    to the .img file (including the header). If "rx_bytes" is much larger than "written", the
+//    filesystem writes couldn't keep up, and whole half-buffers (16750 bytes) were lost.
 // 4. "complete" image indicators: "face" is non-null, and "gaps", "missing", and "bad_lines" are 0.
 // 5. Sentences are written to the .jpg in the order received, even if there are gaps (same as
 //    misc_tools/picam_parse_data.py). Malformed lines are skipped. The parser re-syncs on every '@',
@@ -129,17 +129,6 @@ typedef struct {
     blob_dma_channel_t *Instance;
 } blob_dma_handle_prefix_t;
 
-// Mirror of `UART_error_counts_single_subsystem_struct_t` (uart_handler/uart_error_tracking.h).
-typedef struct {
-    uint16_t parity_error_count;
-    uint16_t noise_error_count;
-    uint16_t frame_error_count;
-    uint16_t overrun_error_count;
-    uint16_t dma_transfer_error_count;
-    uint16_t receiver_timeout_error_count;
-    uint16_t handler_buffer_full_error_count;
-} blob_uart_error_counts_t;
-
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
 extern volatile uint8_t CAMERA_uart_half_1_state;
@@ -151,7 +140,6 @@ extern volatile uint8_t UART_camera_pending_fs_write_half_1_buf[];
 extern volatile uint8_t UART_camera_pending_fs_write_half_2_buf[];
 extern void *UART_camera_port_handle; // Actually `UART_HandleTypeDef *`.
 extern blob_dma_handle_prefix_t hdma_uart4_rx; // Camera UART RX DMA. Actually `DMA_HandleTypeDef`.
-extern blob_uart_error_counts_t UART_error_camera_error_info;
 extern volatile uint32_t STM32_watchdog_uptime_last_pet_ms;
 // TIME_* globals are declared in timekeeping/timekeeping.h.
 
@@ -700,10 +688,6 @@ static void camera_power_off(void) {
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
 }
 
-static uint16_t uart_err_delta(uint16_t after, uint16_t before) {
-    return (uint16_t)(after - before);
-}
-
 static uint8_t capture_and_convert(
     const char *img_path, char lighting_mode,
     char *response_buf, uint16_t response_buf_len
@@ -755,8 +739,6 @@ static uint8_t capture_and_convert(
         return 22;
     }
 
-    const blob_uart_error_counts_t errs_before = UART_error_camera_error_info;
-
     // Start the DMA *before* triggering, so no early bytes are missed.
     reset_camera_dma_buffers();
     if (CAMERA_set_expecting_data(1) != 0) {
@@ -784,7 +766,6 @@ static uint8_t capture_and_convert(
     camera_power_off();
 
     const int32_t close_result = lfs_file_close(&LFS_filesystem, &img_file);
-    const blob_uart_error_counts_t errs_after = UART_error_camera_error_info;
 
     // Convert to JPG.
     convert_state_t c = { .first_num = -1, .last_num = -1 };
@@ -806,19 +787,9 @@ static uint8_t capture_and_convert(
     response_append(
         &w,
         ",\"capture\":{\"end\":\"%s\",\"rx_bytes\":%lu,\"written\":%lu,\"write_errs\":%lu,"
-        "\"close_err\":%ld,\"first_data_ms\":%lu,\"duration_ms\":%lu,\"dma_restarts\":%u,",
+        "\"close_err\":%ld,\"first_data_ms\":%lu,\"duration_ms\":%lu,\"dma_restarts\":%u}",
         capture_end_reason_str(s.end_reason), s.rx_bytes, s.bytes_written, s.write_errors,
         (close_result < 0) ? close_result : 0, s.first_data_ms, s.duration_ms, s.dma_restarts
-    );
-    response_append(
-        &w,
-        "\"uart_errs\":{\"pe\":%u,\"ne\":%u,\"fe\":%u,\"ore\":%u,\"dma\":%u,\"buf_full\":%u}}",
-        uart_err_delta(errs_after.parity_error_count, errs_before.parity_error_count),
-        uart_err_delta(errs_after.noise_error_count, errs_before.noise_error_count),
-        uart_err_delta(errs_after.frame_error_count, errs_before.frame_error_count),
-        uart_err_delta(errs_after.overrun_error_count, errs_before.overrun_error_count),
-        uart_err_delta(errs_after.dma_transfer_error_count, errs_before.dma_transfer_error_count),
-        uart_err_delta(errs_after.handler_buffer_full_error_count, errs_before.handler_buffer_full_error_count)
     );
 
     response_append(
