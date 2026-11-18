@@ -31,7 +31,11 @@
 //  "capture":{"end_reason":"idle","rx_bytes":N,"written":N,"write_errs":N,"close_err":N,
 //    "first_data_ms":N,"duration_ms":N,"dma_restarts":N},
 //  "jpg_result":{"err":0,"bytes":N,"sentences":N,"first":N,"last":N,"total_field":N,"gaps":N,
-//    "missing":N,"bad_lines":N,"exif":true,"face":"<64 hex chars>"|null}}
+//    "missing":N,"bad_lines":N,"exif":true,"convert_ms":N,"timed_out":false,
+//    "face":"<64 hex chars>"|null}}
+// - If the conversion takes over CONVERT_MAX_DURATION_MS, it stops there: "timed_out" is true, the
+//   .jpg is partial (bottom of the image missing), and "result" is "JPG_CONVERT_TIMEOUT". The .img
+//   is complete, so it can still be downlinked.
 //
 // Header Format (first line of the .img file):
 // START_CAM:{"blob":"camera_capture_v2","lighting":"d","epoch_ms":N,"sync_src":"G",
@@ -108,6 +112,10 @@ static const char *BLOB_NAME = "camera_capture_v2";
 #define CAM_LINE_LEN 65 // '@' + 64 hex chars (excluding "\r\n").
 #define CAM_SENTENCE_DATA_BYTES 28
 #define CAM_LINE_BUF_LEN 72
+
+// Cap on the .img to .jpg conversion, so it can never keep the system busy (petting the watchdog)
+// indefinitely. A ~1 MB .img (the most a 90 s capture can produce) is expected to be well under this.
+#define CONVERT_MAX_DURATION_MS 60000
 
 #define CONVERT_READ_BUF_LEN 256
 #define CONVERT_SENTENCES_PER_WRITE 8
@@ -190,6 +198,7 @@ typedef enum {
     BLOB_ERR_IMG_CLOSE_FAILED = 25, // Closing the .img failed (it may be incomplete).
     BLOB_ERR_NO_DATA = 26, // The camera sent no data before the first-data timeout.
     BLOB_ERR_JPG_CONVERT_FAILED = 27, // An LFS error during the .img to .jpg conversion.
+    BLOB_ERR_JPG_CONVERT_TIMEOUT = 28, // Conversion exceeded CONVERT_MAX_DURATION_MS (.jpg is partial).
     BLOB_ERR_MISSING_ARGS = 135, // The img file path arg is missing.
     BLOB_ERR_INVALID_LIGHTING_MODE = 136, // The lighting mode arg isn't one of d,m,n,s.
     BLOB_ERR_TOO_MANY_ARGS = 137, // There are args after the lighting mode.
@@ -209,6 +218,7 @@ static const char *camera_capture_blob_error_to_str(CAM_capture_blob_error_enum_
         case BLOB_ERR_IMG_CLOSE_FAILED: return "IMG_CLOSE_FAILED";
         case BLOB_ERR_NO_DATA: return "NO_DATA";
         case BLOB_ERR_JPG_CONVERT_FAILED: return "JPG_CONVERT_FAILED";
+        case BLOB_ERR_JPG_CONVERT_TIMEOUT: return "JPG_CONVERT_TIMEOUT";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_LIGHTING_MODE: return "INVALID_LIGHTING_MODE";
         case BLOB_ERR_TOO_MANY_ARGS: return "TOO_MANY_ARGS";
@@ -722,6 +732,8 @@ typedef struct {
     int32_t first_num; // -1 if none.
     int32_t last_num; // -1 if none.
     uint16_t total_field; // "Total sentences" field from the last valid sentence.
+    uint32_t convert_ms; // Duration of the conversion (0 if it didn't run).
+    bool timed_out; // Conversion stopped at CONVERT_MAX_DURATION_MS (.jpg is partial).
     bool face_found;
     char face_hex[CAM_LINE_LEN]; // 64 hex chars + null.
     uint8_t out_buf[CAM_SENTENCE_DATA_BYTES * CONVERT_SENTENCES_PER_WRITE];
@@ -831,6 +843,7 @@ static void process_line(convert_state_t *c, const char *line, uint8_t len) {
 static int32_t convert_img_to_jpg(const char *img_path, const char *jpg_path, convert_state_t *c) {
     lfs_file_t img_file;
     lfs_file_t jpg_file;
+    const uint32_t start_ms = uptime_ms();
 
     int32_t result = lfs_file_open(&LFS_filesystem, &img_file, img_path, LFS_O_RDONLY);
     if (result < 0) return result;
@@ -851,6 +864,12 @@ static int32_t convert_img_to_jpg(const char *img_path, const char *jpg_path, co
 
     while (1) {
         pet_watchdog_if_due();
+
+        if (uptime_ms() - start_ms > CONVERT_MAX_DURATION_MS) {
+            c->timed_out = true;
+            result = 0; // Not an LFS error. The partial .jpg is still flushed and closed below.
+            break;
+        }
 
         const lfs_ssize_t bytes_read = lfs_file_read(&LFS_filesystem, &img_file, read_buf, sizeof(read_buf));
         if (bytes_read < 0) {
@@ -878,8 +897,8 @@ static int32_t convert_img_to_jpg(const char *img_path, const char *jpg_path, co
         }
     }
 
-    // Last line, in case the file doesn't end with "\r\n".
-    if (result == 0) {
+    // Last line, in case the file doesn't end with "\r\n". (After a timeout, it's just cut off.)
+    if (result == 0 && !c->timed_out) {
         if (line_overflow) c->bad_lines++;
         else process_line(c, line, line_len);
     }
@@ -891,6 +910,7 @@ static int32_t convert_img_to_jpg(const char *img_path, const char *jpg_path, co
     const int32_t img_close = lfs_file_close(&LFS_filesystem, &img_file);
     if (result == 0 && jpg_close < 0) result = jpg_close;
     if (result == 0 && img_close < 0) result = img_close;
+    c->convert_ms = uptime_ms() - start_ms;
     return result;
 }
 
@@ -1000,6 +1020,9 @@ static CAM_capture_blob_error_enum_t capture_and_convert(
     else if (convert_result != 0) {
         result = BLOB_ERR_JPG_CONVERT_FAILED;
     }
+    else if (c.timed_out) {
+        result = BLOB_ERR_JPG_CONVERT_TIMEOUT;
+    }
 
     // Response (full JSON, even on failure here, as the capture details help diagnose it).
     response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0 };
@@ -1021,9 +1044,11 @@ static CAM_capture_blob_error_enum_t capture_and_convert(
     response_append(
         &w,
         ",\"jpg_result\":{\"err\":%ld,\"bytes\":%lu,\"sentences\":%lu,\"first\":%ld,\"last\":%ld,"
-        "\"total_field\":%u,\"gaps\":%lu,\"missing\":%lu,\"bad_lines\":%lu,\"exif\":%s,\"face\":",
+        "\"total_field\":%u,\"gaps\":%lu,\"missing\":%lu,\"bad_lines\":%lu,\"exif\":%s,"
+        "\"convert_ms\":%lu,\"timed_out\":%s,\"face\":",
         convert_result, c.jpg_bytes, c.sentences, c.first_num, c.last_num,
-        c.total_field, c.gaps, c.missing, c.bad_lines, c.exif_written ? "true" : "false"
+        c.total_field, c.gaps, c.missing, c.bad_lines, c.exif_written ? "true" : "false",
+        c.convert_ms, c.timed_out ? "true" : "false"
     );
     if (c.face_found) {
         response_append(&w, "\"%s\"}}", c.face_hex);
