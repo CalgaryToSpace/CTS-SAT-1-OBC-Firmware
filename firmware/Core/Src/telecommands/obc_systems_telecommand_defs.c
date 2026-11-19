@@ -234,6 +234,15 @@ uint8_t TCMDEXEC_obc_set_stm32_sysclk_to_hse(
 ) {
     const uint32_t SystemCoreClock_at_start = SystemCoreClock;
 
+    if (SystemCoreClock == HSE_VALUE) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Clock already set to HSE (%lu Hz). No action taken.",
+            SystemCoreClock
+        );
+        return 0;
+    }
+
     if (HSE_VALUE != 25000000) {
         snprintf(
             response_output_buf, response_output_buf_len,
