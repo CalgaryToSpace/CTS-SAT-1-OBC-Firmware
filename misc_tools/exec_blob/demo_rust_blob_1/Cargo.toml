@@ -1,0 +1,20 @@
+[package]
+name = "demo_rust_blob_1"
+version = "0.1.0"
+edition = "2024"
+
+[profile.release]
+opt-level = "s"
+lto = true          # important: eliminates any cross-crate thunks
+codegen-units = 1   # single CGU ensures section ordering is predictable
+panic = "abort"     # no unwinding machinery
+
+[[bin]]
+name = "demo_rust_blob_1"
+path = "src/blob_main.rs"
+
+[dependencies]
+heapless = { version = "0.8", features = ["ufmt"]}
+ufmt = "0.2.0"
+serde = { version = "1", default-features = false, features = ["derive"] }
+serde-json-core = "0.6"
