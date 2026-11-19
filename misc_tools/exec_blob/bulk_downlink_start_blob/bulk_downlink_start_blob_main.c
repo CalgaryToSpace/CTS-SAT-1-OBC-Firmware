@@ -22,7 +22,6 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <stdarg.h>
 
 #include "../lfs.h"
 #include "../blob_libs/sha256_fast.h"
