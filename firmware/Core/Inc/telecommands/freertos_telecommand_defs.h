@@ -14,4 +14,10 @@ uint8_t TCMDEXEC_freertos_demo_stack_usage(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_freertos_heap_stats_json(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
+
 #endif // INCLUDE_GUARD__FREERTOS_TELECOMMAND_DEFINITIONS_H
