@@ -160,8 +160,8 @@ Running this blob triggers the extended beacon.
     tested on a dev kit, and must be tested on the flatsat with the ADCS engg model computer.
 3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
     a tssent value of `<interval_ms>` after the beacon is sent.
-4. A run does NOT reschedule itself if another pending run of this same blob file (any args) is
-    due within the next `2*<interval_ms>`; that upcoming run takes over instead. Pending runs
+4. A run does NOT reschedule itself if another pending run of this blob family (any file named
+    `extended_beacon_v*`, so any version, with any args) is due within the next `2*<interval_ms>`; that upcoming run takes over instead. Pending runs
     further out are left alone, so several reconfigurations can be scheduled ahead of time, and
     each hands off to the next. Caveat: re-running this blob immediately while it's already
     repeating does NOT replace the running chain (the new run yields to the chain's next rerun).
@@ -241,9 +241,9 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
     * No changes to the packet format or packet ID, other than the version string.
     * Has version string ` X6\0` (live beacons), and ` S6\0` (ring-stored beacons, when downlinked as history).
     * Change: No longer cancels other pending runs of this blob. Instead, it doesn't reschedule
-      itself if another run of this blob is due within `2*<interval_ms>`, so future
-      reconfigurations can be scheduled with `@tsexec`.
-    * Change: Error 137 renamed `CANCEL_RERUNS_FAILED` -> `BAD_OWN_ARGS`.
+      itself if another run of any `extended_beacon_v*` blob is due within `2*<interval_ms>`, so
+      future reconfigurations (or upgrades to later versions) can be scheduled with `@tsexec`.
+    * Change: Error 137 (`CANCEL_RERUNS_FAILED`) removed.
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 
@@ -357,11 +357,11 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 * Supersedes: `blobs/gnss_bestxyzb_ring_v1.blob`
 * v3-dev changes (vs. v2):
     * No longer cancels other pending runs of this blob. Instead, it doesn't reschedule itself if
-      another run of this blob is due within `2*<repeat_interval_ms>`, so future reconfigurations
-      can be scheduled with `@tsexec`.
+      another run of any `gnss_bestxyzb_ring_v*` blob is due within `2*<repeat_interval_ms>`, so
+      future reconfigurations (or upgrades to later versions) can be scheduled with `@tsexec`.
     * `STOP` no longer cancels other pending runs; it just turns the GNSS off, resets the ring,
       and doesn't reschedule.
-    * Error 137 renamed `CANCEL_RERUNS_FAILED` -> `BAD_OWN_ARGS`.
+    * Error 137 (`CANCEL_RERUNS_FAILED`) removed.
 
 ### High-Level Overview
 
@@ -453,8 +453,8 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v3-dev.blob,0,0;0;STOP)!
 ### Notes
 1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
 2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
-   extended beacon blob: it does NOT reschedule if another pending run of this blob file (any
-   args) is due within the next `2*<repeat_interval_ms>`, and lets that run take over. So several
+   extended beacon blob: it does NOT reschedule if another pending run of this blob family (any
+   file named `gnss_bestxyzb_ring_v*`, so any version, with any args) is due within the next `2*<repeat_interval_ms>`, and lets that run take over. So several
    reconfigurations can be scheduled ahead of time. Re-running it immediately while it's already
    repeating does NOT replace the running chain; `agenda_delete_by_name` first. That includes
    STOP: it doesn't cancel other pending runs, so schedule it ahead (the chain hands off), or delete the

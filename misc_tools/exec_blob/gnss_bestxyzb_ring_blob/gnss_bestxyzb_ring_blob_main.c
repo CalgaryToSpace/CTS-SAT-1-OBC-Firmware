@@ -48,8 +48,8 @@
 // Notes:
 //  1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
 //  2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
-//     extended beacon blob: it does NOT reschedule if another pending run of this blob file (any
-//     args) is due within the next 2*<repeat_interval_ms>, and lets that run take over. So several
+//     extended beacon blob: it does NOT reschedule if another pending run of this blob family (any
+//     file named `gnss_bestxyzb_ring_v*`, so any version, with any args) is due within the next 2*<repeat_interval_ms>, and lets that run take over. So several
 //     reconfigurations can be scheduled ahead of time. Re-running it immediately while it's already
 //     repeating does NOT replace the running chain; `agenda_delete_by_name` first. That includes
 //     STOP: it doesn't cancel other pending runs, so schedule it ahead (the chain hands off), or delete the
@@ -208,6 +208,7 @@ static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 static const char ARG_DELIM = ';';
 static const char FLAG_DELIM = '|';
 static const char BLOB_NAME[] = "gnss_bestxyzb_ring_blob_v3-dev";
+static const char BLOB_FAMILY_PREFIX[] = "gnss_bestxyzb_ring_v"; // Matches all versions' file names, for self-rescheduling handoff.
 
 // Extern variables from core FW:
 extern const uint16_t UART_gnss_buffer_len;                      // Length of the GNSS response buffer
@@ -298,7 +299,6 @@ typedef enum {
     BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE = 62, // MPI was active, so this run stayed off the radio (whether or not it stored a sample).
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
-    BLOB_ERR_BAD_OWN_ARGS = 137, // Couldn't parse our own blob file name from the agenda.
     BLOB_ERR_NO_EXECUTING_AGENDA_SLOT = 163, // Couldn't find our own agenda slot to reschedule.
     BLOB_ERR_AGENDA_ADD_FAILED = 164, // TCMD_add_tcmd_to_agenda() failed while rescheduling.
 } GNSS_ring_blob_error_enum_t;
@@ -323,7 +323,6 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
         case BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE: return "SEND_SKIPPED_MPI_ACTIVE";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
-        case BLOB_ERR_BAD_OWN_ARGS: return "BAD_OWN_ARGS";
         case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
         case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
     }
@@ -550,7 +549,6 @@ static bool has_flag(const char *flags_str, const char *flag_name) {
 /// @brief Map a negative BLOB_reschedule_self_unless_upcoming() result to this blob's error enum.
 static GNSS_ring_blob_error_enum_t reschedule_err_to_blob_err(int8_t reschedule_result) {
     switch (reschedule_result) {
-        case BLOB_RESCHEDULE_ERR_BAD_OWN_ARGS: return BLOB_ERR_BAD_OWN_ARGS;
         case BLOB_RESCHEDULE_ERR_AGENDA_ADD_FAILED: return BLOB_ERR_AGENDA_ADD_FAILED;
         default: return BLOB_ERR_NO_EXECUTING_AGENDA_SLOT;
     }
@@ -1848,7 +1846,7 @@ uint8_t blob_main(
     // Reschedule the blob for the next run, unless another run of this blob (e.g., a scheduled
     // reconfiguration) is due within 2 intervals, in which case that run takes over (and keeps
     // using the open ring file).
-    const int8_t resched_result = BLOB_reschedule_self_unless_upcoming((uint32_t)repeat_interval_ms);
+    const int8_t resched_result = BLOB_reschedule_self_unless_upcoming((uint32_t)repeat_interval_ms, BLOB_FAMILY_PREFIX);
     if (resched_result < 0) {
         ring_close_open_file(); // No rerun is coming to close it; commit what we have.
         return fail_without_rescheduling(

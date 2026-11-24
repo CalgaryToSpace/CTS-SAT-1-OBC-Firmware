@@ -28,8 +28,9 @@
 //      Previously, each ADCS request took ~3.5 s to fail, which hit the watchdog.
 //  3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
 //      a tssent value of <interval_ms> after the beacon is sent.
-//  4. A run does NOT reschedule itself if another pending run of this same blob file (any
-//      args) is due within the next 2*<interval_ms>; that upcoming run takes over instead. Pending
+//  4. A run does NOT reschedule itself if another pending run of this blob family (any file named
+//      `extended_beacon_v*`, so any version, with any args) is due within the next 2*<interval_ms>;
+//      that upcoming run takes over instead. Pending
 //      runs further out are left alone. So you can schedule several reconfigurations ahead of time
 //      (e.g., different intervals at different times), and each one hands off to the next.
 //      Caveat: re-running this blob immediately while it's already repeating does NOT replace the
@@ -141,6 +142,7 @@ static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
 static const char BLOB_NAME[] = "extended_beacon_blob_v6-dev";
+static const char BLOB_FAMILY_PREFIX[] = "extended_beacon_v"; // Matches all versions' file names, for self-rescheduling handoff.
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -214,7 +216,6 @@ typedef enum {
     BLOB_ERR_PERIPHERAL_COMMS_FAILURES = 117, // Beacon was sent, but >=1 peripheral query failed.
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
-    BLOB_ERR_BAD_OWN_ARGS = 137, // Couldn't parse our own blob file name from the agenda.
     BLOB_ERR_NO_EXECUTING_AGENDA_SLOT = 163, // Couldn't find our own agenda slot to reschedule.
     BLOB_ERR_AGENDA_ADD_FAILED = 164, // TCMD_add_tcmd_to_agenda() failed while rescheduling.
 } BLOB_ext_beacon_error_enum_t;
@@ -233,7 +234,6 @@ static const char *ext_beacon_blob_error_to_str(BLOB_ext_beacon_error_enum_t err
         case BLOB_ERR_PERIPHERAL_COMMS_FAILURES: return "PERIPHERAL_COMMS_FAILURES";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
-        case BLOB_ERR_BAD_OWN_ARGS: return "BAD_OWN_ARGS";
         case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
         case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
         default: return "UNKNOWN_ERROR";
@@ -1038,7 +1038,6 @@ static uint8_t count_distinct_pending_tcmds() {
 /// @brief Map a negative BLOB_reschedule_self_unless_upcoming() result to this blob's error enum.
 static BLOB_ext_beacon_error_enum_t reschedule_err_to_blob_err(int8_t reschedule_result) {
     switch (reschedule_result) {
-        case BLOB_RESCHEDULE_ERR_BAD_OWN_ARGS: return BLOB_ERR_BAD_OWN_ARGS;
         case BLOB_RESCHEDULE_ERR_AGENDA_ADD_FAILED: return BLOB_ERR_AGENDA_ADD_FAILED;
         default: return BLOB_ERR_NO_EXECUTING_AGENDA_SLOT;
     }
@@ -1929,7 +1928,7 @@ uint8_t blob_main(
     // within 2 intervals, in which case that run takes over.
     const char *resched_msg = "";
     if (beacon_interval_ms > 0) {
-        const int8_t resched_result = BLOB_reschedule_self_unless_upcoming((uint32_t)beacon_interval_ms);
+        const int8_t resched_result = BLOB_reschedule_self_unless_upcoming((uint32_t)beacon_interval_ms, BLOB_FAMILY_PREFIX);
         if (resched_result < 0) {
             const BLOB_ext_beacon_error_enum_t reexec_result = reschedule_err_to_blob_err(resched_result);
             ring_close_open_file(); // No rerun is coming to close it; commit what we have.
