@@ -22,7 +22,9 @@ CFLAGS  = \
     -Os \
     -Wall \
     -Wextra \
-    -I../../../firmware/Core/Inc/
+    -I../../../firmware/Core/Inc/ \
+    -I../../../firmware/Middlewares/Third_Party/FreeRTOS/Source/include \
+    -I../../../firmware/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 
 CFLAGS += \
     -ffreestanding \
@@ -36,12 +38,13 @@ LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 
 TARGET = extended_beacon_blob
 
-# Name the blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
-BLOB_NAME = extended_beacon_v5
+# Name the task blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
+BLOB_NAME = extended_beacon_v6
 
 ELF = $(BUILD_DIR)/$(TARGET).elf
 BIN = $(BUILD_DIR)/$(TARGET).bin
-BLOB = $(BUILD_DIR)/$(BLOB_NAME).blob
+# A task blob (.taskblob): started by ../task_spawner_blob/, never by exec_blob_from_fs().
+BLOB = $(BUILD_DIR)/$(BLOB_NAME).taskblob
 
 all: $(BIN) $(BLOB)
 
@@ -50,7 +53,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Build, link, and print the size info.
-$(ELF): extended_beacon_blob_main.c ../blob_libs/eps_piu_fixed.h $(FW_ELF) | $(BUILD_DIR)
+$(ELF): extended_beacon_blob_main.c ../blob_libs/eps_piu_fixed.h ../blob_libs/task_spawner.h $(FW_ELF) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -T blob.ld $< -o $@ $(LDFLAGS)
 	@echo "--- Section sizes ---"
 	$(SIZE) -A $@

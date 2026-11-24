@@ -17,8 +17,9 @@
 //   start lands near the end of the chosen ring file.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+// After uplinking the blob as "blobs/extended_beacon_v6.taskblob", start it as a task with the task
+// spawner, in slot 1:
+// CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,1;blobs/extended_beacon_v6.taskblob;9000;5)!
 // With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 //
 // Notes:
@@ -26,23 +27,20 @@
 //  2. (v5+) The ADCS is probed with a single request first. If it doesn't respond (e.g., dev kit,
 //      or ADCS powered off), all ADCS requests are skipped and the ADCS fields are left as 0.
 //      Previously, each ADCS request took ~3.5 s to fail, which hit the watchdog.
-//  3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
-//      a tssent value of <interval_ms> after the beacon is sent.
-//  4. If this blob is currently running in repeat mode, and you re-run it, it will first cancel
-//      the existing repeat telecommand, and then re-schedule itself. That is, it is fine to send
-//      a command to run this blob on every uplink pass, whether or not it's already running.
-//  5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
-//      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-//      `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (which will run one last time,
-//      then cancel itself).
+//  3. (v6+) Runs as its own FreeRTOS task, started by the task spawner blob (../task_spawner_blob/),
+//      and loops itself. It refuses to run directly with exec_blob_from_fs().
+//  4. To stop repeating, use the spawner's `stop` command (e.g., `1;stop`), or reboot. Interval 0,
+//      or a failed live-beacon downlink, also stops it (the task parks).
+//  5. Before the first v6 run, stop v5 with `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!`,
+//      or its agenda reruns run alongside v6.
 //  6. The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
-//      not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
+//      not mounted) never prevent the live beacon from being sent, nor the next run from happening.
 //  7. While the MPI is in active (sensing) mode, the live beacon is still sent and stored, but no
 //      historical beacons are downlinked that run.
 //  8. Nothing historical is downlinked until the first ring file fills (BEACON_RING_RECORDS_PER_FILE
 //      beacons), because the file being written is never downlinked.
-//  9. Historical beacons are sent with the same packet type, but with version string " S5\0"
-//      (instead of " X5\0").
+//  9. Historical beacons are sent with the same packet type, but with version string " S6\0"
+//      (instead of " X6\0"). (" S5"/" X5" on v5.)
 // 10. (v5+) Beacons are stored in LittleFS under `beacon_ring/`, as a ring of `BEACON_RING_FILE_COUNT` = 20 files
 //     (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
 //     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
@@ -67,8 +65,8 @@
 // Open file handle: Same as the GNSS ring blob, the ring file we're currently appending to is left
 // OPEN between executions (its lfs_file_t lives in the persistent state block), so storing a
 // record is just an lfs_file_write(). Closes (which commit metadata to flash) are kept rare, to
-// limit flash wear: the file is only closed when it fills up, or when the blob exits without
-// rescheduling itself. The handle is only trusted after confirming it's still linked into the
+// limit flash wear: the file is only closed when it fills up, or when a run ends without a next
+// run (run-once mode, or a failed downlink). The handle is only trusted after confirming it's still linked into the
 // mounted filesystem's open-file list (see ring_open_file_is_live()).
 //
 // Reboots: Same as the GNSS ring blob, a reboot that leaves the SRAM state block intact is
@@ -82,7 +80,7 @@
 // the ring refills from scratch, and the old files are excluded from downlink. In none of the
 // four is the handle trusted, so it's dropped without being closed, and its uncommitted records
 // are simply lost. Unlike the GNSS ring blob, an unmounted filesystem doesn't stop this blob: the
-// live beacon is still sent, and the blob still reschedules itself.
+// live beacon is still sent, and the next run still happens.
 //
 // On (re)opening a part-full file (e.g., after a run-once exit closed it), we seek to the
 // cursor's exact offset (record_idx * record_size), so the file layout always matches the cursor.
@@ -122,6 +120,7 @@
 #include "crypto/sha256.h"
 #include "comms_drivers/bulk_file_downlink.h"
 #include "../blob_libs/eps_piu_fixed.h"
+#include "../blob_libs/task_spawner.h"
 
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
@@ -135,7 +134,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char BLOB_NAME[] = "extended_beacon_blob_v5";
+static const char BLOB_NAME[] = "extended_beacon_blob_v6";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -198,7 +197,7 @@ extern void *pvPortMalloc(size_t xWantedSize);
 // MARK: Error Enum
 
 // All named status/error codes returned by this blob's functions, including the values
-// `blob_main()` itself returns to the telecommand executor (0 = success).
+// `run_once()` returns, as each run's response code (0 = success).
 typedef enum {
     BLOB_ERR_OK = 0,
     BLOB_ERR_LFS_WRITE_FAILED = 5, // Writing the beacon record to LittleFS failed (beacon still sent).
@@ -209,9 +208,6 @@ typedef enum {
     BLOB_ERR_PERIPHERAL_COMMS_FAILURES = 117, // Beacon was sent, but >=1 peripheral query failed.
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
-    BLOB_ERR_CANCEL_RERUNS_FAILED = 137, // cancel_other_scheduled_reruns_of_this_blob() failed.
-    BLOB_ERR_NO_EXECUTING_AGENDA_SLOT = 163, // Couldn't find our own agenda slot to reschedule.
-    BLOB_ERR_AGENDA_ADD_FAILED = 164, // TCMD_add_tcmd_to_agenda() failed while rescheduling.
 } BLOB_ext_beacon_error_enum_t;
 
 /// @brief Convert a BLOB_ext_beacon_error_enum_t into a short human-readable name, for use in log
@@ -228,9 +224,6 @@ static const char *ext_beacon_blob_error_to_str(BLOB_ext_beacon_error_enum_t err
         case BLOB_ERR_PERIPHERAL_COMMS_FAILURES: return "PERIPHERAL_COMMS_FAILURES";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
-        case BLOB_ERR_CANCEL_RERUNS_FAILED: return "CANCEL_RERUNS_FAILED";
-        case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
-        case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
         default: return "UNKNOWN_ERROR";
     }
 }
@@ -300,9 +293,9 @@ typedef struct {
 
     // The following fields are v5+.
 
-    // Counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue, plus the
-    // currently-executing tcmd (same as pending_queued_tcmd_count's +1). Equal to
-    // pending_queued_tcmd_count when nothing is duplicated.
+    // Counts the distinct (tcmd_idx, tcmd_args) pairs in the pending queue. Equal to
+    // pending_queued_tcmd_count when nothing is duplicated. (v5 also counted the executing tcmd,
+    // i.e., the blob itself; v6+ runs as its own task, so it has no agenda entry to count.)
     // Useful to confirm that all uplinks were successful.
     uint8_t distinct_tcmds_pending;
 
@@ -361,8 +354,8 @@ typedef struct {
     // " X2\0" on extended packets (v2).
     // " X3\0" on extended packets (v3).
     // " X4\0" on extended packets (v4).
-    // " X5\0" on extended packets (v5).
-    // " S5\0" on ring-stored extended packets (v5), when downlinked as history.
+    // " X5\0"/" X6\0" on extended packets (v5/v6).
+    // " S5\0"/" S6\0" on ring-stored extended packets (v5/v6), when downlinked as history.
     char end_message[4];
 
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
@@ -925,13 +918,10 @@ static void get_bulk_downlink_file_path_hash(uint8_t hash_dest[3]) {
 }
 
 
-/// @brief Is this agenda slot counted by count_distinct_pending_tcmds()? Pending entries, plus the
-///     currently-executing one (i.e., this blob's own exec_blob_from_fs).
+/// @brief Is this agenda slot counted by count_distinct_pending_tcmds()? Pending entries only, same
+///     as TCMD_get_agenda_used_slots_count().
 static bool is_agenda_slot_counted(uint16_t slot_num) {
-    return (
-        (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING)
-        || (TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_EXECUTING)
-    );
+    return TCMD_agenda_is_valid[slot_num] == TCMD_AGENDA_ENTRY_VALID_AND_PENDING;
 }
 
 // Hash set used by count_distinct_pending_tcmds().
@@ -971,18 +961,14 @@ static uint32_t hash_agenda_entry(uint16_t slot_num) {
     return hash;
 }
 
-/// @brief Count the distinct (tcmd_idx, args) pairs among the pending agenda entries, plus the
-///     currently-executing one.
-/// @details Includes the executing entry so that, when nothing is duplicated, this equals
-///     pending_queued_tcmd_count (which is pending entries + 1 for the executing entry).
-///     The executing entry can't duplicate a pending one, as
-///     cancel_other_scheduled_reruns_of_this_blob() has already removed this blob's other reruns.
+/// @brief Count the distinct (tcmd_idx, args) pairs among the pending agenda entries.
+/// @details When nothing is duplicated, this equals pending_queued_tcmd_count.
 ///
 ///     Uses an open-addressing hash set (linear probing) on the stack, so it's O(n) expected
 ///     (n = agenda slots), instead of O(n^2) string compares. Still exact: every hash match is
 ///     confirmed with tcmd_idx and strcmp() before it's treated as a duplicate.
 /// @note noinline, so the 4 KB table is only on the stack while this function runs, instead of
-///     being folded into blob_main()'s frame (which is live during the deep EPS/LittleFS calls).
+///     being folded into run_once()'s frame (which is live during the deep EPS/LittleFS calls).
 /// @return The count, capped at 255.
 __attribute__((noinline))
 static uint8_t count_distinct_pending_tcmds() {
@@ -1029,95 +1015,6 @@ static uint8_t count_distinct_pending_tcmds() {
     return (uint8_t)distinct_count;
 }
 
-
-static int16_t get_current_executing_tcmd_agenda_slot_num() {
-    for (uint16_t i = 0; i < TCMD_AGENDA_SIZE; i++) {
-        if (TCMD_agenda_is_valid[i] == TCMD_AGENDA_ENTRY_EXECUTING) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-/// @brief Cancel any other pending agenda entries that would re-run this same blob file, so that
-/// re-uplinking this blob (whether to start, restart, or stop repeating) doesn't leave duplicate
-/// scheduled reruns behind.
-/// @param current_slot_num Agenda slot of the `exec_blob_from_fs` tcmd currently executing this blob.
-/// @return Number of duplicate agenda entries cancelled. Negative if error.
-static int16_t cancel_other_scheduled_reruns_of_this_blob(int16_t current_slot_num) {
-    if (current_slot_num < 0) {
-        return 0;
-    }
-
-    const uint8_t exec_blob_from_fs_tcmd_idx = TCMD_agenda[current_slot_num].tcmd_idx;
-
-    char own_blob_file_name[TCMD_ARGS_STR_NO_PARENS_SIZE];
-    const uint8_t parse_result = TCMD_extract_string_arg(
-        TCMD_agenda[current_slot_num].args_str_no_parens, 0,
-        own_blob_file_name, sizeof(own_blob_file_name)
-    );
-    if (parse_result != 0) {
-        // Can't determine our own blob file name; don't risk cancelling the wrong entries.
-        return -1;
-    }
-
-    uint16_t cancelled_count = 0;
-    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if ((int16_t)slot_num == current_slot_num) {
-            continue;
-        }
-        if (TCMD_agenda_is_valid[slot_num] != TCMD_AGENDA_ENTRY_VALID_AND_PENDING) {
-            continue;
-        }
-        if (TCMD_agenda[slot_num].tcmd_idx != exec_blob_from_fs_tcmd_idx) {
-            continue;
-        }
-
-        char other_blob_file_name[TCMD_ARGS_STR_NO_PARENS_SIZE];
-        const uint8_t other_parse_result = TCMD_extract_string_arg(
-            TCMD_agenda[slot_num].args_str_no_parens, 0,
-            other_blob_file_name, sizeof(other_blob_file_name)
-        );
-        if (other_parse_result != 0) {
-            // Can't determine other blob file name; don't risk cancelling the wrong entries.
-            // Could log a warning here.
-            continue;
-        }
-
-        if (strcmp(own_blob_file_name, other_blob_file_name) == 0) {
-            // Main action: Cancel that entry!
-            TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_INVALID;
-            cancelled_count++;
-        }
-    }
-
-    return cancelled_count;
-}
-
-/// @brief Enqueue a copy of the currently executing tcmd, with a new time into the future to execute.
-/// @note This function avoids incrementing the "total telecommands" counter. Goal: Allow that counter to assess how many uplinked commands were successful.
-static BLOB_ext_beacon_error_enum_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
-    const int16_t slot_num = get_current_executing_tcmd_agenda_slot_num();
-    if (slot_num < 0) {
-        return BLOB_ERR_NO_EXECUTING_AGENDA_SLOT;
-    }
-
-    TCMD_parsed_tcmd_to_execute_t new_tcmd;
-    memcpy(&new_tcmd, &TCMD_agenda[slot_num], sizeof(TCMD_parsed_tcmd_to_execute_t));
-
-    new_tcmd.timestamp_sent = TIME_get_current_unix_epoch_time_ms();
-    new_tcmd.timestamp_to_execute = TIME_get_current_unix_epoch_time_ms() + time_into_future_to_execute_ms;
-
-    if (TCMD_add_tcmd_to_agenda(&new_tcmd) != 0) {
-        return BLOB_ERR_AGENDA_ADD_FAILED;
-    }
-
-    // Added in v3+.
-    // Undo the counter increase in `TCMD_add_tcmd_to_agenda()`.
-    TCMD_total_tcmd_queued_count--;
-
-    return BLOB_ERR_OK;
-}
 
 // MARK: Fill Packet
 
@@ -1409,7 +1306,9 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
     beacon_packet->is_fs_mounted = LFS_is_lfs_mounted;
 
     beacon_packet->total_tcmd_queued_count = TCMD_total_tcmd_queued_count;
-    beacon_packet->pending_queued_tcmd_count = TCMD_get_agenda_used_slots_count() + 1; // Since v4, add 1 for the currently executing tcmd. Prevents bouncing between basic and extended beacons.
+    // v4-v5 added 1 for the blob's own executing tcmd, to match the basic beacon (sent while the
+    // blob's next rerun was pending). v6+ has no agenda entry at all, so the raw count matches.
+    beacon_packet->pending_queued_tcmd_count = TCMD_get_agenda_used_slots_count();
 
     beacon_packet->total_beacon_count_since_boot = COMMS_total_beacon_count_since_boot;
 
@@ -1446,7 +1345,7 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
     beacon_packet->gnss_rx_mode_enum = GNSS_current_rx_mode;
 
     // Note: v5+ has no friendly message (its slot holds the v5+ fields instead).
-    memcpy(beacon_packet->end_message, " X5", 4); // Extended beacon packet version.
+    memcpy(beacon_packet->end_message, " X6", 4); // Extended beacon packet version.
 
     // Set the extended beacon packet fields.
 
@@ -1711,7 +1610,7 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
 /// @brief Append one beacon record to the ring, advancing (and wrapping/truncating) as needed.
 /// @details Writes straight through the persistent handle with lfs_file_write(). The file stays
 ///     open afterwards, and is only closed -- which is what commits its records -- once it fills
-///     up (or when the blob exits without rescheduling).
+///     up (or when a run ends without a next run).
 /// @return BLOB_ERR_OK on success, or the reason the record wasn't stored.
 static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_extended_packet_v5plus_t *beacon_packet) {
     const BLOB_ext_beacon_error_enum_t open_status = ring_open_write_file();
@@ -1763,8 +1662,8 @@ static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_exte
 ///     the cursor without erasing the disk) are excluded by counting only the files behind the
 ///     cursor until the ring has wrapped.
 ///
-///     Records are stored exactly as generated (" X5\0"). Each is sent as-is, except that its
-///     end_message is replaced with " S5\0" after reading it back, so the ground can tell it apart
+///     Records are stored exactly as generated (" X6\0"). Each is sent as-is, except that its
+///     end_message is replaced with " S6\0" after reading it back, so the ground can tell it apart
 ///     from a live beacon.
 /// @param history_count Number of records to send (0 = none).
 /// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
@@ -1826,7 +1725,7 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
         }
 
         // Stored as generated; mark it as a ring-stored (historical) beacon only now.
-        memcpy(packet.end_message, " S5", 4);
+        memcpy(packet.end_message, " S6", 4);
 
         const uint8_t tx_status = AX100_downlink_bytes((uint8_t *)&packet, sizeof(packet));
         if (tx_status != 0) {
@@ -1843,10 +1742,11 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
 
 
 
-__attribute__((used, section(".text.entry")))
-uint8_t blob_main(
-    const char *args_str,
-    char *response_buf, unsigned short response_buf_len
+/// @brief One run of the blob's work.
+/// @param next_run_delay_ms Set to the delay until the next run, or left 0 to stop.
+static uint8_t run_once(
+    const char *args_str, char *response_buf, unsigned short response_buf_len,
+    uint32_t *next_run_delay_ms
 ) {
     // Log that the blob is starting (important for tracing crashes).
     LOG(
@@ -1925,7 +1825,7 @@ uint8_t blob_main(
     // This blob never mounts the filesystem itself. While it's unmounted, our cursor's claim about
     // what's on disk is no longer worth anything, so start over (on every such run), rather than
     // appending into the unknown once it's remounted. Unlike the GNSS ring blob, we keep going:
-    // the live beacon is still sent and the blob still reschedules; storage and history are just
+    // the live beacon is still sent and the next run still happens; storage and history are just
     // skipped below.
     if (!LFS_is_lfs_mounted) {
         reset_to_fresh_state(true);
@@ -1944,34 +1844,6 @@ uint8_t blob_main(
             BLOB_NAME
         );
         reset_to_fresh_state(true);
-    }
-
-    // Cancel any other pending agenda entries that would re-run this same blob (e.g., a repeat
-    // telecommand scheduled by a previous run of this blob), so re-uplinking this blob on every
-    // pass doesn't stack up duplicate scheduled reruns.
-    const int16_t cancel_result = cancel_other_scheduled_reruns_of_this_blob(get_current_executing_tcmd_agenda_slot_num());
-    char cancel_msg[50];
-    if (cancel_result < 0) {
-        ring_close_open_file(); // Not rescheduling; commit what we have.
-        snprintf(
-            response_buf, response_buf_len,
-            "%s error: cancel_other_scheduled_reruns_of_this_blob() -> %d (%s)",
-            BLOB_NAME,
-            cancel_result,
-            ext_beacon_blob_error_to_str(BLOB_ERR_CANCEL_RERUNS_FAILED)
-        );
-        return BLOB_ERR_CANCEL_RERUNS_FAILED;
-    }
-    else if (cancel_result > 0) {
-        snprintf(
-            cancel_msg,
-            sizeof(cancel_msg),
-            ", %d duplicate rerun(s) cancelled",
-            cancel_result
-        );
-    }
-    else {
-        cancel_msg[0] = '\0';
     }
 
     // Fill the beacon packet.
@@ -1994,14 +1866,13 @@ uint8_t blob_main(
         sizeof(COMMS_beacon_extended_packet_v5plus_t)
     );
     if (tx_status != 0) {
-        ring_close_open_file(); // Not rescheduling; commit what we have.
+        ring_close_open_file(); // Stopping (no next run); commit what we have.
         snprintf(
             response_buf, response_buf_len,
-            "%s error: downlink failed (AX100_downlink_bytes() -> %d) (%s)%s",
+            "%s error: downlink failed (AX100_downlink_bytes() -> %d) (%s)",
             BLOB_NAME,
             tx_status,
-            ext_beacon_blob_error_to_str(BLOB_ERR_DOWNLINK_FAILED),
-            cancel_msg
+            ext_beacon_blob_error_to_str(BLOB_ERR_DOWNLINK_FAILED)
         );
         return BLOB_ERR_DOWNLINK_FAILED;
     }
@@ -2030,48 +1901,32 @@ uint8_t blob_main(
     );
 
     if (beacon_interval_ms > 0) {
-        const BLOB_ext_beacon_error_enum_t reexec_result = reschedule_current_blob_tcmd(
-            (uint32_t)beacon_interval_ms
-        );
-        if (reexec_result != BLOB_ERR_OK) {
-            ring_close_open_file(); // No rerun is coming to close it; commit what we have.
-            snprintf(
-                response_buf, response_buf_len,
-                "%s error: reschedule_current_blob_tcmd() -> %s%s%s",
-                BLOB_NAME,
-                ext_beacon_blob_error_to_str(reexec_result),
-                ring_msg,
-                cancel_msg
-            );
-            return reexec_result;
-        }
+        *next_run_delay_ms = (uint32_t)beacon_interval_ms; // Schedule the next run.
     }
     else {
-        ring_close_open_file(); // Run-once mode: no rerun is coming to close it.
+        ring_close_open_file(); // Run-once mode: no next run is coming to close it.
     }
 
     if (peripheral_comms_error_count > 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: peripheral comms error count: %d (%s)%s%s",
+            "%s error: peripheral comms error count: %d (%s)%s",
             BLOB_NAME,
             peripheral_comms_error_count,
             ext_beacon_blob_error_to_str(BLOB_ERR_PERIPHERAL_COMMS_FAILURES),
-            ring_msg,
-            cancel_msg
+            ring_msg
         );
         return BLOB_ERR_PERIPHERAL_COMMS_FAILURES;
     }
 
     snprintf(
         response_buf, response_buf_len,
-        "%s success%s%s",
+        "%s success%s",
         BLOB_NAME,
-        ring_msg,
-        cancel_msg
+        ring_msg
     );
 
-    // Storage/history problems are non-fatal (the beacon was sent and the blob rescheduled), but
+    // Storage/history problems are non-fatal (the beacon was sent and the next run scheduled), but
     // are still reported via the return code.
     if (store_status != BLOB_ERR_OK) {
         return store_status;
@@ -2081,4 +1936,35 @@ uint8_t blob_main(
     }
 
     return BLOB_ERR_OK;
+}
+
+
+// MARK: Entry
+
+/// @brief Entry: started as a task by the task spawner (loops forever). Refuses to run directly
+///     with exec_blob_from_fs(). See ../blob_libs/task_spawner.h.
+__attribute__((used, section(".text.entry")))
+uint8_t blob_main(
+    const char *args_str,
+    char *response_buf, unsigned short response_buf_len
+) {
+    blob_task_ctx_t *ctx = blob_task_ctx_from_arg(args_str);
+    if (ctx != NULL) {
+        // Started by the spawner. response_buf/response_buf_len are garbage here: unused.
+        blob_task_wait_for_predecessor(ctx);
+        for (;;) {
+            char response[BLOB_TASK_RESPONSE_LEN];
+            uint32_t next_run_delay_ms = 0;
+            blob_task_begin_run(ctx);
+            const uint8_t result = run_once(ctx->args, response, sizeof(response), &next_run_delay_ms);
+            blob_task_end_run(ctx, result, response);
+            if ((next_run_delay_ms == 0) || !blob_task_sleep_ms(ctx, next_run_delay_ms)) {
+                // Stopping between runs: commit the ring file, since no next run will.
+                ring_close_open_file();
+                blob_task_park(ctx);
+            }
+        }
+    }
+
+    return blob_task_refuse_direct_run(BLOB_NAME, response_buf, response_buf_len);
 }

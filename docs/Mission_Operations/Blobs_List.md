@@ -6,11 +6,55 @@ Blobs are small executable payloads (generally 100-5000 bytes), which are progra
 
 Blobs are used to overcome bugs and add functionality beyond FrontierSat's core firmware when launched.
 
-Running a blob is effectively the same as running a single built-in telecommand, though some blobs are self-rescheduling (and thus run on repeat many times).
+Running a blob is effectively the same as running a single built-in telecommand. Blobs that run on repeat are "task blobs" (`.taskblob` extension), started by `blobs/task_spawner_v1.blob` as their own long-running task, and loop themselves (older versions of some blobs were self-rescheduling instead).
 
 Blobs are executed using the `CTS1+exec_blob_from_fs(blob_file,0,arguments_passed_to_blob)` core telecommand. The `0` argument is insignificant in normal use, and should just be 0.
 
 The following is the list of blobs which are ready-to-use on FrontierSat.
+
+## `blobs/task_spawner_v1.blob`
+
+* Available since: 2026-11-24
+
+Starts "task blobs" as their own long-running FreeRTOS tasks, in numbered slots, instead of each
+blob re-scheduling itself through the telecommand agenda. Each task blob runs its own loop and picks
+its own delay between runs (see `misc_tools/exec_blob/blob_libs/task_spawner.h`).
+
+Task blobs use the `.taskblob` extension. The spawner refuses any other file, and task blobs refuse to
+run directly with `exec_blob_from_fs` (error `249`).
+
+### Args
+
+* `<slot>;<task_blob_path>[;<task_blob_args>]`: Load the task blob (must end in `.taskblob`) and start it in slot `<slot>`
+  (0..7). Everything after the path is passed to the blob verbatim. Whatever task was in the slot
+  is asked to stop, and the new task waits for it to finish its current run.
+* `<slot>;stop`: Ask the slot's task to stop (it stops at its next sleep).
+* `stop_all`: Stop every slot.
+* `status`: Report each slot's blob, args, run count, seconds since the last run, and last result.
+
+### Example Usage
+
+```
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,0;blobs/gnss_bestxyzb_ring_v3.taskblob;9000;5)!
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,1;blobs/extended_beacon_v6.taskblob;9000;5)!
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,status)!
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,stop_all)!
+```
+
+Conventional slots: 0 = GNSS ring, 1 = extended beacon.
+
+### Notes
+
+1. Always use "0" as the second argument (i.e., always run with malloc).
+2. **Every start leaks ~15 KB of the 128 KB FreeRTOS heap until reboot.** The firmware can't delete
+   tasks, so a stopped task parks forever, keeping its stack and code. Don't re-send start commands
+   every pass; check `status` first, and only restart to change args or upgrade a blob.
+3. Each run's response is downlinked as a telecommand response (same as when blobs re-scheduled
+   themselves).
+4. **Agenda commands (`agenda_delete_all`, etc.) do NOT stop a task.** Use `stop_all`, or reboot.
+5. A reboot stops every slot; nothing is restored after a reboot.
+6. The same blob path can't run in two slots at once.
+7. The scheduler is cooperative: a run blocks other tasks until it yields, same as before.
 
 ## `blobs/hello_world_v1.blob`
 
@@ -121,7 +165,7 @@ The checksums cover exactly the downlinked bytes (`offset` to `offset + length`)
     * `action` is now `bulk_downlink_start_v3` (was `bulk_downlink_start_blob`).
     * Feature: Better error codes/names via an error enum.
 
-## `blobs/extended_beacon_v{2,3,4,5}.blob`
+## `blobs/extended_beacon_v{2,3,4,5}.blob`, `blobs/extended_beacon_v6.taskblob`
 
 ### Description
 
@@ -147,8 +191,9 @@ Running this blob triggers the extended beacon.
 //   start lands near the end of the chosen ring file.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+// After uplinking the blob as "blobs/extended_beacon_v6.taskblob", start it with the task spawner,
+// in slot 1:
+// CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,1;blobs/extended_beacon_v6.taskblob;9000;5)!
 // With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 ```
 
@@ -158,23 +203,21 @@ Running this blob triggers the extended beacon.
 2. If the ADCS fails to respond to the OBC, this blob hits the watchdog and crashes because
     the ADCS communications each take about 3.5 seconds to time out. Thus, this blob cannot be
     tested on a dev kit, and must be tested on the flatsat with the ADCS engg model computer.
-3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
-    a tssent value of `<interval_ms>` after the beacon is sent.
-4. If this blob is currently running in repeat mode, and you re-run it, it will first cancel
-    the existing repeat telecommand, and then re-schedule itself. That is, it is fine to send
-    a command to run this blob on every uplink pass, whether or not it's already running.
-5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
-    use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (which will run one last time,
-    then cancel itself).
+3. (v6+) A task blob: runs as its own task, started by `blobs/task_spawner_v1.blob`, and loops
+    itself. It refuses to run directly with `exec_blob_from_fs`. (v2-v5 re-scheduled themselves
+    through the agenda.)
+4. (v6+) To stop repeating, use the spawner (`1;stop` or `stop_all`), or reboot. Interval 0, or a
+    failed live-beacon downlink, also stops it.
+5. Before the first v6 run, stop v5 with `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!`,
+    or its agenda reruns run alongside v6.
 6. (v5+) The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
-    not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
+    not mounted) never prevent the live beacon from being sent, nor the next run from happening.
 7. (v5+) While the MPI is in active (sensing) mode, the live beacon is still sent and stored, but
     no historical beacons are downlinked that run.
 8. (v5+) Nothing historical is downlinked until the first ring file fills
     (`BEACON_RING_RECORDS_PER_FILE` = 180 beacons), because the file being written is never downlinked.
 9. (v5+) Historical beacons are sent with the same packet type, but with version string ` S5\0`
-    (instead of ` X5\0`).
+    (instead of ` X5\0`). On v6: ` S6\0` (instead of ` X6\0`).
 10. (v5+) Beacons are stored in LittleFS under `beacon_ring/`, as a ring of `BEACON_RING_FILE_COUNT` = 20 files
     (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
@@ -189,7 +232,7 @@ To start the extended beacon, repeating every 9 seconds, also sending 5 historic
 (with a 9 second interval, ~8h of beacons are kept in the ring buffer), run:
 
 ```
-CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,1;blobs/extended_beacon_v6.taskblob;9000;5)!
 ```
 
 ### Versions
@@ -234,6 +277,14 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
       PDU fields (enabled channels, avg power distributed, GNSS power) also come from the PIU
       housekeeping (0xA2/0xA4), instead of the PBU (0x62/0x64) and PDU (0x54) housekeeping.
       Fewer EPS transactions.
+* v6
+    * Same packet format and args as v5. Runs as its own task (started by
+      `blobs/task_spawner_v1.blob`) instead of re-scheduling itself through the telecommand agenda.
+    * Has version string ` X6\0` (live beacons), and ` S6\0` (ring-stored beacons, when downlinked as history).
+    * Has packet ID `COMMS_PACKET_TYPE_BEACON_EXTENDED_V5PLUS = 0x21`.
+    * Change: `pending_queued_tcmd_count` no longer adds 1, and `distinct_tcmds_pending` no longer
+      counts the executing tcmd: the blob no longer has an agenda entry of its own.
+    * Change: stopping the task (spawner `stop`) also commits the ring file.
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 
@@ -341,10 +392,11 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 
 </details>
 
-## `blobs/gnss_bestxyzb_ring_v2.blob`
+## `blobs/gnss_bestxyzb_ring_v2.blob`, `blobs/gnss_bestxyzb_ring_v3.taskblob`
 
-* Available since: 2026-09-20
+* Available since: 2026-09-20 (v2), 2026-11-24 (v3)
 * Supersedes: `blobs/gnss_bestxyzb_ring_v1.blob`
+* v3: Same behaviour and args as v2, but runs as its own task (started by `blobs/task_spawner_v1.blob`) instead of re-scheduling itself through the telecommand agenda. Before the first v3 run, stop v2 (`STOP` flag).
 
 ### High-Level Overview
 
@@ -366,17 +418,17 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 // itself for the next run.
 //
 // Args Format: <repeat_interval_ms>;<downlink_n>[;<flag1|flag2|...>]
-// - repeat_interval_ms: Interval at which the blob re-runs itself. Anything below 1100ms
-//   (including 0) is clamped up to 1100ms.
+// - repeat_interval_ms: Delay between runs. Anything below 1100ms (including 0) is clamped up to
+//   1100ms.
 // - downlink_n: Number of ADDITIONAL consecutive samples to downlink after the randomly-selected
 //   starting sample. So a total of (1 + downlink_n) packets are sent per run, fewer if the
 //   randomly-chosen start lands near the end of the chosen file.
 // - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
-//     STOP       Cancel all pending reruns, turn the GNSS channel off (unless NO_EPS_CTRL), reset the
+//     STOP       Stop the campaign (the task stops), turn the GNSS channel off (unless NO_EPS_CTRL), reset the
 //                ring, and exit.
 //     FAKE       Local/bench test mode: never touch the GNSS UART, never run the power policy
 //                or a time sync, and synthesize samples from the hardware RNG instead. Everything
-//                else (LittleFS storage, downlink, rescheduling) behaves normally.
+//                else (LittleFS storage, downlink, repeating) behaves normally.
 //     TRACK_MPI  Additionally force the GNSS on whenever the MPI is in active (sensing) mode,
 //                regardless of sun/voltage -- except that the 14V hard floor still wins.
 //                This flag only governs powering the GNSS *on*. Downlink is suppressed during
@@ -420,32 +472,38 @@ all-zero).
 
 ### Example Usage
 
-After uplinking the blob as "blobs/gnss_bestxyzb_ring_v2.blob", run:
+After uplinking the blob as "blobs/gnss_bestxyzb_ring_v3.taskblob", start it with the task spawner, in slot 0:
 
 ```
 # Default:
-CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5)!
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,0;blobs/gnss_bestxyzb_ring_v3.taskblob;9000;5)!
 
 # Also, log GNSS when the MPI is active:
-CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;TRACK_MPI)!
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,0;blobs/gnss_bestxyzb_ring_v3.taskblob;9000;5;TRACK_MPI)!
 
-# Stop/disable this feature, and turn the GNSS off:
-CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
+# Stop this feature, and turn the GNSS off (keeps the ring, so a restart resumes it):
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,0;stop)!
+
+# Stop this feature, turn the GNSS off, and reset the ring (replaces the task with one that runs STOP once):
+CTS1+exec_blob_from_fs(blobs/task_spawner_v1.blob,0,0;blobs/gnss_bestxyzb_ring_v3.taskblob;0;0;STOP)!
 ```
 
 ### Notes
 1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
-2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
-   extended beacon blob (re-uplinking cancels any previously-scheduled rerun of this blob).
+2. (v3+) Runs as its own task, started by `blobs/task_spawner_v1.blob`, and loops itself. STOP, or
+   any failure exit, stops the task. The spawner's `stop` turns the GNSS off (unless NO_EPS_CTRL)
+   and commits the ring file. It's a task blob, so it refuses to run directly with
+   `exec_blob_from_fs` (nothing would keep running the Power Policy afterwards). (v2 re-scheduled
+   itself through the agenda instead.)
 3. Unlike v1, this blob TURNS THE GNSS CHANNEL ON AND OFF ITSELF (see Power Policy below).
    It no longer dies when it finds the GNSS powered off -- that's now an expected state.
 4. SAFETY: The GNSS is never powered on while the battery is below
    GNSS_POWER_HARD_FLOOR_MV (14000mV), and is actively turned off if the battery falls below
    that, regardless of MPI state or sun.
-5. SAFETY: Any failure exit which results in non-rescheduling turns the GNSS channel off first,
+5. SAFETY: Any failure exit which stops the campaign turns the GNSS channel off first,
    unless NO_EPS_CTRL is given.
 6. If a GNSS query fails for any reason, this run skips storing a new sample but still
-   downlinks existing samples and reschedules normally, so transient GNSS comms errors
+   downlinks existing samples and repeats normally, so transient GNSS comms errors
    "self-heal" on the next run.
 7. If GNSS firehose mode is activated, this blob skips collecting data samples (and time
    syncs) while firehose mode is active, but will resume after GNSS firehose mode is disabled.
@@ -475,7 +533,7 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
     GNSS_POWER_ON_SETTLE_MS (5s) to boot, and sampling starts on the next run. There's no
     warm-up wait if the channel was already on (e.g., switched on by the ground, or under NO_EPS_CTRL).
 15. Return codes: SEND_PARTIAL_FAILURE and SEND_SKIPPED_MPI_ACTIVE are non-zero, but both mean
-    the run completed and rescheduled itself as normal. They are not failures of the campaign.
+    the run completed and the next run is scheduled as normal. They are not failures of the campaign.
 
 ## `blobs/get_file_map_v1.blob`
 

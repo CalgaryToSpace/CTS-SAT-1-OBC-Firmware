@@ -43,12 +43,13 @@ LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 
 TARGET = gnss_bestxyzb_ring_blob
 
-# Name the blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
-BLOB_NAME = gnss_bestxyzb_ring_v2
+# Name the task blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
+BLOB_NAME = gnss_bestxyzb_ring_v3
 
 ELF = $(BUILD_DIR)/$(TARGET).elf
 BIN = $(BUILD_DIR)/$(TARGET).bin
-BLOB = $(BUILD_DIR)/$(BLOB_NAME).blob
+# A task blob (.taskblob): started by ../task_spawner_blob/, never by exec_blob_from_fs().
+BLOB = $(BUILD_DIR)/$(BLOB_NAME).taskblob
 
 all: $(BIN) $(BLOB)
 
@@ -57,7 +58,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Build, link, and print the size info.
-$(ELF): gnss_bestxyzb_ring_blob_main.c $(FW_ELF) | $(BUILD_DIR)
+$(ELF): gnss_bestxyzb_ring_blob_main.c ../blob_libs/task_spawner.h $(FW_ELF) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -T blob.ld $< -o $@ $(LDFLAGS)
 	@echo "--- Section sizes ---"
 	$(SIZE) -A $@

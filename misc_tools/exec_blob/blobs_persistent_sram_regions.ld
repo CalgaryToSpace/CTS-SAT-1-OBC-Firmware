@@ -1,10 +1,9 @@
 /* blobs_persistent_sram_regions.ld
 
    Fixed SRAM regions used by blobs to persist small state blocks between
-   their separate, self-rescheduled executions. INCLUDEd inside the MEMORY
-   block of each blob's blob.ld, so that every blob sees every slot that's
-   taken. Add new slots here; never overlap an existing one (both blobs may
-   run at the same time).
+   their separate executions. INCLUDEd inside the MEMORY block of each blob's
+   blob.ld, so that every blob sees every slot that's taken. Add new slots
+   here; never overlap an existing one (blobs may run at the same time).
 
    Rationale: This is real physical SRAM on the STM32L4R5 (640KB total,
    contiguous from 0x20000000 to 0x200A0000 across SRAM1+SRAM2+SRAM3 -- the
@@ -35,4 +34,8 @@ GNSS_RING (xrw) : ORIGIN = 0x2008F000, LENGTH = 0x100
 /* extended_beacon_blob (v5+): BEACON_ring_state_t. */
 BEACON_RING (xrw) : ORIGIN = 0x2008F280, LENGTH = 0x100
 
-/* Next free address: 0x2008F380 */
+/* task_spawner_blob (v1+): spawner_slot_t[8], one per spawner slot (holds the pointer to that
+   slot's task control block in the FreeRTOS heap). */
+BLOB_TASKS (xrw) : ORIGIN = 0x2008F380, LENGTH = 0x40
+
+/* Next free address: 0x2008F3C0 */
