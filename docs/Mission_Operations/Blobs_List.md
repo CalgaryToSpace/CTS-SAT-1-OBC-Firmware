@@ -185,6 +185,11 @@ Running this blob triggers the extended beacon.
 11. (v5+) Any reboot (software reboot, watchdog reset, or power cycle), an unmounted filesystem,
     or a filesystem remount/reformat resets the ring and starts with fresh/empty history.
     Software reboots are detected with a heap canary.
+12. (v6+) No-uplink safety net: once time since the last uplink exceeds
+    `STM32_system_reset_no_uplink_interval_sec` minus 5 minutes, each run (after sending and storing the
+    beacon) commits the ring file and sends `EPS_CMD_system_reset()`, power-cycling the whole satellite
+    before the firmware's native OBC-only reboot would fire. Cannot be disabled: if that config is 0
+    (or <= 5 min), every run resets immediately.
 
 ### Example Usage
 

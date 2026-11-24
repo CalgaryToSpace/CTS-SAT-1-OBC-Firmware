@@ -55,6 +55,11 @@
 // 11. (v5+) Any reboot (software reboot, watchdog reset, or power cycle), an unmounted filesystem,
 //     or a filesystem remount/reformat resets the ring and starts with fresh/empty history.
 //     Software reboots are detected with a heap canary.
+// 12. (v6+) No-uplink safety net: once time since the last uplink exceeds
+//     `STM32_system_reset_no_uplink_interval_sec` minus 5 minutes, each run (after sending and storing the
+//     beacon) commits the ring file and sends `EPS_CMD_system_reset()`, power-cycling the whole satellite
+//     before the firmware's native OBC-only reboot would fire. Cannot be disabled in this blob:
+//     if that config is 0 (or <= 5 min), reset is performed immediately.
 //
 // ------ Implementation Notes ----------------
 //
@@ -150,6 +155,8 @@ extern volatile uint32_t TIME_uptime_ms_from_tim6;
 
 // Beacon v1 contents (extern variables).
 extern uint32_t AX100_uptime_at_last_received_kiss_tcmd_ms;
+extern uint32_t STM32_system_reset_no_uplink_interval_sec; // Firmware's no-uplink reboot threshold (config var).
+extern void HAL_Delay(uint32_t Delay);
 extern uint8_t LFS_is_lfs_mounted;
 extern uint32_t COMMS_total_beacon_count_since_boot;
 extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
@@ -1766,6 +1773,45 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
 }
 
 
+// MARK: No-Uplink EPS Reset
+// Purpose: On the first "no uplink" reboot, do an EPS reboot. Then, after the reboot,
+// the main OBC firmware will take over and just do OBC-only reboots.
+
+// Fire this long before the firmware's own no-uplink OBC reboot, so we power-cycle everything instead.
+#define NO_UPLINK_EPS_RESET_MARGIN_SEC 300
+
+/// @brief If no uplink has been received for (STM32_system_reset_no_uplink_interval_sec - 5 min),
+///     commit the ring file and command an EPS system reset (power-cycles the whole satellite,
+///     not just the OBC like the firmware's native no-uplink reboot).
+/// @details Deliberately has no "disabled" case: a threshold of 0 (or <= the margin) triggers the
+///     reset immediately, so the config can't be used to bypass this. Only returns if the reset failed.
+static void reset_eps_if_no_recent_uplink() {
+    const uint32_t threshold_sec = STM32_system_reset_no_uplink_interval_sec;
+    // Saturate at 0 (instead of underflowing), so a 0/small threshold resets right away.
+    const uint32_t trigger_sec = (threshold_sec > NO_UPLINK_EPS_RESET_MARGIN_SEC)
+        ? (threshold_sec - NO_UPLINK_EPS_RESET_MARGIN_SEC)
+        : 0;
+
+    const uint32_t time_since_last_uplink_sec = (
+        (TIME_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000
+    );
+    if (time_since_last_uplink_sec < trigger_sec) {
+        return;  // Happy path: Just leave this function.
+    }
+
+    // We could do `ring_close_open_file();` to commit beacons, but not really necessary,
+    // and just adds complexity. Continue.
+    LOG(
+        LOG_SEVERITY_CRITICAL,
+        "%s: no uplink for %lu sec (native reboot at %lu sec); EPS system reset",
+        BLOB_NAME, (unsigned long)time_since_last_uplink_sec, (unsigned long)threshold_sec
+    );
+    HAL_Delay(1000); // Give time for the log to be sent.
+
+    const uint8_t eps_result = EPS_CMD_system_reset();
+    LOG(LOG_SEVERITY_ERROR, "%s: EPS_CMD_system_reset() -> %d; continuing", BLOB_NAME, eps_result);
+}
+
 
 __attribute__((used, section(".text.entry")))
 uint8_t blob_main(
@@ -1880,6 +1926,9 @@ uint8_t blob_main(
         (uint8_t *)(&beacon_packet),
         sizeof(COMMS_beacon_extended_packet_v5plus_t)
     );
+
+    // Safety net, checked after the beacon is out.
+    reset_eps_if_no_recent_uplink();
 
     // Then store it into the ring (even if the downlink failed). Never mounts the filesystem
     // itself; just skips if unmounted.
