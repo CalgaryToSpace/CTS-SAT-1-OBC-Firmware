@@ -37,13 +37,13 @@
 //
 // Usage Example:
 //   Default:
-//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5)!
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v3-dev.blob,0,9000;5)!
 //
 //   Also, log GNSS when the MPI is active:
-//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;TRACK_MPI)!
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v3-dev.blob,0,9000;5;TRACK_MPI)!
 //
 //   Stop/disable this feature, and turn the GNSS off:
-//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
+//     CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v3-dev.blob,0,0;0;STOP)!
 //
 // Notes:
 //  1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
@@ -207,7 +207,7 @@ static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
 static const char FLAG_DELIM = '|';
-static const char BLOB_NAME[] = "gnss_bestxyzb_ring_blob_v2";
+static const char BLOB_NAME[] = "gnss_bestxyzb_ring_blob_v3-dev";
 
 // Extern variables from core FW:
 extern const uint16_t UART_gnss_buffer_len;                      // Length of the GNSS response buffer

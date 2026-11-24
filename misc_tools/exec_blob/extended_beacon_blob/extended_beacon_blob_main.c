@@ -17,8 +17,8 @@
 //   start lands near the end of the chosen ring file.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+// After uplinking the blob as "blobs/extended_beacon_v6-dev.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
 // With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 //
 // Notes:
@@ -37,7 +37,7 @@
 //      settings immediately, first `CTS1+agenda_delete_by_name(exec_blob_from_fs)`.
 //  5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
 //      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-//      schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (run-once mode,
+//      schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,0)!` (run-once mode,
 //      which doesn't reschedule) for when you want the chain to end.
 //  6. The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
 //      not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
@@ -45,8 +45,8 @@
 //      historical beacons are downlinked that run.
 //  8. Nothing historical is downlinked until the first ring file fills (BEACON_RING_RECORDS_PER_FILE
 //      beacons), because the file being written is never downlinked.
-//  9. Historical beacons are sent with the same packet type, but with version string " S5\0"
-//      (instead of " X5\0").
+//  9. Historical beacons are sent with the same packet type, but with version string " S6\0"
+//      (instead of " X6\0"). (v5 used " S5\0" and " X5\0".)
 // 10. (v5+) Beacons are stored in LittleFS under `beacon_ring/`, as a ring of `BEACON_RING_FILE_COUNT` = 20 files
 //     (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
 //     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
@@ -140,7 +140,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char BLOB_NAME[] = "extended_beacon_blob_v5";
+static const char BLOB_NAME[] = "extended_beacon_blob_v6-dev";
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
 extern lfs_t LFS_filesystem;
@@ -366,8 +366,8 @@ typedef struct {
     // " X2\0" on extended packets (v2).
     // " X3\0" on extended packets (v3).
     // " X4\0" on extended packets (v4).
-    // " X5\0" on extended packets (v5).
-    // " S5\0" on ring-stored extended packets (v5), when downlinked as history.
+    // " X6\0" on extended packets (v6; " X5\0" in v5).
+    // " S6\0" on ring-stored extended packets (v6; " S5\0" in v5), when downlinked as history.
     char end_message[4];
 
     // ====== END OF BASIC BEACON PACKET (DUPLICATED) ========
@@ -1371,7 +1371,7 @@ static void COMMS_fill_beacon_extended_packet_v5plus(
     beacon_packet->gnss_rx_mode_enum = GNSS_current_rx_mode;
 
     // Note: v5+ has no friendly message (its slot holds the v5+ fields instead).
-    memcpy(beacon_packet->end_message, " X5", 4); // Extended beacon packet version.
+    memcpy(beacon_packet->end_message, " X6", 4); // Extended beacon packet version.
 
     // Set the extended beacon packet fields.
 
@@ -1688,8 +1688,8 @@ static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_exte
 ///     the cursor without erasing the disk) are excluded by counting only the files behind the
 ///     cursor until the ring has wrapped.
 ///
-///     Records are stored exactly as generated (" X5\0"). Each is sent as-is, except that its
-///     end_message is replaced with " S5\0" after reading it back, so the ground can tell it apart
+///     Records are stored exactly as generated (" X6\0"). Each is sent as-is, except that its
+///     end_message is replaced with " S6\0" after reading it back, so the ground can tell it apart
 ///     from a live beacon.
 /// @param history_count Number of records to send (0 = none).
 /// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
@@ -1751,7 +1751,7 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
         }
 
         // Stored as generated; mark it as a ring-stored (historical) beacon only now.
-        memcpy(packet.end_message, " S5", 4);
+        memcpy(packet.end_message, " S6", 4);
 
         const uint8_t tx_status = AX100_downlink_bytes((uint8_t *)&packet, sizeof(packet));
         if (tx_status != 0) {

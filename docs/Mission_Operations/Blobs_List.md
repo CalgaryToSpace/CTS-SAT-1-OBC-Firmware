@@ -121,7 +121,7 @@ The checksums cover exactly the downlinked bytes (`offset` to `offset + length`)
     * `action` is now `bulk_downlink_start_v3` (was `bulk_downlink_start_blob`).
     * Feature: Better error codes/names via an error enum.
 
-## `blobs/extended_beacon_v{2,3,4,5}.blob`
+## `blobs/extended_beacon_v{2,3,4,5,6-dev}.blob`
 
 ### Description
 
@@ -147,8 +147,8 @@ Running this blob triggers the extended beacon.
 //   start lands near the end of the chosen ring file.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v5.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+// After uplinking the blob as "blobs/extended_beacon_v6-dev.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
 // With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 ```
 
@@ -168,7 +168,7 @@ Running this blob triggers the extended beacon.
     To change settings immediately, first `CTS1+agenda_delete_by_name(exec_blob_from_fs)`.
 5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
     use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-    schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (run-once mode,
+    schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,0)!` (run-once mode,
     which doesn't reschedule) for when you want the chain to end.
 6. (v5+) The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
     not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
@@ -176,8 +176,8 @@ Running this blob triggers the extended beacon.
     no historical beacons are downlinked that run.
 8. (v5+) Nothing historical is downlinked until the first ring file fills
     (`BEACON_RING_RECORDS_PER_FILE` = 180 beacons), because the file being written is never downlinked.
-9. (v5+) Historical beacons are sent with the same packet type, but with version string ` S5\0`
-    (instead of ` X5\0`).
+9. (v5+) Historical beacons are sent with the same packet type, but with version string ` S6\0`
+    (instead of ` X6\0`). (v5 used ` S5\0` and ` X5\0`.)
 10. (v5+) Beacons are stored in LittleFS under `beacon_ring/`, as a ring of `BEACON_RING_FILE_COUNT` = 20 files
     (`beacon_ring/r0.bin` .. `beacon_ring/r19.bin`), each holding `BEACON_RING_RECORDS_PER_FILE` = 180
     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
@@ -192,7 +192,7 @@ To start the extended beacon, repeating every 9 seconds, also sending 5 historic
 (with a 9 second interval, ~8h of beacons are kept in the ring buffer), run:
 
 ```
-CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
 ```
 
 ### Versions
@@ -237,6 +237,13 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,9000;5)!
       PDU fields (enabled channels, avg power distributed, GNSS power) also come from the PIU
       housekeeping (0xA2/0xA4), instead of the PBU (0x62/0x64) and PDU (0x54) housekeeping.
       Fewer EPS transactions.
+* v6-dev
+    * No changes to the packet format or packet ID, other than the version string.
+    * Has version string ` X6\0` (live beacons), and ` S6\0` (ring-stored beacons, when downlinked as history).
+    * Change: No longer cancels other pending runs of this blob. Instead, it doesn't reschedule
+      itself if another run of this blob is due within `2*<interval_ms>`, so future
+      reconfigurations can be scheduled with `@tsexec`.
+    * Change: Error 137 renamed `CANCEL_RERUNS_FAILED` -> `BAD_OWN_ARGS`.
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 
@@ -344,10 +351,17 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 
 </details>
 
-## `blobs/gnss_bestxyzb_ring_v2.blob`
+## `blobs/gnss_bestxyzb_ring_v2.blob` and `blobs/gnss_bestxyzb_ring_v3-dev.blob`
 
-* Available since: 2026-09-20
+* v2 available since: 2026-09-20
 * Supersedes: `blobs/gnss_bestxyzb_ring_v1.blob`
+* v3-dev changes (vs. v2):
+    * No longer cancels other pending runs of this blob. Instead, it doesn't reschedule itself if
+      another run of this blob is due within `2*<repeat_interval_ms>`, so future reconfigurations
+      can be scheduled with `@tsexec`.
+    * `STOP` no longer cancels other pending runs; it just turns the GNSS off, resets the ring,
+      and doesn't reschedule.
+    * Error 137 renamed `CANCEL_RERUNS_FAILED` -> `BAD_OWN_ARGS`.
 
 ### High-Level Overview
 
@@ -423,17 +437,17 @@ all-zero).
 
 ### Example Usage
 
-After uplinking the blob as "blobs/gnss_bestxyzb_ring_v2.blob", run:
+After uplinking the blob as "blobs/gnss_bestxyzb_ring_v3-dev.blob", run:
 
 ```
 # Default:
-CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5)!
+CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v3-dev.blob,0,9000;5)!
 
 # Also, log GNSS when the MPI is active:
-CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,9000;5;TRACK_MPI)!
+CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v3-dev.blob,0,9000;5;TRACK_MPI)!
 
 # Stop/disable this feature, and turn the GNSS off:
-CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
+CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v3-dev.blob,0,0;0;STOP)!
 ```
 
 ### Notes

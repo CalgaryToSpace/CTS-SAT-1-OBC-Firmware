@@ -44,7 +44,7 @@ LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 TARGET = gnss_bestxyzb_ring_blob
 
 # Name the blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
-BLOB_NAME = gnss_bestxyzb_ring_v2
+BLOB_NAME = gnss_bestxyzb_ring_v3-dev
 
 ELF = $(BUILD_DIR)/$(TARGET).elf
 BIN = $(BUILD_DIR)/$(TARGET).bin
