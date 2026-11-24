@@ -1875,7 +1875,14 @@ uint8_t blob_main(
     uint8_t peripheral_comms_error_count = 0;
     COMMS_fill_beacon_extended_packet_v5plus(&beacon_packet, &peripheral_comms_error_count);
 
-    // Store the beacon into the ring. Never mounts the filesystem itself; just skips if unmounted.
+    // Downlink the beacon packet first, so the filesystem write doesn't add latency to the live beacon.
+    const uint8_t tx_status = AX100_downlink_bytes(
+        (uint8_t *)(&beacon_packet),
+        sizeof(COMMS_beacon_extended_packet_v5plus_t)
+    );
+
+    // Then store it into the ring (even if the downlink failed). Never mounts the filesystem
+    // itself; just skips if unmounted.
     BLOB_ext_beacon_error_enum_t store_status = BLOB_ERR_LFS_NOT_MOUNTED;
     if (LFS_is_lfs_mounted) {
         store_status = store_beacon_to_ring(&beacon_packet);
@@ -1884,11 +1891,6 @@ uint8_t blob_main(
         g_state->store_failure_count++;
     }
 
-    // Downlink the beacon packet.
-    const uint8_t tx_status = AX100_downlink_bytes(
-        (uint8_t *)(&beacon_packet), 
-        sizeof(COMMS_beacon_extended_packet_v5plus_t)
-    );
     if (tx_status != 0) {
         ring_close_open_file(); // Not rescheduling; commit what we have.
         snprintf(
