@@ -19,7 +19,7 @@
 //   starting sample. So a total of (1 + downlink_n) packets are sent per run, fewer if the
 //   randomly-chosen start lands near the end of the chosen file.
 // - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
-//     STOP       Cancel all pending reruns, turn the GNSS channel off (unless NO_EPS_CTRL), reset the
+//     STOP       Don't reschedule, turn the GNSS channel off (unless NO_EPS_CTRL), reset the
 //                ring, and exit.
 //     FAKE       Local/bench test mode: never touch the GNSS UART, never run the power policy
 //                or a time sync, and synthesize samples from the hardware RNG instead. Everything
@@ -48,7 +48,12 @@
 // Notes:
 //  1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
 //  2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
-//     extended beacon blob (re-uplinking cancels any previously-scheduled rerun of this blob).
+//     extended beacon blob: it does NOT reschedule if another pending run of this blob file (any
+//     args) is due within the next 2*<repeat_interval_ms>, and lets that run take over. So several
+//     reconfigurations can be scheduled ahead of time. Re-running it immediately while it's already
+//     repeating does NOT replace the running chain; `agenda_delete_by_name` first. That includes
+//     STOP: it doesn't cancel other pending runs, so schedule it ahead (the chain hands off), or delete the
+//     chain first.
 //  3. Unlike v1, this blob TURNS THE GNSS CHANNEL ON AND OFF ITSELF (see Power Policy below).
 //     It no longer dies when it finds the GNSS powered off -- that's now an expected state.
 //  4. SAFETY: The GNSS is never powered on while the battery is below
@@ -185,6 +190,7 @@
 #include "mpi/mpi_types.h"
 #include "../lfs.h"
 #include "littlefs/littlefs_helper.h"
+#include "../blob_libs/agenda_self_reschedule.h"
 
 
 typedef enum {
@@ -292,7 +298,7 @@ typedef enum {
     BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE = 62, // MPI was active, so this run stayed off the radio (whether or not it stored a sample).
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
-    BLOB_ERR_CANCEL_RERUNS_FAILED = 137, // cancel_other_scheduled_reruns_of_this_blob() failed.
+    BLOB_ERR_BAD_OWN_ARGS = 137, // Couldn't parse our own blob file name from the agenda.
     BLOB_ERR_NO_EXECUTING_AGENDA_SLOT = 163, // Couldn't find our own agenda slot to reschedule.
     BLOB_ERR_AGENDA_ADD_FAILED = 164, // TCMD_add_tcmd_to_agenda() failed while rescheduling.
 } GNSS_ring_blob_error_enum_t;
@@ -317,7 +323,7 @@ static const char *gnss_ring_blob_error_to_str(GNSS_ring_blob_error_enum_t err) 
         case BLOB_ERR_SEND_SKIPPED_MPI_ACTIVE: return "SEND_SKIPPED_MPI_ACTIVE";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
-        case BLOB_ERR_CANCEL_RERUNS_FAILED: return "CANCEL_RERUNS_FAILED";
+        case BLOB_ERR_BAD_OWN_ARGS: return "BAD_OWN_ARGS";
         case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
         case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
     }
@@ -541,91 +547,13 @@ static bool has_flag(const char *flags_str, const char *flag_name) {
 
 // MARK: Self-Rescheduling
 
-// Note: Re-used from extended_beacon_blob_main.c
-
-static int16_t get_current_executing_tcmd_agenda_slot_num() {
-    for (uint16_t i = 0; i < TCMD_AGENDA_SIZE; i++) {
-        if (TCMD_agenda_is_valid[i] == TCMD_AGENDA_ENTRY_EXECUTING) {
-            return i;
-        }
+/// @brief Map a negative BLOB_reschedule_self_unless_upcoming() result to this blob's error enum.
+static GNSS_ring_blob_error_enum_t reschedule_err_to_blob_err(int8_t reschedule_result) {
+    switch (reschedule_result) {
+        case BLOB_RESCHEDULE_ERR_BAD_OWN_ARGS: return BLOB_ERR_BAD_OWN_ARGS;
+        case BLOB_RESCHEDULE_ERR_AGENDA_ADD_FAILED: return BLOB_ERR_AGENDA_ADD_FAILED;
+        default: return BLOB_ERR_NO_EXECUTING_AGENDA_SLOT;
     }
-    return -1;
-}
-
-/// @brief Cancel any other pending agenda entries that would re-run this same blob file, so that
-/// re-uplinking this blob (whether to start, restart, or stop repeating) doesn't leave duplicate
-/// scheduled reruns behind.
-/// @param current_slot_num Agenda slot of the `exec_blob_from_fs` tcmd currently executing this blob.
-/// @return Number of duplicate agenda entries cancelled. Negative if error.
-static int16_t cancel_other_scheduled_reruns_of_this_blob(int16_t current_slot_num) {
-    if (current_slot_num < 0) {
-        return 0;
-    }
-
-    const uint8_t exec_blob_from_fs_tcmd_idx = TCMD_agenda[current_slot_num].tcmd_idx;
-
-    char own_blob_file_name[TCMD_ARGS_STR_NO_PARENS_SIZE];
-    const uint8_t parse_result = TCMD_extract_string_arg(
-        TCMD_agenda[current_slot_num].args_str_no_parens, 0,
-        own_blob_file_name, sizeof(own_blob_file_name)
-    );
-    if (parse_result != 0) {
-        // Can't determine our own blob file name; don't risk cancelling the wrong entries.
-        return -1;
-    }
-
-    uint16_t cancelled_count = 0;
-    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if ((int16_t)slot_num == current_slot_num) {
-            continue;
-        }
-        if (TCMD_agenda_is_valid[slot_num] != TCMD_AGENDA_ENTRY_VALID_AND_PENDING) {
-            continue;
-        }
-        if (TCMD_agenda[slot_num].tcmd_idx != exec_blob_from_fs_tcmd_idx) {
-            continue;
-        }
-
-        char other_blob_file_name[TCMD_ARGS_STR_NO_PARENS_SIZE];
-        const uint8_t other_parse_result = TCMD_extract_string_arg(
-            TCMD_agenda[slot_num].args_str_no_parens, 0,
-            other_blob_file_name, sizeof(other_blob_file_name)
-        );
-        if (other_parse_result != 0) {
-            continue;
-        }
-
-        if (strcmp(own_blob_file_name, other_blob_file_name) == 0) {
-            TCMD_agenda_is_valid[slot_num] = TCMD_AGENDA_ENTRY_INVALID;
-            cancelled_count++;
-        }
-    }
-
-    return cancelled_count;
-}
-
-/// @brief Enqueue a copy of the currently executing tcmd, with a new time into the future to execute.
-/// @note This function avoids incrementing the "total telecommands" counter. Goal: Allow that counter to assess how many uplinked commands were successful.
-static GNSS_ring_blob_error_enum_t reschedule_current_blob_tcmd(uint32_t time_into_future_to_execute_ms) {
-    const int16_t slot_num = get_current_executing_tcmd_agenda_slot_num();
-    if (slot_num < 0) {
-        return BLOB_ERR_NO_EXECUTING_AGENDA_SLOT;
-    }
-
-    TCMD_parsed_tcmd_to_execute_t new_tcmd;
-    memcpy(&new_tcmd, &TCMD_agenda[slot_num], sizeof(TCMD_parsed_tcmd_to_execute_t));
-
-    new_tcmd.timestamp_sent = TIME_get_current_unix_epoch_time_ms();
-    new_tcmd.timestamp_to_execute = TIME_get_current_unix_epoch_time_ms() + time_into_future_to_execute_ms;
-
-    if (TCMD_add_tcmd_to_agenda(&new_tcmd) != 0) {
-        return BLOB_ERR_AGENDA_ADD_FAILED;
-    }
-
-    // Undo the counter increase in `TCMD_add_tcmd_to_agenda()`.
-    TCMD_total_tcmd_queued_count--;
-
-    return BLOB_ERR_OK;
 }
 
 
@@ -1716,16 +1644,16 @@ static uint16_t downlink_consecutive_samples(uint16_t downlink_n, uint16_t *sent
 
 
 /// @brief Common tail of every failure exit that won't reschedule: turn the GNSS off (unless
-///     NO_EPS_CTRL), write "<blob> error: <ERR>. Not rescheduling. <GNSS power><cancel msg>" to
+///     NO_EPS_CTRL), write "<blob> error: <ERR>. Not rescheduling. <GNSS power>" to
 ///     the response, and hand back `err` for blob_main() to return.
 static uint8_t fail_without_rescheduling(
-    GNSS_ring_blob_error_enum_t err, bool no_eps_ctrl, const char *cancel_msg,
+    GNSS_ring_blob_error_enum_t err, bool no_eps_ctrl,
     char *response_buf, unsigned short response_buf_len
 ) {
     const char *shed_msg = shed_gnss_power_before_exit(no_eps_ctrl);
     snprintf(
-        response_buf, response_buf_len, "%s error: %s. Not rescheduling.%s%s",
-        BLOB_NAME, gnss_ring_blob_error_to_str(err), shed_msg, cancel_msg
+        response_buf, response_buf_len, "%s error: %s. Not rescheduling.%s",
+        BLOB_NAME, gnss_ring_blob_error_to_str(err), shed_msg
     );
     return err;
 }
@@ -1766,7 +1694,7 @@ uint8_t blob_main(
 
     // Every failure return below goes through fail_without_rescheduling(), which sheds the GNSS.
     if (arg0_repeat_interval_ms[0] == '\0' || arg1_downlink_n[0] == '\0') {
-        return fail_without_rescheduling(BLOB_ERR_MISSING_ARGS, flag_no_eps, "", response_buf, response_buf_len);
+        return fail_without_rescheduling(BLOB_ERR_MISSING_ARGS, flag_no_eps, response_buf, response_buf_len);
     }
 
     bool arg0_ok, arg1_ok;
@@ -1774,27 +1702,13 @@ uint8_t blob_main(
     const int32_t downlink_n = parse_int(arg1_downlink_n, &arg1_ok);
 
     if (!arg0_ok || !arg1_ok) {
-        return fail_without_rescheduling(BLOB_ERR_INVALID_INT_ARGS, flag_no_eps, "", response_buf, response_buf_len);
+        return fail_without_rescheduling(BLOB_ERR_INVALID_INT_ARGS, flag_no_eps, response_buf, response_buf_len);
     }
 
     // Protect the minimum repeat interval, same as the extended beacon blob: too low of a value
     // would leave the satellite always transmitting, blocking uplink passes.
     if (repeat_interval_ms < 1100) {
         repeat_interval_ms = 1100;
-    }
-
-    // Cancel any other pending agenda entries that would re-run this same blob, so re-uplinking on
-    // every pass doesn't stack up duplicate scheduled reruns.
-    const int16_t cancel_result = cancel_other_scheduled_reruns_of_this_blob(get_current_executing_tcmd_agenda_slot_num());
-    char cancel_msg[50];
-    if (cancel_result < 0) {
-        return fail_without_rescheduling(BLOB_ERR_CANCEL_RERUNS_FAILED, flag_no_eps, "", response_buf, response_buf_len);
-    }
-    else if (cancel_result > 0) {
-        snprintf(cancel_msg, sizeof(cancel_msg), ", %d duplicate rerun(s) cancelled", cancel_result);
-    }
-    else {
-        cancel_msg[0] = '\0';
     }
 
     // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state
@@ -1810,8 +1724,8 @@ uint8_t blob_main(
 
     // The filesystem must already be mounted; this blob never mounts it. An unmounted filesystem
     // is a serious anomaly for a blob whose whole job is storage, and remounting underneath it
-    // would both hide that and invalidate the ring file handle we hold in SRAM. Reruns were
-    // cancelled above and we return without rescheduling, so the campaign simply stops.
+    // would both hide that and invalidate the ring file handle we hold in SRAM. We return without
+    // rescheduling, so the campaign simply stops (until any other pre-scheduled run of this blob).
     //
     // Treated as a fresh start, same as a cold boot or a STOP: whatever happened to the
     // filesystem, our cursor's claim about what's on disk is no longer worth anything, so the
@@ -1820,7 +1734,7 @@ uint8_t blob_main(
     // filesystem is unmounted, so nothing tries to write to it.
     if (!LFS_is_lfs_mounted) {
         reset_to_fresh_state(true);
-        return fail_without_rescheduling(BLOB_ERR_LFS_NOT_MOUNTED, flag_no_eps, cancel_msg, response_buf, response_buf_len);
+        return fail_without_rescheduling(BLOB_ERR_LFS_NOT_MOUNTED, flag_no_eps, response_buf, response_buf_len);
     }
 
     // Now that the state block is known-good, check whether the heap restarted under us since the
@@ -1849,11 +1763,12 @@ uint8_t blob_main(
     // Make sure "gnss_ring/" exists before anything tries to read or write inside it.
     const GNSS_ring_blob_error_enum_t mkdir_status = ensure_ring_dir_exists();
     if (mkdir_status != BLOB_ERR_OK) {
-        return fail_without_rescheduling(mkdir_status, flag_no_eps, cancel_msg, response_buf, response_buf_len);
+        return fail_without_rescheduling(mkdir_status, flag_no_eps, response_buf, response_buf_len);
     }
 
     // STOP: shed the GNSS, commit and close the ring file, wipe the cursor back to r0/0, and exit
-    // without rescheduling. Reruns were already cancelled above, so this run is the last one.
+    // without rescheduling. Other pending runs of this blob (e.g., pre-scheduled ones) are left
+    // alone, and start a new campaign when they run.
     // There is no RESUME: the stop isn't latched, it's a reset. Running the blob again afterwards
     // starts a brand new campaign from the beginning of the ring -- the old one is not resumable.
     if (flag_stop) {
@@ -1862,8 +1777,8 @@ uint8_t blob_main(
 
         snprintf(
             response_buf, response_buf_len,
-            "%s: STOPped. Reruns cancelled.%s%s",
-            BLOB_NAME, shed_msg, cancel_msg
+            "%s: STOPped. Not rescheduling.%s",
+            BLOB_NAME, shed_msg
         );
         return BLOB_ERR_OK; // A requested stop is a success, not an error.
     }
@@ -1930,11 +1845,15 @@ uint8_t blob_main(
         );
     }
 
-    // Reschedule the blob for the next run.
-    const GNSS_ring_blob_error_enum_t reexec_result = reschedule_current_blob_tcmd((uint32_t)repeat_interval_ms);
-    if (reexec_result != BLOB_ERR_OK) {
+    // Reschedule the blob for the next run, unless another run of this blob (e.g., a scheduled
+    // reconfiguration) is due within 2 intervals, in which case that run takes over (and keeps
+    // using the open ring file).
+    const int8_t resched_result = BLOB_reschedule_self_unless_upcoming((uint32_t)repeat_interval_ms);
+    if (resched_result < 0) {
         ring_close_open_file(); // No rerun is coming to close it; commit what we have.
-        return fail_without_rescheduling(reexec_result, flag_no_eps, cancel_msg, response_buf, response_buf_len);
+        return fail_without_rescheduling(
+            reschedule_err_to_blob_err(resched_result), flag_no_eps, response_buf, response_buf_len
+        );
     }
 
     char downlink_msg[24];
@@ -1976,7 +1895,7 @@ uint8_t blob_main(
         did_time_sync ? "yes" : "no", (unsigned long)g_state->time_sync_count,
         time_push_msg,
         downlink_msg,
-        cancel_msg
+        (resched_result == BLOB_RESCHEDULE_SKIPPED_UPCOMING) ? ", not rescheduled (upcoming run takes over)" : ""
     );
 
     // Report the most useful non-fatal condition, in priority order. All of these still mean "the

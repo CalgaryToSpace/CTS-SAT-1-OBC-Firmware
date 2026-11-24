@@ -160,13 +160,16 @@ Running this blob triggers the extended beacon.
     tested on a dev kit, and must be tested on the flatsat with the ADCS engg model computer.
 3. This blob re-schedules itself at the specified interval. Each new scheduled telecommand gets
     a tssent value of `<interval_ms>` after the beacon is sent.
-4. If this blob is currently running in repeat mode, and you re-run it, it will first cancel
-    the existing repeat telecommand, and then re-schedule itself. That is, it is fine to send
-    a command to run this blob on every uplink pass, whether or not it's already running.
+4. A run does NOT reschedule itself if another pending run of this same blob file (any args) is
+    due within the next `2*<interval_ms>`; that upcoming run takes over instead. Pending runs
+    further out are left alone, so several reconfigurations can be scheduled ahead of time, and
+    each hands off to the next. Caveat: re-running this blob immediately while it's already
+    repeating does NOT replace the running chain (the new run yields to the chain's next rerun).
+    To change settings immediately, first `CTS1+agenda_delete_by_name(exec_blob_from_fs)`.
 5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
     use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-    `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (which will run one last time,
-    then cancel itself).
+    schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v5.blob,0,0)!` (run-once mode,
+    which doesn't reschedule) for when you want the chain to end.
 6. (v5+) The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
     not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
 7. (v5+) While the MPI is in active (sensing) mode, the live beacon is still sent and stored, but
@@ -372,7 +375,7 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
 //   starting sample. So a total of (1 + downlink_n) packets are sent per run, fewer if the
 //   randomly-chosen start lands near the end of the chosen file.
 // - flags: Optional. Vertical-bar-separated keywords, matched case-insensitively:
-//     STOP       Cancel all pending reruns, turn the GNSS channel off (unless NO_EPS_CTRL), reset the
+//     STOP       Don't reschedule, turn the GNSS channel off (unless NO_EPS_CTRL), reset the
 //                ring, and exit.
 //     FAKE       Local/bench test mode: never touch the GNSS UART, never run the power policy
 //                or a time sync, and synthesize samples from the hardware RNG instead. Everything
@@ -436,7 +439,12 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v2.blob,0,0;0;STOP)!
 ### Notes
 1. Always use "0" as the second argument to exec_blob_from_fs (i.e., always run with malloc).
 2. This blob re-schedules itself at the specified interval, same mechanism/caveats as the
-   extended beacon blob (re-uplinking cancels any previously-scheduled rerun of this blob).
+   extended beacon blob: it does NOT reschedule if another pending run of this blob file (any
+   args) is due within the next `2*<repeat_interval_ms>`, and lets that run take over. So several
+   reconfigurations can be scheduled ahead of time. Re-running it immediately while it's already
+   repeating does NOT replace the running chain; `agenda_delete_by_name` first. That includes
+   STOP: it doesn't cancel other pending runs, so schedule it ahead (the chain hands off), or delete the
+   chain first.
 3. Unlike v1, this blob TURNS THE GNSS CHANNEL ON AND OFF ITSELF (see Power Policy below).
    It no longer dies when it finds the GNSS powered off -- that's now an expected state.
 4. SAFETY: The GNSS is never powered on while the battery is below
