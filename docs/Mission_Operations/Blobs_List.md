@@ -248,7 +248,6 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
     * Change: No longer cancels other pending runs of this blob. Instead, it doesn't reschedule
       itself if another run of any `extended_beacon_v*` blob is due within `2*<interval_ms>`, so
       future reconfigurations (or upgrades to later versions) can be scheduled with `@tsexec`.
-    * Change: Error 137 (`CANCEL_RERUNS_FAILED`) removed.
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 
@@ -366,7 +365,6 @@ CTS1+exec_blob_from_fs(blobs/gnss_bestxyzb_ring_v1.blob,0,9000;5)!
       future reconfigurations (or upgrades to later versions) can be scheduled with `@tsexec`.
     * `STOP` no longer cancels other pending runs; it just turns the GNSS off, resets the ring,
       and doesn't reschedule.
-    * Error 137 (`CANCEL_RERUNS_FAILED`) removed.
 
 ### High-Level Overview
 
