@@ -8,7 +8,7 @@
 // ahead of time.
 //
 // "Same blob family" means the blob file name (after the last '/') starts with `family_prefix`,
-// e.g., "extended_beacon_v" matches "blobs/extended_beacon_v6-dev.blob" and
+// e.g., "extended_beacon_v" matches "blobs/extended_beacon_v6.blob" and
 // "blobs/extended_beacon_v7.blob". Keep the prefix unique to the blob family.
 //
 // Usage:

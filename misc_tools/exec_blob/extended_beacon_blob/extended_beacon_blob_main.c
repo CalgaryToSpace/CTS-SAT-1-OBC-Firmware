@@ -17,8 +17,8 @@
 //   start lands near the end of the chosen ring file.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v6-dev.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
+// After uplinking the blob as "blobs/extended_beacon_v6.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
 // With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 //
 // Notes:
@@ -38,7 +38,7 @@
 //      settings immediately, first `CTS1+agenda_delete_by_name(exec_blob_from_fs)`.
 //  5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
 //      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-//      schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,0)!` (run-once mode,
+//      schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,0)!` (run-once mode,
 //      which doesn't reschedule) for when you want the chain to end.
 //  6. The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
 //      not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
@@ -146,7 +146,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char BLOB_NAME[] = "extended_beacon_blob_v6-dev";
+static const char BLOB_NAME[] = "extended_beacon_blob_v6";
 static const char BLOB_FAMILY_PREFIX[] = "extended_beacon_v"; // Matches all versions' file names, for self-rescheduling handoff.
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).

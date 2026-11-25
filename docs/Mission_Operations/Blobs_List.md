@@ -121,7 +121,7 @@ The checksums cover exactly the downlinked bytes (`offset` to `offset + length`)
     * `action` is now `bulk_downlink_start_v3` (was `bulk_downlink_start_blob`).
     * Feature: Better error codes/names via an error enum.
 
-## `blobs/extended_beacon_v{2,3,4,5,6-dev}.blob`
+## `blobs/extended_beacon_v{2,3,4,5,6}.blob`
 
 ### Description
 
@@ -147,8 +147,8 @@ Running this blob triggers the extended beacon.
 //   start lands near the end of the chosen ring file.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v6-dev.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
+// After uplinking the blob as "blobs/extended_beacon_v6.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
 // With a 9 second interval, ~8h of beacons are kept in the ring buffer.
 ```
 
@@ -168,7 +168,7 @@ Running this blob triggers the extended beacon.
     To change settings immediately, first `CTS1+agenda_delete_by_name(exec_blob_from_fs)`.
 5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
     use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-    schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,0)!` (run-once mode,
+    schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,0)!` (run-once mode,
     which doesn't reschedule) for when you want the chain to end.
 6. (v5+) The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
     not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
@@ -197,7 +197,7 @@ To start the extended beacon, repeating every 9 seconds, also sending 5 historic
 (with a 9 second interval, ~8h of beacons are kept in the ring buffer), run:
 
 ```
-CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
 ```
 
 ### Versions
@@ -242,7 +242,7 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
       PDU fields (enabled channels, avg power distributed, GNSS power) also come from the PIU
       housekeeping (0xA2/0xA4), instead of the PBU (0x62/0x64) and PDU (0x54) housekeeping.
       Fewer EPS transactions.
-* v6-dev
+* v6
     * No changes to the packet format or packet ID, other than the version string.
     * Has version string ` X6\0` (live beacons), and ` S6\0` (ring-stored beacons, when downlinked as history).
     * Change: No longer cancels other pending runs of this blob. Instead, it doesn't reschedule
