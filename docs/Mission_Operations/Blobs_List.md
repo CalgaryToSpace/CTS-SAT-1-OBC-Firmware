@@ -139,12 +139,16 @@ Running this blob triggers the extended beacon.
 // This lets the ground slowly reconstruct the full beacon history (including the parts
 // of the orbit with no ground station coverage) over many random SatNOGS passes.
 //
-// Args Format: <repeat_interval_ms>[;<history_count>]
+// Args Format: <repeat_interval_ms>[;<history_count>][;kwarg1=val;kwarg2=val]
 // - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
 //   specified interval (clamped to a minimum of 2500ms).
 // - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
-//   run, after the live beacon (clamped to a maximum of 100). Fewer are sent if the randomly-chosen
-//   start lands near the end of the chosen ring file.
+//   run, after the live beacon (clamped to a maximum of 50). Fewer are sent if the randomly-chosen
+//   start lands near the end of the chosen ring file. More are sent if the run reaches a beacon
+//   stored while the MPI was sensing (see note 14).
+// Supported kwargs:
+// - mpi_interval_ms: Repeat interval while the MPI is in active (sensing) mode (default 1500,
+//   clamped to a minimum of 1000). Only used if shorter than repeat_interval_ms. See note 13.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/extended_beacon_v6.blob", run:
@@ -188,11 +192,19 @@ Running this blob triggers the extended beacon.
     `beacon_ring/cursor.bin`), so stored history survives reboots. The file being written at the
     reboot is restarted (its records are lost). If anything about the stored files looks wrong,
     they're all discarded, and the ring starts fresh at `r0` with no history available.
-12. (v6+) No-uplink safety net: once time since the last uplink exceeds
+12. (v6+) No-uplink safety watchdog using EPS reset: once time since the last uplink exceeds
     `STM32_system_reset_no_uplink_interval_sec` minus 5 minutes, each run (after sending and storing the
     beacon) commits the ring file and sends `EPS_CMD_system_reset()`, power-cycling the whole satellite
     before the firmware's native OBC-only reboot would fire. Cannot be disabled: if that config is 0
     (or <= 5 min), every run resets immediately.
+13. (v6+) MPI fast mode: while the MPI is in active (sensing) mode, the blob reschedules itself
+    every `mpi_interval_ms` (default 1500 ms) instead, so beacons are stored to the ring faster.
+    The live beacon is NOT downlinked on every fast run: only once roughly every
+    `<repeat_interval_ms>` (to keep the radio quiet for the MPI, and leave room for uplinks).
+    Note: the ring holds 3600 beacons, so at 1.5 s it only spans 90 minutes of MPI operation.
+14. (v6+) If a history run reaches a stored beacon with `mpi_rx_mode_enum` = sensing, the run is
+    extended to 50 beacons total (or the end of that ring file, if sooner), even past `history_count`.
+    This prioritizes downlinking the beacons stored while the MPI was active.
 
 ### Example Usage
 
@@ -201,6 +213,12 @@ To start the extended beacon, repeating every 9 seconds, also sending 5 historic
 
 ```
 CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
+```
+
+To store beacons every 2 seconds (instead of the default 1.5 s) while the MPI is sensing:
+
+```
+CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5;mpi_interval_ms=2000)!
 ```
 
 ### Versions
@@ -254,6 +272,9 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
     * Change: Stored beacon history survives reboots. The write cursor is saved to
       `beacon_ring/cursor.bin` each time a ring file is started, and restored after a reboot if it
       and the stored files pass validation (otherwise the ring starts fresh, as before).
+    * New: MPI fast mode (enabled by default). While the MPI is sensing, beacons are stored every `mpi_interval_ms`
+      (new kwarg, default 1500 ms), with the live beacon still sent at about the normal interval.
+    * New: History during MPI recordings is prioritized and downlinked extra in longer chains of history (beyond `history_count` argument).
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 

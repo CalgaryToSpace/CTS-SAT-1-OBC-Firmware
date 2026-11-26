@@ -9,17 +9,23 @@
 // This lets the ground slowly reconstruct the full beacon history (including the parts
 // of the orbit with no ground station coverage) over many random SatNOGS passes.
 //
-// Args Format: <repeat_interval_ms>[;<history_count>]
+// Args Format: <repeat_interval_ms>[;<history_count>][;kwarg1=val;kwarg2=val]
 // - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
 //   specified interval (clamped to a minimum of 2500ms).
 // - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
-//   run, after the live beacon (clamped to a maximum of 100). Fewer are sent if the randomly-chosen
-//   start lands near the end of the chosen ring file.
+//   run, after the live beacon (clamped to a maximum of 50). Fewer are sent if the randomly-chosen
+//   start lands near the end of the chosen ring file. More are sent if the run reaches a beacon
+//   stored while the MPI was sensing (see note 14).
+// Supported kwargs:
+// - mpi_interval_ms: Repeat interval while the MPI is in active (sensing) mode (default 1500,
+//   clamped to a minimum of 1000). Only used if shorter than repeat_interval_ms. See note 13.
 //
 // Usage Example:
 // After uplinking the blob as "blobs/extended_beacon_v6.blob", run:
 // CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
 // With a 9 second interval, ~8h of beacons are kept in the ring buffer.
+// To store beacons every 2 seconds (instead of the default 1.5 s) while the MPI is sensing:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5;mpi_interval_ms=2000)!
 //
 // Notes:
 //  1. Always use "0" as the second argument (i.e., always run with malloc).
@@ -63,6 +69,14 @@
 //     beacon) commits the ring file and sends `EPS_CMD_system_reset()`, power-cycling the whole satellite
 //     before the firmware's native OBC-only reboot would fire. Cannot be disabled in this blob:
 //     if that config is 0 (or <= 5 min), reset is performed immediately.
+// 13. (v6+) MPI fast mode: while the MPI is in active (sensing) mode, the blob reschedules itself
+//     every `mpi_interval_ms` (default 1500 ms) instead, so beacons are stored to the ring faster.
+//     The live beacon is NOT downlinked on every fast run: only once roughly every
+//     <repeat_interval_ms> (to keep the radio quiet for the MPI, and leave room for uplinks).
+//     Note: the ring holds 3600 beacons, so at 1.5 s it only spans 90 minutes of MPI operation.
+// 14. (v6+) If a history run reaches a stored beacon with `mpi_rx_mode_enum` = sensing, the run is
+//     extended to 50 beacons total (or the end of that ring file, if sooner), even past history_count.
+//     This prioritizes downlinking the beacons stored while the MPI was active.
 //
 // ------ Implementation Notes ----------------
 //
@@ -155,6 +169,7 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
+static const char KWARG_DELIM = '=';
 static const char BLOB_NAME[] = "extended_beacon_blob_v6";
 static const char BLOB_FAMILY_PREFIX[] = "extended_beacon_v"; // Matches all versions' file names, for self-rescheduling handoff.
 
@@ -233,6 +248,7 @@ typedef enum {
     BLOB_ERR_PERIPHERAL_COMMS_FAILURES = 117, // Beacon was sent, but >=1 peripheral query failed.
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
+    BLOB_ERR_INVALID_KWARGS = 137, // A kwarg was unknown, malformed, or not a positive integer.
     BLOB_ERR_NO_EXECUTING_AGENDA_SLOT = 163, // Couldn't find our own agenda slot to reschedule.
     BLOB_ERR_AGENDA_ADD_FAILED = 164, // TCMD_add_tcmd_to_agenda() failed while rescheduling.
 } BLOB_ext_beacon_error_enum_t;
@@ -251,6 +267,7 @@ static const char *ext_beacon_blob_error_to_str(BLOB_ext_beacon_error_enum_t err
         case BLOB_ERR_PERIPHERAL_COMMS_FAILURES: return "PERIPHERAL_COMMS_FAILURES";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
+        case BLOB_ERR_INVALID_KWARGS: return "INVALID_KWARGS";
         case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
         case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
         default: return "UNKNOWN_ERROR";
@@ -521,7 +538,10 @@ _Static_assert(
 #define BEACON_RING_RECORD_SIZE (sizeof(COMMS_beacon_extended_packet_v5plus_t))
 #define BEACON_RING_PATH_MAX_LEN 32 // Enough for "beacon_ring/r<n>.bin".
 #define BEACON_RING_CURSOR_PATH BEACON_RING_DIR "/cursor.bin"
-#define BEACON_HISTORY_COUNT_MAX 100 // Max historical beacons downlinked per run (history_count arg is clamped).
+#define BEACON_HISTORY_COUNT_MAX 50
+#define BEACON_HISTORY_MPI_EXTENDED_MAX 50 // A run reaching an MPI-sensing beacon is extended to this many (note 14).
+#define BEACON_MPI_INTERVAL_MS_DEFAULT 1500 // Default mpi_interval_ms kwarg.
+#define BEACON_MPI_INTERVAL_MS_MIN 1000 // mpi_interval_ms kwarg is clamped to at least this. // Max historical beacons downlinked per run (history_count arg is clamped).
 
 
 // On-disk copy of the write cursor (BEACON_RING_CURSOR_PATH), rewritten each time a ring file is
@@ -547,8 +567,8 @@ _Static_assert(sizeof(BEACON_ring_cursor_file_t) == 12, "BEACON_ring_cursor_file
 extern uint8_t beacon_ring_state_base[];
 
 #define BEACON_RING_STATE_REGION_LEN 0x100u // Must match BEACON_RING's LENGTH in ../blobs_persistent_sram_regions.ld.
-// Bumped whenever the layout changes (last: needs_fs_recovery), so older state is treated as cold.
-#define BEACON_RING_STATE_MAGIC 0xBEAC0106u
+// Bumped whenever the layout changes (last: last_live_tx_uptime_ms), so older state is treated as cold.
+#define BEACON_RING_STATE_MAGIC 0xBEAC0107u
 
 // NOT packed, deliberately: it holds a live lfs_file_t that littlefs accesses through an ordinary
 // (alignment-assuming) pointer. Same as GNSS_ring_state_t.
@@ -559,6 +579,8 @@ typedef struct {
     uint8_t write_record_idx; // Records already in that file, 0..BEACON_RING_RECORDS_PER_FILE.
     uint8_t has_wrapped; // 1 once we've cycled past the last file at least once (all files have data).
     uint8_t needs_fs_recovery; // 1 after a reset, until a run with the filesystem mounted tries ring_recover_from_fs().
+
+    uint32_t last_live_tx_uptime_ms; // Uptime of the last live beacon downlink (0 = none since reset). For MPI fast mode.
 
     uint32_t stored_record_count; // Total records written to LittleFS, since cold-init.
     uint32_t store_failure_count; // Failed attempts to store a record, since cold-init.
@@ -697,6 +719,24 @@ static int32_t parse_int(const char *s, bool *ok) {
     if (!has_digits) return 0;
     if (ok) *ok = true;
     return (int32_t)result;
+}
+
+/// @brief Parse a "key=value" token into a key and a positive integer value.
+/// @param token The token. Modified in place (the '=' is replaced with a null terminator).
+/// @return true on success, false if there's no '=' or the value isn't a positive integer.
+static bool parse_kwarg(char *token, const char **key_out, uint32_t *value_out) {
+    uint16_t i = 0;
+    while (token[i] != '\0' && token[i] != KWARG_DELIM) i++;
+    if (token[i] != KWARG_DELIM) return false;
+
+    token[i] = '\0';
+    *key_out = token;
+
+    bool ok;
+    const int32_t value = parse_int(&token[i + 1], &ok);
+    if (!ok || value <= 0) return false;
+    *value_out = (uint32_t)value;
+    return true;
 }
 
 
@@ -1859,6 +1899,10 @@ static bool ring_recover_from_fs() {
 ///     Records are stored exactly as generated (" X6\0"). Each is sent as-is, except that its
 ///     end_message is replaced with " S6\0" after reading it back, so the ground can tell it apart
 ///     from a live beacon.
+///
+///     If any record sent has mpi_rx_mode_enum = sensing, the run is extended to
+///     BEACON_HISTORY_MPI_EXTENDED_MAX records (or the end of the file, if sooner), to prioritize
+///     the beacons stored while the MPI was active.
 /// @param history_count Number of records to send (0 = none).
 /// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
 /// @return Number of downlink failures (0 = all succeeded).
@@ -1885,7 +1929,7 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
     const uint16_t start_record_idx = (uint16_t)(record_rand % BEACON_RING_RECORDS_PER_FILE);
 
     const uint16_t available_count = (uint16_t)(BEACON_RING_RECORDS_PER_FILE - start_record_idx);
-    const uint16_t n_to_downlink = (history_count < available_count) ? history_count : available_count;
+    uint16_t n_to_downlink = (history_count < available_count) ? history_count : available_count;
 
     char path[BEACON_RING_PATH_MAX_LEN];
     make_ring_file_path(chosen_file_idx, path, sizeof(path));
@@ -1923,6 +1967,15 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
             LOG(LOG_SEVERITY_WARNING, "%s: invalid record at %s record %d", BLOB_NAME, path, start_record_idx + i);
             fail_count++;
             continue;
+        }
+
+        // Stored while the MPI was sensing: prioritize these, by extending the run (capped).
+        if (packet.mpi_rx_mode_enum == MPI_RX_MODE_SENSING_MODE) {
+            const uint16_t extended_count = (available_count < BEACON_HISTORY_MPI_EXTENDED_MAX)
+                ? available_count : BEACON_HISTORY_MPI_EXTENDED_MAX;
+            if (extended_count > n_to_downlink) {
+                n_to_downlink = extended_count; // Never shortens a longer history_count run.
+            }
         }
 
         // Stored as generated; mark it as a ring-stored (historical) beacon only now.
@@ -1999,10 +2052,7 @@ uint8_t blob_main(
     uint16_t pos = 0;
 
     char arg0_beacon_interval_ms[20];
-    char arg1_history_count[20];
-
     pos = parse_token(args_str, pos, args_str_len, arg0_beacon_interval_ms, sizeof(arg0_beacon_interval_ms));
-    parse_token(args_str, pos, args_str_len, arg1_history_count, sizeof(arg1_history_count)); // Optional; may be "".
 
     if (arg0_beacon_interval_ms[0] == '\0') {
         // Missing args error.
@@ -2018,10 +2068,31 @@ uint8_t blob_main(
     bool arg0_beacon_interval_ms_ok;
     int32_t beacon_interval_ms = parse_int(arg0_beacon_interval_ms, &arg0_beacon_interval_ms_ok);
 
+    // Remaining tokens: the optional positional history_count, then kwargs (key=value).
     bool arg1_history_count_ok = true;
     int32_t history_count = 0;
-    if (arg1_history_count[0] != '\0') {
-        history_count = parse_int(arg1_history_count, &arg1_history_count_ok);
+    uint32_t mpi_interval_ms = BEACON_MPI_INTERVAL_MS_DEFAULT;
+    for (uint8_t arg_num = 1; pos < args_str_len; arg_num++) {
+        char token[40];
+        pos = parse_token(args_str, pos, args_str_len, token, sizeof(token));
+
+        const char *key;
+        uint32_t value;
+        if (parse_kwarg(token, &key, &value) && (strcmp(key, "mpi_interval_ms") == 0)) {
+            mpi_interval_ms = value;
+        }
+        else if ((arg_num == 1) && (token[0] != '\0')) {
+            // Also catches a malformed kwarg here (parse_kwarg() cut it at the '=').
+            history_count = parse_int(token, &arg1_history_count_ok);
+        }
+        else if (token[0] != '\0') { // Tolerate empty tokens (e.g., trailing ';').
+            snprintf(
+                response_buf, response_buf_len,
+                "%s error: invalid kwarg '%s' (%s)",
+                BLOB_NAME, token, ext_beacon_blob_error_to_str(BLOB_ERR_INVALID_KWARGS)
+            );
+            return BLOB_ERR_INVALID_KWARGS;
+        }
     }
 
     if (!arg0_beacon_interval_ms_ok || !arg1_history_count_ok) {
@@ -2043,6 +2114,11 @@ uint8_t blob_main(
     // Likewise, cap the history burst, so one run can't flood the AX100 / hog the radio.
     if (history_count > BEACON_HISTORY_COUNT_MAX) {
         history_count = BEACON_HISTORY_COUNT_MAX;
+    }
+
+    // Leave the telecommand task time for everything else (each run takes a while to fill the beacon).
+    if (mpi_interval_ms < BEACON_MPI_INTERVAL_MS_MIN) {
+        mpi_interval_ms = BEACON_MPI_INTERVAL_MS_MIN;
     }
 
     // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state
@@ -2090,11 +2166,33 @@ uint8_t blob_main(
     uint8_t peripheral_comms_error_count = 0;
     COMMS_fill_beacon_extended_packet_v5plus(&beacon_packet, &peripheral_comms_error_count);
 
-    // Downlink the beacon packet first, so the filesystem write doesn't add latency to the live beacon.
-    const uint8_t tx_status = AX100_downlink_bytes(
-        (uint8_t *)(&beacon_packet),
-        sizeof(COMMS_beacon_extended_packet_v5plus_t)
+    // Snapshot once, so the whole run agrees on the MPI state.
+    const bool mpi_active = (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE);
+
+    // MPI fast mode (note 13): rerun every mpi_interval_ms, to store beacons faster.
+    const bool mpi_fast_mode = (
+        (beacon_interval_ms > 0) && mpi_active && (mpi_interval_ms < (uint32_t)beacon_interval_ms)
     );
+
+    // Fast runs only add stored beacons; the live beacon keeps (roughly) its normal cadence, so the
+    // radio stays quiet for the MPI and uplinks still get through. Sent on the first fast run at
+    // least (beacon_interval_ms - mpi_interval_ms) after the last one, so it's never sent less often.
+    const uint32_t now_ms = TIME_uptime_ms();
+    const bool send_live_beacon = (
+        (!mpi_fast_mode)
+        || (g_state->last_live_tx_uptime_ms == 0)
+        || ((now_ms - g_state->last_live_tx_uptime_ms) >= ((uint32_t)beacon_interval_ms - mpi_interval_ms))
+    );
+
+    // Downlink the beacon packet first, so the filesystem write doesn't add latency to the live beacon.
+    uint8_t tx_status = 0;
+    if (send_live_beacon) {
+        tx_status = AX100_downlink_bytes(
+            (uint8_t *)(&beacon_packet),
+            sizeof(COMMS_beacon_extended_packet_v5plus_t)
+        );
+        g_state->last_live_tx_uptime_ms = now_ms;
+    }
 
     // Safety net, checked after the beacon is out.
     reset_eps_if_no_recent_uplink();
@@ -2133,7 +2231,7 @@ uint8_t blob_main(
 
     // Downlink a random consecutive run of historical beacons, unless the MPI is actively
     // collecting science data (stay off the radio as much as possible then).
-    const bool skip_history_for_mpi = (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE);
+    const bool skip_history_for_mpi = mpi_active;
     uint16_t history_sent_count = 0;
     uint16_t history_fail_count = 0;
     if (LFS_is_lfs_mounted && !skip_history_for_mpi) {
@@ -2157,8 +2255,12 @@ uint8_t blob_main(
     // Reschedule, unless another run of this blob (e.g., a scheduled reconfiguration) is due
     // within 2 intervals, in which case that run takes over.
     const char *resched_msg = "";
+    if (mpi_fast_mode) {
+        resched_msg = send_live_beacon ? ", mpi_fast" : ", mpi_fast (live skipped)";
+    }
     if (beacon_interval_ms > 0) {
-        const int8_t resched_result = BLOB_reschedule_self_unless_upcoming((uint32_t)beacon_interval_ms, BLOB_FAMILY_PREFIX);
+        const uint32_t next_interval_ms = mpi_fast_mode ? mpi_interval_ms : (uint32_t)beacon_interval_ms;
+        const int8_t resched_result = BLOB_reschedule_self_unless_upcoming(next_interval_ms, BLOB_FAMILY_PREFIX);
         if (resched_result < 0) {
             const BLOB_ext_beacon_error_enum_t reexec_result = reschedule_err_to_blob_err(resched_result);
             ring_close_open_file(); // No rerun is coming to close it; commit what we have.
