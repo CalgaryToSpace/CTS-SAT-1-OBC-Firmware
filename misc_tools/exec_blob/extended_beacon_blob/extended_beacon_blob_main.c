@@ -941,7 +941,7 @@ static uint16_t calculate_adcs_total_power_cW(const uint8_t tlm195_raw[ADCS_TLM1
     const uint32_t vbatt_mV = (battery_mV > 0) ? (uint32_t)battery_mV : ADCS_NOMINAL_BATTERY_MV;
     #define RAW(offset) read_le_uint16(&tlm195_raw[offset])
 
-    // Sum of (current in mA) * (voltage in mV), in exact integer units of 0.01 uW (smaller than float code):
+    // Sum of (current in mA) * (voltage in mV) = power in uW. Computed in exact integer units of 0.01 uW (smaller than float code):
     // CubeSense (raw * 0.1 mA) and CubeStar (raw * 0.01 mA) at 3V3; CubeWheels (raw * 0.01 mA) at
     // Vbat; CubeControl (raw * 0.48828125 = raw * 125/256 mA) at 3V3, 5V, and Vbat.
     const uint64_t power_e2_uW =
@@ -1147,6 +1147,34 @@ static bool is_adcs_responding() {
     return result == 0;
 }
 
+// ADCS telemetry whose 6 raw bytes are copied straight into the beacon: {telemetry ID, beacon offset}.
+// This table structure is used to decrease the size of the implementation.
+#define ADCS_COPY(id, field) { id, offsetof(COMMS_beacon_extended_packet_v5plus_t, field) }
+static const uint8_t ADCS_COPY_TLMS[][2] = {
+    // ADCS status data.
+    ADCS_COPY(132, adcs_current_state_1), // ADCS_TELEMETRY_CUBEACP_ADCS_STATE
+
+    // ADCS magnetic field vector (x, y, z).
+    // Raw values are int16, little-endian, in units of 10 nT (i.e. already in Telsla en8 scale).
+    ADCS_COPY(151, adcs_magnetic_field_x_T_en8), // ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR
+
+    // ADCS estimated angular rates (x, y, z rates).
+    ADCS_COPY(147, adcs_estimated_rate_x_cdeg_per_sec), // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES
+
+    // ADCS estimated attitude angles (roll, pitch, yaw).
+    ADCS_COPY(146, adcs_estimated_roll_angle_cdeg), // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES
+
+    // ADCS measured wheel speeds, in RPM.
+    ADCS_COPY(156, adcs_wheel_speed_x_rpm), // ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED
+
+    // ADCS estimation innovation vector, in the raw units of 0.0001.
+    ADCS_COPY(162, adcs_innovation_vector_x_en4), // ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR
+
+    // ADCS EKF estimated gyro bias, in the raw units of 0.001 deg/s.
+    ADCS_COPY(161, adcs_estimated_gyro_bias_x_mdeg_per_sec), // ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS
+};
+_Static_assert(sizeof(COMMS_beacon_extended_packet_v5plus_t) <= 255, "offsets stored as uint8_t");
+
 /// @brief Fill all the ADCS fields of the beacon packet (v2 and v5+).
 /// @details Skips every ADCS request if the ADCS doesn't respond to a single probe (e.g., dev kit
 ///     with no ADCS, or ADCS powered off), leaving the ADCS fields zeroed. See is_adcs_responding().
@@ -1158,20 +1186,19 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
     }
 
     uint8_t peripheral_comms_error_count = 0;
+    uint8_t data_received[ADCS_TLM195_LEN];
 
-    // ADCS status data.
-    {
-        uint8_t data_received[6];
-
+    for (uint8_t i = 0; i < sizeof(ADCS_COPY_TLMS) / sizeof(ADCS_COPY_TLMS[0]); i++) {
         const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            132, // ADCS_TELEMETRY_CUBEACP_ADCS_STATE
+            ADCS_COPY_TLMS[i][0], // Telemetry ID (ADCS_TELEMETRY_CUBEACP_...).
             data_received,
-            sizeof(data_received),
+            6,  // All are 3 elements long, 16-bit elements.
             1 // ADCS_INCLUDE_CHECKSUM
         );
 
         if (tlm_status == 0) {
-            memcpy(beacon_packet->adcs_current_state_1, data_received, sizeof(data_received));
+            // x, y, z (int16 each) land in the 3 consecutive beacon fields starting at the offset.
+            memcpy((uint8_t *)beacon_packet + ADCS_COPY_TLMS[i][1], data_received, 6);
         }
         else {
             peripheral_comms_error_count++;
@@ -1202,28 +1229,6 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
         }
     }
 
-    // ADCS magnetic field vector.
-    // Raw values are int16, little-endian, in units of 10 nT (i.e. already in Telsla en8 scale).
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            151, // ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_magnetic_field_x_T_en8, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_magnetic_field_y_T_en8, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_magnetic_field_z_T_en8, &data_received[4], 2);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
     // ADCS MEMS rate sensor angular rate magnitude.
     {
         uint8_t data_received[6];
@@ -1238,69 +1243,6 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
         if (tlm_status == 0) {
             // Note: data_received is 3x i16 (x, y, z), each in cdeg/s.
             beacon_packet->adcs_angular_rate_norm_cdeg_per_sec = vector3_i16_norm(data_received);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS estimated angular rates.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            147, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_estimated_rate_x_cdeg_per_sec, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_estimated_rate_y_cdeg_per_sec, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_estimated_rate_z_cdeg_per_sec, &data_received[4], 2);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS estimated attitude angles.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            146, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_estimated_roll_angle_cdeg, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_estimated_pitch_angle_cdeg, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_estimated_yaw_angle_cdeg, &data_received[4], 2);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS measured wheel speeds, in RPM.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            156, // ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_wheel_speed_x_rpm, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_wheel_speed_y_rpm, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_wheel_speed_z_rpm, &data_received[4], 2);
         }
         else {
             peripheral_comms_error_count++;
@@ -1323,48 +1265,6 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
             beacon_packet->adcs_pointing_error_cdeg = quaternion_error_vector_to_angle_cdeg(
                 vector3_i16_norm(data_received)
             );
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS estimation innovation vector, in the raw units of 0.0001.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            162, // ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_innovation_vector_x_en4, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_innovation_vector_y_en4, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_innovation_vector_z_en4, &data_received[4], 2);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS EKF estimated gyro bias, in the raw units of 0.001 deg/s.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            161, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_estimated_gyro_bias_x_mdeg_per_sec, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_estimated_gyro_bias_y_mdeg_per_sec, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_estimated_gyro_bias_z_mdeg_per_sec, &data_received[4], 2);
         }
         else {
             peripheral_comms_error_count++;
@@ -2027,8 +1927,8 @@ static void reset_eps_if_no_recent_uplink() {
     // and just adds complexity. Continue.
     blob_log(
         LOG_SEVERITY_CRITICAL,
-        "%s: no uplink for %lu sec (native reboot at %lu sec); EPS system reset",
-        BLOB_NAME, (unsigned long)time_since_last_uplink_sec, (unsigned long)threshold_sec
+        "no uplink for %lu sec (native reboot at %lu sec); EPS system reset",
+        (unsigned long)time_since_last_uplink_sec, (unsigned long)threshold_sec
     );
     HAL_Delay(1000); // Give time for the log to be sent.
 
