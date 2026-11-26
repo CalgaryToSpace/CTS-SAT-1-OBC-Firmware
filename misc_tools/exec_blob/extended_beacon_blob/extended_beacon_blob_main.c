@@ -1918,6 +1918,13 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
             break;
         }
 
+        // Recovery only spot-checks each file's first/last record; never re-broadcast garbage.
+        if (!ring_record_looks_valid(&packet)) {
+            LOG(LOG_SEVERITY_WARNING, "%s: invalid record at %s record %d", BLOB_NAME, path, start_record_idx + i);
+            fail_count++;
+            continue;
+        }
+
         // Stored as generated; mark it as a ring-stored (historical) beacon only now.
         memcpy(packet.end_message, " S6", 4);
 
