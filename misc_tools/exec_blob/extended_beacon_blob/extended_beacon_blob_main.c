@@ -234,6 +234,20 @@ extern void *pvPortMalloc(size_t xWantedSize);
 //     #endif
 // }
 
+extern int vsnprintf(char *buf, unsigned int size, const char *fmt, va_list ap);
+
+/// @brief LOG() with the "<BLOB_NAME>: " prefix, kept in one non-inlined place to save flash
+///     (each inlined LOG() call site costs ~40 bytes).
+__attribute__((noinline, format(printf, 2, 3)))
+static void blob_log(LOG_severity_enum_t severity, const char *fmt, ...) {
+    char msg[128];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(msg, sizeof(msg), fmt, ap);
+    va_end(ap);
+    LOG(severity, "%s: %s", BLOB_NAME, msg);
+}
+
 // MARK: Error Enum
 
 // All named status/error codes returned by this blob's functions, including the values
@@ -646,9 +660,7 @@ static bool detect_reboot_via_heap_canary() {
     // One log line covers both notable events: a detected reboot, and/or a failed allocation.
     // Nominal runs (same boot, canary intact) stay silent.
     if (rebooted || (canary == NULL)) {
-        LOG(
-            LOG_SEVERITY_WARNING, "%s: heap canary: reboot=%d, alloc_ok=%d",
-            BLOB_NAME, rebooted, (canary != NULL)
+        blob_log(LOG_SEVERITY_WARNING, "heap canary: reboot=%d, alloc_ok=%d", rebooted, (canary != NULL)
         );
     }
     return rebooted;
@@ -926,28 +938,27 @@ static uint16_t read_le_uint16(const uint8_t *buf) {
 ///     value), ADCS_NOMINAL_BATTERY_MV is assumed instead.
 /// @return Total power in cW, clamped to 0..65535.
 static uint16_t calculate_adcs_total_power_cW(const uint8_t tlm195_raw[ADCS_TLM195_LEN], int16_t battery_mV) {
-    const float vbatt_mV = (battery_mV > 0) ? (float)battery_mV : (float)ADCS_NOMINAL_BATTERY_MV;
+    const uint32_t vbatt_mV = (battery_mV > 0) ? (uint32_t)battery_mV : ADCS_NOMINAL_BATTERY_MV;
+    #define RAW(offset) read_le_uint16(&tlm195_raw[offset])
 
-    // Sum of (current in mA) * (voltage in mV) = power in uW.
-    float power_uW = 0.0f;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESENSE1_3V3_OFFSET]) * 0.1f) * (float)ADCS_3V3_RAIL_MV;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESENSE2_3V3_OFFSET]) * 0.1f) * (float)ADCS_3V3_RAIL_MV;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_3V3_OFFSET]) * 0.48828125f) * (float)ADCS_3V3_RAIL_MV;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_5V_OFFSET]) * 0.48828125f) * (float)ADCS_5V_RAIL_MV;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_VBAT_OFFSET]) * 0.48828125f) * vbatt_mV;
-    for (uint8_t i = 0; i < 3; i++) {
-        power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_WHEEL1_OFFSET + (2 * i)]) * 0.01f) * vbatt_mV;
-    }
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESTAR_OFFSET]) * 0.01f) * (float)ADCS_3V3_RAIL_MV;
+    // Sum of (current in mA) * (voltage in mV), in exact integer units of 0.01 uW (smaller than float code):
+    // CubeSense (raw * 0.1 mA) and CubeStar (raw * 0.01 mA) at 3V3; CubeWheels (raw * 0.01 mA) at
+    // Vbat; CubeControl (raw * 0.48828125 = raw * 125/256 mA) at 3V3, 5V, and Vbat.
+    const uint64_t power_e2_uW =
+        (10ull * ADCS_3V3_RAIL_MV * (RAW(ADCS_TLM195_CUBESENSE1_3V3_OFFSET) + RAW(ADCS_TLM195_CUBESENSE2_3V3_OFFSET)))
+        + ((uint64_t)ADCS_3V3_RAIL_MV * RAW(ADCS_TLM195_CUBESTAR_OFFSET))
+        + ((uint64_t)vbatt_mV * (
+            RAW(ADCS_TLM195_WHEEL1_OFFSET) + RAW(ADCS_TLM195_WHEEL1_OFFSET + 2) + RAW(ADCS_TLM195_WHEEL1_OFFSET + 4)
+        ))
+        + ((12500ull * (
+            ((uint64_t)ADCS_3V3_RAIL_MV * RAW(ADCS_TLM195_CUBECONTROL_3V3_OFFSET))
+            + ((uint64_t)ADCS_5V_RAIL_MV * RAW(ADCS_TLM195_CUBECONTROL_5V_OFFSET))
+            + ((uint64_t)vbatt_mV * RAW(ADCS_TLM195_CUBECONTROL_VBAT_OFFSET))
+        )) / 256u);
+    #undef RAW
 
-    const float power_cW = (power_uW / 10000.0f) + 0.5f; // uW -> cW, rounded.
-    if (power_cW >= (float)UINT16_MAX) {
-        return UINT16_MAX;
-    }
-    else if (power_cW <= 0) {
-        return 0; // Should be unreachable, but valuable safety nonetheless.
-    }
-    return (uint16_t)power_cW;
+    const uint64_t power_cW = (power_e2_uW + 500000u) / 1000000u; // 0.01 uW -> cW, rounded.
+    return (power_cW > UINT16_MAX) ? UINT16_MAX : (uint16_t)power_cW;
 }
 
 
@@ -1646,10 +1657,7 @@ static void ring_close_open_file() {
     if (ring_open_file_is_live()) {
         const int close_result = lfs_file_close(&LFS_filesystem, &g_state->open_file);
         if (close_result < 0) {
-            LOG(
-                LOG_SEVERITY_ERROR,
-                "%s: lfs_file_close(r%d) -> %d",
-                BLOB_NAME, g_state->open_file_idx, close_result
+            blob_log(LOG_SEVERITY_ERROR, "lfs_file_close(r%d) -> %d", g_state->open_file_idx, close_result
             );
         }
     }
@@ -1680,7 +1688,7 @@ static BLOB_ext_beacon_error_enum_t ring_write_cursor_file() {
         result = (write_len != (lfs_ssize_t)sizeof(cursor)) ? -1 : close_result;
     }
     if (result < 0) {
-        LOG(LOG_SEVERITY_ERROR, "%s: writing %s -> %d", BLOB_NAME, BEACON_RING_CURSOR_PATH, result);
+        blob_log(LOG_SEVERITY_ERROR, "writing %s -> %d", BEACON_RING_CURSOR_PATH, result);
         return BLOB_ERR_LFS_WRITE_FAILED;
     }
     return BLOB_ERR_OK;
@@ -1702,7 +1710,7 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
 
     const int mkdir_result = lfs_mkdir(&LFS_filesystem, BEACON_RING_DIR);
     if ((mkdir_result != 0) && (mkdir_result != LFS_ERR_EXIST)) {
-        LOG(LOG_SEVERITY_ERROR, "%s: lfs_mkdir(%s) -> %d", BLOB_NAME, BEACON_RING_DIR, mkdir_result);
+        blob_log(LOG_SEVERITY_ERROR, "lfs_mkdir(%s) -> %d", BEACON_RING_DIR, mkdir_result);
         return BLOB_ERR_LFS_MKDIR_FAILED;
     }
 
@@ -1725,7 +1733,7 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
 
     const int open_result = lfs_file_open(&LFS_filesystem, &g_state->open_file, path, open_flags);
     if (open_result < 0) {
-        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        blob_log(LOG_SEVERITY_ERROR, "lfs_file_open(%s) -> %d", path, open_result);
         return BLOB_ERR_LFS_WRITE_FAILED;
     }
     g_state->open_file_idx = g_state->write_file_idx;
@@ -1738,7 +1746,7 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
         (lfs_soff_t)g_state->write_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET
     );
     if (seek_result < 0) {
-        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_seek(%s) -> %ld", BLOB_NAME, path, (long)seek_result);
+        blob_log(LOG_SEVERITY_ERROR, "lfs_file_seek(%s) -> %ld", path, (long)seek_result);
         ring_close_open_file();
         return BLOB_ERR_LFS_WRITE_FAILED;
     }
@@ -1761,10 +1769,7 @@ static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_exte
         &LFS_filesystem, &g_state->open_file, beacon_packet, BEACON_RING_RECORD_SIZE
     );
     if (write_result != (lfs_ssize_t)BEACON_RING_RECORD_SIZE) {
-        LOG(
-            LOG_SEVERITY_ERROR,
-            "%s: lfs_file_write(r%d, record %d) -> %ld",
-            BLOB_NAME, g_state->write_file_idx, g_state->write_record_idx, (long)write_result
+        blob_log(LOG_SEVERITY_ERROR, "lfs_file_write(r%d, record %d) -> %ld", g_state->write_file_idx, g_state->write_record_idx, (long)write_result
         );
         // The handle's write position is now unknown; drop it so the next run reopens (and
         // re-seeks) cleanly.
@@ -1810,7 +1815,7 @@ static bool ring_file_is_full_and_valid(uint8_t file_idx) {
 
     lfs_file_t file;
     if (lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY) < 0) {
-        LOG(LOG_SEVERITY_WARNING, "%s: recovery: can't open %s", BLOB_NAME, path);
+        blob_log(LOG_SEVERITY_WARNING, "recovery: can't open %s", path);
         return false;
     }
 
@@ -1830,7 +1835,7 @@ static bool ring_file_is_full_and_valid(uint8_t file_idx) {
     lfs_file_close(&LFS_filesystem, &file);
 
     if (!ok) {
-        LOG(LOG_SEVERITY_WARNING, "%s: recovery: %s is not full/valid", BLOB_NAME, path);
+        blob_log(LOG_SEVERITY_WARNING, "recovery: %s is not full/valid", path);
     }
     return ok;
 }
@@ -1864,7 +1869,7 @@ static bool ring_recover_from_fs() {
         || (cursor.has_wrapped > 1)
         || (cursor.reserved != 0)
     ) {
-        LOG(LOG_SEVERITY_WARNING, "%s: recovery: %s is invalid", BLOB_NAME, BEACON_RING_CURSOR_PATH);
+        blob_log(LOG_SEVERITY_WARNING, "recovery: %s is invalid", BEACON_RING_CURSOR_PATH);
         return false;
     }
 
@@ -1938,12 +1943,12 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
     const int open_result = lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY);
     if (open_result < 0) {
         // Same format string as in store_beacon_to_ring(), so it's stored once.
-        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        blob_log(LOG_SEVERITY_ERROR, "lfs_file_open(%s) -> %d", path, open_result);
         return n_to_downlink;
     }
 
     if (lfs_file_seek(&LFS_filesystem, &file, (lfs_soff_t)start_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET) < 0) {
-        LOG(LOG_SEVERITY_WARNING, "%s: lfs_file_seek(%s) failed", BLOB_NAME, path);
+        blob_log(LOG_SEVERITY_WARNING, "lfs_file_seek(%s) failed", path);
         lfs_file_close(&LFS_filesystem, &file);
         return n_to_downlink;
     }
@@ -1953,10 +1958,7 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
         COMMS_beacon_extended_packet_v5plus_t packet;
         const lfs_ssize_t read_len = lfs_file_read(&LFS_filesystem, &file, &packet, BEACON_RING_RECORD_SIZE);
         if (read_len != (lfs_ssize_t)BEACON_RING_RECORD_SIZE) {
-            LOG(
-                LOG_SEVERITY_WARNING,
-                "%s: short read (%ld) at %s record %d",
-                BLOB_NAME, (long)read_len, path, start_record_idx + i
+            blob_log(LOG_SEVERITY_WARNING, "short read (%ld) at %s record %d", (long)read_len, path, start_record_idx + i
             );
             fail_count += (uint16_t)(n_to_downlink - i); // The rest of the run is unreachable too.
             break;
@@ -1964,7 +1966,7 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
 
         // Recovery only spot-checks each file's first/last record; never re-broadcast garbage.
         if (!ring_record_looks_valid(&packet)) {
-            LOG(LOG_SEVERITY_WARNING, "%s: invalid record at %s record %d", BLOB_NAME, path, start_record_idx + i);
+            blob_log(LOG_SEVERITY_WARNING, "invalid record at %s record %d", path, start_record_idx + i);
             fail_count++;
             continue;
         }
@@ -2023,7 +2025,7 @@ static void reset_eps_if_no_recent_uplink() {
 
     // We could do `ring_close_open_file();` to commit beacons, but not really necessary,
     // and just adds complexity. Continue.
-    LOG(
+    blob_log(
         LOG_SEVERITY_CRITICAL,
         "%s: no uplink for %lu sec (native reboot at %lu sec); EPS system reset",
         BLOB_NAME, (unsigned long)time_since_last_uplink_sec, (unsigned long)threshold_sec
@@ -2031,7 +2033,7 @@ static void reset_eps_if_no_recent_uplink() {
     HAL_Delay(1000); // Give time for the log to be sent.
 
     const uint8_t eps_result = EPS_CMD_system_reset();
-    LOG(LOG_SEVERITY_ERROR, "%s: EPS_CMD_system_reset() -> %d; continuing", BLOB_NAME, eps_result);
+    blob_log(LOG_SEVERITY_ERROR, "EPS_CMD_system_reset() -> %d; continuing", eps_result);
 }
 
 
@@ -2153,11 +2155,7 @@ uint8_t blob_main(
     // returns false in the perfectly normal case where we simply aren't holding a handle, and
     // that must not trigger a reset.
     if (g_state->open_file_is_valid && (!ring_open_file_is_live())) {
-        LOG(
-            LOG_SEVERITY_WARNING,
-            "%s: stale ring file handle; resetting",
-            BLOB_NAME
-        );
+        blob_log(LOG_SEVERITY_WARNING, "stale ring file handle; resetting");
         reset_to_fresh_state(true);
     }
 
@@ -2205,9 +2203,7 @@ uint8_t blob_main(
         if (g_state->needs_fs_recovery) {
             g_state->needs_fs_recovery = 0; // One attempt only; a failure just means a fresh start.
             const bool recovered = ring_recover_from_fs();
-            LOG(
-                LOG_SEVERITY_NORMAL, "%s: ring recovery: %s (cursor=r%d%s)",
-                BLOB_NAME, recovered ? "restored" : "fresh start",
+            blob_log(LOG_SEVERITY_NORMAL, "ring recovery: %s (cursor=r%d%s)", recovered ? "restored" : "fresh start",
                 g_state->write_file_idx, g_state->has_wrapped ? ", wrapped" : ""
             );
         }
