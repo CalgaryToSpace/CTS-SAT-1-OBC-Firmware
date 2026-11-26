@@ -1842,13 +1842,15 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
     lfs_file_t file;
     const int open_result = lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY);
     if (open_result < 0) {
-        // Same format string as in store_beacon_to_ring(), so it's stored once.
         blob_log(LOG_SEVERITY_ERROR, "lfs_file_open(%s) -> %d", path, open_result);
         return n_to_downlink;
     }
 
-    if (lfs_file_seek(&LFS_filesystem, &file, (lfs_soff_t)start_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET) < 0) {
-        blob_log(LOG_SEVERITY_WARNING, "lfs_file_seek(%s) failed", path);
+    const lfs_soff_t seek_result = lfs_file_seek(
+        &LFS_filesystem, &file, (lfs_soff_t)start_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET
+    );
+    if (seek_result < 0) {
+        blob_log(LOG_SEVERITY_WARNING, "lfs_file_seek(%s) -> %ld", path, (long)seek_result);
         lfs_file_close(&LFS_filesystem, &file);
         return n_to_downlink;
     }
@@ -1960,7 +1962,7 @@ uint8_t blob_main(
         // Missing args error.
         snprintf(
             response_buf, response_buf_len,
-            "%s error: missing args! (%s)",
+            "%s error: %s",
             BLOB_NAME,
             ext_beacon_blob_error_to_str(BLOB_ERR_MISSING_ARGS)
         );
@@ -1990,8 +1992,8 @@ uint8_t blob_main(
         else if (token[0] != '\0') { // Tolerate empty tokens (e.g., trailing ';').
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: invalid kwarg '%s' (%s)",
-                BLOB_NAME, token, ext_beacon_blob_error_to_str(BLOB_ERR_INVALID_KWARGS)
+                "%s error: %s '%s'",
+                BLOB_NAME, ext_beacon_blob_error_to_str(BLOB_ERR_INVALID_KWARGS), token
             );
             return BLOB_ERR_INVALID_KWARGS;
         }
@@ -2000,7 +2002,7 @@ uint8_t blob_main(
     if (!arg0_beacon_interval_ms_ok || !arg1_history_count_ok) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: invalid int args! (%s)",
+            "%s error: %s",
             BLOB_NAME,
             ext_beacon_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS)
         );
@@ -2117,10 +2119,11 @@ uint8_t blob_main(
         ring_close_open_file(); // Not rescheduling; commit what we have.
         snprintf(
             response_buf, response_buf_len,
-            "%s error: downlink failed (AX100_downlink_bytes() -> %d) (%s)",
+            "%s error: %s (%d)%s%s", // %d = AX100_downlink_bytes() result. Likely will never see this error message.
             BLOB_NAME,
+            ext_beacon_blob_error_to_str(BLOB_ERR_DOWNLINK_FAILED),
             tx_status,
-            ext_beacon_blob_error_to_str(BLOB_ERR_DOWNLINK_FAILED)
+            "", ""
         );
         return BLOB_ERR_DOWNLINK_FAILED;
     }
@@ -2162,7 +2165,7 @@ uint8_t blob_main(
             ring_close_open_file(); // No rerun is coming to close it; commit what we have.
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reschedule failed -> %s%s",
+                "%s error: %s%s",
                 BLOB_NAME,
                 ext_beacon_blob_error_to_str(reexec_result),
                 ring_msg
@@ -2181,10 +2184,10 @@ uint8_t blob_main(
     if (peripheral_comms_error_count > 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: peripheral comms error count: %d (%s)%s%s",
+            "%s error: %s (%d)%s%s", // %d = peripheral comms error count.
             BLOB_NAME,
-            peripheral_comms_error_count,
             ext_beacon_blob_error_to_str(BLOB_ERR_PERIPHERAL_COMMS_FAILURES),
+            peripheral_comms_error_count,
             ring_msg,
             resched_msg
         );
