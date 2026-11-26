@@ -183,8 +183,11 @@ Running this blob triggers the extended beacon.
     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
     the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
 11. (v5+) Any reboot (software reboot, watchdog reset, or power cycle), an unmounted filesystem,
-    or a filesystem remount/reformat resets the ring and starts with fresh/empty history.
-    Software reboots are detected with a heap canary.
+    or a filesystem remount/reformat resets the in-RAM ring state. Software reboots are detected
+    with a heap canary. (v6+) The ring is then recovered from the filesystem (via
+    `beacon_ring/cursor.bin`), so stored history survives reboots. The file being written at the
+    reboot is restarted (its records are lost). If anything about the stored files looks wrong,
+    they're all discarded, and the ring starts fresh at `r0` with no history available.
 12. (v6+) No-uplink safety net: once time since the last uplink exceeds
     `STM32_system_reset_no_uplink_interval_sec` minus 5 minutes, each run (after sending and storing the
     beacon) commits the ring file and sends `EPS_CMD_system_reset()`, power-cycling the whole satellite
@@ -248,6 +251,9 @@ CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
     * Change: No longer cancels other pending runs of this blob. Instead, it doesn't reschedule
       itself if another run of any `extended_beacon_v*` blob is due within `2*<interval_ms>`, so
       future reconfigurations (or upgrades to later versions) can be scheduled with `@tsexec`.
+    * Change: Stored beacon history survives reboots. The write cursor is saved to
+      `beacon_ring/cursor.bin` each time a ring file is started, and restored after a reboot if it
+      and the stored files pass validation (otherwise the ring starts fresh, as before).
 
 ## `blobs/adcs_get_latest_sd_file_v{1,2}.blob`
 

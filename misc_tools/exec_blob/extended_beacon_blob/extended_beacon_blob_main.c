@@ -53,8 +53,11 @@
 //     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
 //     the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
 // 11. (v5+) Any reboot (software reboot, watchdog reset, or power cycle), an unmounted filesystem,
-//     or a filesystem remount/reformat resets the ring and starts with fresh/empty history.
-//     Software reboots are detected with a heap canary.
+//     or a filesystem remount/reformat resets the in-RAM ring state. Software reboots are detected
+//     with a heap canary. (v6+) The ring is then recovered from the filesystem (via
+//     `beacon_ring/cursor.bin`), so stored history survives reboots. The file being written at the
+//     reboot is restarted (its records are lost). If anything about the stored files looks wrong,
+//     they're all discarded, and the ring starts fresh at r0 with no history available.
 // 12. (v6+) No-uplink safety net: once time since the last uplink exceeds
 //     `STM32_system_reset_no_uplink_interval_sec` minus 5 minutes, each run (after sending and storing the
 //     beacon) commits the ring file and sends `EPS_CMD_system_reset()`, power-cycling the whole satellite
@@ -72,7 +75,13 @@
 // Persistent RAM: Same approach as the GNSS ring blob. The write cursor lives in a small state
 // block at a fixed SRAM address (see `BEACON_RING` in ../blobs_persistent_sram_regions.ld; separate
 // from the GNSS ring blob's region, so both blobs can run at the same time). A magic number detects cold start,
-// in which case the cursor restarts at r0/record 0.
+// in which case the cursor is recovered from the filesystem (see below).
+//
+// Recovery (v6+): Each time a ring file is started (record 0), the cursor (file index + wrapped
+// flag) is first written to "beacon_ring/cursor.bin". After any reset of the in-RAM state, the
+// first run with the filesystem mounted reads it back, and checks that every file it says is full
+// is exactly full and has valid-looking first/last records. Only then is the cursor restored (at
+// record 0 of the file it names, which gets truncated). Any doubt means a fresh start at r0.
 //
 // Open file handle: Same as the GNSS ring blob, the ring file we're currently appending to is left
 // OPEN between executions (its lfs_file_t lives in the persistent state block), so storing a
@@ -91,7 +100,7 @@
 // without a reboot). Each resets the write cursor to r0.bin record 0 and zeroes the counters, so
 // the ring refills from scratch, and the old files are excluded from downlink. In none of the
 // four is the handle trusted, so it's dropped without being closed, and its uncommitted records
-// are simply lost. Unlike the GNSS ring blob, an unmounted filesystem doesn't stop this blob: the
+// are simply lost. Each then tries to recover the cursor from the filesystem (see Recovery above). Unlike the GNSS ring blob, an unmounted filesystem doesn't stop this blob: the
 // live beacon is still sent, and the blob still reschedules itself.
 //
 // On (re)opening a part-full file (e.g., after a run-once exit closed it), we seek to the
@@ -188,6 +197,7 @@ extern int strlen(const char *s);
 extern int strcmp(const char *s1, const char *s2);
 extern void *memset(void *s, int c, size_t n);
 extern void *memcpy(void *__restrict dest, const void *__restrict src, size_t n);
+extern int memcmp(const void *s1, const void *s2, size_t n);
 
 extern void LOG_message(
     uint32_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
@@ -510,7 +520,25 @@ _Static_assert(
 #define BEACON_RING_RECORDS_PER_FILE 180 // Records per file. 20*180 = 3600 beacons = 9 hours at 9s.
 #define BEACON_RING_RECORD_SIZE (sizeof(COMMS_beacon_extended_packet_v5plus_t))
 #define BEACON_RING_PATH_MAX_LEN 32 // Enough for "beacon_ring/r<n>.bin".
+#define BEACON_RING_CURSOR_PATH BEACON_RING_DIR "/cursor.bin"
 #define BEACON_HISTORY_COUNT_MAX 100 // Max historical beacons downlinked per run (history_count arg is clamped).
+
+
+// On-disk copy of the write cursor (BEACON_RING_CURSOR_PATH), rewritten each time a ring file is
+// started. Holds the layout too, so a layout change makes recovery discard the old files.
+typedef struct {
+    uint32_t magic; // BEACON_RING_CURSOR_MAGIC.
+    uint16_t record_size; // BEACON_RING_RECORD_SIZE.
+    uint16_t records_per_file; // BEACON_RING_RECORDS_PER_FILE.
+    uint8_t file_count; // BEACON_RING_FILE_COUNT.
+    uint8_t write_file_idx; // Ring file being written (always from record 0).
+    uint8_t has_wrapped;
+    uint8_t reserved; // Always 0.
+} BEACON_ring_cursor_file_t;
+
+_Static_assert(sizeof(BEACON_ring_cursor_file_t) == 12, "BEACON_ring_cursor_file_t should have no padding");
+
+#define BEACON_RING_CURSOR_MAGIC 0xBEACC0D6u
 
 
 // MARK: Persistent State
@@ -519,8 +547,8 @@ _Static_assert(
 extern uint8_t beacon_ring_state_base[];
 
 #define BEACON_RING_STATE_REGION_LEN 0x100u // Must match BEACON_RING's LENGTH in ../blobs_persistent_sram_regions.ld.
-// Bumped when the reboot canary was added (the layout changed), so earlier v5 state is treated as cold.
-#define BEACON_RING_STATE_MAGIC 0xBEAC0105u
+// Bumped whenever the layout changes (last: needs_fs_recovery), so older state is treated as cold.
+#define BEACON_RING_STATE_MAGIC 0xBEAC0106u
 
 // NOT packed, deliberately: it holds a live lfs_file_t that littlefs accesses through an ordinary
 // (alignment-assuming) pointer. Same as GNSS_ring_state_t.
@@ -530,6 +558,7 @@ typedef struct {
     uint8_t write_file_idx; // Ring file currently being appended to, 0..(BEACON_RING_FILE_COUNT-1).
     uint8_t write_record_idx; // Records already in that file, 0..BEACON_RING_RECORDS_PER_FILE.
     uint8_t has_wrapped; // 1 once we've cycled past the last file at least once (all files have data).
+    uint8_t needs_fs_recovery; // 1 after a reset, until a run with the filesystem mounted tries ring_recover_from_fs().
 
     uint32_t stored_record_count; // Total records written to LittleFS, since cold-init.
     uint32_t store_failure_count; // Failed attempts to store a record, since cold-init.
@@ -621,6 +650,7 @@ static void reset_to_fresh_state(bool may_keep_canary) {
     memset(g_state, 0, sizeof(BEACON_ring_state_t));
     g_state->magic = BEACON_RING_STATE_MAGIC;
     g_state->reboot_canary = canary_to_keep;
+    g_state->needs_fs_recovery = 1;
 }
 
 
@@ -1587,6 +1617,35 @@ static void ring_close_open_file() {
     g_state->open_file_is_valid = 0;
 }
 
+/// @brief Write the current cursor to BEACON_RING_CURSOR_PATH (see BEACON_ring_cursor_file_t).
+/// @details A failed write may leave the file empty/short, which makes recovery discard the ring
+///     (fail-safe), rather than leave a stale cursor behind.
+static BLOB_ext_beacon_error_enum_t ring_write_cursor_file() {
+    BEACON_ring_cursor_file_t cursor;
+    memset(&cursor, 0, sizeof(cursor));
+    cursor.magic = BEACON_RING_CURSOR_MAGIC;
+    cursor.record_size = BEACON_RING_RECORD_SIZE;
+    cursor.records_per_file = BEACON_RING_RECORDS_PER_FILE;
+    cursor.file_count = BEACON_RING_FILE_COUNT;
+    cursor.write_file_idx = g_state->write_file_idx;
+    cursor.has_wrapped = g_state->has_wrapped;
+
+    lfs_file_t file;
+    int result = lfs_file_open(
+        &LFS_filesystem, &file, BEACON_RING_CURSOR_PATH, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
+    );
+    if (result >= 0) {
+        const lfs_ssize_t write_len = lfs_file_write(&LFS_filesystem, &file, &cursor, sizeof(cursor));
+        const int close_result = lfs_file_close(&LFS_filesystem, &file);
+        result = (write_len != (lfs_ssize_t)sizeof(cursor)) ? -1 : close_result;
+    }
+    if (result < 0) {
+        LOG(LOG_SEVERITY_ERROR, "%s: writing %s -> %d", BLOB_NAME, BEACON_RING_CURSOR_PATH, result);
+        return BLOB_ERR_LFS_WRITE_FAILED;
+    }
+    return BLOB_ERR_OK;
+}
+
 /// @brief Make sure `g_state->open_file` is open on ring file `write_file_idx`, positioned at the
 ///     cursor, ready to write.
 /// @details Reuses the handle left open by a previous execution whenever it's still live, which is
@@ -1605,6 +1664,14 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
     if ((mkdir_result != 0) && (mkdir_result != LFS_ERR_EXIST)) {
         LOG(LOG_SEVERITY_ERROR, "%s: lfs_mkdir(%s) -> %d", BLOB_NAME, BEACON_RING_DIR, mkdir_result);
         return BLOB_ERR_LFS_MKDIR_FAILED;
+    }
+
+    // Starting a new file: persist the cursor first, so a reboot from here on recovers to this file.
+    if (g_state->write_record_idx == 0) {
+        const BLOB_ext_beacon_error_enum_t cursor_status = ring_write_cursor_file();
+        if (cursor_status != BLOB_ERR_OK) {
+            return cursor_status;
+        }
     }
 
     char path[BEACON_RING_PATH_MAX_LEN];
@@ -1681,6 +1748,101 @@ static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_exte
     }
 
     return BLOB_ERR_OK;
+}
+
+
+// MARK: Ring Recovery
+
+/// @brief Does a record read back from the ring look like a beacon this version stored?
+static bool ring_record_looks_valid(const COMMS_beacon_extended_packet_v5plus_t *record) {
+    return (
+        (record->packet_type == COMMS_PACKET_TYPE_BEACON_EXTENDED_V5PLUS)
+        && (memcmp(record->satellite_name, "CTS1", 4) == 0)
+        && (memcmp(record->end_message, " X6", 4) == 0)
+    );
+}
+
+/// @brief Is ring file `file_idx` exactly full, with valid-looking first and last records?
+/// @note Spot-checks only 2 records: reading all of them for every file would take too long.
+static bool ring_file_is_full_and_valid(uint8_t file_idx) {
+    char path[BEACON_RING_PATH_MAX_LEN];
+    make_ring_file_path(file_idx, path, sizeof(path));
+
+    lfs_file_t file;
+    if (lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY) < 0) {
+        LOG(LOG_SEVERITY_WARNING, "%s: recovery: can't open %s", BLOB_NAME, path);
+        return false;
+    }
+
+    bool ok = (
+        lfs_file_size(&LFS_filesystem, &file)
+        == (lfs_soff_t)(BEACON_RING_RECORDS_PER_FILE * BEACON_RING_RECORD_SIZE)
+    );
+    const uint16_t check_record_idxs[2] = {0, BEACON_RING_RECORDS_PER_FILE - 1};
+    for (uint8_t i = 0; ok && (i < 2); i++) {
+        COMMS_beacon_extended_packet_v5plus_t record;
+        ok = (
+            (lfs_file_seek(&LFS_filesystem, &file, (lfs_soff_t)check_record_idxs[i] * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET) >= 0)
+            && (lfs_file_read(&LFS_filesystem, &file, &record, BEACON_RING_RECORD_SIZE) == (lfs_ssize_t)BEACON_RING_RECORD_SIZE)
+            && ring_record_looks_valid(&record)
+        );
+    }
+    lfs_file_close(&LFS_filesystem, &file);
+
+    if (!ok) {
+        LOG(LOG_SEVERITY_WARNING, "%s: recovery: %s is not full/valid", BLOB_NAME, path);
+    }
+    return ok;
+}
+
+/// @brief After a reset of the in-RAM state, restore the write cursor from BEACON_RING_CURSOR_PATH,
+///     if it and every file it says is full look good.
+/// @details Leaves g_state untouched (fresh: r0, record 0, not wrapped, no history) on any doubt.
+///     On success, the cursor restarts at record 0 of the file that was being written (its
+///     uncommitted or partial records are discarded when it's truncated).
+/// @return true if the cursor was restored.
+static bool ring_recover_from_fs() {
+    BEACON_ring_cursor_file_t cursor;
+    memset(&cursor, 0, sizeof(cursor));
+
+    lfs_file_t file;
+    if (lfs_file_open(&LFS_filesystem, &file, BEACON_RING_CURSOR_PATH, LFS_O_RDONLY) < 0) {
+        return false; // Never written (e.g., first ever run, or reformatted).
+    }
+    const lfs_soff_t file_size = lfs_file_size(&LFS_filesystem, &file);
+    const lfs_ssize_t read_len = lfs_file_read(&LFS_filesystem, &file, &cursor, sizeof(cursor));
+    lfs_file_close(&LFS_filesystem, &file);
+
+    if (
+        (file_size != (lfs_soff_t)sizeof(cursor))
+        || (read_len != (lfs_ssize_t)sizeof(cursor))
+        || (cursor.magic != BEACON_RING_CURSOR_MAGIC)
+        || (cursor.record_size != BEACON_RING_RECORD_SIZE)
+        || (cursor.records_per_file != BEACON_RING_RECORDS_PER_FILE)
+        || (cursor.file_count != BEACON_RING_FILE_COUNT)
+        || (cursor.write_file_idx >= BEACON_RING_FILE_COUNT)
+        || (cursor.has_wrapped > 1)
+        || (cursor.reserved != 0)
+    ) {
+        LOG(LOG_SEVERITY_WARNING, "%s: recovery: %s is invalid", BLOB_NAME, BEACON_RING_CURSOR_PATH);
+        return false;
+    }
+
+    // Same set of files downlink_history_beacons() will read from.
+    const uint8_t full_file_count = cursor.has_wrapped ? (BEACON_RING_FILE_COUNT - 1) : cursor.write_file_idx;
+    for (uint8_t steps_back = 1; steps_back <= full_file_count; steps_back++) {
+        const uint8_t file_idx = (uint8_t)(
+            (cursor.write_file_idx + BEACON_RING_FILE_COUNT - steps_back) % BEACON_RING_FILE_COUNT
+        );
+        if (!ring_file_is_full_and_valid(file_idx)) {
+            return false;
+        }
+    }
+
+    g_state->write_file_idx = cursor.write_file_idx;
+    g_state->write_record_idx = 0;
+    g_state->has_wrapped = cursor.has_wrapped;
+    return true;
 }
 
 
@@ -1878,8 +2040,8 @@ uint8_t blob_main(
 
     // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state
     // block can be trusted, including the open file handle and the canary pointer, so reset
-    // without dereferencing either. We deliberately do NOT measure the on-disk files to recover
-    // the write cursor -- a fresh start simply begins again at r0.bin record 0.
+    // without dereferencing either. The cursor is recovered from the filesystem later (before
+    // storing), via needs_fs_recovery.
     if (g_state->magic != BEACON_RING_STATE_MAGIC) {
         reset_to_fresh_state(false);
     }
@@ -1934,6 +2096,16 @@ uint8_t blob_main(
     // itself; just skips if unmounted.
     BLOB_ext_beacon_error_enum_t store_status = BLOB_ERR_LFS_NOT_MOUNTED;
     if (LFS_is_lfs_mounted) {
+        // First mounted run since a reset: try to pick up where the stored ring left off.
+        if (g_state->needs_fs_recovery) {
+            g_state->needs_fs_recovery = 0; // One attempt only; a failure just means a fresh start.
+            const bool recovered = ring_recover_from_fs();
+            LOG(
+                LOG_SEVERITY_NORMAL, "%s: ring recovery: %s (cursor=r%d%s)",
+                BLOB_NAME, recovered ? "restored" : "fresh start",
+                g_state->write_file_idx, g_state->has_wrapped ? ", wrapped" : ""
+            );
+        }
         store_status = store_beacon_to_ring(&beacon_packet);
     }
     if (store_status != BLOB_ERR_OK) {
