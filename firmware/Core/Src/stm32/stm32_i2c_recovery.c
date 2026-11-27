@@ -17,6 +17,19 @@ void STM32_i2c_reset_if_stuck(I2C_HandleTypeDef *hi2c, uint8_t log_to_uhf_radio)
     }
 
     const uint32_t isr_before = hi2c->Instance->ISR;
+    uint8_t bus_num = 0; // 0 = unknown.
+    if (hi2c->Instance == I2C1) {
+        bus_num = 1;
+    }
+    else if (hi2c->Instance == I2C2) {
+        bus_num = 2;
+    }
+    else if (hi2c->Instance == I2C3) {
+        bus_num = 3;
+    }
+    else if (hi2c->Instance == I2C4) {
+        bus_num = 4;
+    }
 
     // DeInit+Init resets the peripheral (clears BUSY, releases SCL/SDA) and the HAL handle state/lock.
     HAL_I2C_DeInit(hi2c);
@@ -25,7 +38,7 @@ void STM32_i2c_reset_if_stuck(I2C_HandleTypeDef *hi2c, uint8_t log_to_uhf_radio)
     // Log after the reset, so a UHF log goes out on the recovered bus.
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, (log_to_uhf_radio ? LOG_SINK_ALL : LOG_all_sinks_except(LOG_SINK_UHF_RADIO)),
-        "I2C stuck BUSY (ISR=0x%08lX). Reset peripheral -> init_status=%d, still_busy=%d",
-        isr_before, init_status, (__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_BUSY) != RESET)
+        "I2C%u stuck BUSY (ISR=0x%08lX). Reset peripheral -> init_status=%d, still_busy=%d",
+        bus_num, isr_before, init_status, (__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_BUSY) != RESET)
     );
 }

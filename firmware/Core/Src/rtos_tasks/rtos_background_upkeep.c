@@ -18,6 +18,7 @@
 #include "adcs_drivers/adcs_commands.h"
 #include "transforms/number_comparisons.h"
 #include "telecommand_exec/agenda_from_file.h"
+#include "stm32/stm32_i2c_recovery.h"
 
 #include "cmsis_os.h"
 
@@ -475,6 +476,16 @@ static void subtask_enqueue_tcmds_from_agenda_file(void) {
 }
 
 
+/// @brief Safety net: reset any I2C bus stuck BUSY, including ones only used by call sites without a pre-transfer check.
+/// @note Safe here, as cooperative scheduling means no transfer can be in progress.
+static void subtask_reset_stuck_i2c_buses(void) {
+    STM32_i2c_reset_if_stuck(&hi2c1, 1);
+    STM32_i2c_reset_if_stuck(&hi2c2, 1);
+    STM32_i2c_reset_if_stuck(&hi2c3, 1);
+    STM32_i2c_reset_if_stuck(&hi2c4, 1);
+}
+
+
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
     while(1) {
@@ -513,6 +524,9 @@ void TASK_background_upkeep(void *argument) {
 
         subtask_enqueue_tcmds_from_agenda_file();
         osDelay(10);
+        
+        subtask_reset_stuck_i2c_buses();
+        osDelay(10); // Yield.
         
         osDelay(1000);
     }
