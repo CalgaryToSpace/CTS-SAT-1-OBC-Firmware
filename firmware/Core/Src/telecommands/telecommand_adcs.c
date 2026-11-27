@@ -1,3 +1,4 @@
+#include "stm32/stm32_i2c_recovery.h"
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
@@ -107,6 +108,7 @@ uint8_t TCMDEXEC_adcs_generic_bootloader_command(const char *args_str,
     if (status == ADCS_ERROR_FLAG_WRONG_LENGTH && data_length == 1) {
         // for zero-parameter commands, do this instead
         uint8_t data_send[1] = {command_id}; 
+        STM32_i2c_reset_if_stuck(ADCS_i2c_HANDLE, 1);
         status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
             // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
     }

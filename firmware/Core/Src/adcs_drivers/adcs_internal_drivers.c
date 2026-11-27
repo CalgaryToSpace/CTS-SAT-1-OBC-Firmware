@@ -10,6 +10,7 @@
 #include <math.h>
 
 #include "stm32l4xx_hal.h"
+#include "stm32/stm32_i2c_recovery.h"
 
 /* Basic Telecommand Functions */ 
 
@@ -97,6 +98,7 @@ uint8_t ADCS_send_i2c_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
     // include checksum following data if enabled
     if (include_checksum) {buf[data_length] = ADCS_calculate_crc8_checksum(data, data_length);}
 
+    STM32_i2c_reset_if_stuck(ADCS_i2c_HANDLE, 1);
     ADCS_CMD_status = HAL_I2C_Mem_Write(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, id, 1, buf, sizeof(buf), ADCS_HAL_TIMEOUT);
 
     /* When sending a command to the CubeACP, it is possible to include an 8-bit CRC checksum.
@@ -130,6 +132,7 @@ uint8_t ADCS_send_i2c_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
     uint8_t temp_data[data_length + include_checksum];
         // temp data used for checksum checking
 
+    STM32_i2c_reset_if_stuck(ADCS_i2c_HANDLE, 1);
     adcs_tlm_status = HAL_I2C_Mem_Read(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data), ADCS_HAL_TIMEOUT);
 
     for (uint32_t i = 0; i < data_length; i++) {

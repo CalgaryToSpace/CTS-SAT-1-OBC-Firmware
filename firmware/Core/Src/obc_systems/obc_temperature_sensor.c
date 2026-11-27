@@ -1,4 +1,5 @@
 #include "main.h"
+#include "stm32/stm32_i2c_recovery.h"
 #include "stdio.h"
 #include <stdint.h>
 
@@ -35,6 +36,7 @@ uint8_t OBC_TEMP_SENSOR_read_temperature(int32_t *result)
     uint8_t buf[2];
 
     // Read the temperature from the temp register
+    STM32_i2c_reset_if_stuck(&hi2c4, 1);
     status = HAL_I2C_Mem_Read(&hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_temp_register_addr, 1, buf, 2, OBC_TEMP_SENSOR_timeout_ms);
     if (status != HAL_OK)
     {
@@ -87,6 +89,7 @@ int8_t OBC_TEMP_SENSOR_get_temp_precision()
     uint8_t buf;
     uint8_t precision_mask = 0x60; // 0b01100000
 
+    STM32_i2c_reset_if_stuck(&hi2c4, 1);
     const HAL_StatusTypeDef status = HAL_I2C_Mem_Read(
         &hi2c4, OBC_TEMP_SENSOR_device_addr << 1,
         OBC_TEMP_SENSOR_config_register_addr, 1,
@@ -128,6 +131,7 @@ uint8_t OBC_TEMP_SENSOR_set_temp_precision(
     *temp_scaling_factor = precision_data.precision_scaling_factor;
 
     // Write the precision value to the config register.
+    STM32_i2c_reset_if_stuck(&hi2c4, 1);
     const HAL_StatusTypeDef status = HAL_I2C_Mem_Write(
         &hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1,
         &(precision_data.config_write_data), 1, OBC_TEMP_SENSOR_timeout_ms

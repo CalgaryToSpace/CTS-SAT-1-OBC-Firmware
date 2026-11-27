@@ -22,6 +22,7 @@
 #include <math.h>
 
 #include "stm32l4xx_hal.h"
+#include "stm32/stm32_i2c_recovery.h"
 
 /// @brief Initialize the ADCS CRC, timestamp, and file system directory. 
 /// @return 0 when successful
@@ -360,6 +361,7 @@ uint8_t ADCS_get_llh_position(ADCS_llh_position_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_bootloader_clear_errors() {
     uint8_t data_send[1] = {ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS}; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+    STM32_i2c_reset_if_stuck(ADCS_i2c_HANDLE, 1);
     const uint8_t hal_status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
         // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
     return hal_status;
@@ -2119,6 +2121,7 @@ uint8_t ADCS_erase_sd_file_by_checksum(uint16_t file_checksum) {
 /// @note This function always returns an error, because if the ADCS leaves the bootloader it can't confirm this command, which commands it to leave the bootloader
 uint8_t ADCS_bootloader_run_program() {
     uint8_t data_send[1] = {ADCS_COMMAND_BOOTLOADER_RUN_PROGRAM};
+    STM32_i2c_reset_if_stuck(ADCS_i2c_HANDLE, 1);
     const uint8_t hal_status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
         // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
     return hal_status;

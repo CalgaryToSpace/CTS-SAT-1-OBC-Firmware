@@ -1,4 +1,5 @@
 #include "main.h"
+#include "stm32/stm32_i2c_recovery.h"
 
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "debug_tools/debug_i2c.h"
@@ -33,9 +34,11 @@ uint8_t ANT_send_cmd(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t cmd_buf[], uint8_
     HAL_StatusTypeDef transmit_status;
     switch(i2c_bus_mcu) {
         case ANT_I2C_BUS_A_MCU_A:
+            STM32_i2c_reset_if_stuck(&hi2c2, 1);
             transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR_A << 1, cmd_buf, cmd_len, ANT_i2c_timeout_ms);
             break;
         case ANT_I2C_BUS_B_MCU_B:
+            STM32_i2c_reset_if_stuck(&hi2c3, 1);
             transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR_B << 1, cmd_buf, cmd_len, ANT_i2c_timeout_ms);
             break;
         default:
@@ -68,10 +71,12 @@ uint8_t ANT_get_response(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uin
     
     switch (i2c_bus_mcu) {
     case ANT_I2C_BUS_A_MCU_A:
+        STM32_i2c_reset_if_stuck(&hi2c2, 1);
         read_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR_A << 1, rx_buf, rx_len, ANT_i2c_timeout_ms);
         break;
     
     case ANT_I2C_BUS_B_MCU_B:
+        STM32_i2c_reset_if_stuck(&hi2c3, 1);
         read_status = HAL_I2C_Master_Receive(&hi2c3, ANT_ADDR_B << 1, rx_buf, rx_len, ANT_i2c_timeout_ms);
         break;
 

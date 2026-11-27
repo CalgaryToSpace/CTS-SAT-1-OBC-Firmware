@@ -5,6 +5,7 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 #include "comms_drivers/rf_antenna_switch.h"
+#include "stm32/stm32_i2c_recovery.h"
 
 #include <string.h>
 #include <stdint.h>
@@ -73,6 +74,7 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
         return 0;
     }
 
+    STM32_i2c_reset_if_stuck(AX100_I2C_HANDLE, 0);
     const HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
         AX100_I2C_HANDLE,
         AX100_I2C_ADDR << 1, 
