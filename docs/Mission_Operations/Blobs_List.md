@@ -575,7 +575,7 @@ The response is tightly-packed JSON, like:
         "registers": {"ISR":"0x00008001","CR1":"0x00000001","CR2":"0x02000000","hal_state":"0x20","hal_lock":false,"hal_err":"0x20","scl_level":1,"sda_level":1},
         "scan": {"majority_state":"BUSY"}
     },
-    "recovery": {"stuck_before":true,"peripheral_resets":1,"bus_clear_pulses":-1,"init_status":0,"stuck_after":false},
+    "recovery": {"stuck_before":"BUSY_FLAG","peripheral_resets":1,"bus_clear_pulses":null,"init_status":0,"stuck_after":"NOT_STUCK"},
     "after": {"registers": {...}, "scan": {"majority_state":"ERROR","0x05":"OK","0x57":"OK"}}
 }
 ```
@@ -594,11 +594,9 @@ CTS1+exec_blob_from_fs(blobs/recover_i2c_v1.blob,0,1;ENSURE_RECOVERED)!
     * `ISR` bits 15 (BUSY) and 1 (TXIS) set, `scl_level`=0: the OBC abandoned a transfer partway through, and is holding SCL low. A peripheral reset fixes it.
     * `sda_level`=0 after a peripheral reset: a device is holding SDA low. Needs a bus clear (`ENSURE_RECOVERED` does this automatically).
     * `hal_state` other than `0x20` (READY), or `hal_lock`=true: the HAL handle is stuck. A peripheral reset fixes it.
-2. "Stuck" means BUSY is set, or the HAL handle isn't READY/unlocked. Since tasks never yield mid-transfer, neither should ever be true while the blob runs.
-3. Registers are captured before each scan, so they show the state before the scan touches the bus. A stuck bus scans as all `BUSY`.
-4. The peripheral reset is an RCC reset plus `HAL_I2C_Init` (which also re-runs `HAL_I2C_MspInit`), giving the same config as at boot. `HAL_I2C_DeInit` isn't in the flight firmware, so it isn't used.
-5. `bus_clear_pulses` is -1 if no bus clear was done, else the number of SCL pulses before SDA went high. `init_status` is -1 if no reset was done, else the `HAL_I2C_Init` status (0 = OK).
-6. Returns 0 if the chosen bus isn't stuck at the end, 1 if it still is, and 135+ on argument errors.
+2. `stuck_before`/`stuck_after` say which checks found the bus stuck, joined with `+` (e.g. `BUSY_FLAG+HAL_LOCK`): `BUSY_FLAG` (BUSY is set), `HAL_STATE` (the HAL handle isn't READY), `HAL_LOCK` (the HAL handle is locked). `NOT_STUCK` if none. Since tasks never yield mid-transfer, none of these should ever be true while the blob runs.
+3. The peripheral reset is an RCC reset plus `HAL_I2C_Init` (which also re-runs `HAL_I2C_MspInit`), giving the same config as at boot. `HAL_I2C_DeInit` isn't in the flight firmware, so it isn't used.
+4. `bus_clear_pulses` is `null` if no bus clear was done, else the number of SCL pulses before SDA went high. `init_status` is `null` if no reset was done, else the `HAL_I2C_Init` status (0 = OK).
 
 
 ## `blobs/analyze_mpi_data_v{1,2}.blob`
