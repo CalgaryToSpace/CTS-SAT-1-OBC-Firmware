@@ -43,6 +43,8 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+#include "telecommands/i2c_telecommand_defs.h"
+
 #define USE_HAL_DRIVER 1
 #define STM32L4R5xx 1
 
@@ -73,9 +75,6 @@ extern int snprintf(char *buf, unsigned int size, const char *fmt, ...);
 extern int vsnprintf(char *buf, unsigned int size, const char *fmt, va_list args);
 extern int strlen (const char *s);
 extern int strcmp(const char *a, const char *b);
-
-// The `scan_i2c_bus` telecommand. Arg: the bus number as a string ("1"-"4").
-extern uint8_t TCMDEXEC_scan_i2c_bus(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len);
 
 #if BLOB_ENABLE_LOGS
 extern void LOG_message(
@@ -281,6 +280,8 @@ static void append_registers(response_writer_t *w, const i2c_bus_t *bus) {
 static void append_scan(response_writer_t *w, uint8_t bus_num) {
     const char bus_arg[2] = { '0' + bus_num, '\0' };
     char *scan_buf = &w->buf[w->pos];
+
+    // The `scan_i2c_bus` telecommand. Arg string: just the bus number as a string ("1"-"4").
     TCMDEXEC_scan_i2c_bus(bus_arg, scan_buf, w->size - w->pos);
     w->pos += strlen(scan_buf);
 }
