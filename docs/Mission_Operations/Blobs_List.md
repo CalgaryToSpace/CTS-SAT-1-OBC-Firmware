@@ -577,6 +577,64 @@ CTS1+exec_blob_from_fs(blobs/get_file_map_v1.blob,0,your_file.bin;minimum_null_l
 3. If the response doesn't fit in the response buffer, it's silently cut off (incomplete JSON). Re-run with a larger `minimum_null_length` to fit fewer null ranges.
 
 
+## `blobs/recover_i2c_v1.blob`
+
+Blob to diagnose and recover a stuck I2C bus (e.g., I2C1 stuck BUSY, so AX100 downlinks and ADCS commands all fail) without rebooting the OBC.
+
+### Description
+
+```c
+// Args Format: <bus>;<mode>
+//  - bus: I2C bus number, 1-4 (1=stack/AX100/ADCS, 2=antenna A, 3=antenna B, 4=OBC temp sensor).
+//  - mode: What to do to the bus. Required.
+//      - INFO_ONLY: Read-only. Only reports the registers and scan.
+//      - ENSURE_RECOVERED: If the bus is stuck, reset the peripheral. If it's still stuck (e.g., a line
+//          is still held low), also do a bus clear (9 SCL pulses + STOP), then reset the peripheral again.
+//      - FORCE_RECOVER: Reset the peripheral, even if it doesn't look stuck.
+//      - FORCE_BUS_CLEAR: Do a bus clear, then reset the peripheral, even if it doesn't look stuck.
+```
+
+Steps: scan the bus and then capture its registers and stuck reasons, do the recovery (if the mode calls for it), then scan the bus and capture its registers and stuck reasons again.
+
+The response is tightly-packed JSON, like:
+
+```json
+{
+    "action": "recover_i2c_v1", "bus": "I2C1", "mode": "ENSURE_RECOVERED",
+    "before": {
+        "scan": {"majority_state":"BUSY"},
+        "registers": {"ISR":"0x00008001","CR1":"0x00000001","CR2":"0x02000000","hal_state":"0x20","hal_lock":false,"hal_err":"0x20","scl_level":1,"sda_level":1},
+        "stuck": "BUSY_FLAG"
+    },
+    "recovery": {"peripheral_resets":1,"bus_clear_pulses":null,"init_status":0},
+    "after": {"scan": {"majority_state":"ERROR","0x05":"OK","0x57":"OK"}, "registers": {...}, "stuck": "NOT_STUCK"}
+}
+```
+
+### Example Usage
+
+```
+CTS1+exec_blob_from_fs(blobs/recover_i2c_v1.blob,0,1;INFO_ONLY)!
+CTS1+exec_blob_from_fs(blobs/recover_i2c_v1.blob,0,1;ENSURE_RECOVERED)!
+```
+
+### Notes
+
+1. Common potential registers states:
+    * `ISR` bit 15 (BUSY) set, `scl_level`=1 and `sda_level`=1: a glitch looked like a START with no STOP. A peripheral reset fixes it.
+    * `ISR` bits 15 (BUSY) and 1 (TXIS) set, `scl_level`=0: the OBC abandoned a transfer partway through, and is holding SCL low. A peripheral reset fixes it.
+    * `sda_level`=0 after a peripheral reset: a device is holding SDA low. Needs a bus clear (`ENSURE_RECOVERED` does this automatically).
+    * `hal_state` other than `0x20` (READY), or `hal_lock`=true: the HAL handle is stuck. A peripheral reset fixes it.
+2. `stuck` (in `before` and `after`) says which checks found the bus stuck, joined with `+` (e.g. `BUSY_FLAG+HAL_LOCK`). Since tasks never yield mid-transfer, none of these should ever be true while the blob runs. The potential values in this field are:
+    * `NOT_STUCK`: The bus is not stuck (nominal)
+    * `BUSY_FLAG`: BUSY is set
+    * `HAL_STATE`: the HAL handle isn't READY
+    * `HAL_LOCK`: the HAL handle is locked
+    * `SCL_LOW`/`SDA_LOW`: the line is held low, by the OBC or a device
+3. The peripheral reset is an RCC reset plus `HAL_I2C_Init` (which also re-runs `HAL_I2C_MspInit`), giving the same config as at boot. `HAL_I2C_DeInit` isn't in the flight firmware, so it isn't used.
+4. `bus_clear_pulses` is `null` if no bus clear was done, else the number of SCL pulses before SDA went high. `init_status` is `null` if no reset was done, else the `HAL_I2C_Init` status (0 = OK).
+
+
 ## `blobs/analyze_mpi_data_v{1,2}.blob`
 
 Blob to summarize an MPI science data file on-orbit (SHA256 and CRC16, frame counts, time syncs, date range, end-of-recording footer, and likely ion signals), to decide whether it's worth downlinking, and which byte ranges of it.
