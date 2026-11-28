@@ -558,7 +558,7 @@ Blob to diagnose and recover a stuck I2C bus (e.g., I2C1 stuck BUSY, so AX100 do
 //  - bus: I2C bus number, 1-4 (1=stack/AX100/ADCS, 2=antenna A, 3=antenna B, 4=OBC temp sensor).
 //  - mode: What to do to the bus. Required.
 //      - INFO_ONLY: Read-only. Only reports the registers and scan.
-//      - ENSURE_RECOVERED: If the bus is stuck, reset the peripheral. If it's still stuck (or a line
+//      - ENSURE_RECOVERED: If the bus is stuck, reset the peripheral. If it's still stuck (e.g., a line
 //          is still held low), also do a bus clear (9 SCL pulses + STOP), then reset the peripheral again.
 //      - FORCE_RECOVER: Reset the peripheral, even if it doesn't look stuck.
 //      - FORCE_BUS_CLEAR: Do a bus clear, then reset the peripheral, even if it doesn't look stuck.
@@ -595,7 +595,12 @@ CTS1+exec_blob_from_fs(blobs/recover_i2c_v1.blob,0,1;ENSURE_RECOVERED)!
     * `ISR` bits 15 (BUSY) and 1 (TXIS) set, `scl_level`=0: the OBC abandoned a transfer partway through, and is holding SCL low. A peripheral reset fixes it.
     * `sda_level`=0 after a peripheral reset: a device is holding SDA low. Needs a bus clear (`ENSURE_RECOVERED` does this automatically).
     * `hal_state` other than `0x20` (READY), or `hal_lock`=true: the HAL handle is stuck. A peripheral reset fixes it.
-2. `stuck` (in `before` and `after`) says which checks found the bus stuck, joined with `+` (e.g. `BUSY_FLAG+HAL_LOCK`): `BUSY_FLAG` (BUSY is set), `HAL_STATE` (the HAL handle isn't READY), `HAL_LOCK` (the HAL handle is locked). `NOT_STUCK` if none. Since tasks never yield mid-transfer, none of these should ever be true while the blob runs.
+2. `stuck` (in `before` and `after`) says which checks found the bus stuck, joined with `+` (e.g. `BUSY_FLAG+HAL_LOCK`). Since tasks never yield mid-transfer, none of these should ever be true while the blob runs. The potential values in this field are:
+    * `NOT_STUCK`: The bus is not stuck (nominal)
+    * `BUSY_FLAG`: BUSY is set
+    * `HAL_STATE`: the HAL handle isn't READY
+    * `HAL_LOCK`: the HAL handle is locked
+    * `SCL_LOW`/`SDA_LOW`: the line is held low, by the OBC or a device
 3. The peripheral reset is an RCC reset plus `HAL_I2C_Init` (which also re-runs `HAL_I2C_MspInit`), giving the same config as at boot. `HAL_I2C_DeInit` isn't in the flight firmware, so it isn't used.
 4. `bus_clear_pulses` is `null` if no bus clear was done, else the number of SCL pulses before SDA went high. `init_status` is `null` if no reset was done, else the `HAL_I2C_Init` status (0 = OK).
 

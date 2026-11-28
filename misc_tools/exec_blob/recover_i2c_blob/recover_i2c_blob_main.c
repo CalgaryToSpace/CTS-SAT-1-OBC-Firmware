@@ -8,7 +8,7 @@
 //  - bus: I2C bus number, 1-4 (1=stack/AX100/ADCS, 2=antenna A, 3=antenna B, 4=OBC temp sensor).
 //  - mode: What to do to the bus. Required.
 //      - INFO_ONLY: Read-only. Only reports the registers and scan.
-//      - ENSURE_RECOVERED: If the bus is stuck, reset the peripheral. If it's still stuck (or a line
+//      - ENSURE_RECOVERED: If the bus is stuck, reset the peripheral. If it's still stuck (e.g., a line
 //          is still held low), also do a bus clear (9 SCL pulses + STOP), then reset the peripheral again.
 //      - FORCE_RECOVER: Reset the peripheral, even if it doesn't look stuck.
 //      - FORCE_BUS_CLEAR: Do a bus clear, then reset the peripheral, even if it doesn't look stuck.
@@ -193,15 +193,21 @@ static inline uint8_t pin_level(GPIO_TypeDef *port, uint16_t pin) {
 #define STUCK_BUSY_FLAG (1u << 0) // Peripheral's ISR BUSY flag is set.
 #define STUCK_HAL_STATE (1u << 1) // HAL handle State isn't READY.
 #define STUCK_HAL_LOCK (1u << 2)  // HAL handle is locked.
+#define STUCK_SCL_LOW (1u << 3)   // SCL is held low (by the OBC or a device).
+#define STUCK_SDA_LOW (1u << 4)   // SDA is held low (by the OBC or a device).
 
 /// @brief Which ways the bus is stuck (a bitmask of STUCK_*). 0 if it isn't stuck.
 /// @note Blobs run inside a telecommand, and tasks never yield mid-transfer (cooperative
-///     scheduling), so no transfer is ever legitimately in progress here.
+///     scheduling), so no transfer is ever legitimately in progress here, and an idle bus has
+///     both lines high (pulled up). A line held low means the bus is unusable, even if the
+///     peripheral looks fine (e.g., a device holding SDA low doesn't set BUSY).
 static uint8_t get_stuck_reasons(const i2c_bus_t *bus) {
     uint8_t reasons = 0;
     if (__HAL_I2C_GET_FLAG(bus->hi2c, I2C_FLAG_BUSY) != RESET) reasons |= STUCK_BUSY_FLAG;
     if (bus->hi2c->State != HAL_I2C_STATE_READY) reasons |= STUCK_HAL_STATE;
     if (bus->hi2c->Lock != HAL_UNLOCKED) reasons |= STUCK_HAL_LOCK;
+    if (!pin_level(bus->scl_port, bus->scl_pin)) reasons |= STUCK_SCL_LOW;
+    if (!pin_level(bus->sda_port, bus->sda_pin)) reasons |= STUCK_SDA_LOW;
     return reasons;
 }
 
@@ -211,20 +217,32 @@ static void append_int_or_null(response_writer_t *w, int16_t value) {
     else response_append(w, "%d", value);
 }
 
-/// @brief Append the stuck reasons as a JSON string, e.g. `"BUSY_FLAG+HAL_LOCK"`, or `"NOT_STUCK"`.
+static const char *stuck_reason_name(uint8_t reason) {
+    switch (reason) {
+        case STUCK_BUSY_FLAG: return "BUSY_FLAG";
+        case STUCK_HAL_STATE: return "HAL_STATE";
+        case STUCK_HAL_LOCK: return "HAL_LOCK";
+        case STUCK_SCL_LOW: return "SCL_LOW";
+        case STUCK_SDA_LOW: return "SDA_LOW";
+    }
+    return "UNKNOWN";
+}
+
+/// @brief Append the stuck reasons as a JSON string, e.g. `"BUSY_FLAG+SCL_LOW"`, or `"NOT_STUCK"`.
 static void append_stuck_reasons(response_writer_t *w, uint8_t reasons) {
     if (reasons == 0) {
         response_append(w, "\"NOT_STUCK\"");
         return;
     }
-    response_append(
-        w, "\"%s%s%s%s%s\"",
-        (reasons & STUCK_BUSY_FLAG) ? "BUSY_FLAG" : "",
-        ((reasons & STUCK_BUSY_FLAG) && (reasons & (STUCK_HAL_STATE | STUCK_HAL_LOCK))) ? "+" : "",
-        (reasons & STUCK_HAL_STATE) ? "HAL_STATE" : "",
-        ((reasons & STUCK_HAL_STATE) && (reasons & STUCK_HAL_LOCK)) ? "+" : "",
-        (reasons & STUCK_HAL_LOCK) ? "HAL_LOCK" : ""
-    );
+    response_append(w, "\"");
+    bool first = true;
+    for (uint8_t reason_bit = STUCK_BUSY_FLAG; reason_bit <= STUCK_SDA_LOW; reason_bit <<= 1) {
+        if (reasons & reason_bit) {
+            response_append(w, "%s%s", first ? "" : "+", stuck_reason_name(reason_bit));
+            first = false;
+        }
+    }
+    response_append(w, "\"");
 }
 
 static const char *mode_name(recovery_mode_t mode) {
@@ -290,10 +308,10 @@ static uint8_t append_bus_state(response_writer_t *w, uint8_t bus_num, const i2c
 ///     Setting the handle to RESET makes HAL_I2C_Init also re-run HAL_I2C_MspInit (I2C clock
 ///     source, GPIO alternate function, IRQs) and unlock the handle. The resulting config matches
 ///     boot (CR1 reset value = analog filter on, no digital filter).
-/// @note The usual way is HAL_I2C_DeInit + HAL_I2C_Init (as the newer firmware does), but
+/// @note The usual way is HAL_I2C_DeInit + HAL_I2C_Init, but
 ///     HAL_I2C_DeInit and HAL_I2C_MspDeInit aren't in the flight firmware (removed by
 ///     --gc-sections). The RCC reset gives the same end state, and is more thorough (it resets
-///     every register, not just the state machine).
+///     every register of the target I2C peripheral, not just the state machine register).
 static HAL_StatusTypeDef reset_peripheral(uint8_t bus_num, const i2c_bus_t *bus) {
     switch (bus_num) {
         case 1: __HAL_RCC_I2C1_FORCE_RESET(); __HAL_RCC_I2C1_RELEASE_RESET(); break;
@@ -383,10 +401,9 @@ static uint8_t fetch_states_and_do_recovery(
         peripheral_resets++;
     }
 
-    const bool line_held_low = !pin_level(bus.scl_port, bus.scl_pin) || !pin_level(bus.sda_port, bus.sda_pin);
     if (
         mode == MODE_FORCE_BUS_CLEAR
-        || (mode == MODE_ENSURE_RECOVERED && stuck_before && (get_stuck_reasons(&bus) || line_held_low))
+        || (mode == MODE_ENSURE_RECOVERED && stuck_before && get_stuck_reasons(&bus))
     ) {
         bus_clear_pulses = bus_clear(&bus);
         init_status = reset_peripheral(bus_num, &bus);
