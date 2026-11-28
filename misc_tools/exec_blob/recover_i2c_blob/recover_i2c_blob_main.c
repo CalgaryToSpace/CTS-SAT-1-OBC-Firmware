@@ -14,15 +14,15 @@
 //      - FORCE_BUS_CLEAR: Do a bus clear, then reset the peripheral, even if it doesn't look stuck.
 //
 // Steps:
-// 1. Capture the bus's registers, then scan the bus.
+// 1. Scan the bus, then capture its registers and stuck reasons.
 // 2. Do the recovery on the chosen bus (if the mode calls for it).
-// 3. Capture the registers and scan the bus again.
+// 3. Scan the bus, then capture its registers and stuck reasons again.
 //
 // Response Format (JSON):
 // {"action":"recover_i2c_v1","bus":"I2C1","mode":"ENSURE_RECOVERED",
-//  "before":{"registers":{...},"scan":{"majority_state":"ERROR","0x05":"OK","0x57":"OK"}},
-//  "recovery":{"stuck_before":"BUSY_FLAG","peripheral_resets":1,"bus_clear_pulses":null,"init_status":0,"stuck_after":"NOT_STUCK"},
-//  "after":{"registers":{...},"scan":{...}}}
+//  "before":{"scan":{"majority_state":"BUSY"},"registers":{...},"stuck":"BUSY_FLAG"},
+//  "recovery":{"peripheral_resets":1,"bus_clear_pulses":null,"init_status":0},
+//  "after":{"scan":{"majority_state":"ERROR","0x05":"OK","0x57":"OK"},"registers":{...},"stuck":"NOT_STUCK"}}
 //
 // The registers entry: {"ISR":"0x...","CR1":"0x...","CR2":"0x...","hal_state":"0x20","hal_lock":false,"hal_err":"0x0","scl_level":1,"sda_level":1}
 //  - ISR bit 15 = BUSY, bit 1 = TXIS. hal_state 0x20 = READY. scl_level/sda_level are the pin levels (1 = high/idle).
@@ -267,14 +267,21 @@ static void append_scan(response_writer_t *w, uint8_t bus_num) {
     w->pos += strlen(scan_buf);
 }
 
-/// @brief Append the bus's registers, then scan the bus.
-/// @note Registers first, so they show the state before the scan touches the bus.
-static void append_bus_state(response_writer_t *w, uint8_t bus_num, const i2c_bus_t *bus) {
-    response_append(w, "{\"registers\":");
-    append_registers(w, bus);
-    response_append(w, ",\"scan\":");
+/// @brief Scan the bus, then append its registers and stuck reasons (read at the same moment).
+/// @return The stuck reasons (bitmask of STUCK_*), as reported.
+/// @note Scan first, so the registers and stuck reasons are a consistent snapshot of the bus as it
+///     is after the scan. A stuck bus isn't touched by the scan (the HAL returns BUSY right away),
+///     so its registers (e.g., CR2 from the abandoned transfer) are still intact.
+static uint8_t append_bus_state(response_writer_t *w, uint8_t bus_num, const i2c_bus_t *bus) {
+    response_append(w, "{\"scan\":");
     append_scan(w, bus_num);
+    response_append(w, ",\"registers\":");
+    append_registers(w, bus);
+    const uint8_t stuck_reasons = get_stuck_reasons(bus);
+    response_append(w, ",\"stuck\":");
+    append_stuck_reasons(w, stuck_reasons);
     response_append(w, "}");
+    return stuck_reasons;
 }
 
 /// @brief Reset the I2C peripheral through the RCC, and re-initialize it.
@@ -365,9 +372,8 @@ static uint8_t fetch_states_and_do_recovery(
 
     response_writer_t w = { .buf = response_buf, .size = response_buf_len, .pos = 0 };
     response_append(&w, "{\"action\":\"%s\",\"bus\":\"I2C%u\",\"mode\":\"%s\",\"before\":", BLOB_NAME, bus_num, mode_name(mode));
-    append_bus_state(&w, bus_num, &bus);
+    const uint8_t stuck_before = append_bus_state(&w, bus_num, &bus);
 
-    const uint8_t stuck_before = get_stuck_reasons(&bus);
     uint8_t peripheral_resets = 0;
     int16_t bus_clear_pulses = -1; // -1 = no bus clear (printed as null).
     int16_t init_status = -1; // -1 = HAL_I2C_Init not run (printed as null).
@@ -387,19 +393,12 @@ static uint8_t fetch_states_and_do_recovery(
         peripheral_resets++;
     }
 
-    const uint8_t stuck_after = get_stuck_reasons(&bus);
-    response_append(&w, ",\"recovery\":{\"stuck_before\":");
-    append_stuck_reasons(&w, stuck_before);
-    response_append(
-        &w, ",\"peripheral_resets\":%u,\"bus_clear_pulses\":", peripheral_resets
-    );
+    response_append(&w, ",\"recovery\":{\"peripheral_resets\":%u,\"bus_clear_pulses\":", peripheral_resets);
     append_int_or_null(&w, bus_clear_pulses);
     response_append(&w, ",\"init_status\":");
     append_int_or_null(&w, init_status);
-    response_append(&w, ",\"stuck_after\":");
-    append_stuck_reasons(&w, stuck_after);
     response_append(&w, "},\"after\":");
-    append_bus_state(&w, bus_num, &bus);
+    const uint8_t stuck_after = append_bus_state(&w, bus_num, &bus);
     response_append(&w, "}");
 
     return stuck_after ? 1 : 0;
