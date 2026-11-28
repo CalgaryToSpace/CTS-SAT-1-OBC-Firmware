@@ -9,17 +9,23 @@
 // This lets the ground slowly reconstruct the full beacon history (including the parts
 // of the orbit with no ground station coverage) over many random SatNOGS passes.
 //
-// Args Format: <repeat_interval_ms>[;<history_count>]
+// Args Format: <repeat_interval_ms>[;<history_count>][;kwarg1=val;kwarg2=val]
 // - repeat_interval_ms: 0 to run only once, or any positive number to run repeatedly at that
 //   specified interval (clamped to a minimum of 2500ms).
 // - history_count: Optional (default 0). Number of consecutive historical beacons to downlink per
-//   run, after the live beacon (clamped to a maximum of 100). Fewer are sent if the randomly-chosen
-//   start lands near the end of the chosen ring file.
+//   run, after the live beacon (clamped to a maximum of 50). Fewer are sent if the randomly-chosen
+//   start lands near the end of the chosen ring file. More are sent if the run reaches a beacon
+//   stored while the MPI was sensing (see note 14).
+// Supported kwargs:
+// - mpi_interval_ms: Repeat interval while the MPI is in active (sensing) mode (default 1500,
+//   clamped to a minimum of 1000). Only used if shorter than repeat_interval_ms. See note 13.
 //
 // Usage Example:
-// After uplinking the blob as "blobs/extended_beacon_v6-dev.blob", run:
-// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,9000;5)!
+// After uplinking the blob as "blobs/extended_beacon_v6.blob", run:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5)!
 // With a 9 second interval, ~8h of beacons are kept in the ring buffer.
+// To store beacons every 2 seconds (instead of the default 1.5 s) while the MPI is sensing:
+// CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,9000;5;mpi_interval_ms=2000)!
 //
 // Notes:
 //  1. Always use "0" as the second argument (i.e., always run with malloc).
@@ -38,7 +44,7 @@
 //      settings immediately, first `CTS1+agenda_delete_by_name(exec_blob_from_fs)`.
 //  5. To stop the recurring rescheduling of this blob after starting it, you can use reboot, or
 //      use `CTS1+agenda_delete_by_name(exec_blob_from_fs)`, or `CTS1+agenda_delete_all()`, or
-//      schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v6-dev.blob,0,0)!` (run-once mode,
+//      schedule a `CTS1+exec_blob_from_fs(blobs/extended_beacon_v6.blob,0,0)!` (run-once mode,
 //      which doesn't reschedule) for when you want the chain to end.
 //  6. The beacon is always sent first. Storage and history downlink problems (e.g., filesystem
 //      not mounted) never prevent the live beacon from being sent, nor the blob from rescheduling.
@@ -53,8 +59,24 @@
 //     fixed-size records (one raw 198-byte beacon each). When the current file fills, the blob advances to
 //     the next; after the last one it wraps back to `r0` and truncates it, evicting the oldest data.
 // 11. (v5+) Any reboot (software reboot, watchdog reset, or power cycle), an unmounted filesystem,
-//     or a filesystem remount/reformat resets the ring and starts with fresh/empty history.
-//     Software reboots are detected with a heap canary.
+//     or a filesystem remount/reformat resets the in-RAM ring state. Software reboots are detected
+//     with a heap canary. (v6+) The ring is then recovered from the filesystem (via
+//     `beacon_ring/cursor.bin`), so stored history survives reboots. The file being written at the
+//     reboot is restarted (its records are lost). If anything about the stored files looks wrong,
+//     they're all discarded, and the ring starts fresh at r0 with no history available.
+// 12. (v6+) No-uplink safety net: once time since the last uplink exceeds
+//     `STM32_system_reset_no_uplink_interval_sec` minus 5 minutes, each run (after sending and storing the
+//     beacon) commits the ring file and sends `EPS_CMD_system_reset()`, power-cycling the whole satellite
+//     before the firmware's native OBC-only reboot would fire. Cannot be disabled in this blob:
+//     if that config is 0 (or <= 5 min), reset is performed immediately.
+// 13. (v6+) MPI fast mode: while the MPI is in active (sensing) mode, the blob reschedules itself
+//     every `mpi_interval_ms` (default 1500 ms) instead, so beacons are stored to the ring faster.
+//     The live beacon is NOT downlinked on every fast run: only once roughly every
+//     <repeat_interval_ms> (to keep the radio quiet for the MPI, and leave room for uplinks).
+//     Note: the ring holds 3600 beacons, so at 1.5 s it only spans 90 minutes of MPI operation.
+// 14. (v6+) If a history run reaches a stored beacon with `mpi_rx_mode_enum` = sensing, the run is
+//     extended to 50 beacons total (or the end of that ring file, if sooner), even past history_count.
+//     This prioritizes downlinking the beacons stored while the MPI was active.
 //
 // ------ Implementation Notes ----------------
 //
@@ -67,7 +89,13 @@
 // Persistent RAM: Same approach as the GNSS ring blob. The write cursor lives in a small state
 // block at a fixed SRAM address (see `BEACON_RING` in ../blobs_persistent_sram_regions.ld; separate
 // from the GNSS ring blob's region, so both blobs can run at the same time). A magic number detects cold start,
-// in which case the cursor restarts at r0/record 0.
+// in which case the cursor is recovered from the filesystem (see below).
+//
+// Recovery (v6+): Each time a ring file is started (record 0), the cursor (file index + wrapped
+// flag) is first written to "beacon_ring/cursor.bin". After any reset of the in-RAM state, the
+// first run with the filesystem mounted reads it back, and checks that every file it says is full
+// is exactly full and has valid-looking first/last records. Only then is the cursor restored (at
+// record 0 of the file it names, which gets truncated). Any doubt means a fresh start at r0.
 //
 // Open file handle: Same as the GNSS ring blob, the ring file we're currently appending to is left
 // OPEN between executions (its lfs_file_t lives in the persistent state block), so storing a
@@ -86,7 +114,7 @@
 // without a reboot). Each resets the write cursor to r0.bin record 0 and zeroes the counters, so
 // the ring refills from scratch, and the old files are excluded from downlink. In none of the
 // four is the handle trusted, so it's dropped without being closed, and its uncommitted records
-// are simply lost. Unlike the GNSS ring blob, an unmounted filesystem doesn't stop this blob: the
+// are simply lost. Each then tries to recover the cursor from the filesystem (see Recovery above). Unlike the GNSS ring blob, an unmounted filesystem doesn't stop this blob: the
 // live beacon is still sent, and the blob still reschedules itself.
 //
 // On (re)opening a part-full file (e.g., after a run-once exit closed it), we seek to the
@@ -141,7 +169,8 @@ static const uint32_t LOG_SYSTEM_TELECOMMAND = 1 << 12;
 static const uint32_t LOG_SINK_ALL = (1 << 4) - 1;
 
 static const char ARG_DELIM = ';';
-static const char BLOB_NAME[] = "extended_beacon_blob_v6-dev";
+static const char KWARG_DELIM = '=';
+static const char BLOB_NAME[] = "extended_beacon_blob_v6";
 static const char BLOB_FAMILY_PREFIX[] = "extended_beacon_v"; // Matches all versions' file names, for self-rescheduling handoff.
 
 // Global variables defined in the firmware ELF (CTS-SAT-1_FW_rc3.elf).
@@ -150,6 +179,8 @@ extern volatile uint32_t TIME_uptime_ms_from_tim6;
 
 // Beacon v1 contents (extern variables).
 extern uint32_t AX100_uptime_at_last_received_kiss_tcmd_ms;
+extern uint32_t STM32_system_reset_no_uplink_interval_sec; // Firmware's no-uplink reboot threshold (config var).
+extern void HAL_Delay(uint32_t Delay);
 extern uint8_t LFS_is_lfs_mounted;
 extern uint32_t COMMS_total_beacon_count_since_boot;
 extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
@@ -181,6 +212,7 @@ extern int strlen(const char *s);
 extern int strcmp(const char *s1, const char *s2);
 extern void *memset(void *s, int c, size_t n);
 extern void *memcpy(void *__restrict dest, const void *__restrict src, size_t n);
+extern int memcmp(const void *s1, const void *s2, size_t n);
 
 extern void LOG_message(
     uint32_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
@@ -202,6 +234,20 @@ extern void *pvPortMalloc(size_t xWantedSize);
 //     #endif
 // }
 
+extern int vsnprintf(char *buf, unsigned int size, const char *fmt, va_list ap);
+
+/// @brief LOG() with the "<BLOB_NAME>: " prefix, kept in one non-inlined place to save flash
+///     (each inlined LOG() call site costs ~40 bytes).
+__attribute__((noinline, format(printf, 2, 3)))
+static void blob_log(LOG_severity_enum_t severity, const char *fmt, ...) {
+    char msg[128];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(msg, sizeof(msg), fmt, ap);
+    va_end(ap);
+    LOG(severity, "%s: %s", BLOB_NAME, msg);
+}
+
 // MARK: Error Enum
 
 // All named status/error codes returned by this blob's functions, including the values
@@ -216,6 +262,7 @@ typedef enum {
     BLOB_ERR_PERIPHERAL_COMMS_FAILURES = 117, // Beacon was sent, but >=1 peripheral query failed.
     BLOB_ERR_MISSING_ARGS = 135, // One or more required args_str tokens were empty.
     BLOB_ERR_INVALID_INT_ARGS = 136, // One or more args_str tokens failed integer parsing.
+    BLOB_ERR_INVALID_KWARGS = 137, // A kwarg was unknown, malformed, or not a positive integer.
     BLOB_ERR_NO_EXECUTING_AGENDA_SLOT = 163, // Couldn't find our own agenda slot to reschedule.
     BLOB_ERR_AGENDA_ADD_FAILED = 164, // TCMD_add_tcmd_to_agenda() failed while rescheduling.
 } BLOB_ext_beacon_error_enum_t;
@@ -234,6 +281,7 @@ static const char *ext_beacon_blob_error_to_str(BLOB_ext_beacon_error_enum_t err
         case BLOB_ERR_PERIPHERAL_COMMS_FAILURES: return "PERIPHERAL_COMMS_FAILURES";
         case BLOB_ERR_MISSING_ARGS: return "MISSING_ARGS";
         case BLOB_ERR_INVALID_INT_ARGS: return "INVALID_INT_ARGS";
+        case BLOB_ERR_INVALID_KWARGS: return "INVALID_KWARGS";
         case BLOB_ERR_NO_EXECUTING_AGENDA_SLOT: return "NO_EXECUTING_AGENDA_SLOT";
         case BLOB_ERR_AGENDA_ADD_FAILED: return "AGENDA_ADD_FAILED";
         default: return "UNKNOWN_ERROR";
@@ -503,7 +551,28 @@ _Static_assert(
 #define BEACON_RING_RECORDS_PER_FILE 180 // Records per file. 20*180 = 3600 beacons = 9 hours at 9s.
 #define BEACON_RING_RECORD_SIZE (sizeof(COMMS_beacon_extended_packet_v5plus_t))
 #define BEACON_RING_PATH_MAX_LEN 32 // Enough for "beacon_ring/r<n>.bin".
-#define BEACON_HISTORY_COUNT_MAX 100 // Max historical beacons downlinked per run (history_count arg is clamped).
+#define BEACON_RING_CURSOR_PATH BEACON_RING_DIR "/cursor.bin"
+#define BEACON_HISTORY_COUNT_MAX 50
+#define BEACON_HISTORY_MPI_EXTENDED_MAX 50 // A run reaching an MPI-sensing beacon is extended to this many (note 14).
+#define BEACON_MPI_INTERVAL_MS_DEFAULT 1500 // Default mpi_interval_ms kwarg.
+#define BEACON_MPI_INTERVAL_MS_MIN 1000 // mpi_interval_ms kwarg is clamped to at least this. // Max historical beacons downlinked per run (history_count arg is clamped).
+
+
+// On-disk copy of the write cursor (BEACON_RING_CURSOR_PATH), rewritten each time a ring file is
+// started. Holds the layout too, so a layout change makes recovery discard the old files.
+typedef struct {
+    uint32_t magic; // BEACON_RING_CURSOR_MAGIC.
+    uint16_t record_size; // BEACON_RING_RECORD_SIZE.
+    uint16_t records_per_file; // BEACON_RING_RECORDS_PER_FILE.
+    uint8_t file_count; // BEACON_RING_FILE_COUNT.
+    uint8_t write_file_idx; // Ring file being written (always from record 0).
+    uint8_t has_wrapped;
+    uint8_t reserved; // Always 0.
+} BEACON_ring_cursor_file_t;
+
+_Static_assert(sizeof(BEACON_ring_cursor_file_t) == 12, "BEACON_ring_cursor_file_t should have no padding");
+
+#define BEACON_RING_CURSOR_MAGIC 0xBEACC0D6u
 
 
 // MARK: Persistent State
@@ -512,8 +581,8 @@ _Static_assert(
 extern uint8_t beacon_ring_state_base[];
 
 #define BEACON_RING_STATE_REGION_LEN 0x100u // Must match BEACON_RING's LENGTH in ../blobs_persistent_sram_regions.ld.
-// Bumped when the reboot canary was added (the layout changed), so earlier v5 state is treated as cold.
-#define BEACON_RING_STATE_MAGIC 0xBEAC0105u
+// Bumped whenever the layout changes (last: last_live_tx_uptime_ms), so older state is treated as cold.
+#define BEACON_RING_STATE_MAGIC 0xBEAC0107u
 
 // NOT packed, deliberately: it holds a live lfs_file_t that littlefs accesses through an ordinary
 // (alignment-assuming) pointer. Same as GNSS_ring_state_t.
@@ -523,6 +592,9 @@ typedef struct {
     uint8_t write_file_idx; // Ring file currently being appended to, 0..(BEACON_RING_FILE_COUNT-1).
     uint8_t write_record_idx; // Records already in that file, 0..BEACON_RING_RECORDS_PER_FILE.
     uint8_t has_wrapped; // 1 once we've cycled past the last file at least once (all files have data).
+    uint8_t needs_fs_recovery; // 1 after a reset, until a run with the filesystem mounted tries ring_recover_from_fs().
+
+    uint32_t last_live_tx_uptime_ms; // Uptime of the last live beacon downlink (0 = none since reset). For MPI fast mode.
 
     uint32_t stored_record_count; // Total records written to LittleFS, since cold-init.
     uint32_t store_failure_count; // Failed attempts to store a record, since cold-init.
@@ -588,9 +660,7 @@ static bool detect_reboot_via_heap_canary() {
     // One log line covers both notable events: a detected reboot, and/or a failed allocation.
     // Nominal runs (same boot, canary intact) stay silent.
     if (rebooted || (canary == NULL)) {
-        LOG(
-            LOG_SEVERITY_WARNING, "%s: heap canary: reboot=%d, alloc_ok=%d",
-            BLOB_NAME, rebooted, (canary != NULL)
+        blob_log(LOG_SEVERITY_WARNING, "heap canary: reboot=%d, alloc_ok=%d", rebooted, (canary != NULL)
         );
     }
     return rebooted;
@@ -614,6 +684,7 @@ static void reset_to_fresh_state(bool may_keep_canary) {
     memset(g_state, 0, sizeof(BEACON_ring_state_t));
     g_state->magic = BEACON_RING_STATE_MAGIC;
     g_state->reboot_canary = canary_to_keep;
+    g_state->needs_fs_recovery = 1;
 }
 
 
@@ -660,6 +731,24 @@ static int32_t parse_int(const char *s, bool *ok) {
     if (!has_digits) return 0;
     if (ok) *ok = true;
     return (int32_t)result;
+}
+
+/// @brief Parse a "key=value" token into a key and a positive integer value.
+/// @param token The token. Modified in place (the '=' is replaced with a null terminator).
+/// @return true on success, false if there's no '=' or the value isn't a positive integer.
+static bool parse_kwarg(char *token, const char **key_out, uint32_t *value_out) {
+    uint16_t i = 0;
+    while (token[i] != '\0' && token[i] != KWARG_DELIM) i++;
+    if (token[i] != KWARG_DELIM) return false;
+
+    token[i] = '\0';
+    *key_out = token;
+
+    bool ok;
+    const int32_t value = parse_int(&token[i + 1], &ok);
+    if (!ok || value <= 0) return false;
+    *value_out = (uint32_t)value;
+    return true;
 }
 
 
@@ -849,28 +938,27 @@ static uint16_t read_le_uint16(const uint8_t *buf) {
 ///     value), ADCS_NOMINAL_BATTERY_MV is assumed instead.
 /// @return Total power in cW, clamped to 0..65535.
 static uint16_t calculate_adcs_total_power_cW(const uint8_t tlm195_raw[ADCS_TLM195_LEN], int16_t battery_mV) {
-    const float vbatt_mV = (battery_mV > 0) ? (float)battery_mV : (float)ADCS_NOMINAL_BATTERY_MV;
+    const uint32_t vbatt_mV = (battery_mV > 0) ? (uint32_t)battery_mV : ADCS_NOMINAL_BATTERY_MV;
+    #define RAW(offset) read_le_uint16(&tlm195_raw[offset])
 
-    // Sum of (current in mA) * (voltage in mV) = power in uW.
-    float power_uW = 0.0f;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESENSE1_3V3_OFFSET]) * 0.1f) * (float)ADCS_3V3_RAIL_MV;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESENSE2_3V3_OFFSET]) * 0.1f) * (float)ADCS_3V3_RAIL_MV;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_3V3_OFFSET]) * 0.48828125f) * (float)ADCS_3V3_RAIL_MV;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_5V_OFFSET]) * 0.48828125f) * (float)ADCS_5V_RAIL_MV;
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBECONTROL_VBAT_OFFSET]) * 0.48828125f) * vbatt_mV;
-    for (uint8_t i = 0; i < 3; i++) {
-        power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_WHEEL1_OFFSET + (2 * i)]) * 0.01f) * vbatt_mV;
-    }
-    power_uW += ((float)read_le_uint16(&tlm195_raw[ADCS_TLM195_CUBESTAR_OFFSET]) * 0.01f) * (float)ADCS_3V3_RAIL_MV;
+    // Sum of (current in mA) * (voltage in mV) = power in uW. Computed in exact integer units of 0.01 uW (smaller than float code):
+    // CubeSense (raw * 0.1 mA) and CubeStar (raw * 0.01 mA) at 3V3; CubeWheels (raw * 0.01 mA) at
+    // Vbat; CubeControl (raw * 0.48828125 = raw * 125/256 mA) at 3V3, 5V, and Vbat.
+    const uint64_t power_e2_uW =
+        (10ull * ADCS_3V3_RAIL_MV * (RAW(ADCS_TLM195_CUBESENSE1_3V3_OFFSET) + RAW(ADCS_TLM195_CUBESENSE2_3V3_OFFSET)))
+        + ((uint64_t)ADCS_3V3_RAIL_MV * RAW(ADCS_TLM195_CUBESTAR_OFFSET))
+        + ((uint64_t)vbatt_mV * (
+            RAW(ADCS_TLM195_WHEEL1_OFFSET) + RAW(ADCS_TLM195_WHEEL1_OFFSET + 2) + RAW(ADCS_TLM195_WHEEL1_OFFSET + 4)
+        ))
+        + ((12500ull * (
+            ((uint64_t)ADCS_3V3_RAIL_MV * RAW(ADCS_TLM195_CUBECONTROL_3V3_OFFSET))
+            + ((uint64_t)ADCS_5V_RAIL_MV * RAW(ADCS_TLM195_CUBECONTROL_5V_OFFSET))
+            + ((uint64_t)vbatt_mV * RAW(ADCS_TLM195_CUBECONTROL_VBAT_OFFSET))
+        )) / 256u);
+    #undef RAW
 
-    const float power_cW = (power_uW / 10000.0f) + 0.5f; // uW -> cW, rounded.
-    if (power_cW >= (float)UINT16_MAX) {
-        return UINT16_MAX;
-    }
-    else if (power_cW <= 0) {
-        return 0; // Should be unreachable, but valuable safety nonetheless.
-    }
-    return (uint16_t)power_cW;
+    const uint64_t power_cW = (power_e2_uW + 500000u) / 1000000u; // 0.01 uW -> cW, rounded.
+    return (power_cW > UINT16_MAX) ? UINT16_MAX : (uint16_t)power_cW;
 }
 
 
@@ -1059,6 +1147,34 @@ static bool is_adcs_responding() {
     return result == 0;
 }
 
+// ADCS telemetry whose 6 raw bytes are copied straight into the beacon: {telemetry ID, beacon offset}.
+// This table structure is used to decrease the size of the implementation.
+#define ADCS_COPY(id, field) { id, offsetof(COMMS_beacon_extended_packet_v5plus_t, field) }
+static const uint8_t ADCS_COPY_TLMS[][2] = {
+    // ADCS status data.
+    ADCS_COPY(132, adcs_current_state_1), // ADCS_TELEMETRY_CUBEACP_ADCS_STATE
+
+    // ADCS magnetic field vector (x, y, z).
+    // Raw values are int16, little-endian, in units of 10 nT (i.e. already in Telsla en8 scale).
+    ADCS_COPY(151, adcs_magnetic_field_x_T_en8), // ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR
+
+    // ADCS estimated angular rates (x, y, z rates).
+    ADCS_COPY(147, adcs_estimated_rate_x_cdeg_per_sec), // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES
+
+    // ADCS estimated attitude angles (roll, pitch, yaw).
+    ADCS_COPY(146, adcs_estimated_roll_angle_cdeg), // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES
+
+    // ADCS measured wheel speeds, in RPM.
+    ADCS_COPY(156, adcs_wheel_speed_x_rpm), // ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED
+
+    // ADCS estimation innovation vector, in the raw units of 0.0001.
+    ADCS_COPY(162, adcs_innovation_vector_x_en4), // ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR
+
+    // ADCS EKF estimated gyro bias, in the raw units of 0.001 deg/s.
+    ADCS_COPY(161, adcs_estimated_gyro_bias_x_mdeg_per_sec), // ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS
+};
+_Static_assert(sizeof(COMMS_beacon_extended_packet_v5plus_t) <= 255, "offsets stored as uint8_t");
+
 /// @brief Fill all the ADCS fields of the beacon packet (v2 and v5+).
 /// @details Skips every ADCS request if the ADCS doesn't respond to a single probe (e.g., dev kit
 ///     with no ADCS, or ADCS powered off), leaving the ADCS fields zeroed. See is_adcs_responding().
@@ -1070,20 +1186,19 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
     }
 
     uint8_t peripheral_comms_error_count = 0;
+    uint8_t data_received[ADCS_TLM195_LEN];
 
-    // ADCS status data.
-    {
-        uint8_t data_received[6];
-
+    for (uint8_t i = 0; i < sizeof(ADCS_COPY_TLMS) / sizeof(ADCS_COPY_TLMS[0]); i++) {
         const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            132, // ADCS_TELEMETRY_CUBEACP_ADCS_STATE
+            ADCS_COPY_TLMS[i][0], // Telemetry ID (ADCS_TELEMETRY_CUBEACP_...).
             data_received,
-            sizeof(data_received),
+            6,  // All are 3 elements long, 16-bit elements.
             1 // ADCS_INCLUDE_CHECKSUM
         );
 
         if (tlm_status == 0) {
-            memcpy(beacon_packet->adcs_current_state_1, data_received, sizeof(data_received));
+            // x, y, z (int16 each) land in the 3 consecutive beacon fields starting at the offset.
+            memcpy((uint8_t *)beacon_packet + ADCS_COPY_TLMS[i][1], data_received, 6);
         }
         else {
             peripheral_comms_error_count++;
@@ -1114,28 +1229,6 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
         }
     }
 
-    // ADCS magnetic field vector.
-    // Raw values are int16, little-endian, in units of 10 nT (i.e. already in Telsla en8 scale).
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            151, // ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_magnetic_field_x_T_en8, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_magnetic_field_y_T_en8, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_magnetic_field_z_T_en8, &data_received[4], 2);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
     // ADCS MEMS rate sensor angular rate magnitude.
     {
         uint8_t data_received[6];
@@ -1150,69 +1243,6 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
         if (tlm_status == 0) {
             // Note: data_received is 3x i16 (x, y, z), each in cdeg/s.
             beacon_packet->adcs_angular_rate_norm_cdeg_per_sec = vector3_i16_norm(data_received);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS estimated angular rates.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            147, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_estimated_rate_x_cdeg_per_sec, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_estimated_rate_y_cdeg_per_sec, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_estimated_rate_z_cdeg_per_sec, &data_received[4], 2);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS estimated attitude angles.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            146, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_estimated_roll_angle_cdeg, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_estimated_pitch_angle_cdeg, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_estimated_yaw_angle_cdeg, &data_received[4], 2);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS measured wheel speeds, in RPM.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            156, // ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_wheel_speed_x_rpm, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_wheel_speed_y_rpm, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_wheel_speed_z_rpm, &data_received[4], 2);
         }
         else {
             peripheral_comms_error_count++;
@@ -1235,48 +1265,6 @@ static uint8_t fill_beacon_adcs_fields(COMMS_beacon_extended_packet_v5plus_t *be
             beacon_packet->adcs_pointing_error_cdeg = quaternion_error_vector_to_angle_cdeg(
                 vector3_i16_norm(data_received)
             );
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS estimation innovation vector, in the raw units of 0.0001.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            162, // ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_innovation_vector_x_en4, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_innovation_vector_y_en4, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_innovation_vector_z_en4, &data_received[4], 2);
-        }
-        else {
-            peripheral_comms_error_count++;
-        }
-    }
-
-    // ADCS EKF estimated gyro bias, in the raw units of 0.001 deg/s.
-    {
-        uint8_t data_received[6];
-
-        const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(
-            161, // ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS
-            data_received,
-            sizeof(data_received),
-            1 // ADCS_INCLUDE_CHECKSUM
-        );
-
-        if (tlm_status == 0) {
-            memcpy(&beacon_packet->adcs_estimated_gyro_bias_x_mdeg_per_sec, &data_received[0], 2);
-            memcpy(&beacon_packet->adcs_estimated_gyro_bias_y_mdeg_per_sec, &data_received[2], 2);
-            memcpy(&beacon_packet->adcs_estimated_gyro_bias_z_mdeg_per_sec, &data_received[4], 2);
         }
         else {
             peripheral_comms_error_count++;
@@ -1569,15 +1557,41 @@ static void ring_close_open_file() {
     if (ring_open_file_is_live()) {
         const int close_result = lfs_file_close(&LFS_filesystem, &g_state->open_file);
         if (close_result < 0) {
-            LOG(
-                LOG_SEVERITY_ERROR,
-                "%s: lfs_file_close(r%d) -> %d",
-                BLOB_NAME, g_state->open_file_idx, close_result
+            blob_log(LOG_SEVERITY_ERROR, "lfs_file_close(r%d) -> %d", g_state->open_file_idx, close_result
             );
         }
     }
 
     g_state->open_file_is_valid = 0;
+}
+
+/// @brief Write the current cursor to BEACON_RING_CURSOR_PATH (see BEACON_ring_cursor_file_t).
+/// @details A failed write may leave the file empty/short, which makes recovery discard the ring
+///     (fail-safe), rather than leave a stale cursor behind.
+static BLOB_ext_beacon_error_enum_t ring_write_cursor_file() {
+    BEACON_ring_cursor_file_t cursor;
+    memset(&cursor, 0, sizeof(cursor));
+    cursor.magic = BEACON_RING_CURSOR_MAGIC;
+    cursor.record_size = BEACON_RING_RECORD_SIZE;
+    cursor.records_per_file = BEACON_RING_RECORDS_PER_FILE;
+    cursor.file_count = BEACON_RING_FILE_COUNT;
+    cursor.write_file_idx = g_state->write_file_idx;
+    cursor.has_wrapped = g_state->has_wrapped;
+
+    lfs_file_t file;
+    int result = lfs_file_open(
+        &LFS_filesystem, &file, BEACON_RING_CURSOR_PATH, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
+    );
+    if (result >= 0) {
+        const lfs_ssize_t write_len = lfs_file_write(&LFS_filesystem, &file, &cursor, sizeof(cursor));
+        const int close_result = lfs_file_close(&LFS_filesystem, &file);
+        result = (write_len != (lfs_ssize_t)sizeof(cursor)) ? -1 : close_result;
+    }
+    if (result < 0) {
+        blob_log(LOG_SEVERITY_ERROR, "writing %s -> %d", BEACON_RING_CURSOR_PATH, result);
+        return BLOB_ERR_LFS_WRITE_FAILED;
+    }
+    return BLOB_ERR_OK;
 }
 
 /// @brief Make sure `g_state->open_file` is open on ring file `write_file_idx`, positioned at the
@@ -1596,8 +1610,16 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
 
     const int mkdir_result = lfs_mkdir(&LFS_filesystem, BEACON_RING_DIR);
     if ((mkdir_result != 0) && (mkdir_result != LFS_ERR_EXIST)) {
-        LOG(LOG_SEVERITY_ERROR, "%s: lfs_mkdir(%s) -> %d", BLOB_NAME, BEACON_RING_DIR, mkdir_result);
+        blob_log(LOG_SEVERITY_ERROR, "lfs_mkdir(%s) -> %d", BEACON_RING_DIR, mkdir_result);
         return BLOB_ERR_LFS_MKDIR_FAILED;
+    }
+
+    // Starting a new file: persist the cursor first, so a reboot from here on recovers to this file.
+    if (g_state->write_record_idx == 0) {
+        const BLOB_ext_beacon_error_enum_t cursor_status = ring_write_cursor_file();
+        if (cursor_status != BLOB_ERR_OK) {
+            return cursor_status;
+        }
     }
 
     char path[BEACON_RING_PATH_MAX_LEN];
@@ -1611,7 +1633,7 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
 
     const int open_result = lfs_file_open(&LFS_filesystem, &g_state->open_file, path, open_flags);
     if (open_result < 0) {
-        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        blob_log(LOG_SEVERITY_ERROR, "lfs_file_open(%s) -> %d", path, open_result);
         return BLOB_ERR_LFS_WRITE_FAILED;
     }
     g_state->open_file_idx = g_state->write_file_idx;
@@ -1624,7 +1646,7 @@ static BLOB_ext_beacon_error_enum_t ring_open_write_file() {
         (lfs_soff_t)g_state->write_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET
     );
     if (seek_result < 0) {
-        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_seek(%s) -> %ld", BLOB_NAME, path, (long)seek_result);
+        blob_log(LOG_SEVERITY_ERROR, "lfs_file_seek(%s) -> %ld", path, (long)seek_result);
         ring_close_open_file();
         return BLOB_ERR_LFS_WRITE_FAILED;
     }
@@ -1647,10 +1669,7 @@ static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_exte
         &LFS_filesystem, &g_state->open_file, beacon_packet, BEACON_RING_RECORD_SIZE
     );
     if (write_result != (lfs_ssize_t)BEACON_RING_RECORD_SIZE) {
-        LOG(
-            LOG_SEVERITY_ERROR,
-            "%s: lfs_file_write(r%d, record %d) -> %ld",
-            BLOB_NAME, g_state->write_file_idx, g_state->write_record_idx, (long)write_result
+        blob_log(LOG_SEVERITY_ERROR, "lfs_file_write(r%d, record %d) -> %ld", g_state->write_file_idx, g_state->write_record_idx, (long)write_result
         );
         // The handle's write position is now unknown; drop it so the next run reopens (and
         // re-seeks) cleanly.
@@ -1677,6 +1696,101 @@ static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_exte
 }
 
 
+// MARK: Ring Recovery
+
+/// @brief Does a record read back from the ring look like a beacon this version stored?
+static bool ring_record_looks_valid(const COMMS_beacon_extended_packet_v5plus_t *record) {
+    return (
+        (record->packet_type == COMMS_PACKET_TYPE_BEACON_EXTENDED_V5PLUS)
+        && (memcmp(record->satellite_name, "CTS1", 4) == 0)
+        && (memcmp(record->end_message, " X6", 4) == 0)
+    );
+}
+
+/// @brief Is ring file `file_idx` exactly full, with valid-looking first and last records?
+/// @note Spot-checks only 2 records: reading all of them for every file would take too long.
+static bool ring_file_is_full_and_valid(uint8_t file_idx) {
+    char path[BEACON_RING_PATH_MAX_LEN];
+    make_ring_file_path(file_idx, path, sizeof(path));
+
+    lfs_file_t file;
+    if (lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY) < 0) {
+        blob_log(LOG_SEVERITY_WARNING, "recovery: can't open %s", path);
+        return false;
+    }
+
+    bool ok = (
+        lfs_file_size(&LFS_filesystem, &file)
+        == (lfs_soff_t)(BEACON_RING_RECORDS_PER_FILE * BEACON_RING_RECORD_SIZE)
+    );
+    const uint16_t check_record_idxs[2] = {0, BEACON_RING_RECORDS_PER_FILE - 1};
+    for (uint8_t i = 0; ok && (i < 2); i++) {
+        COMMS_beacon_extended_packet_v5plus_t record;
+        ok = (
+            (lfs_file_seek(&LFS_filesystem, &file, (lfs_soff_t)check_record_idxs[i] * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET) >= 0)
+            && (lfs_file_read(&LFS_filesystem, &file, &record, BEACON_RING_RECORD_SIZE) == (lfs_ssize_t)BEACON_RING_RECORD_SIZE)
+            && ring_record_looks_valid(&record)
+        );
+    }
+    lfs_file_close(&LFS_filesystem, &file);
+
+    if (!ok) {
+        blob_log(LOG_SEVERITY_WARNING, "recovery: %s is not full/valid", path);
+    }
+    return ok;
+}
+
+/// @brief After a reset of the in-RAM state, restore the write cursor from BEACON_RING_CURSOR_PATH,
+///     if it and every file it says is full look good.
+/// @details Leaves g_state untouched (fresh: r0, record 0, not wrapped, no history) on any doubt.
+///     On success, the cursor restarts at record 0 of the file that was being written (its
+///     uncommitted or partial records are discarded when it's truncated).
+/// @return true if the cursor was restored.
+static bool ring_recover_from_fs() {
+    BEACON_ring_cursor_file_t cursor;
+    memset(&cursor, 0, sizeof(cursor));
+
+    lfs_file_t file;
+    if (lfs_file_open(&LFS_filesystem, &file, BEACON_RING_CURSOR_PATH, LFS_O_RDONLY) < 0) {
+        return false; // Never written (e.g., first ever run, or reformatted).
+    }
+    const lfs_soff_t file_size = lfs_file_size(&LFS_filesystem, &file);
+    const lfs_ssize_t read_len = lfs_file_read(&LFS_filesystem, &file, &cursor, sizeof(cursor));
+    lfs_file_close(&LFS_filesystem, &file);
+
+    if (
+        (file_size != (lfs_soff_t)sizeof(cursor))
+        || (read_len != (lfs_ssize_t)sizeof(cursor))
+        || (cursor.magic != BEACON_RING_CURSOR_MAGIC)
+        || (cursor.record_size != BEACON_RING_RECORD_SIZE)
+        || (cursor.records_per_file != BEACON_RING_RECORDS_PER_FILE)
+        || (cursor.file_count != BEACON_RING_FILE_COUNT)
+        || (cursor.write_file_idx >= BEACON_RING_FILE_COUNT)
+        || (cursor.has_wrapped > 1)
+        || (cursor.reserved != 0)
+    ) {
+        blob_log(LOG_SEVERITY_WARNING, "recovery: %s is invalid", BEACON_RING_CURSOR_PATH);
+        return false;
+    }
+
+    // Same set of files downlink_history_beacons() will read from.
+    const uint8_t full_file_count = cursor.has_wrapped ? (BEACON_RING_FILE_COUNT - 1) : cursor.write_file_idx;
+    for (uint8_t steps_back = 1; steps_back <= full_file_count; steps_back++) {
+        const uint8_t file_idx = (uint8_t)(
+            (cursor.write_file_idx + BEACON_RING_FILE_COUNT - steps_back) % BEACON_RING_FILE_COUNT
+        );
+        if (!ring_file_is_full_and_valid(file_idx)) {
+            return false;
+        }
+    }
+
+    g_state->write_file_idx = cursor.write_file_idx;
+    g_state->write_record_idx = 0;
+    g_state->has_wrapped = cursor.has_wrapped;
+    return true;
+}
+
+
 // MARK: History Downlink
 
 /// @brief Downlink a randomly-chosen run of consecutive stored beacons: pick a random full ring
@@ -1690,6 +1804,10 @@ static BLOB_ext_beacon_error_enum_t store_beacon_to_ring(const COMMS_beacon_exte
 ///     Records are stored exactly as generated (" X6\0"). Each is sent as-is, except that its
 ///     end_message is replaced with " S6\0" after reading it back, so the ground can tell it apart
 ///     from a live beacon.
+///
+///     If any record sent has mpi_rx_mode_enum = sensing, the run is extended to
+///     BEACON_HISTORY_MPI_EXTENDED_MAX records (or the end of the file, if sooner), to prioritize
+///     the beacons stored while the MPI was active.
 /// @param history_count Number of records to send (0 = none).
 /// @param sent_count_dest Set to the number of packets actually sent. Never NULL.
 /// @return Number of downlink failures (0 = all succeeded).
@@ -1716,7 +1834,7 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
     const uint16_t start_record_idx = (uint16_t)(record_rand % BEACON_RING_RECORDS_PER_FILE);
 
     const uint16_t available_count = (uint16_t)(BEACON_RING_RECORDS_PER_FILE - start_record_idx);
-    const uint16_t n_to_downlink = (history_count < available_count) ? history_count : available_count;
+    uint16_t n_to_downlink = (history_count < available_count) ? history_count : available_count;
 
     char path[BEACON_RING_PATH_MAX_LEN];
     make_ring_file_path(chosen_file_idx, path, sizeof(path));
@@ -1724,13 +1842,15 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
     lfs_file_t file;
     const int open_result = lfs_file_open(&LFS_filesystem, &file, path, LFS_O_RDONLY);
     if (open_result < 0) {
-        // Same format string as in store_beacon_to_ring(), so it's stored once.
-        LOG(LOG_SEVERITY_ERROR, "%s: lfs_file_open(%s) -> %d", BLOB_NAME, path, open_result);
+        blob_log(LOG_SEVERITY_ERROR, "lfs_file_open(%s) -> %d", path, open_result);
         return n_to_downlink;
     }
 
-    if (lfs_file_seek(&LFS_filesystem, &file, (lfs_soff_t)start_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET) < 0) {
-        LOG(LOG_SEVERITY_WARNING, "%s: lfs_file_seek(%s) failed", BLOB_NAME, path);
+    const lfs_soff_t seek_result = lfs_file_seek(
+        &LFS_filesystem, &file, (lfs_soff_t)start_record_idx * BEACON_RING_RECORD_SIZE, LFS_SEEK_SET
+    );
+    if (seek_result < 0) {
+        blob_log(LOG_SEVERITY_WARNING, "lfs_file_seek(%s) -> %ld", path, (long)seek_result);
         lfs_file_close(&LFS_filesystem, &file);
         return n_to_downlink;
     }
@@ -1740,13 +1860,26 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
         COMMS_beacon_extended_packet_v5plus_t packet;
         const lfs_ssize_t read_len = lfs_file_read(&LFS_filesystem, &file, &packet, BEACON_RING_RECORD_SIZE);
         if (read_len != (lfs_ssize_t)BEACON_RING_RECORD_SIZE) {
-            LOG(
-                LOG_SEVERITY_WARNING,
-                "%s: short read (%ld) at %s record %d",
-                BLOB_NAME, (long)read_len, path, start_record_idx + i
+            blob_log(LOG_SEVERITY_WARNING, "short read (%ld) at %s record %d", (long)read_len, path, start_record_idx + i
             );
             fail_count += (uint16_t)(n_to_downlink - i); // The rest of the run is unreachable too.
             break;
+        }
+
+        // Recovery only spot-checks each file's first/last record; never re-broadcast garbage.
+        if (!ring_record_looks_valid(&packet)) {
+            blob_log(LOG_SEVERITY_WARNING, "invalid record at %s record %d", path, start_record_idx + i);
+            fail_count++;
+            continue;
+        }
+
+        // Stored while the MPI was sensing: prioritize these, by extending the run (capped).
+        if (packet.mpi_rx_mode_enum == MPI_RX_MODE_SENSING_MODE) {
+            const uint16_t extended_count = (available_count < BEACON_HISTORY_MPI_EXTENDED_MAX)
+                ? available_count : BEACON_HISTORY_MPI_EXTENDED_MAX;
+            if (extended_count > n_to_downlink) {
+                n_to_downlink = extended_count; // Never shortens a longer history_count run.
+            }
         }
 
         // Stored as generated; mark it as a ring-stored (historical) beacon only now.
@@ -1766,6 +1899,45 @@ static uint16_t downlink_history_beacons(uint16_t history_count, uint16_t *sent_
 }
 
 
+// MARK: No-Uplink EPS Reset
+// Purpose: On the first "no uplink" reboot, do an EPS reboot. Then, after the reboot,
+// the main OBC firmware will take over and just do OBC-only reboots.
+
+// Fire this long before the firmware's own no-uplink OBC reboot, so we power-cycle everything instead.
+#define NO_UPLINK_EPS_RESET_MARGIN_SEC 300
+
+/// @brief If no uplink has been received for (STM32_system_reset_no_uplink_interval_sec - 5 min),
+///     commit the ring file and command an EPS system reset (power-cycles the whole satellite,
+///     not just the OBC like the firmware's native no-uplink reboot).
+/// @details Deliberately has no "disabled" case: a threshold of 0 (or <= the margin) triggers the
+///     reset immediately, so the config can't be used to bypass this. Only returns if the reset failed.
+static void reset_eps_if_no_recent_uplink() {
+    const uint32_t threshold_sec = STM32_system_reset_no_uplink_interval_sec;
+    // Saturate at 0 (instead of underflowing), so a 0/small threshold resets right away.
+    const uint32_t trigger_sec = (threshold_sec > NO_UPLINK_EPS_RESET_MARGIN_SEC)
+        ? (threshold_sec - NO_UPLINK_EPS_RESET_MARGIN_SEC)
+        : 0;
+
+    const uint32_t time_since_last_uplink_sec = (
+        (TIME_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000
+    );
+    if (time_since_last_uplink_sec < trigger_sec) {
+        return;  // Happy path: Just leave this function.
+    }
+
+    // We could do `ring_close_open_file();` to commit beacons, but not really necessary,
+    // and just adds complexity. Continue.
+    blob_log(
+        LOG_SEVERITY_CRITICAL,
+        "no uplink for %lu sec (native reboot at %lu sec); EPS system reset",
+        (unsigned long)time_since_last_uplink_sec, (unsigned long)threshold_sec
+    );
+    HAL_Delay(1000); // Give time for the log to be sent.
+
+    const uint8_t eps_result = EPS_CMD_system_reset();
+    blob_log(LOG_SEVERITY_ERROR, "EPS_CMD_system_reset() -> %d; continuing", eps_result);
+}
+
 
 __attribute__((used, section(".text.entry")))
 uint8_t blob_main(
@@ -1784,16 +1956,13 @@ uint8_t blob_main(
     uint16_t pos = 0;
 
     char arg0_beacon_interval_ms[20];
-    char arg1_history_count[20];
-
     pos = parse_token(args_str, pos, args_str_len, arg0_beacon_interval_ms, sizeof(arg0_beacon_interval_ms));
-    parse_token(args_str, pos, args_str_len, arg1_history_count, sizeof(arg1_history_count)); // Optional; may be "".
 
     if (arg0_beacon_interval_ms[0] == '\0') {
         // Missing args error.
         snprintf(
             response_buf, response_buf_len,
-            "%s error: missing args! (%s)",
+            "%s error: %s",
             BLOB_NAME,
             ext_beacon_blob_error_to_str(BLOB_ERR_MISSING_ARGS)
         );
@@ -1803,16 +1972,37 @@ uint8_t blob_main(
     bool arg0_beacon_interval_ms_ok;
     int32_t beacon_interval_ms = parse_int(arg0_beacon_interval_ms, &arg0_beacon_interval_ms_ok);
 
+    // Remaining tokens: the optional positional history_count, then kwargs (key=value).
     bool arg1_history_count_ok = true;
     int32_t history_count = 0;
-    if (arg1_history_count[0] != '\0') {
-        history_count = parse_int(arg1_history_count, &arg1_history_count_ok);
+    uint32_t mpi_interval_ms = BEACON_MPI_INTERVAL_MS_DEFAULT;
+    for (uint8_t arg_num = 1; pos < args_str_len; arg_num++) {
+        char token[40];
+        pos = parse_token(args_str, pos, args_str_len, token, sizeof(token));
+
+        const char *key;
+        uint32_t value;
+        if (parse_kwarg(token, &key, &value) && (strcmp(key, "mpi_interval_ms") == 0)) {
+            mpi_interval_ms = value;
+        }
+        else if ((arg_num == 1) && (token[0] != '\0')) {
+            // Also catches a malformed kwarg here (parse_kwarg() cut it at the '=').
+            history_count = parse_int(token, &arg1_history_count_ok);
+        }
+        else if (token[0] != '\0') { // Tolerate empty tokens (e.g., trailing ';').
+            snprintf(
+                response_buf, response_buf_len,
+                "%s error: %s '%s'",
+                BLOB_NAME, ext_beacon_blob_error_to_str(BLOB_ERR_INVALID_KWARGS), token
+            );
+            return BLOB_ERR_INVALID_KWARGS;
+        }
     }
 
     if (!arg0_beacon_interval_ms_ok || !arg1_history_count_ok) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: invalid int args! (%s)",
+            "%s error: %s",
             BLOB_NAME,
             ext_beacon_blob_error_to_str(BLOB_ERR_INVALID_INT_ARGS)
         );
@@ -1830,10 +2020,15 @@ uint8_t blob_main(
         history_count = BEACON_HISTORY_COUNT_MAX;
     }
 
+    // Leave the telecommand task time for everything else (each run takes a while to fill the beacon).
+    if (mpi_interval_ms < BEACON_MPI_INTERVAL_MS_MIN) {
+        mpi_interval_ms = BEACON_MPI_INTERVAL_MS_MIN;
+    }
+
     // True cold-start: first ever run, or a power cycle that cleared SRAM. Nothing in the state
     // block can be trusted, including the open file handle and the canary pointer, so reset
-    // without dereferencing either. We deliberately do NOT measure the on-disk files to recover
-    // the write cursor -- a fresh start simply begins again at r0.bin record 0.
+    // without dereferencing either. The cursor is recovered from the filesystem later (before
+    // storing), via needs_fs_recovery.
     if (g_state->magic != BEACON_RING_STATE_MAGIC) {
         reset_to_fresh_state(false);
     }
@@ -1862,11 +2057,7 @@ uint8_t blob_main(
     // returns false in the perfectly normal case where we simply aren't holding a handle, and
     // that must not trigger a reset.
     if (g_state->open_file_is_valid && (!ring_open_file_is_live())) {
-        LOG(
-            LOG_SEVERITY_WARNING,
-            "%s: stale ring file handle; resetting",
-            BLOB_NAME
-        );
+        blob_log(LOG_SEVERITY_WARNING, "stale ring file handle; resetting");
         reset_to_fresh_state(true);
     }
 
@@ -1875,35 +2066,71 @@ uint8_t blob_main(
     uint8_t peripheral_comms_error_count = 0;
     COMMS_fill_beacon_extended_packet_v5plus(&beacon_packet, &peripheral_comms_error_count);
 
-    // Store the beacon into the ring. Never mounts the filesystem itself; just skips if unmounted.
+    // Snapshot once, so the whole run agrees on the MPI state.
+    const bool mpi_active = (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE);
+
+    // MPI fast mode (note 13): rerun every mpi_interval_ms, to store beacons faster.
+    const bool mpi_fast_mode = (
+        (beacon_interval_ms > 0) && mpi_active && (mpi_interval_ms < (uint32_t)beacon_interval_ms)
+    );
+
+    // Fast runs only add stored beacons; the live beacon keeps (roughly) its normal cadence, so the
+    // radio stays quiet for the MPI and uplinks still get through. Sent on the first fast run at
+    // least (beacon_interval_ms - mpi_interval_ms) after the last one, so it's never sent less often.
+    const uint32_t now_ms = TIME_uptime_ms();
+    const bool send_live_beacon = (
+        (!mpi_fast_mode)
+        || (g_state->last_live_tx_uptime_ms == 0)
+        || ((now_ms - g_state->last_live_tx_uptime_ms) >= ((uint32_t)beacon_interval_ms - mpi_interval_ms))
+    );
+
+    // Downlink the beacon packet first, so the filesystem write doesn't add latency to the live beacon.
+    uint8_t tx_status = 0;
+    if (send_live_beacon) {
+        tx_status = AX100_downlink_bytes(
+            (uint8_t *)(&beacon_packet),
+            sizeof(COMMS_beacon_extended_packet_v5plus_t)
+        );
+        g_state->last_live_tx_uptime_ms = now_ms;
+    }
+
+    // Safety net, checked after the beacon is out.
+    reset_eps_if_no_recent_uplink();
+
+    // Then store it into the ring (even if the downlink failed). Never mounts the filesystem
+    // itself; just skips if unmounted.
     BLOB_ext_beacon_error_enum_t store_status = BLOB_ERR_LFS_NOT_MOUNTED;
     if (LFS_is_lfs_mounted) {
+        // First mounted run since a reset: try to pick up where the stored ring left off.
+        if (g_state->needs_fs_recovery) {
+            g_state->needs_fs_recovery = 0; // One attempt only; a failure just means a fresh start.
+            const bool recovered = ring_recover_from_fs();
+            blob_log(LOG_SEVERITY_NORMAL, "ring recovery: %s (cursor=r%d%s)", recovered ? "restored" : "fresh start",
+                g_state->write_file_idx, g_state->has_wrapped ? ", wrapped" : ""
+            );
+        }
         store_status = store_beacon_to_ring(&beacon_packet);
     }
     if (store_status != BLOB_ERR_OK) {
         g_state->store_failure_count++;
     }
 
-    // Downlink the beacon packet.
-    const uint8_t tx_status = AX100_downlink_bytes(
-        (uint8_t *)(&beacon_packet), 
-        sizeof(COMMS_beacon_extended_packet_v5plus_t)
-    );
     if (tx_status != 0) {
         ring_close_open_file(); // Not rescheduling; commit what we have.
         snprintf(
             response_buf, response_buf_len,
-            "%s error: downlink failed (AX100_downlink_bytes() -> %d) (%s)",
+            "%s error: %s (%d)%s%s", // %d = AX100_downlink_bytes() result. Likely will never see this error message.
             BLOB_NAME,
+            ext_beacon_blob_error_to_str(BLOB_ERR_DOWNLINK_FAILED),
             tx_status,
-            ext_beacon_blob_error_to_str(BLOB_ERR_DOWNLINK_FAILED)
+            "", ""
         );
         return BLOB_ERR_DOWNLINK_FAILED;
     }
 
     // Downlink a random consecutive run of historical beacons, unless the MPI is actively
     // collecting science data (stay off the radio as much as possible then).
-    const bool skip_history_for_mpi = (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE);
+    const bool skip_history_for_mpi = mpi_active;
     uint16_t history_sent_count = 0;
     uint16_t history_fail_count = 0;
     if (LFS_is_lfs_mounted && !skip_history_for_mpi) {
@@ -1927,14 +2154,18 @@ uint8_t blob_main(
     // Reschedule, unless another run of this blob (e.g., a scheduled reconfiguration) is due
     // within 2 intervals, in which case that run takes over.
     const char *resched_msg = "";
+    if (mpi_fast_mode) {
+        resched_msg = send_live_beacon ? ", mpi_fast" : ", mpi_fast (live skipped)";
+    }
     if (beacon_interval_ms > 0) {
-        const int8_t resched_result = BLOB_reschedule_self_unless_upcoming((uint32_t)beacon_interval_ms, BLOB_FAMILY_PREFIX);
+        const uint32_t next_interval_ms = mpi_fast_mode ? mpi_interval_ms : (uint32_t)beacon_interval_ms;
+        const int8_t resched_result = BLOB_reschedule_self_unless_upcoming(next_interval_ms, BLOB_FAMILY_PREFIX);
         if (resched_result < 0) {
             const BLOB_ext_beacon_error_enum_t reexec_result = reschedule_err_to_blob_err(resched_result);
             ring_close_open_file(); // No rerun is coming to close it; commit what we have.
             snprintf(
                 response_buf, response_buf_len,
-                "%s error: reschedule failed -> %s%s",
+                "%s error: %s%s",
                 BLOB_NAME,
                 ext_beacon_blob_error_to_str(reexec_result),
                 ring_msg
@@ -1953,10 +2184,10 @@ uint8_t blob_main(
     if (peripheral_comms_error_count > 0) {
         snprintf(
             response_buf, response_buf_len,
-            "%s error: peripheral comms error count: %d (%s)%s%s",
+            "%s error: %s (%d)%s%s", // %d = peripheral comms error count.
             BLOB_NAME,
-            peripheral_comms_error_count,
             ext_beacon_blob_error_to_str(BLOB_ERR_PERIPHERAL_COMMS_FAILURES),
+            peripheral_comms_error_count,
             ring_msg,
             resched_msg
         );

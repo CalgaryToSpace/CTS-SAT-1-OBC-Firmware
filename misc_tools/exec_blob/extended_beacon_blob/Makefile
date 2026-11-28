@@ -37,7 +37,7 @@ LDFLAGS += -Wl,--just-symbols=$(FW_ELF)
 TARGET = extended_beacon_blob
 
 # Name the blob is uplinked as (see docs/Mission_Operations/Blobs_List.md).
-BLOB_NAME = extended_beacon_v6-dev
+BLOB_NAME = extended_beacon_v6
 
 ELF = $(BUILD_DIR)/$(TARGET).elf
 BIN = $(BUILD_DIR)/$(TARGET).bin
